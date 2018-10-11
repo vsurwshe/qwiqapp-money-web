@@ -1,7 +1,9 @@
 import React, {Component} from 'react'
 import { Link } from 'react-router-dom'
+import {createBrowserHistory} from 'history';
 import { Button, Input, Card } from 'reactstrap';
 import LoginApi from '../services/AuthApi'
+import Store from '../data/Store';
 
 class Login extends Component {
   constructor(props) {
@@ -14,16 +16,22 @@ class Login extends Component {
   }
 
   handleNameChange(event) {
+    console.log("token: ", Store.getUser());
     this.setState({name: event.target.value});
   }
   
   handlePwdChange(event) {
     this.setState({password: event.target.value});
   }
+
   handleButton() {
-    console.log(this.state.name, ', your password id: ',this.state.password);
+    // console.log(this.state.name, ', your password id: ',this.state.password);
     new LoginApi().login(this.state.name, this.state.password, 
-      function() { alert('Success'); },
+      function() { 
+        browserHistory.push('/signup');
+        window.location.reload();
+        console.log('Success '+Store.getAuthToken()); 
+      },
       function() { alert('Failure'); });
   }
 
@@ -39,8 +47,9 @@ class Login extends Component {
                 onChange={this.handlePwdChange} placeholder='Your super secret password'/>
             <Button color="success" onClick={this.handleButton} >
               Login
-            </Button> <br/><br/>
+            </Button> <br/>
         </div>
+        <div>Logedin user: {Store.getAuthToken()}</div>
         <Card className="col-10">
           <span className="h5">Don't have an Account yet?</span>
           <Link to='/signup'>Signup now</Link>
@@ -50,5 +59,7 @@ class Login extends Component {
     );
   }
 }
+
+const browserHistory = createBrowserHistory();
 
 export default Login

@@ -1,10 +1,14 @@
-import axios, {AxiosPromise, AxiosResponse} from 'axios'
+import axios from 'axios'
 import Config from '../data/Config'
 import Store from '../data/Store'
 
 
 class LoginApi {
-    login (username, password, success, failure) {        
+    login (username, password, success, failure) { 
+        console.log('Before clear: ', localStorage.length);
+        localStorage.clear();
+        console.log('After clear: ', localStorage.length);
+        
         let params= { grant_type: 'password',
             username:'vijay@sdf.co.in', password:'sdf12345'
             // username: username, password: password
