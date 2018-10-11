@@ -19,6 +19,9 @@ Import Bootstrap CSS in the src/index.js file:
 
 https://www.npmjs.com/package/reactstrap
 
+- 4. Install axiom for requests
+# npm install --save axiom
+
 
 
 
