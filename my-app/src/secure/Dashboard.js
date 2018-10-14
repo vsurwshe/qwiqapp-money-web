@@ -4,7 +4,7 @@ class Home extends Component {
   render() {
     return (
       <div>
-        <h1>Hello, welcome to App!</h1>
+        <h1>Manage Profiles.!</h1>
       </div>
     );
   }

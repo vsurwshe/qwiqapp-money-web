@@ -25,6 +25,11 @@ const Store = {
         return xx;
     },
 
+    logout: function(callBack) {
+        sessionStorage.clear();
+        setTimeout(callBack, 50);
+    },
+
     setLogin: function(token, refresh, email) {
         let user = {oauthToken: token, 
             refreshToken: refresh, 

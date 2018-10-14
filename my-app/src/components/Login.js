@@ -28,7 +28,7 @@ class Login extends Component {
     // console.log(this.state.name, ', your password id: ',this.state.password);
     new LoginApi().login(this.state.name, this.state.password, 
       function() { 
-        browserHistory.push('/signup');
+        browserHistory.push('/dashboard');
         window.location.reload();
         console.log('Success '+Store.getAuthToken()); 
       },

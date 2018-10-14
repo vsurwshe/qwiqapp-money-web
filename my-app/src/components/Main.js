@@ -1,8 +1,9 @@
 import React from 'react'
-import { Switch, Route } from 'react-router-dom'
-import Home from './Home'
-import Login from './Login'
+import {Route,Redirect, Switch } 
+        from 'react-router-dom'
+import Dashboard from '../secure/Dashboard'
 import Signup from './Signup'
+import Store from '../data/Store'
 
 // The Main component renders one of the three provided
 // Routes (provided that one matches). Both the /roster
@@ -12,11 +13,31 @@ import Signup from './Signup'
 const Main = () => (
   <main>
     <Switch>
-      <Route exact path='/' component={Home}/>
-      <Route path='/login' component={Login}/>
+      {/* <PrivateRoute exact path='/' component={Home}/> */}
+      {/* <Route path='/' component={App}/> */}
+      <PrivateRoute path='/dashboard' component={Dashboard}/>
+      {/* <Route path='/login' component={Login}/> */}
       <Route path='/signup' component={Signup}/>
     </Switch>
   </main>
 )
 
-export default Main
+export default Main;
+
+const PrivateRoute = ({ component: Component, ...rest }) => (
+  <Route
+    {...rest}
+    render={props =>
+      Store.isLoggedIn() ? (
+        <Component {...props} />
+      ) : (
+        <Redirect
+          to={{
+            pathname: "/",  // -> /login
+            state: { from: props.location }
+          }}
+        />
+      )
+    }
+  />
+);

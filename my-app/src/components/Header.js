@@ -4,6 +4,7 @@ import { Collapse, Navbar, NavbarToggler, NavbarBrand,
   Nav, NavItem, NavLink, UncontrolledDropdown,
   DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import Store from '../data/Store';
+import { AuthButton } from '../App';
 
 class Header extends React.Component {
 
@@ -27,55 +28,16 @@ class Header extends React.Component {
     let content;
     console.log('render: Store.isLoggedIn: ', Store.isLoggedIn());
     if (Store.isLoggedIn()) {
-      content = (
-        <Navbar color="light" light expand="md">
-          <NavbarBrand href="/">The Thing</NavbarBrand>
-          <NavbarToggler onClick={this.toggle} />
-          <Collapse isOpen={this.state.isOpen} navbar>
-            <Nav className="ml-auto" navbar>
-              <NavItem>
-                <NavLink href="/components/">Components</NavLink>
-              </NavItem>
-              <NavItem>
-                <NavLink href="https://github.com/reactstrap/reactstrap">GitHub</NavLink>
-              </NavItem>
-              <UncontrolledDropdown nav inNavbar>
-                <DropdownToggle nav caret>
-                  Options
-                </DropdownToggle>
-                <DropdownMenu right>
-                  <DropdownItem>
-                    Option 1
-                  </DropdownItem>
-                  <DropdownItem>
-                    Option 2
-                  </DropdownItem>
-                  <DropdownItem divider />
-                  <DropdownItem>
-                    Reset
-                  </DropdownItem>
-                </DropdownMenu>
-              </UncontrolledDropdown>
-            </Nav>
-          </Collapse>
-        </Navbar>
-    );
+      return this.secureNavBar();
     } else {
-      content = (
-        <Navbar color="light" light expand="md">
-          <Link to='/'>Non secure navigagon bar.</Link>
-        </Navbar>
-    );
-    }
-    return (
-      <div>{content}</div>
-    );
+      return this.nonSecureNavBar();
+    };
   }
 
-/*
  secureNavBar = function() {
   return (
       <Navbar color="light" light expand="md">
+      <AuthButton/>
         <NavbarBrand href="/">reactstrap</NavbarBrand>
         <NavbarToggler onClick={this.toggle} />
         <Collapse isOpen={this.state.isOpen} navbar>
@@ -111,10 +73,13 @@ class Header extends React.Component {
 
   nonSecureNavBar = function() {
     return (
+      <Navbar color="light" light expand="md">
+      <AuthButton/>
         <Link to='/'>Non secure navigagon bar.</Link>
+      </Navbar>
     );
   } 
-  */
+  
 }
 
 
