@@ -12,8 +12,6 @@ class Profiles extends Component {
     }
 
     successCall(json) { 
-        // browserHistory.push('/dashboard');
-        // window.location.reload();
         // console.log('Success '+Store.getAuthToken()); 
         console.log('Success date is: '+json);
         console.log(json[0].id);
@@ -28,8 +26,6 @@ class Profiles extends Component {
     }
 
     errorCall() { 
-        // browserHistory.push('/dashboard');
-        // window.location.reload();
         // console.log('Success '+Store.getAuthToken()); 
         console.log('Some Error..');
     }
