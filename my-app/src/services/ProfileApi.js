@@ -3,13 +3,10 @@ import Config from '../data/Config'
 import Store from '../data/Store'
 
 
-class LoginApi {
-    login (username, password, success, failure) { 
-        let params= { grant_type: 'password',
-            // username:'vijay@sdf.co.in', password:'sdf12345'
-            username: username, password: password
-        };
-        process(params, success, failure);
+class ProfileApi {
+
+    getProfiles (success, failure) { 
+        process(success, failure);
     }
 
     refresh(success, failure) {
@@ -25,11 +22,11 @@ class LoginApi {
     }
 }
 
-export default LoginApi;
+export default ProfileApi;
 
 
-let process = function(params, success, failure) {
-    let promise = HTTP.request({params: params})
+let process = function(success, failure) {
+    let promise = HTTP.request()
         .then((resp) => validResponse(resp, success))
         .catch((error) => errorResponse(error, failure));
     console.log('Promise is: ', promise);
@@ -37,10 +34,8 @@ let process = function(params, success, failure) {
 
 let validResponse = function(resp, successMethod) {
     console.log('Response: ', resp.data);
-    Store.saveLoginResponse(
-        resp.data.access_token, resp.data.refresh_token);
     if (successMethod != null) {
-        successMethod();
+        successMethod(resp.data);
     }
 };
 
@@ -53,12 +48,12 @@ let errorResponse = function (error, failure) {
 };
 
 let HTTP = axios.create({
-    baseURL: Config.authBaseURL,
-    method: 'post',
-    url: '/oauth/token',
-    headers: { 'accept': 'application/json', 'content-type': 'application/json'},
-
-    auth: { username: Config.clientId, password: Config.clientSecret},
-    withCredentials: true
-});
+    baseURL: Config.cloudBaseURL,
+    method: 'get',
+    url: '/profiles',
+    headers: { 
+        'accept': 'application/json', 
+        'content-type': 'application/json',
+        'Authorization': "bearer "+ Store.getAccessToken()}
+    });
     

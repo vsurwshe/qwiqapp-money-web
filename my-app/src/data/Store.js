@@ -4,36 +4,34 @@ const db = sessionStorage;
 const Store = {
     getUser: function() {
         let user = db.getItem(USER_KEY);
+        // console.log("parsing User: "+ user);
         return JSON.parse(user);
     },
 
-    getAuthToken: function() {
+    getAccessToken: function() {
         let user = this.getUser();
         if (user != null) {
-            console.info('getAuthToken().. ', user.oauthToken);
             return user.oauthToken;
         } else {
-            console.info('getAuthToken().. NULL');
             return 'xx';
         }
     },
 
     isLoggedIn: function() {
         let user = this.getUser();
-        let xx = user != null && user.oauthToken != null && user.oauthToken.length > 5;
-        console.log('isLoggedin: ', xx);
-        return xx;
+        let flag = user != null && user.oauthToken != null && user.oauthToken.length > 5;
+        // console.log('isLoggedin: ', flag);
+        return flag;
     },
 
     logout: function(callBack) {
-        sessionStorage.clear();
+        db.clear();
         setTimeout(callBack, 50);
     },
 
-    setLogin: function(token, refresh, email) {
+    saveLoginResponse: function(token, refresh) {
         let user = {oauthToken: token, 
-            refreshToken: refresh, 
-            email: email};
+            refreshToken: refresh};
         console.log('User is: ', user);
         db.setItem(USER_KEY, JSON.stringify(user));
         console.log('After setting: ', db.getItem(USER_KEY));

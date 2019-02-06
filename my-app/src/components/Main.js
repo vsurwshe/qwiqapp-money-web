@@ -3,6 +3,8 @@ import {Route,Redirect, Switch }
         from 'react-router-dom'
 import Dashboard from '../secure/Dashboard'
 import Signup from './Signup'
+import Home from './Home'
+import Login from './Login'
 import Store from '../data/Store'
 
 // The Main component renders one of the three provided
@@ -16,8 +18,9 @@ const Main = () => (
       {/* <PrivateRoute exact path='/' component={Home}/> */}
       {/* <Route path='/' component={App}/> */}
       <PrivateRoute path='/dashboard' component={Dashboard}/>
-      {/* <Route path='/login' component={Login}/> */}
+      <Route path='/login' component={Login}/>
       <Route path='/signup' component={Signup}/>
+      <Route path='/' component={Home}/>
     </Switch>
   </main>
 )

@@ -3,16 +3,20 @@ import { withRouter } from "react-router-dom";
 import Header from './components/Header'
 import Main from './components/Main'
 import Store from './data/Store'
-import Login from './components/Login'
+// import Login from './components/Login'
 
 class App extends React.Component {
 
   render() {
-    if (!Store.isLoggedIn()) {
-      return ( <div><Header/><Main/><Login/> </div> );
-    } else {
-      return(<div><Header/><Main/></div>);
-    }
+    /* if (Store.isLoggedIn()) { */
+      return(<div>
+        <Header/><Main/>
+        </div>);
+    /* } else {
+      return ( <div>
+        <Header/><Main/><Login/> 
+        </div> );
+    } */
   }
 }
 

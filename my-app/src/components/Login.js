@@ -16,7 +16,7 @@ class Login extends Component {
   }
 
   handleNameChange(event) {
-    console.log("token: ", Store.getUser());
+    // console.log("token: ", Store.getUser());
     this.setState({name: event.target.value});
   }
   
@@ -30,33 +30,40 @@ class Login extends Component {
       function() { 
         browserHistory.push('/dashboard');
         window.location.reload();
-        console.log('Success '+Store.getAuthToken()); 
       },
       function() { alert('Failure'); });
   }
 
   render() {
-    // Note: onChange is required when value is present.} 
-    return(
-      <div className="col-9 .flex-md-row">
-        <h1>Login to Tornadoes</h1>
-        <div className="col-10" >
-            <Input type='text' value={this.state.name}
-                onChange={this.handleNameChange} placeholder='Your registered email'/>
-            <Input type='password' value={this.state.password} cols='3'
-                onChange={this.handlePwdChange} placeholder='Your super secret password'/>
-            <Button color="success" onClick={this.handleButton} >
-              Login
-            </Button> <br/>
+    if (Store.isLoggedIn()) {
+      return(<div>
+        <h3>Already loggedin. Go to 
+
+        <Link to='/dashboard'> Dashboard </Link>
+        </h3><br/></div>
+      );
+    } else {
+      return(
+        <div className="col-9 .flex-md-row">
+          <h1>Login to Tornadoes</h1>
+          <div className="col-10" >
+              <Input type='text' value={this.state.name}
+                  onChange={this.handleNameChange} placeholder='Your registered email'/>
+              <Input type='password' value={this.state.password} cols='3'
+                  onChange={this.handlePwdChange} placeholder='Your super secret password'/>
+              <Button color="success" onClick={this.handleButton} >
+                Login
+              </Button> <br/>
+          </div>
+          <div>Logedin user: {Store.getAccessToken()}</div>
+          <Card className="col-10">
+            <span className="h5">Don't have an Account yet?</span>
+            <Link to='/signup'>Signup now</Link>
+          </Card>
+              
         </div>
-        <div>Logedin user: {Store.getAuthToken()}</div>
-        <Card className="col-10">
-          <span className="h5">Don't have an Account yet?</span>
-          <Link to='/signup'>Signup now</Link>
-        </Card>
-            
-      </div>
-    );
+      );
+    }
   }
 }
 

@@ -12,8 +12,8 @@ class Header extends React.Component {
     super();
 
     this.toggle = this.toggle.bind(this);
-    // this.nonSecureNavBar = this.nonSecureNavBar.bind(this);
-    // this.secureNavBar = this.secureNavBar.bind(this);
+    this.nonSecureNavBar = this.nonSecureNavBar.bind(this);
+    this.secureNavBar = this.secureNavBar.bind(this);
     this.state = {
       isOpen: false
     };
@@ -31,7 +31,7 @@ class Header extends React.Component {
       return this.secureNavBar();
     } else {
       return this.nonSecureNavBar();
-    };
+    }
   }
 
  secureNavBar = function() {

@@ -1,13 +1,15 @@
 import React, {Component} from 'react'
+import Profiles from './Profiles'
 
-class Home extends Component {
+class Dashboard extends Component {
   render() {
     return (
       <div>
         <h1>Manage Profiles.!</h1>
+        <Profiles/>
       </div>
     );
   }
 }
 
-export default Home
+export default Dashboard
