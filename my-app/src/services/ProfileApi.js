@@ -1,59 +1,72 @@
-import axios from 'axios'
-import Config from '../data/Config'
-import Store from '../data/Store'
-
+import Axios from "axios";
+import Config from "../data/Config";
+import Store from "../data/Store";
 
 class ProfileApi {
+  createProfile(success, failure, data) {
+    process(success, failure, "/profiles/", "POST", data);
+  }
+  getProfiles(success, failure) {
+    process(success, failure, "/profiles/", "GET");
+  }
 
-    getProfiles (success, failure) { 
-        process(success, failure);
-    }
+  getProfilesById(success, failure, uid) {
+    process(success, failure, "/profiles/" + uid, "GET");
+  }
+  updateProfile(success, failure, data, uid) {
+    process(success, failure, "/profiles/" + uid, "PUT", data);
+  }
 
-    refresh(success, failure) {
-        if (!Store.isLoggedIn) {
-            console.log('Please login first..');
-            failure();
-            return;
-        }
-        let params= { grant_type: 'refresh_token',
-            refresh_token: Store.user.refreshToken
-        };
-        process(params, success, failure);
-    }
+  deleteProfile(success, failure, uid) {
+    process(success, failure, "/profiles/" + uid, "DELETE");
+  }
 }
 
 export default ProfileApi;
 
-
-let process = function(success, failure) {
-    let promise = HTTP.request()
-        .then((resp) => validResponse(resp, success))
-        .catch((error) => errorResponse(error, failure));
-    console.log('Promise is: ', promise);
+function process(success, failure, Uurl, Umethod, data) {
+  if (Umethod === "PUT" || Umethod === "POST") {
+    let insta = createInstance(Uurl, Umethod);
+    insta
+      .request({ data })
+      .then(resp => validResponse(resp, success))
+      .catch(err => {
+        console.log(err.response.status);
+        if (err.response.status)
+          errorResponse("Sorry can't create Profile!", failure);
+      });
+  } else {
+    let insta = createInstance(Uurl, Umethod);
+    insta
+      .request()
+      .then(resp => validResponse(resp, success))
+      .catch(err => errorResponse(err, failure));
+  }
 }
 
 let validResponse = function(resp, successMethod) {
-    console.log('Response: ', resp.data);
-    if (successMethod != null) {
-        successMethod(resp.data);
-    }
+  console.log("Response: ", resp.data);
+  if (successMethod != null) {
+    successMethod(resp.data);
+  }
 };
 
-let errorResponse = function (error, failure) {
-    console.log('Error: ', error);
-    console.log(error.config);
-    if (failure != null) {
-        failure();
-    }
+let errorResponse = function(error, failure) {
+  console.log("Error: ", error);
+  if (failure != null) {
+    failure(error);
+  }
 };
 
-let HTTP = axios.create({
+function createInstance(Uurl, Umethod) {
+  let instance = Axios.create({
     baseURL: Config.cloudBaseURL,
-    method: 'get',
-    url: '/profiles',
-    headers: { 
-        'accept': 'application/json', 
-        'content-type': 'application/json',
-        'Authorization': "bearer "+ Store.getAccessToken()}
-    });
-    
+    method: Umethod,
+    url: Uurl,
+    headers: {
+      "content-type": "application/json",
+      Authorization: "Bearer " + Store.getAccessToken()
+    }
+  });
+  return instance;
+}
