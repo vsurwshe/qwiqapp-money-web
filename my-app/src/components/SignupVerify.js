@@ -38,8 +38,6 @@ class SignupVerify extends Component {
                   <CardTitle>
                     Congratulations!! You are successfully registered in JustMoney. You can now login.....
                   </CardTitle>
-
-                  <span>Now You can Login </span>
                   <Link to="/login"> Login Now</Link>
                 </center>
               </CardBody>

@@ -54,8 +54,9 @@ class SignupApi {
          alert("Internal Error")
       });
   }
-  //This Method Verify the User Creadtional
+  //This Method Verify the User Credential
   verifySignup(success, failure, uid, code) {
+    this.getToken()
     process(
       success,
       failure,

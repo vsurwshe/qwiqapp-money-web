@@ -16,6 +16,15 @@ const Store = {
         }
     },
 
+    getRefreshToken: function() {
+        let user = this.getUser();
+        if (user !== null) {
+          return user.refreshToken;
+        } else {
+          return "xx";
+        }
+      },
+
     isLoggedIn: function() {
         let user = this.getUser();
         let flag = user !== null && user.oauthToken !== null && user.oauthToken.length > 5 && user.user !== "Dummy";
@@ -28,9 +37,9 @@ const Store = {
         setTimeout(callBack, 50);
     },
 
-    saveLoginResponse: function(token, refresh) {
+    saveLoginResponse: function(token, refresh,expiry) {
         let user = {oauthToken: token, 
-            refreshToken: refresh};
+            refreshToken: refresh,timeExpiry: expiry};
         console.log('User is: ', user);
         db.setItem(USER_KEY, JSON.stringify(user));
         console.log('After setting: ', db.getItem(USER_KEY));

@@ -1,5 +1,4 @@
 import axios from "axios";
-
 import Config from "../data/Config";
 import Store from "../data/Store";
 import "../css/react-table.css";
@@ -23,7 +22,7 @@ class LoginApi {
     }
     let params = {
       grant_type: "refresh_token",
-      refresh_token: Store.user.refreshToken
+      refresh_token: Store.getRefreshToken()
     };
     process(params, success, failure);
   }
@@ -46,8 +45,13 @@ let validResponse = function(resp, successMethod,params) {
   if(params.username === "dummy@email.com")
     Store.saveDummyResponse(resp.data.access_token, resp.data.refresh_token);
   else
-    Store.saveLoginResponse(resp.data.access_token, resp.data.refresh_token);
-  if (successMethod != null) {
+    Store.saveLoginResponse(resp.data.access_token, resp.data.refresh_token,resp.data.expires_in);
+ 
+    setTimeout(() =>
+      { new LoginApi().refresh(()=>console.log("Refresh Token generated"),()=>console.log("Token Generation failed"),resp.data.expires_in)},resp.data.expires_in
+    )
+
+    if (successMethod != null) {
     successMethod();
   }
 };
