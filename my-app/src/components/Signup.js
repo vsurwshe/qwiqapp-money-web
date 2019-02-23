@@ -64,9 +64,9 @@ class Signup extends React.Component {
     }
     else{
       setTimeout(() => {
-        this.setState({color:'',content:''}) 
+        this.setState({color:'',content:'',email:''}) 
       }
-      ,5000)
+      ,4000)
     }
   }
 
