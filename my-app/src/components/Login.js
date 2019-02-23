@@ -23,8 +23,16 @@ class Login extends Component {
   handleEvent = event => {
     this.setState({ [event.target.name]: event.target.value });
   };
-
+  handleEnter=(event)=>{
+    if(event.key==='Enter' && event.keyCode===0){
+      this.handleButton();
+    }
+  }
   handleButton = event => {
+    if(this.state.email === '' || this.state.password ===''){
+      this.callAlertTimer('danger','Please Enter Username/Password')
+    }
+    else{
       new LoginApi().login(
         this.state.email,
         this.state.password,
@@ -36,6 +44,7 @@ class Login extends Component {
           this.callAlertTimer('danger','Incorrect Username/Password')
         }
       );
+    }
   };
 
   resetData(){
@@ -99,7 +108,7 @@ class Login extends Component {
                   <CardTitle>Welcome Back!</CardTitle><br/>
                   <FormGroup>
                   <Input
-                    type="text"
+                    type="email"
                     name="email"
                     onChange={
                       (e) => {
@@ -126,6 +135,7 @@ class Login extends Component {
                         this.validatePassword(e)
                         this.handleEvent(e)
                       }}
+                      onKeyPress={this.handleEnter}
                     placeholder="Your Password"
                     value={this.state.password}
                     required

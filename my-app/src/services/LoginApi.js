@@ -46,9 +46,10 @@ let validResponse = function(resp, successMethod,params) {
     Store.saveDummyResponse(resp.data.access_token, resp.data.refresh_token);
   else
     Store.saveLoginResponse(resp.data.access_token, resp.data.refresh_token,resp.data.expires_in);
- 
+    // TODO: refresh token when actual token expire occurs. 
+    const expiry = resp.data.expires_in * 1000
     setTimeout(() =>
-      { new LoginApi().refresh(()=>console.log("Refresh Token generated"),()=>console.log("Token Generation failed"),resp.data.expires_in)},resp.data.expires_in
+      { new LoginApi().refresh(()=>console.log("Refresh Token generated"),()=>console.log("Token Generation failed"),resp.data.expires_in)},expiry
     )
 
     if (successMethod != null) {

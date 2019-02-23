@@ -42,11 +42,18 @@ class SignupApi {
     
     instance.request()
       .then(resp => {
-        if(resp.data)
-          alert("User already exists")
-        else
-          this.registerUser(success,failure,data)
-        return resp.data;
+        validResponse(resp,success)
+
+
+        // if(resp.data)
+        // {
+        //   alert("User already exists")
+          
+          
+        // }
+        // return resp.data;
+
+          
       })
       .catch(err => {
         console.log(err.response.status);

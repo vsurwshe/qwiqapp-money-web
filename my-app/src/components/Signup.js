@@ -5,7 +5,7 @@ import {Container,Alert,Label,Button,Input,Card, CardBody,
 } from "reactstrap";
 import { Link } from "react-router-dom";
 import SignupApi from "../services/SignupApi";
-
+import LoginApi from "../services/LoginApi";
 class Signup extends React.Component {
   state = {
     name: "",
@@ -25,40 +25,40 @@ class Signup extends React.Component {
     this.setState({ [e.target.name]: e.target.value });
   };
 
+  // handleEnter = (event) =>{
+  //   if (event.key === 'Enter' && event.keyCode===0) { 
+  //     this.handleSubmit();
+  //   }
+  // }
+
   handleSubmit = e => {
     e.preventDefault();
-      console.log(this.state.email + " " + this.state.password);
-      const data = {
-        name: this.state.name,
-        email: this.state.email,
-        password: this.state.password
-      };
-      new SignupApi().existsUser(this.successCall, this.errorCall, data);
+    console.log(this.state.email + " " + this.state.password);
+    const data = {
+      name: this.state.name,
+      email: this.state.email,
+      password: this.state.password
+    };
+    new SignupApi().registerUser(this.successCall, this.errorCall, data);
   };
 
   successCall = json => {
-    console.log(json);
-    this.callAlertTimer("success","Successful!Please Check your email for Activation Link!!")
+    this.callAlertTimer("success","Succesfull! Please Check your Email for Activation Link")
     
   };
 
   errorCall = err => {
-    //this.callAlertTimer("danger","User Already exists")
+    this.callAlertTimer("danger","Internal Error")
   };
 
   callAlertTimer = (color,content) => {
     this.setState({
       color:color,
       content:content,
-
     })
-    if(color === 'success'){
-
+    if(color === 'success' && content ==="Succesfull! Please Check your Email for Activation Link"){
       setTimeout(() => {
-        this.setState({color:'',content:''})
-        //browserHistory.push("/login");
-        window.location.reload();
-        
+        this.setState({color:'',content:'',flag:false}) 
       }
         ,2000)
     }
@@ -73,10 +73,16 @@ class Signup extends React.Component {
   validateEmail= e => {
     const emailRex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     const { validate } = this.state
-      if (emailRex.test(e.target.value)) 
-        validate.emailState = 'success'
-      else 
+      let email = e.target.value;
+      let data={
+        email:e.target.value
+      }
+      if (emailRex.test(email)) {
+       new SignupApi().existsUser(()=>{this.callAlertTimer("success","User Already exists!")},()=>{validate.emailState = 'danger'}, data)
+      }
+       else {
         validate.emailState = 'danger'
+      }
       this.setState({ validate })
   }
 
@@ -93,78 +99,82 @@ class Signup extends React.Component {
     var style={
       color:'red'
     }
+
+    if(this.state.flag){
     return (
       <div>
         <center>
           <Container style={{ paddingTop: 50 }} className="App">
             <Card style={{ width: 400, border : 0 }}>
               <CardBody>
-              <Alert color={this.state.color}>{this.state.content}</Alert>
+                <Alert color={this.state.color}>{this.state.content}</Alert>
                 <center>
                   <CardTitle style={{color:"teal"}}>Create an Account</CardTitle><br/>
                 </center>
-                    <FormGroup style={{textAlign:"left"}}>
-                    <Label for="Name">Name <span style={style}>*</span></Label>
-                    <Input
-                      name="name"
-                      type="text"
-                      placeholder="Your Name"
-                      onChange={e => this.handleInput(e)}
-                      required
-                      />
-                    </FormGroup>
-                    <FormGroup style={{textAlign:"left"}}>
-                      <Label style={{textAlign:"left"}} for="Email">Email <span style={style}>*</span></Label>
-                      <Input
-                        name="email"
-                        type="email"
-                        placeholder="Your Email"
-                        onChange={e => {
-                          this.handleInput(e)
-                          this.validateEmail(e)
-                        }}
-                        required
-                        valid={ this.state.validate.emailState === 'success' }
-                        invalid={ this.state.validate.emailState === 'danger'}
-                      />
-                      <FormFeedback invalid>
-                            Uh oh! Incorrect email.
-                      </FormFeedback>
-                    </FormGroup>
-                    <FormGroup style={{textAlign:"left"}}>
-                      <Label for="password">Password <span style={style}>*</span></Label>
-                      <Input
-                        name="password"
-                        type="password"
-                        placeholder="Your password"
-                        onChange={e =>{
-                          this.handleInput(e)
-                          this.validatePassword(e)
-                        }} 
-                        required
-                        valid={ this.state.validate.passwordState === 'success' }
-                        invalid={ this.state.validate.passwordState === 'danger' }
-                      />
-                      <FormFeedback invalid tooltip>
-                          Password length must be minimum 6 characters
-                      </FormFeedback> 
-                    </FormGroup>
-                    <center>
-                      <Button color="info" onClick={this.handleSubmit}>Signup</Button>
-                      <CardBody>
-                        <span>I already have an Account. </span>
-                        <Link to="/login">Login Now </Link>
-                      </CardBody>
-                    </center>
-                  {/* </div>
-                  :
-                  null} */}
+                <FormGroup style={{textAlign:"left"}}>
+                  <Label for="Name">Name <span style={style}>*</span></Label>
+                  <Input name="name" type="text" placeholder="Your Name"value={this.state.name}
+                    onChange={e => this.handleInput(e)} required />
+                </FormGroup>
+                <FormGroup style={{textAlign:"left"}}>
+                  <Label style={{textAlign:"left"}} for="Email">Email <span style={style}>*</span></Label>
+                  <Input
+                    name="email"
+                    type="email"
+                    placeholder="Your Email"
+                    value={this.state.email}
+                    onChange={e => {
+                      this.handleInput(e)
+                      this.validateEmail(e)
+                    }}
+                    required
+                    valid={ this.state.validate.emailState === 'success' }
+                    invalid={ this.state.validate.emailState === 'danger'}
+                  />
+                  <FormFeedback invalid>
+                        Uh oh! Incorrect email.
+                  </FormFeedback>
+                </FormGroup>
+                <FormGroup style={{textAlign:"left"}}>
+                  <Label for="password">Password <span style={style}>*</span></Label>
+                  <Input
+                    name="password"
+                    type="password"
+                    placeholder="Your password"
+                    value={this.state.password}
+                    onChange={e =>{
+                      this.handleInput(e)
+                      this.validatePassword(e)
+                    }} 
+                   // onKeyPress = {this.handleEnter}
+                    required
+                    valid={ this.state.validate.passwordState === 'success' }
+                    invalid={ this.state.validate.passwordState === 'danger' }
+                  />
+                  <FormFeedback invalid tooltip>
+                      Password length must be minimum 6 characters
+                  </FormFeedback> 
+                </FormGroup>
+                <center>
+                  <Button color="info" onClick={this.handleSubmit}>Signup</Button>
+                  <CardBody>
+                    <span>I already have an Account. </span>
+                    <Link to="/login">Login Now </Link>
+                  </CardBody>
+                </center>
               </CardBody>
             </Card>
           </Container>
         </center>
       </div>
-    );
+    );}
+    else{
+   return(
+     <Container>
+      <Card> <p>Please Check your Email for Activation Link!</p></Card>
+    </Container>
+   )
+   }
   }
 }
 

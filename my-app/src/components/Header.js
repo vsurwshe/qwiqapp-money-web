@@ -1,4 +1,5 @@
 import React from "react";
+import '../css/style.css';
 
 import {
   Container,
@@ -47,22 +48,26 @@ class Header extends React.Component {
             <NavbarBrand href="/">Just Money Web App</NavbarBrand>
             <NavbarToggler onClick={this.toggle} />
             <Collapse isOpen={this.state.isOpen} navbar>
+              
               <Nav className="ml-auto" navbar>
+                <NavItem>
+                   <AuthButton />
+                 </NavItem>
+                 </Nav>
+            </Collapse>
+          </Navbar>
+        </Container>
+
+              <Nav navbar vertical style={{padding:"20px"}}>
                 <NavItem><NavLink href="/dashboard">Home</NavLink></NavItem>
                 <UncontrolledDropdown nav inNavbar>
                   <DropdownToggle nav caret>Profiles</DropdownToggle>
-                  <DropdownMenu right>
+                  <DropdownMenu className="sidebar">
                     <DropdownItem><NavLink href="/createProfiles">Create Profiles</NavLink></DropdownItem>
                     <DropdownItem><NavLink href="/viewProfiles">View Profiles</NavLink></DropdownItem>
                   </DropdownMenu>
                 </UncontrolledDropdown>
-                <NavItem>
-                  <AuthButton />
-                </NavItem>
               </Nav>
-            </Collapse>
-          </Navbar>
-        </Container>
       </div>
     );
   };
