@@ -26,10 +26,10 @@ const Main = () => (
 
       <Route path="/signup" component={Signup} />
       <Route path="/createProfiles" component={CreateProfiles} />
-      <Route path="/viewProfiles" component={Profiles} />
+      <Route path="/profiles" component={Profiles} />
       <Route path="/register/:id/verify" component={SignupVerify} />
       <Route path="/home" component={Home} />
-      <Route expect path="/" component={Login} />
+      <Route expect path="/" component={Home} />
     </Switch>
   </main>
 );

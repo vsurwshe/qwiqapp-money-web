@@ -10,6 +10,7 @@ import {
 } from "reactstrap";
 import Store from "../data/Store";
 import ProfileApi from "../services/ProfileApi";
+import Sidemenu from './SideMenu';
 
 import { createBrowserHistory } from "history";
 
@@ -75,29 +76,32 @@ class CreateProfiles extends Component {
   //this method call api and create user profile
   render() {
     return (
-      <div>
-        <center>
-          <Container style={{ paddingTop: 50 }} className="App">
-          <Alert color={this.state.color}>{this.state.content}</Alert>
-            <Card style={{width:400}}>
-              <CardBody>
-                <CardTitle>Create User Profiles</CardTitle>
-                <form>
-                  <Input
-                    name="name"
-                    type="text"
-                    placeholder="Enter Profile name"
-                    onChange={e => this.handleInput(e)}
-                  />
-                  <br />
-                  <Button color="info" onClick={e => this.handleSubmit(e)}>
-                    Save
-                  </Button>
-                </form>
-              </CardBody>
-            </Card>
-          </Container>
-        </center>
+      <div className="container-fluid">
+        <div className="flex-xl-nowrap row">
+            <Sidemenu/>
+          <center>
+            <Container style={{ paddingTop: 50 }} className="App">
+            <Alert color={this.state.color}>{this.state.content}</Alert>
+              <Card style={{width:400}}>
+                <CardBody>
+                  <CardTitle>Create User Profiles</CardTitle>
+                  <form>
+                    <Input
+                      name="name"
+                      type="text"
+                      placeholder="Enter Profile name"
+                      onChange={e => this.handleInput(e)}
+                    />
+                    <br />
+                    <Button color="info" onClick={e => this.handleSubmit(e)}>
+                      Save
+                    </Button>
+                  </form>
+                </CardBody>
+              </Card>
+            </Container>
+          </center>
+        </div>
       </div>
     );
   }

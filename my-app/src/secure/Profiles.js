@@ -64,14 +64,8 @@ class Profiles extends Component {
  
   render() {
     const columns = [
-      {
-        Header: "Id",
-        accessor: "id"
-      },
-      {
-        Header: "Profile Name",
-        accessor: "name"
-      },
+      { Header: "Id", accessor: "id" },
+      { Header: "Profile Name", accessor: "name" },
       {
         Header: "Profile Create Time",
         accessor: "created",
@@ -135,6 +129,7 @@ class Profiles extends Component {
       );
     } else {
       return (
+        <div className="Main-styles-module--main--2QNBf col-xl-8 col-md-9 col-12">
           <Container style={{ padding: 20}} className="App">
             <Card>
               <CardBody>
@@ -166,6 +161,7 @@ class Profiles extends Component {
               </CardBody>
             </Card>
           </Container>
+          </div>
       );
     }
   }

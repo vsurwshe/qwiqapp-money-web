@@ -59,12 +59,12 @@ class Header extends React.Component {
         </Container>
 
               <Nav navbar vertical style={{padding:"20px"}}>
-                <NavItem><NavLink href="/dashboard">Home</NavLink></NavItem>
+                <NavItem><NavLink href="/dashboard">Dashboard</NavLink></NavItem>
                 <UncontrolledDropdown nav inNavbar>
                   <DropdownToggle nav caret>Profiles</DropdownToggle>
                   <DropdownMenu className="sidebar">
                     <DropdownItem><NavLink href="/createProfiles">Create Profiles</NavLink></DropdownItem>
-                    <DropdownItem><NavLink href="/viewProfiles">View Profiles</NavLink></DropdownItem>
+                    <DropdownItem><NavLink href="/profiles">View Profiles</NavLink></DropdownItem>
                   </DropdownMenu>
                 </UncontrolledDropdown>
               </Nav>
