@@ -7,7 +7,6 @@ class LoginApi {
   login(username, password, success, failure) {
     let params = {
       grant_type: "password",
-      // username:'vijay@sdf.co.in', password:'sdf12345'
       username: username,
       password: password
     };
@@ -16,7 +15,6 @@ class LoginApi {
 
   refresh(success, failure) {
     if (!Store.isLoggedIn) {
-      console.log("Please login first..");
       failure();
       return;
     }
@@ -35,13 +33,10 @@ let process = function(params, success, failure) {
     .then(resp => validResponse(resp, success,params))
     .catch(error => {
       errorResponse(error, failure);
-      console.log(error);
     });
-  console.log("Promise is: ", promise);
 };
 
 let validResponse = function(resp, successMethod,params) {
-  console.log("Response: ", resp.data);
   if(params.username === "dummy@email.com")
     Store.saveDummyResponse(resp.data.access_token, resp.data.refresh_token);
   else
@@ -58,8 +53,6 @@ let validResponse = function(resp, successMethod,params) {
 };
 
 let errorResponse = function(error, failure) {
-  console.log("Error: ", error);
-  console.log(error.config);
   if (failure != null) {
     failure();
   }

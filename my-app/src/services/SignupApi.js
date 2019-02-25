@@ -5,7 +5,6 @@ import LoginApi from "./LoginApi";
 
 class SignupApi {
   constructor() {
-    console.log("Constructor called");
     //this.getToken();
   }
   //This is Step to Register The User
@@ -14,15 +13,17 @@ class SignupApi {
       "dummy@email.com",
       "dummyPwd",
       () => {
+        //TODO change success message
         console.log("Your Token is", Store.getAccessToken());
       },
       () => {
+         //TODO change failure message
         console.log("Cantnot Fetch the Admin Token");
       }
     );
   };
 
-  //This Method Work On Creation User
+  //Registers User
   registerUser(success, failure, data) {
       process(
         success,
@@ -32,36 +33,27 @@ class SignupApi {
         data
       );
   }
-  //This Method Check Wheter user alredy availbale or not
+  //Checks Whether user already exists or not
   existsUser(success, failure, data) {
     this.getToken();
     let instance = createInstance(
       Config.cloudBaseURL + "/register/exists?email=" + data.email,
       "GET"
     );
-    
     instance.request()
       .then(resp => {
-        validResponse(resp,success)
-
-
-        // if(resp.data)
-        // {
-        //   alert("User already exists")
-          
-          
-        // }
-        // return resp.data;
-
-          
+        if (resp.data) {
+          validResponse(resp,success)
+        }   
       })
       .catch(err => {
-        console.log(err.response.status);
         if (err.response.status === "404") 
-         alert("Internal Error")
+        //TODO change error log message
+         console.log("Internal Error")
+        // alert("Internal Error")
       });
   }
-  //This Method Verify the User Credential
+  //Verify the User Credentials
   verifySignup(success, failure, uid, code) {
     this.getToken()
     process(
@@ -77,7 +69,6 @@ export default SignupApi;
 
 let process = function(success, failure, Uurl, Umethod, data) {
   let instance = createInstance(Uurl, Umethod);
-  console.log("Data length ", [data]);
   if ([data].length > 0) {
     instance
       .request({ data })
@@ -92,14 +83,12 @@ let process = function(success, failure, Uurl, Umethod, data) {
 };
 
 let validResponse = function(resp, successMethod) {
-  console.log("Response: ", resp.data);
   if (successMethod != null) {
     successMethod(resp.data);
   }
 };
 
 let errorResponse = function(error, failure) {
-  console.log("Error: ", error);
   if (failure != null) {
     failure(error);
   }

@@ -33,24 +33,20 @@ class Login extends Component {
   handleEvent = event => {
     this.setState({ [event.target.name]: event.target.value });
   };
-  handleEnter = event => {
-    if (event.key === "Enter" && event.keyCode === 0) {
-      this.handleButton();
-    }
-  };
+  handleEnter=(event)=>{
+    if(event.key==='Enter' && event.keyCode===0){ this.handleButton(); }
+  }
   handleButton = event => {
-    if (this.state.email === "" || this.state.password === "") {
-      this.callAlertTimer("danger", "Please Enter Username/Password");
-    } else {
-      new LoginApi().login(
-        this.state.email,
-        this.state.password,
+    if(this.state.email === '' || this.state.password ===''){
+      this.callAlertTimer('danger','Please Enter Username/Password')
+    }
+    else{
+      new LoginApi().login(this.state.email, this.state.password,
         () => {
           browserHistory.push("/dashboard");
           window.location.reload();
-        },
-        () => {
-          this.callAlertTimer("danger", "Incorrect Username/Password");
+        }, () => {
+          this.callAlertTimer('danger','Incorrect Username/Password')
         }
       );
     }
@@ -58,9 +54,13 @@ class Login extends Component {
 
   resetData() {
     this.setState({
-      email: "",
-      password: ""
-    });
+      email:'',
+      password:'',
+      validate :{
+        emailState:'',
+        passwordState:''
+      }
+    })
   }
 
   callAlertTimer(color, content) {
@@ -74,20 +74,14 @@ class Login extends Component {
 
   validateEmail = e => {
     const emailRex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    const { validate } = this.state;
-    if (emailRex.test(e.target.value)) validate.emailState = "success";
-    else validate.emailState = "danger";
-    this.setState({ validate });
-  };
-
-  validatePassword = e => {
-    const { validate } = this.state;
-    if (e.target.value.length >= 4) validate.passwordState = "success";
-    else validate.passwordState = "danger";
-    this.setState({ validate });
-  };
+    const { validate } = this.state
+      if (emailRex.test(e.target.value)) { validate.emailState = 'success' }
+      else { validate.emailState = 'danger'; }
+      this.setState({ validate })
+  }
 
   render() {
+    const {emailState} = this.state.validate;
     if (Store.isLoggedIn()) {
       return (
         <div>
@@ -111,40 +105,14 @@ class Login extends Component {
                   <CardTitle>Welcome Back!</CardTitle>
                   <br />
                   <FormGroup>
-                    <Input
-                      type="email"
-                      name="email"
-                      onChange={e => {
-                        this.validateEmail(e);
-                        this.handleEvent(e);
-                      }}
-                      placeholder="Your Email"
-                      value={this.state.email}
-                      required
-                      valid={this.state.validate.emailState === "success"}
-                      invalid={this.state.validate.emailState === "danger"}
-                    />
-                    <FormFeedback invalid>Uh oh! Incorrect email.</FormFeedback>
+                  <Input name="email" type="email" placeholder="Your Email" value={this.state.email} valid={ emailState === 'success' }
+                      invalid={ emailState === 'danger'} onChange={ (e) => { this.validateEmail(e);this.handleEvent(e) }} />
+                  <FormFeedback invalid> Uh oh! Incorrect email. </FormFeedback>  
                   </FormGroup>
                   <FormGroup>
-                    <Input
-                      type="password"
-                      cols="3"
-                      name="password"
-                      onChange={e => {
-                        this.validatePassword(e);
-                        this.handleEvent(e);
-                      }}
-                      onKeyPress={this.handleEnter}
-                      placeholder="Your Password"
-                      value={this.state.password}
-                      required
-                      valid={this.state.validate.passwordState === "success"}
-                      invalid={this.state.validate.passwordState === "danger"}
-                    />
-                    <FormFeedback invalid tooltip>
-                      Password length must be minimum 6 characters
-                    </FormFeedback>
+                  {/* cols="3" */}
+                  <Input type="password"  name="password" onChange={(e) => { this.handleEvent(e)}}
+                   onKeyPress={this.handleEnter} placeholder="Your Password" value={this.state.password} /> 
                   </FormGroup>
                   <Button color="info" onClick={this.handleButton}>
                     Login
