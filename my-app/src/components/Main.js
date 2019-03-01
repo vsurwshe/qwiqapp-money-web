@@ -1,5 +1,18 @@
-import React from "react";
+import React, { Component, Suspense } from "react";
 import { Route, Redirect, Switch } from "react-router-dom";
+import { Container } from "reactstrap";
+import {
+  AppBreadcrumb,
+  AppFooter,
+  AppHeader,
+  AppSidebar,
+  AppSidebarFooter,
+  AppSidebarForm,
+  AppSidebarHeader,
+  AppSidebarMinimizer,
+  AppSidebarNav
+} from "@coreui/react";
+
 import Dashboard from "../secure/Dashboard";
 import Signup from "./Signup";
 import Home from "./Home";
@@ -7,32 +20,86 @@ import Login from "./Login";
 import Store from "../data/Store";
 
 import SignupVerify from "../components/SignupVerify";
-
 import Profiles from "../secure/Profiles";
-import CreateProfiles from "../secure/CreateProfile";
+import CreateProfiles from "../secure/CreateProfiles";
+import navigation from "../data/navigations";
+import UpdateProfile from "../secure/UpdateProfile";
 
-// The Main component renders one of the three provided
-// Routes (provided that one matches). Both the /roster
-// and /schedule routes will match any pathname that starts
-// with /roster or /schedule. The / route will only match
-// when the pathname is exactly the string "/"
-const Main = () => (
-  <main>
-    <Switch>
-      {/* <PrivateRoute exact path='/' component={Home}/> */}
-      {/* <Route path='/' component={App}/> */}
-      <PrivateRoute path="/dashboard" component={Dashboard} />
-      <Route path="/login" component={Login} />
-
-      <Route path="/signup" component={Signup} />
-      <Route path="/createProfiles" component={CreateProfiles} />
-      <Route path="/profiles" component={Profiles} />
-      <Route path="/register/:id/verify" component={SignupVerify} />
-      <Route path="/home" component={Home} />
-      <Route expect path="/" component={Home} />
-    </Switch>
-  </main>
+const DefaultFooter = React.lazy(() =>
+  import("../secure/Sidebar/DefaultFooter")
 );
+const DefaultHeader = React.lazy(() =>
+  import("../secure/Sidebar/DefaultHeader")
+);
+
+class Main extends Component {
+  loading = () => (
+    <div className="animated fadeIn pt-1 text-center">Loading...</div>
+  );
+
+  signOut(e) {
+    e.preventDefault();
+    this.props.history.push("/login");
+  }
+
+  render() {
+    if (Store.isLoggedIn()) {
+      return this.loadSecureRouets();
+    } else {
+      return this.loadRoutes();
+    }
+  }
+
+  loadRoutes() {
+    return (
+      <Switch>
+        <PrivateRoute path="/dashboard" component={Dashboard} />
+        <Route path="/login" component={Login} />
+        <Route path="/signup" component={Signup} />
+        <Route path="/updateProfile" component={UpdateProfile} />
+        <Route path="/createProfile" component={CreateProfiles} />
+        <Route path="/profiles" component={Profiles} />
+        <Route path="/register/:id/verify" component={SignupVerify} />
+        <Route exact path="/" component={Login} />
+        <Route path="/home" component={Home} />
+      </Switch>
+    );
+  }
+
+  loadSecureRouets() {
+    return (
+      <div className="app ">
+        <AppHeader fixed>
+          <Suspense fallback={this.loading()}>
+            <DefaultHeader onLogout={e => this.signOut(e)} />
+          </Suspense>
+        </AppHeader>
+        <div className="app-body">
+          <AppSidebar fixed display="sm">
+            <AppSidebarHeader />
+            <AppSidebarForm />
+            <Suspense>
+              <AppSidebarNav navConfig={navigation} {...this.props} />
+            </Suspense>
+            <AppSidebarFooter />
+            <AppSidebarMinimizer />
+          </AppSidebar>
+          <main className="main">
+            <AppBreadcrumb />
+            <Container fluid>
+              <Suspense fallback={this.loading()}>{this.loadRoutes()}</Suspense>
+            </Container>
+          </main>
+        </div>
+        <AppFooter>
+          <Suspense fallback={this.loading()}>
+            <DefaultFooter />
+          </Suspense>
+        </AppFooter>
+      </div>
+    );
+  }
+}
 
 export default Main;
 
