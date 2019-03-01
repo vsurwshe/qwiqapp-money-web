@@ -1,66 +1,163 @@
-import React, {Component} from 'react'
-import { Link } from 'react-router-dom'
-import {createBrowserHistory} from 'history';
-import { Button, Input, Card } from 'reactstrap';
-import LoginApi from '../services/AuthApi'
-import Store from '../data/Store';
+import React, { Component } from "react";
+import { Link } from "react-router-dom";
+import { createBrowserHistory } from "history";
+import {
+  Container,
+  Button,
+  Input,
+  Card,
+  CardBody,
+  CardTitle,
+  FormFeedback,
+  Alert,
+  FormGroup
+} from "reactstrap";
+import LoginApi from "../services/LoginApi";
+import Store from "../data/Store";
 
 class Login extends Component {
   constructor(props) {
     super(props);
-    this.state = {name: '', password: ''};
-
-    this.handleNameChange = this.handleNameChange.bind(this);
-    this.handlePwdChange = this.handlePwdChange.bind(this);
-    this.handleButton = this.handleButton.bind(this);
+    this.state = {
+      email: "",
+      password: "",
+      color: "",
+      content: "",
+      validate: {
+        emailState: "",
+        passwordState: ""
+      }
+    };
   }
 
-  handleNameChange(event) {
-    // console.log("token: ", Store.getUser());
-    this.setState({name: event.target.value});
-  }
-  
-  handlePwdChange(event) {
-    this.setState({password: event.target.value});
+  handleEvent = event => {
+    this.setState({ [event.target.name]: event.target.value });
+  };
+  handleEnter = event => {
+    if (event.key === "Enter" && event.keyCode === 0) {
+      this.handleButton();
+    }
+  };
+  handleButton = event => {
+    if (this.state.email === "" || this.state.password === "") {
+      this.callAlertTimer("danger", "Please Enter Username/Password");
+    } else {
+      new LoginApi().login(
+        this.state.email,
+        this.state.password,
+        () => {
+          browserHistory.push("/dashboard");
+          window.location.reload();
+        },
+        () => {
+          this.callAlertTimer("danger", "Incorrect Username/Password");
+        }
+      );
+    }
+  };
+
+  resetData() {
+    this.setState({
+      email: "",
+      password: ""
+    });
   }
 
-  handleButton() {
-    // console.log(this.state.name, ', your password id: ',this.state.password);
-    new LoginApi().login(this.state.name, this.state.password, 
-      function() { 
-        browserHistory.push('/dashboard');
-        window.location.reload();
-      },
-      function() { alert('Failure'); });
+  callAlertTimer(color, content) {
+    this.setState({
+      color: color,
+      content: content
+    });
+    this.resetData();
+    setTimeout(() => this.setState({ color: "", content: "" }), 5000);
   }
+
+  validateEmail = e => {
+    const emailRex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    const { validate } = this.state;
+    if (emailRex.test(e.target.value)) validate.emailState = "success";
+    else validate.emailState = "danger";
+    this.setState({ validate });
+  };
+
+  validatePassword = e => {
+    const { validate } = this.state;
+    if (e.target.value.length >= 4) validate.passwordState = "success";
+    else validate.passwordState = "danger";
+    this.setState({ validate });
+  };
 
   render() {
     if (Store.isLoggedIn()) {
-      return(<div>
-        <h3>Already loggedin. Go to 
-
-        <Link to='/dashboard'> Dashboard </Link>
-        </h3><br/></div>
+      return (
+        <div>
+          <Container style={{ padding: 20 }} classmail="App">
+            <h3>
+              Already loggedin. Go to
+              <Link to="/dashboard"> Dashboard </Link>
+            </h3>
+            <br />
+          </Container>
+        </div>
       );
     } else {
-      return(
-        <div className="col-9 .flex-md-row">
-          <h1>Login to Tornadoes</h1>
-          <div className="col-10" >
-              <Input type='text' value={this.state.name}
-                  onChange={this.handleNameChange} placeholder='Your registered email'/>
-              <Input type='password' value={this.state.password} cols='3'
-                  onChange={this.handlePwdChange} placeholder='Your super secret password'/>
-              <Button color="success" onClick={this.handleButton} >
-                Login
-              </Button> <br/>
-          </div>
-          <div>Logedin user: {Store.getAccessToken()}</div>
-          <Card className="col-10">
-            <span className="h5">Don't have an Account yet?</span>
-            <Link to='/signup'>Signup now</Link>
-          </Card>
-              
+      return (
+        <div style={{ color: "teal" }}>
+          <center>
+            <Container style={{ paddingTop: 50 }} className="App">
+              <Alert color={this.state.color}>{this.state.content}</Alert>
+              <Card style={{ width: 300, borderRadius: 8 }}>
+                <CardBody>
+                  <CardTitle>Welcome Back!</CardTitle>
+                  <br />
+                  <FormGroup>
+                    <Input
+                      type="email"
+                      name="email"
+                      onChange={e => {
+                        this.validateEmail(e);
+                        this.handleEvent(e);
+                      }}
+                      placeholder="Your Email"
+                      value={this.state.email}
+                      required
+                      valid={this.state.validate.emailState === "success"}
+                      invalid={this.state.validate.emailState === "danger"}
+                    />
+                    <FormFeedback invalid>Uh oh! Incorrect email.</FormFeedback>
+                  </FormGroup>
+                  <FormGroup>
+                    <Input
+                      type="password"
+                      cols="3"
+                      name="password"
+                      onChange={e => {
+                        this.validatePassword(e);
+                        this.handleEvent(e);
+                      }}
+                      onKeyPress={this.handleEnter}
+                      placeholder="Your Password"
+                      value={this.state.password}
+                      required
+                      valid={this.state.validate.passwordState === "success"}
+                      invalid={this.state.validate.passwordState === "danger"}
+                    />
+                    <FormFeedback invalid tooltip>
+                      Password length must be minimum 6 characters
+                    </FormFeedback>
+                  </FormGroup>
+                  <Button color="info" onClick={this.handleButton}>
+                    Login
+                  </Button>
+                </CardBody>
+                <CardBody>
+                  <span>Don't have an Account yet? </span>&nbsp;
+                  <br />
+                  <Link to="/signup">Signup Now</Link>
+                </CardBody>
+              </Card>
+            </Container>
+          </center>
         </div>
       );
     }
@@ -69,4 +166,4 @@ class Login extends Component {
 
 const browserHistory = createBrowserHistory();
 
-export default Login
+export default Login;

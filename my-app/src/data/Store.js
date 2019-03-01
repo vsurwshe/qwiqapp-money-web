@@ -7,20 +7,28 @@ const Store = {
         // console.log("parsing User: "+ user);
         return JSON.parse(user);
     },
-
     getAccessToken: function() {
         let user = this.getUser();
-        if (user != null) {
+        if (user !== null) {
             return user.oauthToken;
         } else {
             return 'xx';
         }
     },
 
+    getRefreshToken: function() {
+        let user = this.getUser();
+        if (user !== null) {
+          return user.refreshToken;
+        } else {
+          return "xx";
+        }
+      },
+
     isLoggedIn: function() {
         let user = this.getUser();
-        let flag = user != null && user.oauthToken != null && user.oauthToken.length > 5;
-        // console.log('isLoggedin: ', flag);
+        let flag = user !== null && user.oauthToken !== null && user.oauthToken.length > 5 && user.user !== "Dummy";
+        console.log('isLoggedin: ', flag);
         return flag;
     },
 
@@ -29,13 +37,20 @@ const Store = {
         setTimeout(callBack, 50);
     },
 
-    saveLoginResponse: function(token, refresh) {
+    saveLoginResponse: function(token, refresh,expiry) {
         let user = {oauthToken: token, 
+            refreshToken: refresh,timeExpiry: expiry};
+        console.log('User is: ', user);
+        db.setItem(USER_KEY, JSON.stringify(user));
+        console.log('After setting: ', db.getItem(USER_KEY));
+    },
+    
+    saveDummyResponse: function(token, refresh) {
+        let user = {user:"Dummy",oauthToken: token, 
             refreshToken: refresh};
         console.log('User is: ', user);
         db.setItem(USER_KEY, JSON.stringify(user));
         console.log('After setting: ', db.getItem(USER_KEY));
     }
 }
-
 export default Store;

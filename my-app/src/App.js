@@ -1,44 +1,45 @@
-import React from 'react'
+import React from "react";
 import { withRouter } from "react-router-dom";
-import Header from './components/Header'
-import Main from './components/Main'
-import Store from './data/Store'
-// import Login from './components/Login'
+import Store from "./data/Store";
+import { Button } from "reactstrap";
+import Main from "./components/Main";
 
-class App extends React.Component {
-
-  render() {
-    /* if (Store.isLoggedIn()) { */
-      return(<div>
-        <Header/><Main/>
-        </div>);
-    /* } else {
-      return ( <div>
-        <Header/><Main/><Login/> 
-        </div> );
-    } */
-  }
-}
+const App = () => {
+  return (
+    <div>
+      <Main />
+    </div>
+  );
+};
 
 export default App;
 
-
-const AuthButton = withRouter(
-  ({ history }) =>
+const AuthButton = withRouter(({ history }) =>
   Store.isLoggedIn() ? (
+    <div>
       <p>
-        Welcome!{" "}
-        <button
+        <Button
           onClick={() => {
             Store.logout(() => history.push("/"));
           }}
         >
           Sign out
-        </button>
+        </Button>
       </p>
-    ) : (
-      <p>You are not logged in.</p>
-    )
+    </div>
+  ) : (
+    <div>
+      <p>
+        <Button
+          onClick={() => {
+            history.push("/login");
+          }}
+        >
+          Login
+        </Button>
+      </p>
+    </div>
+  )
 );
 
-export {AuthButton};
+export { AuthButton };
