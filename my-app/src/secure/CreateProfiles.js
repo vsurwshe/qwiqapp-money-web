@@ -1,16 +1,16 @@
 import React, { Component } from "react";
 import {
   Alert,
-  Container,
   Button,
   Input,
   Card,
   CardBody,
-  CardTitle
+  CardTitle,
+  Row,
+  Col
 } from "reactstrap";
 import Store from "../data/Store";
 import ProfileApi from "../services/ProfileApi";
-import Sidemenu from './SideMenu';
 
 import { createBrowserHistory } from "history";
 
@@ -20,8 +20,8 @@ class CreateProfiles extends Component {
   state = {
     name: "",
     userToken: "",
-    color:'',
-    content:''
+    color: "",
+    content: ""
   };
 
   handleInput = e => {
@@ -41,8 +41,7 @@ class CreateProfiles extends Component {
 
     new ProfileApi().createProfile(
       () => {
-        this.callAlertTimer("success","New Profile Created!!")
-        
+        this.callAlertTimer("success", "New Profile Created!!");
       },
       this.errorCall,
       data
@@ -51,57 +50,47 @@ class CreateProfiles extends Component {
 
   errorCall = err => {
     console.log("Calling Error Functions");
-    this.callAlertTimer("danger",err)
-     
-     
+    this.callAlertTimer("danger", err);
   };
 
-
-  callAlertTimer = (color,content) => {
+  callAlertTimer = (color, content) => {
     this.setState({
-      color:color,
-      content:content,
+      color: color,
+      content: content
+    });
 
-    })
-    
-      setTimeout(() => {
-        this.setState({color:'',content:''})
-        browserHistory.push("/dashboard");
-        window.location.reload();
-      },2000)
-    // }
-    // else setTimeout(() => this.setState({color:'',content:''}),2000)
-  }
+    setTimeout(() => {
+      this.setState({ color: "", content: "" });
+      browserHistory.push("/dashboard");
+      window.location.reload();
+    }, 2000);
+  };
 
-  //this method call api and create user profile
   render() {
     return (
-      <div className="container-fluid">
-        <div className="flex-xl-nowrap row">
-            <Sidemenu/>
-          <center>
-            <Container style={{ paddingTop: 50 }} className="App">
-            <Alert color={this.state.color}>{this.state.content}</Alert>
-              <Card style={{width:400}}>
-                <CardBody>
-                  <CardTitle>Create User Profiles</CardTitle>
-                  <form>
-                    <Input
-                      name="name"
-                      type="text"
-                      placeholder="Enter Profile name"
-                      onChange={e => this.handleInput(e)}
-                    />
-                    <br />
-                    <Button color="info" onClick={e => this.handleSubmit(e)}>
-                      Save
-                    </Button>
-                  </form>
-                </CardBody>
-              </Card>
-            </Container>
-          </center>
-        </div>
+      <div className="animated fadeIn">
+        <Row>
+          <Col xs="12" sm="6" lg="3">
+            <Card className="text-white bg-info">
+              <CardBody className="pb-0">
+                <Alert color={this.state.color}>{this.state.content}</Alert>
+                <CardTitle>Create User Profiles</CardTitle>
+                <form>
+                  <Input
+                    name="name"
+                    type="text"
+                    placeholder="Enter Profile name"
+                    onChange={e => this.handleInput(e)}
+                  />
+                  <br />
+                  <Button color="info" onClick={e => this.handleSubmit(e)}>
+                    Save
+                  </Button>
+                </form>
+              </CardBody>
+            </Card>
+          </Col>
+        </Row>
       </div>
     );
   }

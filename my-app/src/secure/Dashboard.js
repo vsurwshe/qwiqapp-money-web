@@ -1,15 +1,21 @@
 import React, { Component } from "react";
-import Profiles from "./Profiles";
-import Sidemenu from './SideMenu';
+import { Card, CardTitle } from "reactstrap";
 
 class Dashboard extends Component {
+  loading = () => (
+    <div className="animated fadeIn pt-1 text-center">Loading...</div>
+  );
+
+  signOut(e) {
+    e.preventDefault();
+    this.props.history.push("/login");
+  }
   render() {
     return (
-      <div className="container-fluid">
-        <div className="flex-xl-nowrap row">
-            <Sidemenu/> 
-            <Profiles /> 
-        </div> 
+      <div>
+        <Card>
+          <CardTitle>Welcome To WebMoney App</CardTitle>
+        </Card>
       </div>
     );
   }

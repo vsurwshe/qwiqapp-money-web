@@ -1,15 +1,12 @@
 import React from "react";
 import { withRouter } from "react-router-dom";
-import Header from "./components/Header";
-import Main from "./components/Main";
 import Store from "./data/Store";
 import { Button } from "reactstrap";
-// import Login from './components/Login'
+import Main from "./components/Main";
 
 const App = () => {
   return (
     <div>
-      <Header />
       <Main />
     </div>
   );
