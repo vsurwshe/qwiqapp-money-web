@@ -4,7 +4,7 @@ import { Container,Button,Label,Card,CardBody,Col,Row,CardTitle,Alert} from "rea
 import ReactTable from "react-table";
 import ProfileApi from "../services/ProfileApi";
 import UpdateProfile from "../secure/UpdateProfile";
-import CreateProfiles from "./CreateProfiles";
+import CreateProfile from "./CreateProfile";
 
 class Profiles extends Component {
   constructor(props) {
@@ -12,7 +12,9 @@ class Profiles extends Component {
     this.state = { 
       profiles: [] ,
       visible:false,
-      addContainer:false
+      addContainer:false,
+      updateContainer:false,
+      id: 0
     };
   }
 
@@ -45,11 +47,16 @@ class Profiles extends Component {
   }
 
   // Update Profile
-  updateProfile = (uid, uname) => {
-    ReactDom.render(
-      <UpdateProfile id={uid} name={uname} />,
-      document.getElementById("root")
-    );
+  updateProfile = (uid) => {
+    alert("before id:" +this.state.id)
+    this.setState({ id : uid})
+    alert("profile id= " +uid)
+    this.setState({ updateContainer : true })
+    //alert("profile id= " + this.state.updateContainer)
+    // ReactDom.render(
+    //   <UpdateProfile id={uid} name={uname} />,
+    //   document.getElementById("root")
+    // );
   };
 
   //Delete profile 
@@ -89,7 +96,7 @@ class Profiles extends Component {
             //update button
             <Button
               color="primary"
-              onClick={() => {this.updateProfile(props.original.id, props.original.name);}}>
+              onClick={() => {this.updateProfile(props.original.id);}}>
               Update</Button>
           );
         },
@@ -119,7 +126,7 @@ class Profiles extends Component {
                 <b>You haven't created any Profiles yet... </b><br/>
               </CardBody>
               <CardBody>
-               {this.state.addContainer ?<CreateProfiles/>:
+               {this.state.addContainer ?<CreateProfile/>:
                   <center>
                     <Button color="info" onClick={this.callCreateProfile}> Create One </Button>
                   </center>}
@@ -127,8 +134,13 @@ class Profiles extends Component {
             </Card>
           </Container>
       );
-    } else {
+    } else if(this.state.updateContainer){
       return (
+      <UpdateProfile id={this.props.id} /> 
+      );
+    }
+    else{
+      return(
         <div className="Main-styles-module--main--2QNBf col-xl-8 col-md-9 col-12">
           <Container style={{ padding: 20}} className="App">
             <Card>

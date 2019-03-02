@@ -17,23 +17,23 @@ class UpdateProfile extends Component {
     super(props);
     this.state = {
       id: this.props.id,
-      name: this.props.name,
+      name: '',
       color:'',
       content:''
     };
     this.handleUpdate = this.handleUpdate.bind(this);
   }
   handleUpdate = () => {
-    let data = {
-      name: this.state.name
-    };
+    alert("handle Update"+this.state.name)
+    let data = { name: this.state.name };
     if (this.state.name === "") {
-      console.log("Name should be null")
+      alert("Name is null")
     } else {
+      alert("Id =" + this.state.id)
       new ProfileApi().updateProfile(
         () => {
-          this.callAlertTimer("success","Profile Updated Successfully!!")
-         
+          // this.callAlertTimer("success","Profile Updated Successfully!!")
+         alert("Update Successfull")
         },
         this.errorCall,
         data,
@@ -57,7 +57,7 @@ class UpdateProfile extends Component {
         this.setState({color:'',content:''})
         browserHistory.push("/dashboard");
         window.location.reload();
-      },1500)
+      },5500)
   }
 
   render() {

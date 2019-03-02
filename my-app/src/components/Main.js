@@ -9,7 +9,7 @@ import Store from "../data/Store";
 import SignupVerify from "../components/SignupVerify";
 
 import Profiles from "../secure/Profiles";
-import CreateProfiles from "../secure/CreateProfiles";
+import CreateProfiles from "../secure/CreateProfile";
 
 // The Main component renders one of the three provided
 // Routes (provided that one matches). Both the /roster

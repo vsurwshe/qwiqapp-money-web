@@ -14,6 +14,7 @@ class ProfileApi {
     process(success, failure, "/profiles/" + uid, "GET");
   }
   updateProfile(success, failure, data, uid) {
+    alert("updateProfile in API")
     process(success, failure, "/profiles/" + uid, "PUT", data);
   }
 
