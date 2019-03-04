@@ -54,7 +54,7 @@ class UpdateProfile extends Component {
               <p>hello update</p>
               <Input type="text" name="profile name" value={this.state.name} onChange={e => { this.setState({ name: e.target.value }); }} />
               <Button color="success" disabled={!this.state.name} onClick={this.handleUpdate}>
-                Update Profile
+                  Update Profile
               </Button>
             </CardBody>
           </Card>

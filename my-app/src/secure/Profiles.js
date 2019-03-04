@@ -107,7 +107,7 @@ class Profiles extends Component {
           return (
             //delete button
             <Button color="danger" onClick={() => {
-              window.confirm("are you sure you wnt to delete ")
+              window.confirm("Are you sure you want to Delete ? ")
               this.deleteProfile(props.original.id);}}> Delete </Button>
           );},
         sortable: false,
@@ -155,7 +155,7 @@ class Profiles extends Component {
                         return (
                           <Card>
                             <Label key={profiles.id}>
-                            <Avatar name={profiles.name} size="30" round={true} />{profiles.name}
+                            <Avatar name={profiles.name} size="30" round={true} /> {profiles.name}
                               {/* <Card style={{paddingLeft:"10px"}}> */}
                                 <Row></Row>
                               <b>Profile Id : </b>{profiles.id}<br />

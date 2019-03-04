@@ -24,7 +24,7 @@ class DeleteProfile extends Component {
     }
     successCall = () =>{
         this.setState({ profileDeleted: true }); 
-        this.callAlertTimer("success", "deleted successfully ");
+        this.callAlertTimer("success", "Profile Deleted Successfully ");
     }
     errorCall = () => {
         this.setState({ profileDeleted: true });
@@ -34,7 +34,6 @@ class DeleteProfile extends Component {
         this.setState({
           color:color,
           content:content,
-    
         })
           setTimeout(() => {
             this.setState({ color:'',content:''})
