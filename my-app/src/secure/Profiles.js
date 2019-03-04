@@ -5,6 +5,8 @@ import ReactTable from "react-table";
 import ProfileApi from "../services/ProfileApi";
 import UpdateProfile from "../secure/UpdateProfile";
 import CreateProfile from "./CreateProfile";
+import DeleteProfile from "./DeleteProfile";
+import Avatar from 'react-avatar';
 
 class Profiles extends Component {
   constructor(props) {
@@ -14,7 +16,9 @@ class Profiles extends Component {
       visible:false,
       addContainer:false,
       updateContainer:false,
-      id: 0
+      deleteProfile: false,
+      id: 0,
+      name:""
     };
   }
 
@@ -48,20 +52,14 @@ class Profiles extends Component {
 
   // Update Profile
   updateProfile = (uid) => {
-    alert("before id:" +this.state.id)
     this.setState({ id : uid})
-    alert("profile id= " +uid)
     this.setState({ updateContainer : true })
-    //alert("profile id= " + this.state.updateContainer)
-    // ReactDom.render(
-    //   <UpdateProfile id={uid} name={uname} />,
-    //   document.getElementById("root")
-    // );
   };
 
   //Delete profile 
-  deleteProfile = id => {
-    new ProfileApi().deleteProfile(this.successCall, this.errorCall, id);
+  deleteProfile = dId => {
+    this.setState({ deleteProfile : true, id: dId})
+    // new ProfileApi().deleteProfile(this.successCall, this.errorCall, id);
   };
 
   callCreateProfile= e=>{
@@ -108,11 +106,9 @@ class Profiles extends Component {
         Cell: props => {
           return (
             //delete button
-            <Button
-              color="danger"
-              onClick={() => {this.deleteProfile(props.original.id);}}>
-              Delete
-            </Button>
+            <Button color="danger" onClick={() => {
+              window.confirm("are you sure you wnt to delete ")
+              this.deleteProfile(props.original.id);}}> Delete </Button>
           );},
         sortable: false,
         filterable: false
@@ -136,7 +132,12 @@ class Profiles extends Component {
       );
     } else if(this.state.updateContainer){
       return (
-      <UpdateProfile id={this.props.id} /> 
+      <UpdateProfile id={this.state.id} /> 
+      );
+    }else if(this.state.deleteProfile){
+      return (<Container>
+      <DeleteProfile id={this.state.id} /> 
+      </Container>
       );
     }
     else{
@@ -152,13 +153,19 @@ class Profiles extends Component {
                     <CardBody>
                       {this.state.profiles.map(profiles => {
                         return (
-                          <Label key={profiles.id}>
-                            <b>Profile Id : </b>{profiles.id}<br />
-                            <b>Profile Name : </b>{profiles.name}<br />
-                            <b>Profile Creations : </b> {profiles.created}<br />
-                            <b>Profile Type : </b>{profiles.type}<br />
-                            <b>Profile Creation URL : </b>{profiles.url}
-                          </Label>
+                          <Card>
+                            <Label key={profiles.id}>
+                            <Avatar name={profiles.name} size="30" round={true} />{profiles.name}
+                              {/* <Card style={{paddingLeft:"10px"}}> */}
+                                <Row></Row>
+                              <b>Profile Id : </b>{profiles.id}<br />
+                              <b>Profile Name : </b>{profiles.name}<br />
+                              <b>Profile Creations : </b> {profiles.created}<br />
+                              <b>Profile Type : </b>{profiles.type}<br />
+                              <b>Profile Creation URL : </b>{profiles.url}
+                              {/* </Card> */}
+                            </Label>
+                          </Card>
                         );
                       })}
                     </CardBody>

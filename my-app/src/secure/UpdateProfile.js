@@ -10,8 +10,6 @@ import {
 import ProfileApi from "../services/ProfileApi";
 import { createBrowserHistory } from "history";
 
-const browserHistory = createBrowserHistory();
-
 class UpdateProfile extends Component {
   constructor(props) {
     super(props);
@@ -24,23 +22,11 @@ class UpdateProfile extends Component {
     this.handleUpdate = this.handleUpdate.bind(this);
   }
   handleUpdate = () => {
-    alert("handle Update"+this.state.name)
     let data = { name: this.state.name };
-    if (this.state.name === "") {
-      alert("Name is null")
-    } else {
-      alert("Id =" + this.state.id)
       new ProfileApi().updateProfile(
         () => {
-          // this.callAlertTimer("success","Profile Updated Successfully!!")
-         alert("Update Successfull")
-        },
-        this.errorCall,
-        data,
-        this.state.id
-      );
-    }
-    
+          this.callAlertTimer("success","Profile Updated Successfully!!")
+        }, this.errorCall, data, this.state.id );
   };
 
   errorCall = err => {
@@ -54,9 +40,7 @@ class UpdateProfile extends Component {
 
     })
       setTimeout(() => {
-        this.setState({color:'',content:''})
-        browserHistory.push("/dashboard");
-        window.location.reload();
+        this.setState({name:"", color:'',content:''})
       },5500)
   }
 
@@ -68,14 +52,8 @@ class UpdateProfile extends Component {
             <CardBody>
             <Alert color={this.state.color}>{this.state.content}</Alert>
               <p>hello update</p>
-              <Input
-                type="text"
-                name="profile name"
-                onChange={e => {
-                  this.setState({ name: e.target.value });
-                }}
-              />
-              <Button color="success" onClick={this.handleUpdate}>
+              <Input type="text" name="profile name" value={this.state.name} onChange={e => { this.setState({ name: e.target.value }); }} />
+              <Button color="success" disabled={!this.state.name} onClick={this.handleUpdate}>
                 Update Profile
               </Button>
             </CardBody>
