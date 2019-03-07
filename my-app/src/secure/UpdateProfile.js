@@ -10,6 +10,7 @@ import {
 } from "reactstrap";
 import ProfileApi from "../services/ProfileApi";
 import { createBrowserHistory } from "history";
+import { Link } from "react-router";
 
 class UpdateProfile extends Component {
   constructor(props) {
@@ -18,7 +19,8 @@ class UpdateProfile extends Component {
       id: this.props.id,
       name: "",
       color: "",
-      content: ""
+      content: "",
+      updateSuccess: false
     };
     this.handleUpdate = this.handleUpdate.bind(this);
   }
@@ -26,7 +28,7 @@ class UpdateProfile extends Component {
     let data = { name: this.state.name };
     new ProfileApi().updateProfile(
       () => {
-        this.callAlertTimer("success", "Profile Updated Successfully!!");
+        this.setState({ updateSuccess: true });
       },
       this.errorCall,
       data,
@@ -35,47 +37,66 @@ class UpdateProfile extends Component {
   };
 
   errorCall = err => {
-    return <CardTitle>{err}</CardTitle>;
+    this.callAlertTimer(
+      "danger",
+      "Something went wrong, Please Try Again...  "
+    );
   };
 
   callAlertTimer = (color, content) => {
-    this.setState({
-      color: color,
-      content: content
-    });
+    this.setState({ color: color, content: content });
     setTimeout(() => {
-      this.setState({ name: "", color: "", content: "" });
-    }, 5500);
+      this.setState({ name: "", color: "" });
+    }, 4000);
   };
 
   render() {
-    return (
-      <div style={{ paddingTop: "10" }}>
+    const { name, color, content, updateSuccess } = this.state;
+    if (updateSuccess) {
+      return (
         <Container>
-          <Card>
-            <CardBody>
-              <Alert color={this.state.color}>{this.state.content}</Alert>
-              <p>hello update</p>
-              <Input
-                type="text"
-                name="profile name"
-                value={this.state.name}
-                onChange={e => {
-                  this.setState({ name: e.target.value });
-                }}
-              />
-              <Button
-                color="success"
-                disabled={!this.state.name}
-                onClick={this.handleUpdate}
-              >
-                Update Profile
-              </Button>
-            </CardBody>
-          </Card>
+          <center>
+            <b>Your Profile Updated Successfully !!</b>
+            <br />
+            <br />
+            <a href="/profiles">View Profile</a>
+          </center>
         </Container>
-      </div>
-    );
+      );
+    } else {
+      return (
+        <div style={{ paddingTop: "10" }}>
+          <Container>
+            <Card style={{ border: 0 }}>
+              <CardBody>
+                <center>
+                  <Alert color={color}>{content}</Alert>
+                  <p>Edit Profile</p>
+                  <Input
+                    type="text"
+                    name="profile name"
+                    value={name}
+                    onChange={e => {
+                      this.setState({ name: e.target.value });
+                    }}
+                    style={{ width: "60%" }}
+                  />
+                  <br />
+                  <Button
+                    color="success"
+                    disabled={!name}
+                    onClick={this.handleUpdate}
+                  >
+                    {" "}
+                    Update Profile{" "}
+                  </Button>
+                </center>
+              </CardBody>
+            </Card>
+          </Container>
+        </div>
+      );
+    }
   }
 }
 
