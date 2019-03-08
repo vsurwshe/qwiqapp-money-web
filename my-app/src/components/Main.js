@@ -21,7 +21,7 @@ import Store from "../data/Store";
 
 import SignupVerify from "../components/SignupVerify";
 import Profiles from "../secure/Profiles";
-import CreateProfiles from "../secure/CreateProfiles";
+import CreateProfiles from "../secure/CreateProfile";
 import navigation from "../data/navigations";
 import UpdateProfile from "../secure/UpdateProfile";
 
