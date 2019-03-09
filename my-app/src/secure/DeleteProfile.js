@@ -50,16 +50,15 @@ class DeleteProfile extends Component {
         <Container>
           <center>
             {" "}
-            <b>{content}</b>
-            <br /> <br />
-            <a href="/profiles">New Profile </a>
+            <h5><b>{content}</b><br /> <br />
+            <a href="/profiles">New Profile </a></h5>
           </center>
         </Container>
       );
     } else {
       return (
         <Container>
-          <p>Deleting Profile.....</p>
+         <h5><b>Deleting Profile.....</b></h5>
         </Container>
       );
     }

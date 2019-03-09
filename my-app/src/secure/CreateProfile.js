@@ -54,54 +54,34 @@ class CreateProfiles extends Component {
   callAlertTimer = (color, content) => {
     this.setState({ color: color, content: content });
     setTimeout(() => {
-      this.setState({ color: "", content: "", name: "" });
-    }, 4000);
+      this.setState({ name: "", content: "", color: "" });
+    }, 3500);
   };
 
   render() {
     if (!this.state.profileCreated) {
       return (
-        <div className="container-fluid">
-          <div className="flex-xl-nowrap row">
-            {/* <Sidemenu/> */}
             <center>
               <Container style={{ paddingTop: 50 }} className="App">
                 <Alert color={this.state.color}>{this.state.content}</Alert>
-                <Card style={{ width: 400 }}>
+                <Card >
                   <CardBody>
-                    <CardTitle>Create Profile</CardTitle>
+                    <CardTitle><b>CREATE PROFILE</b></CardTitle><br/>
                     <form>
-                      <Input
-                        name="name"
-                        type="text"
-                        placeholder="Enter Profile name"
-                        onChange={e => this.handleInput(e)}
-                      />
-                      <br />
-                      <Button
-                        color="info"
-                        disabled={!this.state.name}
-                        onClick={e => this.handleSubmit(e)}
-                      >
-                        {" "}
-                        Save{" "}
-                      </Button>
+                      <Input name="name" value={this.state.name} type="text" placeholder="Enter Profile name" autoFocus={true} onChange={e => this.handleInput(e)} /> <br />
+                      <Button color="info" disabled={!this.state.name} onClick={e => this.handleSubmit(e)} > {" "} Save{" "} </Button>
                     </form>
                   </CardBody>
                 </Card>
               </Container>
             </center>
-          </div>
-        </div>
       );
     } else {
       return (
         <Container>
           <center>
-            <b>Profile Created Successfully !!</b>
-            <br />
-            <br />
-            <a href="/profiles">View Profile</a>
+          <h5><b>Profile Created Successfully !!</b> <br /> <br />
+            <b><a href="/profiles">View Profile</a></b></h5>
           </center>
         </Container>
       );
