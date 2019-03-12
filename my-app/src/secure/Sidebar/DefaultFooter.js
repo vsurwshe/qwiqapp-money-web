@@ -15,10 +15,10 @@ class DefaultFooter extends Component {
     return (
       <React.Fragment>
         <span>
-          <a href="https://coreui.io">Web Money</a> &copy; 2019 creativeLabs.
+          <a href="#">WEB MONEY</a> &copy; 2019 124appsLab.
         </span>
         <span className="ml-auto">
-          Powered by <a href="https://coreui.io/react">124Apps Pvt. Ltd.</a>
+          Powered by <a href="http://www.124apps.com/">124Apps Pvt. Ltd.</a>
         </span>
       </React.Fragment>
     );

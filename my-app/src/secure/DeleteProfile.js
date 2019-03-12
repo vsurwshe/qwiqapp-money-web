@@ -1,7 +1,6 @@
 import React, { Component } from "react";
-import { Container, Alert } from "reactstrap";
+import { Card, CardHeader,CardBody } from "reactstrap";
 import ProfileApi from "../services/ProfileApi";
-
 class DeleteProfile extends Component {
   constructor(props) {
     super(props);
@@ -24,7 +23,7 @@ class DeleteProfile extends Component {
       profileDeleted: true,
       content: "Profile Deleted Successfully !!"
     });
-    // this.callAlertTimer("success", "Profile Deleted Successfully !!");
+    
   };
   errorCall = () => {
     this.setState({ profileDeleted: true });
@@ -46,22 +45,41 @@ class DeleteProfile extends Component {
   render() {
     const { profileDeleted, content } = this.state;
     if (profileDeleted) {
-      return (
-        <Container>
-          <center>
-            {" "}
-            <h5><b>{content}</b><br /> <br />
-            <a href="/profiles">New Profile </a></h5>
-          </center>
-        </Container>
-      );
+      return <div>{this.loadDeleteMessage(content)}</div>
     } else {
-      return (
-        <Container>
-         <h5><b>Deleting Profile.....</b></h5>
-        </Container>
-      );
+      return <div>{this.loadDeleteing()}</div>
     }
+  }
+  //This Method called After Deleted Profile
+  loadDeleteMessage=(content)=>{
+    return(
+    <div className="animated fadeIn">
+    <Card>
+      <CardHeader>
+        <strong>Profile</strong>
+      </CardHeader>
+      <center>
+        <h5><b>{content}</b><br /> <br />
+          <a href="/profiles">New Profile </a></h5>
+      </center>
+    </Card>
+  </div>)
+  }
+
+  //this Method Call Between Deleteing Process.
+  loadDeleteing=()=>{
+    return(
+      <div className="animated fadeIn">
+      <Card>
+        <CardHeader>
+          <strong>Profile</strong>
+        </CardHeader>
+          <CardBody>  
+          <h5><b>Deleting Profile.....</b></h5>
+          </CardBody>
+        </Card>
+        </div>
+    )
   }
 }
 

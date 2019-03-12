@@ -11,14 +11,14 @@ export default {
       icon: "cui-puzzle"
     },
     {
-      name: "Create Profiles",
+      name: "Create Profile",
       url: "/createProfile",
       icon: "cui-user-follow"
     },
-    {
-      name: "Update Profiles",
-      url: "/updateProfile",
-      icon: "cui-brush"
-    }
+    // {
+    //   name: "Update Profiles",
+    //   url: "/updateProfile",
+    //   icon: "cui-brush"
+    // }
   ]
 };

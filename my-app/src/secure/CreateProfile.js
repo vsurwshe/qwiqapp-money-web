@@ -1,22 +1,7 @@
 import React, { Component } from "react";
-import {
-  Alert,
-  Button,
-  Input,
-  Card,
-  CardBody,
-  CardTitle,
-  Row,
-  Col,
-  Container
-} from "reactstrap";
+import { Alert, Button, Input, Card, CardBody, CardHeader,FormGroup,Col } from "reactstrap";
 import Store from "../data/Store";
 import ProfileApi from "../services/ProfileApi";
-
-import { createBrowserHistory } from "history";
-
-const browserHistory = createBrowserHistory();
-
 class CreateProfiles extends Component {
   state = {
     name: "",
@@ -60,32 +45,54 @@ class CreateProfiles extends Component {
 
   render() {
     if (!this.state.profileCreated) {
-      return (
-            <center>
-              <Container style={{ paddingTop: 50 }} className="App">
-                <Alert color={this.state.color}>{this.state.content}</Alert>
-                <Card >
-                  <CardBody>
-                    <CardTitle><b>CREATE PROFILE</b></CardTitle><br/>
-                    <form>
-                      <Input name="name" value={this.state.name} type="text" placeholder="Enter Profile name" autoFocus={true} onChange={e => this.handleInput(e)} /> <br />
-                      <Button color="info" disabled={!this.state.name} onClick={e => this.handleSubmit(e)} > {" "} Save{" "} </Button>
-                    </form>
-                  </CardBody>
-                </Card>
-              </Container>
-            </center>
-      );
+      return <div>{this.loadCreatingProfile()}</div>
     } else {
-      return (
-        <Container>
-          <center>
-          <h5><b>Profile Created Successfully !!</b> <br /> <br />
-            <b><a href="/profiles">View Profile</a></b></h5>
-          </center>
-        </Container>
-      );
+      return <div>{this.loadCreatedMessage()}</div>
     }
+  }
+
+  //this Method Call when Profile Creation in porceess.
+  loadCreatingProfile=()=>{
+    return(
+      <div className="animated fadeIn">
+          <Card>
+            <CardHeader>
+              <strong>Profile</strong>
+            </CardHeader>
+            <Alert color={this.state.color}>{this.state.content}</Alert>
+            <CardBody>
+              <center>
+              <FormGroup>
+                <h5><b>CREATE PROFILE</b></h5>
+                 <Col sm="6">
+                 <Input name="name" value={this.state.name} type="text" placeholder="Enter Profile name" autoFocus={true} onChange={e => this.handleInput(e)} />
+                </Col>
+                <br />
+                <Button color="info" disabled={!this.state.name} onClick={e => this.handleSubmit(e)} >  Save </Button>
+                <a href="/profiles" style={{textDecoration:'none'}}> <Button active  color="light" aria-pressed="true">Cancle</Button></a>
+                </FormGroup>
+              </center>
+            </CardBody>
+          </Card>
+        </div>
+    );
+  }
+
+  //this method call after Creations Of Profile Successfully.
+  loadCreatedMessage=()=>{
+    return(
+      <div className="animated fadeIn">
+          <Card>
+            <CardHeader>
+              <strong>Profile</strong>
+            </CardHeader>
+          <center>
+            <h5><b>Profile Created Successfully !!</b> <br /> <br />
+              <b><a href="/profiles">View Profile</a></b></h5>
+          </center>
+        </Card>
+        </div>
+    )
   }
 }
 
