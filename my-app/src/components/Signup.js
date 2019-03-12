@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  Container,
+Container,
   Alert,
   Label,
   Button,
@@ -20,9 +20,9 @@ class Signup extends React.Component {
     password: "",
     adminToken: "",
     flag: true,
-    color: '',
-    content: '',
-    emailAlert: '',
+    color: "",
+    content: "",
+    emailAlert:false,
     validate: {
       emailState: "",
       passwordState: ""
@@ -37,7 +37,9 @@ class Signup extends React.Component {
     if (event.key === 'Enter' ) { this.handleSubmit(); }
   }
 
-  handleSubmit = () => {
+  handleSubmit = e => {
+    e.preventDefault();
+    console.log(this.state.email + " " + this.state.password);
     const data = {
       name: this.state.name,
       email: this.state.email,
@@ -171,6 +173,7 @@ class Signup extends React.Component {
       )
     }
   }
+
 }
 
 export default Signup;

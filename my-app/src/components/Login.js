@@ -33,20 +33,24 @@ class Login extends Component {
   handleEvent = event => {
     this.setState({ [event.target.name]: event.target.value });
   };
-  handleEnter=(event)=>{
-    if(event.key==='Enter' && event.keyCode===0){ this.handleButton(); }
-  }
-  handleButton = event => {
-    if(this.state.email === '' || this.state.password ===''){
-      this.callAlertTimer('danger','Please Enter Username/Password')
+  handleEnter = event => {
+    if (event.key === "Enter" && event.keyCode === 0) {
+      this.handleButton();
     }
-    else{
-      new LoginApi().login(this.state.email, this.state.password,
+  };
+  handleButton = event => {
+    if (this.state.email === "" || this.state.password === "") {
+      this.callAlertTimer("danger", "Please Enter Username/Password");
+    } else {
+      new LoginApi().login(
+        this.state.email,
+        this.state.password,
         () => {
           browserHistory.push("/dashboard");
           window.location.reload();
-        }, () => {
-          this.callAlertTimer('danger','Incorrect Username/Password')
+        },
+        () => {
+          this.callAlertTimer("danger", "Incorrect Username/Password");
         }
       );
     }
