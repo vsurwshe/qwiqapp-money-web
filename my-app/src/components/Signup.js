@@ -1,16 +1,5 @@
 import React from "react";
-import {
-  Container,
-  Alert,
-  Label,
-  Button,
-  Input,
-  Card,
-  CardBody,
-  CardTitle,
-  FormGroup,
-  FormFeedback
-} from "reactstrap";
+import { Container, Alert, Label, Button, Input, Card, CardBody, CardTitle, FormGroup, FormFeedback } from "reactstrap";
 import { Link } from "react-router-dom";
 import SignupApi from "../services/SignupApi";
 class Signup extends React.Component {
@@ -19,6 +8,7 @@ class Signup extends React.Component {
     email: "",
     password: "",
     adminToken: "",
+    userCreated: false,
     flag: true,
     color: '',
     content: '',
@@ -38,6 +28,7 @@ class Signup extends React.Component {
   }
 
   handleSubmit = () => {
+
     const data = {
       name: this.state.name,
       email: this.state.email,
@@ -52,6 +43,7 @@ class Signup extends React.Component {
   };
 
   successCall = json => {
+    // this.setState({ userCreated: !this.state.userCreated });
     this.callAlertTimer("success", "Succesfull! Please Check your Email for Activation Link")
   };
 
@@ -64,22 +56,16 @@ class Signup extends React.Component {
       color: color,
       content: content
     });
-    if (
-      color === "success" &&
-      content === "Succesfull! Please Check your Email for Activation Link"
-    ) {
-      setTimeout(() => {
-        this.setState({ color: '', content: '', flag: false })
-      }, 2000)
+    if ( this.state.color === "success"  && this.state.content === "Succesfull! Please Check your Email for Activation Link") {
+      setTimeout(() => { this.setState({ color: '', content: '', flag: false }) }, 4000)
     }
     else {
-      setTimeout(() => {
-        this.setState({ color: '', content: '', email: '' })
-      }, 4000)
+      setTimeout(() => { this.setState({ color: '', content: '', email: '' }) }, 4000)
     }
   };
 
   validateEmail = e => {
+    console.log("Hi");
     const emailRex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     const { validate } = this.state;
     let email = e.target.value;
@@ -89,6 +75,7 @@ class Signup extends React.Component {
     if (emailRex.test(email)) {
       validate.emailState = 'success'
       new SignupApi().existsUser(() => { validate.emailState = 'danger'; this.setState({ email: "",emailAlert: true }); }, () => { validate.emailState = 'danger' }, data)
+      this.forceUpdate()
     }
     else {
       this.setState({ emailAlert: false })
@@ -112,64 +99,57 @@ class Signup extends React.Component {
     const {emailState, passwordState} = this.state.validate
     const {name,email,password,content,color,flag,emailAlert}=this.state
     if (flag) {
-      return (
-        <div>
-          <center>
-            <Container style={{ paddingTop: 50 }} className="App">
-              <Card style={{ width: 400, border: 0 }}>
-                <CardBody>
-                  <Alert color={color}>{content}</Alert>
-                  <center>
-                    <CardTitle style={{ color: "teal" }}>
-                      Create an Account
-                    </CardTitle>
-                    <br />
-                  </center>
-                  <FormGroup style={align}>
-                    <Label for="Name">Name <span style={requiredLabel}>*</span></Label>
-                    <Input name="name" type="text" placeholder="Your Name" value={name} onChange={e => this.handleInput(e)}  />
-                  </FormGroup>
-                  <FormGroup style={align}>
-                    <Label style={{ align }} for="Email">Email <span style={requiredLabel}>*</span></Label>
-                    <Input name="email" type="email" placeholder="Your Email" value={email} 
-                           valid={emailState === 'success'} invalid={emailState === 'danger'}
-                           onChange={e => {  this.handleInput(e); this.validateEmail(e) }}
-                     />
-                    <FormFeedback invalid> {emailAlert ? "Email already exists, try another mail" : "Uh oh! Incorrect email"}
-                    </FormFeedback>
-                  </FormGroup>
-                  <FormGroup style={align}>
-                    <Label for="password">Password <span style={requiredLabel}>*</span></Label>
-                    <Input name="password" type="password" disabled={!email} placeholder="Your password" 
-                           value={password} onChange={e => { this.handleInput(e); this.validatePassword(e) }}
-                           onKeyPress = {this.handleEnter} valid={passwordState === 'success'} invalid={passwordState === 'danger'}
-                    />
-                    <FormFeedback invalid tooltip>
-                      Password length must be more then 5 characters
-                    </FormFeedback>
-                  </FormGroup>
-                  <center>
-                    <Button color="info" disabled={!password} onClick={this.handleSubmit}>Signup</Button>
-                    <CardBody>
-                      <span>I already have an Account. </span>
-                      <Link to="/login">Login Now </Link>
-                    </CardBody>
-                  </center>
-                </CardBody>
-              </Card>
-            </Container>
-          </center>
-        </div>
-      );
+      return <div>{this.loadSignupComponent(requiredLabel,align,emailState,passwordState,name,email,password,content,color,emailAlert)}</div>
     } else {
       return (
-        <center>
-          <Container>
-            <Card style={{ border: 0 }}> <p>Please Check your Email for Activation Link!</p></Card>
+          <Container style={{paddingTop: "20%"}} className="App" >
+            <Card style={{ padding: 40, border: 0, textAlign: "center"}}> <p><b>You are Succesfully Registered with Web Money !!<br/>
+             <br/>Please Check your Email for Activation Link !</b></p>
+             <br/> <br/>
+            {/* <b><a href="/signup">Goto Signup </a></b> */}
+            </Card>
           </Container>
-        </center>
       )
     }
+  }
+
+  loadSignupComponent = (requiredLabel,align,emailState,passwordState,name,email,password,content,color,emailAlert) => {
+    return (<div style={{ paddingTop: 50 }} className="animated fadeIn">
+      <center>
+          <Card style={{ width: 400, border: 0 }}>
+            <CardBody>
+              <Alert color={color}>{content}</Alert>
+              <center>
+                <CardTitle style={{ color: "teal" }}> Create a Web Money Account </CardTitle> <br />
+              </center>
+              <FormGroup style={align}>
+                <Label for="Name">Name <span style={requiredLabel}>*</span></Label>
+                <Input name="name" type="text" placeholder="Your Name" value={name} onChange={e => this.handleInput(e)}  />
+              </FormGroup>
+              <FormGroup style={align}>
+                <Label style={{ align }} for="Email">Email <span style={requiredLabel}>*</span></Label>
+                <Input name="email" type="email" placeholder="Your Email" value={email} valid={emailState === 'success'}
+                       invalid={emailState === 'danger'} onChange={e => {  this.handleInput(e); this.validateEmail(e) }}/>
+                <FormFeedback invalid> {emailAlert ? "Email already Exists, try another Email" : "Uh oh! Incorrect email"}
+                </FormFeedback>
+              </FormGroup>
+              <FormGroup style={align}>
+                <Label for="password">Password <span style={requiredLabel}>*</span></Label>
+                <Input name="password" type="password" placeholder="Your password" onChange={e => { this.handleInput(e); this.validatePassword(e) }} 
+                  onKeyPress = {this.handleEnter} disabled={!email} valid={passwordState === 'success'} invalid={passwordState === 'danger'} value={password} />
+                <FormFeedback invalid tooltip> Password length must be more then 5 characters </FormFeedback>
+              </FormGroup>
+              <center>
+                <Button color="info" disabled={!password} onClick={this.handleSubmit}> Signup </Button>
+                <CardBody>
+                  <span> I already have an Account. </span>
+                  <Link to="/login"> Login Now </Link>
+                </CardBody>
+              </center>
+            </CardBody>
+          </Card>
+      </center>
+    </div>)
   }
 }
 

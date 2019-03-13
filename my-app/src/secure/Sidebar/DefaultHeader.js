@@ -14,16 +14,11 @@ class DefaultHeader extends Component {
     return (
       <React.Fragment>
         <AppSidebarToggler className="d-lg-none" display="md" mobile />
-
         <Nav className="d-md-down-none" navbar />
         <Nav className="ml-auto" navbar>
           <AppHeaderDropdown direction="down">
             <DropdownToggle nav>
-              <img
-                src={"../../assets/img/avatars/6.jpg"}
-                className="img-avatar"
-                alt="Menu"
-              />
+              <img src={"../../assets/img/avatars/6.jpg"} className="img-avatar" alt="Menu" />
             </DropdownToggle>
             <DropdownMenu right style={{ right: "auto" }}>
               <DropdownItem header tag="div" className="text-center">
