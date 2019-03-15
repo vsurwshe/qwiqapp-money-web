@@ -1,17 +1,7 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import { createBrowserHistory } from "history";
-import {
-  Container,
-  Button,
-  Input,
-  Card,
-  CardBody,
-  CardTitle,
-  FormFeedback,
-  Alert,
-  FormGroup
-} from "reactstrap";
+import { Container,Button,Input,Card,CardBody,CardTitle,FormFeedback,Alert,FormGroup} from "reactstrap";
 import LoginApi from "../services/LoginApi";
 import Store from "../data/Store";
 
@@ -44,6 +34,7 @@ class Login extends Component {
       new LoginApi().login(this.state.email, this.state.password,
         () => {
           browserHistory.push("/dashboard");
+          Store.clearDummyAccessToken();
           window.location.reload();
         }, () => {
           this.callAlertTimer('danger','Incorrect Username/Password')
@@ -82,7 +73,7 @@ class Login extends Component {
 
   render() {
     const {emailState} = this.state.validate;
-    if (Store.isLoggedIn()) {
+    if (Store.isAppUserLoggedIn()) {
       return (
         <div>
           <Container style={{ padding: 20 }} classmail="App">

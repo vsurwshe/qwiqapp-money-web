@@ -43,7 +43,7 @@ class Main extends Component {
   }
 
   render() {
-    if (Store.isLoggedIn()) {
+    if (Store.isAppUserLoggedIn()) {
       return this.loadSecureRouets();
     } else {
       return this.loadRoutes();
@@ -107,7 +107,7 @@ const PrivateRoute = ({ component: Component, ...rest }) => (
   <Route
     {...rest}
     render={props =>
-      Store.isLoggedIn() ? (
+      Store.isAppUserLoggedIn() ? (
         <Component {...props} />
       ) : (
         <Redirect
