@@ -69,7 +69,7 @@ class CreateProfiles extends Component {
                 </Col>
                 <br />
                 <Button color="info" disabled={!this.state.name} onClick={e => this.handleSubmit(e)} >  Save </Button>
-                <a href="/profiles" style={{textDecoration:'none'}}> <Button active  color="light" aria-pressed="true">Cancle</Button></a>
+                <a href="/profiles" style={{textDecoration:'none'}}> <Button active  color="light" aria-pressed="true">Cancel</Button></a>
                 </FormGroup>
               </center>
             </CardBody>
@@ -78,7 +78,7 @@ class CreateProfiles extends Component {
     );
   }
 
-  //this method call after Creations Of Profile Successfully.
+  //this method calls after Successful Creation Of Profile
   loadCreatedMessage=()=>{
     return(
       <div className="animated fadeIn">
@@ -86,9 +86,9 @@ class CreateProfiles extends Component {
             <CardHeader>
               <strong>Profile</strong>
             </CardHeader>
-          <center>
+          <center style={{paddingTop:'20px'}}>
             <h5><b>Profile Created Successfully !!</b> <br /> <br />
-              <b><a href="/profiles">View Profile</a></b></h5>
+              <b><a href="/profiles">View Profiles</a></b></h5>
           </center>
         </Card>
         </div>

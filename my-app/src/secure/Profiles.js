@@ -87,11 +87,9 @@ class Profiles extends Component {
         <CardHeader>
           <strong>Profile</strong>
         </CardHeader>
-        <center>
+        <center style={{paddingTop:'20px'}}>
           <CardBody>
-            <b>You haven't created any Profiles yet... </b><br />
-          </CardBody>
-          <CardBody>
+            <h5><b>You haven't created any Profiles yet... </b></h5><br/>
             <Button color="info" onClick={this.callCreateProfile}> Create Profile </Button>
           </CardBody>
         </center>
@@ -117,8 +115,8 @@ class Profiles extends Component {
                   return (
                     <Container>
                       <Avatar name={profiles.name.charAt(0)} size="40" round={true} onClick={this.profileView} /> {profiles.name}
-                      <FaTrashAlt onClick={() => { this.setState({ id: profiles.id }); this.toggleDanger() }} className="float-right" style={{ marginLeft: "20px", color: 'red' }} />
-                      <FaPen size={20} className="float-right" style={{ marginLeft: "20px", color: '#4385ef' }} onClick={() => { this.updateProfile(profiles.id, profiles.name) }} />
+                      <FaTrashAlt onClick={() => { this.setState({ id: profiles.id }); this.toggleDanger() }} className="float-right" style={{ marginLeft: "20px", color: 'red', marginTop: "15px"}} />
+                      <FaPen size={20} className="float-right" style={{ marginLeft: "20px", color: '#4385ef', marginTop: "15px" }} onClick={() => { this.updateProfile(profiles.id, profiles.name) }} />
                       <hr />
                       <Container>
                         {viewProfileRequest ? <ViewProfile view={profiles} /> : " "}
