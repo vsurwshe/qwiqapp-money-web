@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import {  CardTitle, Container, Card, CardBody } from "reactstrap";
+import { CardTitle,Container,Card, CardBody } from "reactstrap";
 import { Link } from "react-router-dom";
 import queryString from "query-string";
 import SignupApi from "../services/SignupApi";
@@ -15,11 +15,9 @@ class SignupVerify extends Component {
   componentDidMount = () => {
     let code = queryString.parse(window.location.search).code;
     let id = this.props.match.params.id;
-    console.log("id " + code + "  code " + id);
     new SignupApi().verifySignup(this.successCall, this.errorCall, id, code);
   };
   successCall = json => {
-    console.log(json);
     this.setState({ flag: true });
   };
 

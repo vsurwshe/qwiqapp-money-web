@@ -1,169 +1,152 @@
 import React, { Component } from "react";
-import ReactDom from "react-dom";
-import { Container,Button,Label,Card,CardBody,Col,Row,CardTitle,Alert} from "reactstrap";
-import ReactTable from "react-table";
+import { Container, Button, Card, CardBody, Col, Row, Alert, CardHeader, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 import ProfileApi from "../services/ProfileApi";
 import UpdateProfile from "../secure/UpdateProfile";
-import CreateProfiles from "./CreateProfiles";
-
+import CreateProfile from "./CreateProfile";
+import DeleteProfile from "./DeleteProfile";
+import Avatar from 'react-avatar';
+import ViewProfile from "./ViewProfile";
+import { FaPen, FaTrashAlt } from 'react-icons/fa';
 class Profiles extends Component {
   constructor(props) {
     super(props);
-    this.state = { 
-      profiles: [] ,
-      visible:false,
-      addContainer:false
+    this.state = {
+      profiles: [],
+      addContainer: false,
+      updateProfile: false,
+      deleteProfile: false,
+      createProfile: false,
+      danger: false,
+      viewProfileRequest: false,
+      visible: false,
+      id: 0,
+      name: ""
     };
   }
 
   componentDidMount() {
-    new ProfileApi().getProfiles(this.successCall, this.errorCall); 
+    new ProfileApi().getProfiles(this.successCall, this.errorCall);
   }
 
   successCall = json => {
     console.log(json);
     if (json === "Deleted Successfully") {
-      this.setState({ profiles: [0], visible:true });
-      this.callTimer()
+      this.setState({ profiles: [0] })
     }
-    else this.setState({profiles: json});
+    else {
+      this.setState({ profiles: json })
+    }
   };
 
-  successupdate = json => {
-    console.log("Updated Data ", json);
-  };
+  errorCall = err => { this.setState({ visible: true }) }
 
-  errorCall = err => {
-    return <CardTitle>{err}</CardTitle>;
-  };
-
-  callTimer(){
-    setTimeout(() => {
-      window.location.reload()
-      this.setState({visible:false})
-    } ,1500)
-  }
 
   // Update Profile
-  updateProfile = (uid, uname) => {
-    ReactDom.render(
-      <UpdateProfile id={uid} name={uname} />,
-      document.getElementById("root")
-    );
+  updateProfile = (uid, uName) => {
+    this.setState({ updateProfile: true, id: uid, name: uName })
   };
 
   //Delete profile 
-  deleteProfile = id => {
-    new ProfileApi().deleteProfile(this.successCall, this.errorCall, id);
+  deleteProfile = () => {
+       this.setState({ deleteProfile: true })
   };
 
-  callCreateProfile= e=>{
-    e.preventDefault();    
-    this.setState({addContainer: !this.state.addContainer})
-   }
- 
+  profileView = () => {
+    this.setState({ viewProfileRequest: true })
+  }
+
+  callCreateProfile = () => {
+    this.setState({ createProfile: true })
+  }
+
+  toggleDanger = () => {
+
+    this.setState({
+      danger: !this.state.danger,
+    });
+  }
+
   render() {
-    const columns = [
-      { Header: "Id", accessor: "id" },
-      { Header: "Profile Name", accessor: "name" },
-      {
-        Header: "Profile Create Time",
-        accessor: "created",
-        sortable: false,
-        filterable: false
-      },
-      {
-        Header: "Profile Type",
-        accessor: "type"
-      },
-      {
-        Header: "Profile URL",
-        accessor: "url",
-        sortable: false,
-        filterable: false
-      },
-      {
-        Header: "",
-        Cell: props => {
-          return (
-            //update button
-            <Button
-              color="primary"
-              onClick={() => {this.updateProfile(props.original.id, props.original.name);}}>
-              Update</Button>
-          );
-        },
-        sortable: false,
-        filterable: false
-      },
-      {
-        Header: "",
-        Cell: props => {
-          return (
-            //delete button
-            <Button
-              color="danger"
-              onClick={() => {this.deleteProfile(props.original.id);}}>
-              Delete
-            </Button>
-          );},
-        sortable: false,
-        filterable: false
-      }
-    ];
-    if (this.state.profiles.length === 0 ) {
-      return (
-          <Container style={{ padding: 20 }} className="App">
-            <Card style={{border:0}}>
-              <CardBody>
-                <b>You haven't created any Profiles yet... </b><br/>
-              </CardBody>
-              <CardBody>
-               {this.state.addContainer ?<CreateProfiles/>:
-                  <center>
-                    <Button color="info" onClick={this.callCreateProfile}> Create One </Button>
-                  </center>}
-              </CardBody>
-            </Card>
-          </Container>
-      );
-    } else {
-      return (
-        <div className="Main-styles-module--main--2QNBf col-xl-8 col-md-9 col-12">
-          <Container style={{ padding: 20}} className="App">
-            <Card>
-              <CardBody>
-                <CardTitle>Your Profiles</CardTitle>
-                <Alert isOpen={this.state.visible} color="success" >Profile deleted</Alert>
-                <Col sm="6">
-                  <Row>
-                    <CardBody>
-                      {this.state.profiles.map(profiles => {
-                        return (
-                          <Label key={profiles.id}>
-                            <b>Profile Id : </b>{profiles.id}<br />
-                            <b>Profile Name : </b>{profiles.name}<br />
-                            <b>Profile Creations : </b> {profiles.created}<br />
-                            <b>Profile Type : </b>{profiles.type}<br />
-                            <b>Profile Creation URL : </b>{profiles.url}
-                          </Label>
-                        );
-                      })}
-                    </CardBody>
-                  </Row>
-                </Col>
-                <ReactTable
-                  columns={columns}
-                  data={this.state.profiles}
-                  filterable
-                  defaultPageSize={5}
-                  showFilters/>
-              </CardBody>
-            </Card>
-          </Container>
-          </div>
-      );
+    const { profiles, id, viewProfileRequest, createProfile, updateProfile, deleteProfile, visible, name } = this.state
+    if (profiles.length === 0 && !createProfile) {
+      return <div>{this.loadNotCreateProfile()}</div>
+    } else if (createProfile) {
+      return (<Container> <CreateProfile /> </Container>)
+    } else if (updateProfile) {
+      return (<Container> <UpdateProfile id={id} name={name} /> </Container>)
+    } else if (deleteProfile) {
+      return (<Container> <DeleteProfile id={id} /> </Container>)
+    }else {
+      return <div>{this.loadShowProfile(viewProfileRequest, visible, profiles)}{this.loadDeleteProfile()}</div>
     }
   }
+  //this method call when if any profile not created.
+  loadNotCreateProfile = () => {
+    return (<div className="animated fadeIn">
+      <Card>
+        <CardHeader>
+          <strong>Profile</strong>
+        </CardHeader>
+        <center style={{paddingTop:'20px'}}>
+          <CardBody>
+            <h5><b>You haven't created any Profiles yet... </b></h5><br/>
+            <Button color="info" onClick={this.callCreateProfile}> Create Profile </Button>
+          </CardBody>
+        </center>
+      </Card>
+    </div>)
+  }
+  //if one or more profile is there then this method Call
+  loadShowProfile = (viewProfileRequest, visible, profiles) => {
+    return (
+    <div className="animated fadeIn">
+      <Card>
+        <CardHeader>
+          <strong>Profile</strong>
+        </CardHeader>
+        <CardBody>
+          <h6>
+            <Alert isOpen={visible} color="danger">Internal Server Error</Alert>
+          </h6>
+          <Col sm="6">
+            <Row>
+              <CardBody>
+                {profiles.map(profiles => {
+                  return (
+                    <Container>
+                      <Avatar name={profiles.name.charAt(0)} size="40" round={true} onClick={this.profileView} /> {profiles.name}
+                      <FaTrashAlt onClick={() => { this.setState({ id: profiles.id }); this.toggleDanger() }} className="float-right" style={{ marginLeft: "20px", color: 'red', marginTop: "15px"}} />
+                      <FaPen size={20} className="float-right" style={{ marginLeft: "20px", color: '#4385ef', marginTop: "15px" }} onClick={() => { this.updateProfile(profiles.id, profiles.name) }} />
+                      <hr />
+                      <Container>
+                        {viewProfileRequest ? <ViewProfile view={profiles} /> : " "}
+                      </Container>
+                    </Container>
+                  );
+                })}
+              </CardBody>
+            </Row>
+          </Col>
+        </CardBody>
+      </Card>
+    </div>)
+  }
+
+  //this method call the delete model
+  loadDeleteProfile = () => {
+    return (
+    <Modal isOpen={this.state.danger} toggle={this.toggleDanger}
+      className={'modal-danger '}>
+      <ModalHeader toggle={this.toggleDanger}>Delete Profile</ModalHeader>
+      <ModalBody>
+        Are you Sure want to Delete This Profile ?
+        </ModalBody>
+      <ModalFooter>
+        <Button color="danger" onClick={this.deleteProfile}>Delete</Button>
+        <Button color="secondary" onClick={this.toggleDanger}>Cancel</Button>
+      </ModalFooter>
+    </Modal>)
+  }
+
 }
-export default Profiles;
+export default Profiles

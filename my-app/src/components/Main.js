@@ -1,55 +1,34 @@
 import React, { Component, Suspense } from "react";
 import { Route, Redirect, Switch } from "react-router-dom";
 import { Container } from "reactstrap";
-import {
-  AppBreadcrumb,
-  AppFooter,
-  AppHeader,
-  AppSidebar,
-  AppSidebarFooter,
-  AppSidebarForm,
-  AppSidebarHeader,
-  AppSidebarMinimizer,
-  AppSidebarNav
-} from "@coreui/react";
-
+import {  AppFooter,  AppHeader,  AppSidebar,  AppSidebarFooter,  AppSidebarForm,  AppSidebarHeader,  AppSidebarNav} from "@coreui/react";
 import Dashboard from "../secure/Dashboard";
 import Signup from "./Signup";
 import Home from "./Home";
 import Login from "./Login";
 import Store from "../data/Store";
-
 import SignupVerify from "../components/SignupVerify";
 import Profiles from "../secure/Profiles";
-import CreateProfiles from "../secure/CreateProfiles";
+import CreateProfile from "../secure/CreateProfile";
 import navigation from "../data/navigations";
 import UpdateProfile from "../secure/UpdateProfile";
 
-const DefaultFooter = React.lazy(() =>
-  import("../secure/Sidebar/DefaultFooter")
-);
-const DefaultHeader = React.lazy(() =>
-  import("../secure/Sidebar/DefaultHeader")
-);
-
+const DefaultFooter = React.lazy(() =>import("../secure/Sidebar/DefaultFooter"));
+const DefaultHeader = React.lazy(() =>  import("../secure/Sidebar/DefaultHeader"));
 class Main extends Component {
-  loading = () => (
-    <div className="animated fadeIn pt-1 text-center">Loading...</div>
-  );
+  loading = () => (<div className="animated fadeIn pt-1 text-center">Loading...</div>);
 
-  signOut(e) {
-    e.preventDefault();
-    this.props.history.push("/login");
-  }
+  signOut(e) {e.preventDefault();this.props.history.push("/login");}
 
   render() {
     if (Store.isLoggedIn()) {
-      return this.loadSecureRouets();
+      return this.loadSecureRoutes();
     } else {
       return this.loadRoutes();
     }
   }
 
+  //This Method Call the Routing Paths
   loadRoutes() {
     return (
       <Switch>
@@ -57,7 +36,7 @@ class Main extends Component {
         <Route path="/login" component={Login} />
         <Route path="/signup" component={Signup} />
         <Route path="/updateProfile" component={UpdateProfile} />
-        <Route path="/createProfile" component={CreateProfiles} />
+        <Route path="/createProfile" component={CreateProfile} />
         <Route path="/profiles" component={Profiles} />
         <Route path="/register/:id/verify" component={SignupVerify} />
         <Route exact path="/" component={Login} />
@@ -66,7 +45,8 @@ class Main extends Component {
     );
   }
 
-  loadSecureRouets() {
+  //This Method Call When user Log in Successfully.
+  loadSecureRoutes() {
     return (
       <div className="app ">
         <AppHeader fixed>
@@ -82,10 +62,11 @@ class Main extends Component {
               <AppSidebarNav navConfig={navigation} {...this.props} />
             </Suspense>
             <AppSidebarFooter />
-            <AppSidebarMinimizer />
+            {/* <AppSidebarMinimizer /> */}
           </AppSidebar>
           <main className="main">
-            <AppBreadcrumb />
+            {/* <AppBreadcrumb /> */}
+            <br/>
             <Container fluid>
               <Suspense fallback={this.loading()}>{this.loadRoutes()}</Suspense>
             </Container>
@@ -100,9 +81,9 @@ class Main extends Component {
     );
   }
 }
-
 export default Main;
 
+//This is provide the Security to app Routing
 const PrivateRoute = ({ component: Component, ...rest }) => (
   <Route
     {...rest}

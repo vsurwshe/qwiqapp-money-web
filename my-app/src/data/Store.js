@@ -38,19 +38,20 @@ const Store = {
     },
 
     saveLoginResponse: function(token, refresh,expiry) {
-        let user = {oauthToken: token, 
-            refreshToken: refresh,timeExpiry: expiry};
-        console.log('User is: ', user);
-        db.setItem(USER_KEY, JSON.stringify(user));
-        console.log('After setting: ', db.getItem(USER_KEY));
+        let user = {oauthToken: token,refreshToken: refresh,timeExpiry: expiry};
+        this.setToken(user);
     },
     
     saveDummyResponse: function(token, refresh) {
-        let user = {user:"Dummy",oauthToken: token, 
-            refreshToken: refresh};
+        let user = {user:"Dummy",oauthToken: token,refreshToken: refresh};
+        this.setToken(user);
+    },
+
+    setToken :function(user){
         console.log('User is: ', user);
         db.setItem(USER_KEY, JSON.stringify(user));
         console.log('After setting: ', db.getItem(USER_KEY));
     }
+
 }
 export default Store;

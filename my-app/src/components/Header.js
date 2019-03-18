@@ -15,7 +15,7 @@ class Header extends React.Component {
     this.setState({ isOpen: !this.state.isOpen });
   };
   render() {
-    //    console.log("render: Store.isLoggedIn: ", Store.isLoggedIn());
+ 
     if (Store.isLoggedIn()) {
       return this.secureNavBar();
     } else {
@@ -36,7 +36,7 @@ class Header extends React.Component {
               type="button"
               data-toggle="sidebar-show"
             >
-              <span className="navbar-toggler-icon" />
+                      <span className="navbar-toggler-icon" />
             </button>
 
             <ul className="nav navbar-nav mr-auto d-md-down-none" />
@@ -51,9 +51,9 @@ class Header extends React.Component {
               <nav className="sidebar-nav ps">
                 <ul className="nav">
                   <li class="nav-item ">
-                    <a className="nav-link ">
+                    {/* <a className="nav-link ">
                       <i class="nav-icon cui-dashboard" /> DashBoard
-                    </a>
+                    </a> */}
                     <ul className="nav-dropdown-items" />
                   </li>
                   <li className="nav-item  nav-dropdown  ">
@@ -82,8 +82,7 @@ class Header extends React.Component {
                     </ul>
                   </li>
                 </ul>
-              </nav>
-              <button class="sidebar-minimizer brand-minimizer" type="button" />
+              </nav> <button class="sidebar-minimizer brand-minimizer" type="button" />
             </div>
           </div>
         </body>
