@@ -35,7 +35,7 @@ class Signup extends React.Component {
     };
     if (this.state.name === "") {
         this.callAlertTimer("danger", "Name should not be empty")
-        this.setState({ password: "" });
+        // this.setState({ password: "" });
     } else if (this.state.password.length > 5) {
          new SignupApi().registerUser(this.successCall, this.errorCall, data);
     }
@@ -47,8 +47,9 @@ class Signup extends React.Component {
   //When Call the Email Already Exits
   successCallCheck = () => {
     const { validate } = this.state;
-    validate.emailState = 'danger'; this.setState({ email: "",emailAlert: true });
+    validate.emailState = 'danger'; this.setState({ emailAlert: true });
   };
+
  // when any internal Error is coming
   errorCall = err => {
     this.callAlertTimer("danger", "Internal Error");
@@ -134,11 +135,11 @@ class Signup extends React.Component {
               <FormGroup style={align}>
                 <Label for="password">Password <span style={requiredLabel}>*</span></Label>
                 <Input name="password" type="password" placeholder="Your password" onChange={e => { this.handleInput(e); this.validatePassword(e) }} 
-                  onKeyPress = {this.handleEnter} disabled={!email} valid={passwordState === 'success'} invalid={passwordState === 'danger'} value={password} />
+                  onKeyPress = {this.handleEnter} disabled={!email || emailState === 'danger'} valid={passwordState === 'success'} invalid={passwordState === 'danger'} value={password} />
                 <FormFeedback invalid tooltip> Password length must be more then 5 characters </FormFeedback>
               </FormGroup>
               <center>
-                <Button color="info" disabled={!password} onClick={this.handleSubmit}> Signup </Button>
+                <Button color="info" disabled={!password || (emailAlert &&  emailState === 'danger' ) } onClick={this.handleSubmit}> Signup </Button>
                 <CardBody>
                   <span> I already have an Account. </span>
                   <Link to="/login"> Login Now </Link>
