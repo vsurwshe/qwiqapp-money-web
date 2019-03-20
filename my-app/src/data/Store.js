@@ -87,6 +87,7 @@ const Store = {
     clearDummyAccessToken: function() {
         db.removeItem(DUMMY_KEY);       
     }
+
 }
 export default Store;
 

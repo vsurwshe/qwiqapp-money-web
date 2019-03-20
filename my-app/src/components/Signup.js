@@ -4,19 +4,18 @@ import { Link } from "react-router-dom";
 import SignupApi from "../services/SignupApi";
 class Signup extends React.Component {
   state = {
-      name: "",
-      email: "",
-      password: "",
-      adminToken: "",
-      userCreated: false,
-      flag: true,
-      color: '',
-      content: '',
-      emailAlert: '',
-      validate: {
-        emailState: "",
-        passwordState: ""
-      }
+    name: "",
+    email: "",
+    password: "",
+    adminToken: "",
+    flag: true,
+    color: "",
+    content: "",
+    emailAlert:false,
+    validate: {
+      emailState: "",
+      passwordState: ""
+    }
   };
   //this is use for the store whatever input given in input fileds set into state variable
   handleInput = e => {
@@ -26,8 +25,10 @@ class Signup extends React.Component {
   handleEnter = (event) =>{
     if (event.key === 'Enter' ) { this.handleSubmit(); }
   }
-  //this method when sinup button clicked that time called
-  handleSubmit = () => {
+
+  handleSubmit = e => {
+    e.preventDefault();
+    console.log(this.state.email + " " + this.state.password);
     const data = {
         name: this.state.name,
         email: this.state.email,
