@@ -60,7 +60,7 @@ class DeleteProfile extends Component {
       </CardHeader>
       <center style={{paddingTop:'20px'}}>
         <h5><b>{content}</b><br /> <br />
-          <a href="/profiles">New Profile </a></h5>
+          <a href="/profiles">View Profiles </a></h5>
       </center>
     </Card>
   </div>)

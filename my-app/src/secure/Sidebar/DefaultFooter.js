@@ -15,7 +15,7 @@ class DefaultFooter extends Component {
     return (
       <React.Fragment>
         <span>
-          <a href="#">WEB MONEY</a> &copy; 2019 124appsLab.
+          <a href="/">Web Money</a> &copy; 2019 124Apps.
         </span>
         <span className="ml-auto">
           Powered by <a href="http://www.124apps.com/">124Apps Pvt. Ltd.</a>

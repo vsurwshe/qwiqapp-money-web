@@ -8,11 +8,13 @@ class SignupVerify extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      flag: false
+      flag: false,
+      content:'User Verification in Progress, Please wait ..........'
     };
   }
 
-  componentDidMount = () => {
+  
+  componentWillMount = () => {
     let code = queryString.parse(window.location.search).code;
     let id = this.props.match.params.id;
     new SignupApi().verifySignup(this.successCall, this.errorCall, id, code);
@@ -20,21 +22,21 @@ class SignupVerify extends Component {
   successCall = json => {
     this.setState({ flag: true });
   };
-
+//
   errorCall = err => {
-    this.setState({ flag: false });
+    this.setState({ content: <div><strong>Email already Verified, please Login......</strong><br/><br/><br/><Link to='/login'> Login Now</Link></div>});
   };
 
   render() {
     if (this.state.flag) {
       return (
         <div>
-          <Container style={{ padding: 20, color:"success" }} className="App">
-            <Card style={{ border : 0 }}>
+          <Container style={{paddingTop: "20%"}} className="App" >
+          <Card style={{ padding: 40, border: 0, textAlign: "center"}}> 
               <CardBody>
                 <center>
                   <CardTitle>
-                    Congratulations!! You are successfully registered in JustMoney. You can now login.....
+                    <b>Congratulations!! You are successfully registered in JustMoney. You can now login.....</b>
                   </CardTitle>
                   <Link to="/login"> Login Now</Link>
                 </center>
@@ -46,11 +48,12 @@ class SignupVerify extends Component {
     }
     return (
       <div>
-        <Container style={{ padding: 20 }} className="App">
-          <Card style={{ border : 0 }}>
+        <Container style={{paddingTop: "20%"}} className="App" >
+        <Card style={{ padding: 40, border: 0, textAlign: "center"}}> 
             <CardBody>
               <center>
-                <CardTitle>User Verification in Progress, Please wait ..........</CardTitle>
+                <CardTitle><b>{this.state.content}</b></CardTitle>
+                
               </center>
             </CardBody>
           </Card>

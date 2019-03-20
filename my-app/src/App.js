@@ -15,12 +15,12 @@ const App = () => {
 export default App;
 
 const AuthButton = withRouter(({ history }) =>
-  Store.isLoggedIn() ? (
+  Store.isAppUserLoggedIn() ? (
     <div>
       <p>
         <Button
           onClick={() => {
-            Store.logout(() => history.push("/"));
+            Store.logoutAppUser(() => history.push("/"));
           }}
         >
           Sign out

@@ -1,7 +1,6 @@
 import Axios from "axios";
 import Config from "../data/Config";
 import Store from "../data/Store";
-
 class ProfileApi {
   createProfile(success, failure, data) {
     process(success, failure, "/profiles/", "POST", data);
@@ -65,7 +64,7 @@ function createInstance(Uurl, Umethod) {
     url: Uurl,
     headers: {
       "content-type": "application/json",
-      Authorization: "Bearer " + Store.getAccessToken()
+      Authorization: "Bearer " + Store.getAppUserAccessToken()
     }
   });
   return instance;

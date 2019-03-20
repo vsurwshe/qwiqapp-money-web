@@ -21,7 +21,7 @@ class Main extends Component {
   signOut(e) {e.preventDefault();this.props.history.push("/login");}
 
   render() {
-    if (Store.isLoggedIn()) {
+    if (Store.isAppUserLoggedIn()) {
       return this.loadSecureRoutes();
     } else {
       return this.loadRoutes();
@@ -88,7 +88,7 @@ const PrivateRoute = ({ component: Component, ...rest }) => (
   <Route
     {...rest}
     render={props =>
-      Store.isLoggedIn() ? (
+      Store.isAppUserLoggedIn() ? (
         <Component {...props} />
       ) : (
         <Redirect

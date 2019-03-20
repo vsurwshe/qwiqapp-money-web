@@ -16,7 +16,7 @@ class CreateProfiles extends Component {
   };
 
   componentDidMount() {
-    this.setState({ userToken: Store.getAccessToken() });
+    this.setState({ userToken: Store.getAppUserAccessToken() });
   }
 
   handleSubmit = e => {

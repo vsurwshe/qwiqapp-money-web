@@ -1,8 +1,7 @@
 import axios from "axios";
 import Config from "../data/Config";
 import Store from "../data/Store";
-import "../css/react-table.css";
-
+import '../css/react-table.css'
 class LoginApi {
   login(username, password, success, failure) {
     let params = {
@@ -14,13 +13,13 @@ class LoginApi {
   }
 
   refresh(success, failure) {
-    if (!Store.isLoggedIn) {
+    if (!Store.isAppUserLoggedIn) {
       failure();
       return;
     }
     let params = {
       grant_type: "refresh_token",
-      refresh_token: Store.getRefreshToken()
+      refresh_token: Store.getAppUserRefreshToken()
     };
     process(params, success, failure);
   }
@@ -37,10 +36,12 @@ let process = function(params, success, failure) {
 };
 
 let validResponse = function(resp, successMethod,params) {
+  console.log(params);
+  console.log(resp.data)
   if(params.username === "dummy@email.com")
-    Store.saveDummyResponse(resp.data.access_token, resp.data.refresh_token);
+    Store.saveDummyUserAccessToken(resp.data.access_token, resp.data.refresh_token);
   else
-    Store.saveLoginResponse(resp.data.access_token, resp.data.refresh_token,resp.data.expires_in);
+    Store.saveAppUserAccessToken(resp.data.access_token, resp.data.refresh_token,resp.data.expires_in);
     // TODO: refresh token when actual token expire occurs. 
     const expiry = resp.data.expires_in * 1000
     setTimeout(() =>
