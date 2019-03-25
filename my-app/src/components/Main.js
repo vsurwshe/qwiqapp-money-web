@@ -12,6 +12,8 @@ import Profiles from "../secure/profiles/Profiles";
 import navigation from "../data/navigations";
 import CreateLable from "../secure/labels/Createlabel";
 import Lables from "../secure/labels/Label";
+// import UpdateProfile from "../secure/UpdateProfile";
+import Categories from "../secure/Categories/Categories";
 
 const DefaultFooter = React.lazy(() =>import("../secure/Sidebar/DefaultFooter"));
 const DefaultHeader = React.lazy(() =>  import("../secure/Sidebar/DefaultHeader"));
@@ -41,6 +43,8 @@ class Main extends Component {
         <PrivateRoute path="/label/createLabel" component={CreateLable} />
         <Route exact path="/" component={Login} />
         <Route path="/home" component={Home} />
+        <Route path="/listCategories" component={Categories} />
+
       </Switch>
     );
   }

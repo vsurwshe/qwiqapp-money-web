@@ -19,6 +19,15 @@ export default {
       name: "Labels",
       url: "/label/labels",
       icon: "cui-align-center"
+    {
+      name: "Create Profile",
+      url: "/createProfile",
+      icon: "cui-user-follow"
+    },
+    {
+      name: "Categories",
+      url: "/listCategories",
+      icon: "cui-layers"
     }
   ]
 };
