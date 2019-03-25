@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { Button,Col, Input, Alert ,FormGroup,Card,CardHeader} from "reactstrap";
 import LabelApi from "../../services/LabelApi";
-import ProfileApi from "../../services/ProfileApi";
 class UpdateLabel extends Component {
   constructor(props) {
     super(props);
@@ -12,22 +11,25 @@ class UpdateLabel extends Component {
       version:this.props.version,
       color: "",
       content: "",
-      updateSuccess: false,
-      profileId:this.props.pid
+      updateSuccess: false
     };
   }
+  //This method handle Updations of Labels
   handleUpdate = () => {
     let data = { name: this.state.name,notes:this.state.notes,version:this.state.version };
-    new LabelApi().updateLabel( () => {this.setState({ updateSuccess: true });}, this.errorCall, data,this.state.profileId, this.state.id )
+    new LabelApi().updateLabel( () => {
+        this.setState({ updateSuccess: true });
+      }, this.errorCall, data,11, this.state.id )
   };
- //when any api goto the api executions failed then called this method 
+
   errorCall = err => {
     this.callAlertTimer( "danger", "Something went wrong, Please Try Again... ");
   };
-//this  method show the on page alert
+
   callAlertTimer = (color, content) => {
     this.setState({ color: color, content: content });
-    setTimeout(() => {this.setState({ name: '', color: ''});
+    setTimeout(() => {
+      this.setState({ name: '', color: ''});
     }, 4000);
   };
 
@@ -39,20 +41,24 @@ class UpdateLabel extends Component {
       return <div>{this.loadUpdatingLable(name,notes,color,content)}</div>
     }
   }
+
   //this method call after successfully updtaed profile
   loadUpdateMessage=()=>{
-    return(<div className="animated fadeIn">
-        <Card>
-          <CardHeader>
-            <strong>Label</strong>
-          </CardHeader>
-          <center style={{ paddingTop: '20px' }}>
-            <h5><b>Your Label Updated Successfully !!</b><br /><br />
-              <a href="/label/labels">View Label</a></h5>
-          </center>
-        </Card>
-      </div>)
+    return(
+    <div className="animated fadeIn">
+      <Card>
+      <CardHeader>
+        <strong>Label</strong>
+      </CardHeader>
+      <center style={{paddingTop:'20px'}}>
+        <h5><b>Your Label Updated Successfully !!</b><br /><br />
+        <a href="/label/labels">View Label</a></h5>
+     </center>
+     </Card>
+    </div>
+    )
   }
+
   //this method call when updating profile
   loadUpdatingLable=(name,notes,color,content)=>{
      return( 
@@ -74,7 +80,8 @@ class UpdateLabel extends Component {
              </FormGroup>
            </center>
          </Card>
-       </div>)
+       </div>
+      )
   }
 }
 

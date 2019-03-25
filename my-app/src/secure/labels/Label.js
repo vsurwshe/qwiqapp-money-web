@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Container, Button, Card, CardBody, Col, Row, Alert, CardHeader,Collapse,Label,Modal, ModalHeader, ModalBody, ModalFooter} from "reactstrap";
+import { Container, Button, Card, CardBody, Col, Row, Alert, CardHeader,Collapse,Label,Modal, ModalHeader, ModalBody, ModalFooter,FormGroup } from "reactstrap";
 import CreateLabel from "./Createlabel";
 import Avatar from 'react-avatar';
 import { AppSwitch } from '@coreui/react'
@@ -7,7 +7,6 @@ import { FaPen, FaTrashAlt ,FaPlusCircle } from 'react-icons/fa';
 import UpdateLabel from "./UpdateLabel";
 import DeleteLabel from "./DeleteLabel";
 import LabelApi from "../../services/LabelApi";
-import ProfileApi from "../../services/ProfileApi";
 
 class Lables extends Component {
   constructor(props) {
@@ -24,7 +23,6 @@ class Lables extends Component {
       visible: false,
       updateLabel: false,
       deleteLabel: false,
-      profileId:0,
       accordion: [],
       danger: false,
       show:false,
@@ -32,29 +30,15 @@ class Lables extends Component {
   }
   //this method get All Labels Realted That Profile
   componentDidMount=()=> {
-         new ProfileApi().getProfiles(this.successProfileid,this.errorCall);
-  }
-  //this method seting Profile id 
-  successProfileid=json=>{
-    if (json === []) { this.setState({ profileId:'' })}
-    else {
-      const iterator = json.values();
-      for (const value of iterator) {this.setProfileId(value.id)}
-    }
-  }
-  //this method set Profile Id
-  setProfileId=(id)=>{
-    console.log(id);
-    this.setState({profileId:id})
-    this.getLabels(this.state.show);
+      new LabelApi().getSublabels(this.successCall, this.errorCall,11,this.state.show);
   }
   //this method seting labels when api given successfull Response
   successCall = json => {
-  if (json === "Deleted Successfully") {
-    this.setState({ labels: [0] })
-  }else {
-    this.setState({ labels: json })
-    this.loadCollapse();}
+    if (json === "Deleted Successfully") {
+      this.setState({ labels: [0] })
+    }else {
+      this.setState({ labels: json })
+      this.loadCollapse();}
   };
 
   errorCall = err => { this.setState({ visible: true }) }
@@ -85,27 +69,20 @@ class Lables extends Component {
   }
   //this method use for showing sub-lables when swtich is yes
   toggleSublabel=()=>{
-    this.setState({show:!this.state.show});
-    this.getLabels(!this.state.show);
+    new LabelApi().getSublabels(this.successCall, this.errorCall,11,true);
   }
-
-  //this is geting labels
-  getLabels=(value)=>{
-    new LabelApi().getSublabels(this.successCall, this.errorCall,this.state.profileId,value);
-  }
-
  
 
   render() {
-   const { labels,viewLabelRequest, createLabel,updateLabel,id,name,notes,version,deleteLabel, visible,profileId} = this.state
+   const { labels,viewLabelRequest, createLabel,updateLabel,id,name,notes,version,deleteLabel, visible} = this.state
     if (labels.length === 0 && !createLabel) {
       return <div>{this.loadNotLabelProfile()}</div>
     } else if (createLabel) {
-      return (<Container> <CreateLabel pid={profileId} /> </Container>)
+      return (<Container> <CreateLabel /> </Container>)
     }else if (updateLabel) {
-      return(<UpdateLabel id={id} name={name} notes={notes} pid={profileId} version={version} />)
+      return(<UpdateLabel id={id} name={name} notes={notes} version={version} />)
     }else if(deleteLabel) {
-      return ( <DeleteLabel id={id}  pid={profileId}/> )
+      return ( <DeleteLabel id={id} /> )
     }else{
       return <div>{this.loadShowLabel(viewLabelRequest, visible, labels)}{this.loadDeleteLabel()}</div>
     }
@@ -135,7 +112,7 @@ class Lables extends Component {
           <h6><Alert isOpen={visible} color="danger">Internal Server Error</Alert></h6>
           <Col sm="6">
             <Row>
-              Show with Sub-Labels: <AppSwitch  className={'mx-1'} variant={'pill'} color={'danger'} onClick={()=>this.toggleSublabel()} label dataOn={'Yes'} dataOff={'No'}  />
+              Show with Sub-Labels: <AppSwitch  className={'mx-1'} variant={'pill'} color={'danger'} onClick={this.toggleSublabel} label dataOn={'Yes'} dataOff={'No'}  />
               <Container >
                 {this.state.labels.map((labels, key) => {
                   return this.loadSingleLable(this.state.labels[key],key);
@@ -158,9 +135,11 @@ class Lables extends Component {
       <hr />
       <Container>
         <Collapse isOpen={this.state.accordion[ukey]}>
-          { Array.isArray(labels.subLabels) ? labels.subLabels.map(lable=>{
-            return( <div><Avatar name={lable.name.charAt(0)} size="40" round={true} key={labels.id} />&nbsp;&nbsp;{lable.name}  <hr /></div>)
+       
+        { Array.isArray(labels.subLabels) ? labels.subLabels.map(lable=>{
+            return( <div><Avatar name={lable.name.charAt(0)} size="40" round={true} key={labels.id} />&nbsp;&nbsp;{lable.name}</div>)
           }) :""} 
+     
          </Collapse>
       </Container>
     </div>)
