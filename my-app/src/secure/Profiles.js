@@ -124,6 +124,7 @@ class Profiles extends Component {
                     </Container>
                   );
                 })}
+                 <Button color="info" onClick={this.callCreateProfile}> Create Profile </Button>
               </CardBody>
             </Row>
           </Col>
@@ -135,8 +136,7 @@ class Profiles extends Component {
   //this method call the delete model
   loadDeleteProfile = () => {
     return (
-    <Modal isOpen={this.state.danger} toggle={this.toggleDanger}
-      className={'modal-danger '}>
+    <Modal isOpen={this.state.danger} toggle={this.toggleDanger} backdrop={false}>
       <ModalHeader toggle={this.toggleDanger}>Delete Profile</ModalHeader>
       <ModalBody>
         Are you Sure want to Delete This Profile ?

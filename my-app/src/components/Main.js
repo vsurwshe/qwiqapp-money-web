@@ -12,6 +12,10 @@ import Profiles from "../secure/Profiles";
 import CreateProfile from "../secure/CreateProfile";
 import navigation from "../data/navigations";
 import UpdateProfile from "../secure/UpdateProfile";
+import UpdateLabel from "../secure/labels/UpdateLabel";
+import CreateLable from "../secure/labels/Createlabel";
+
+import Lables from "../secure/labels/Label";
 
 const DefaultFooter = React.lazy(() =>import("../secure/Sidebar/DefaultFooter"));
 const DefaultHeader = React.lazy(() =>  import("../secure/Sidebar/DefaultHeader"));
@@ -39,6 +43,11 @@ class Main extends Component {
         <Route path="/createProfile" component={CreateProfile} />
         <Route path="/profiles" component={Profiles} />
         <Route path="/register/:id/verify" component={SignupVerify} />
+
+        <Route path="/label/updateLabel" component={UpdateLabel} />
+        <Route path="/label/createLabel" component={CreateLable} />
+        <Route path="/label/labels" component={Lables} />
+        
         <Route exact path="/" component={Login} />
         <Route path="/home" component={Home} />
       </Switch>
