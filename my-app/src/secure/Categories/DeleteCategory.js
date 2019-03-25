@@ -13,7 +13,6 @@ class DeleteCategory extends Component {
     };
   }
   componentDidMount = () => {
-    alert(this.state.pId)
     new CategoryApi().deleteCategory(this.successCall, this.errorCall,this.state.pId, this.state.cId );
   };
   successCall = () => {
