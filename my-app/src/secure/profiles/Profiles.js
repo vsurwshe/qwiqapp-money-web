@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Container, Button, Card, CardBody, Col, Row, Alert, CardHeader, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
-import ProfileApi from "../services/ProfileApi";
-import UpdateProfile from "../secure/UpdateProfile";
+import ProfileApi from "../../services/ProfileApi";
+import UpdateProfile from "./UpdateProfile";
 import CreateProfile from "./CreateProfile";
 import DeleteProfile from "./DeleteProfile";
 import Avatar from 'react-avatar';

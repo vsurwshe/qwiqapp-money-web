@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Alert, Button, Input, Card, CardBody, CardHeader,FormGroup,Col } from "reactstrap";
-import Store from "../data/Store";
-import ProfileApi from "../services/ProfileApi";
+import Store from "../../data/Store";
+import ProfileApi from "../../services/ProfileApi";
 class CreateProfiles extends Component {
   state = {
     name: "",

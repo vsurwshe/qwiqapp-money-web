@@ -24,8 +24,9 @@ class ProfileApi {
 export default ProfileApi;
 
 function process(success, failure, Uurl, Umethod, data) {
+  let insta = createInstance(Uurl, Umethod);
   if (Umethod === "PUT" || Umethod === "POST") {
-    let insta = createInstance(Uurl, Umethod);
+    
     insta
       .request({ data })
       .then(resp => validResponse(resp, success))
@@ -35,7 +36,6 @@ function process(success, failure, Uurl, Umethod, data) {
           errorResponse("Sorry can't create Profile!", failure);
       });
   } else {
-    let insta = createInstance(Uurl, Umethod);
     insta
       .request()
       .then(resp => validResponse(resp, success))

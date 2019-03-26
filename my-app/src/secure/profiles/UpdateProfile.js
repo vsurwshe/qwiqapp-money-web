@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Button, Card,Col, Input, Alert ,CardHeader,FormGroup} from "reactstrap";
-import ProfileApi from "../services/ProfileApi";
+import ProfileApi from "../../services/ProfileApi";
 
 
 class UpdateProfile extends Component {

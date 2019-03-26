@@ -56,7 +56,7 @@ const Store = {
         if (user !== null) {
             return user.oauthToken;
         } else {
-            return 'null';
+            return null;
         }
     },
 
@@ -65,7 +65,7 @@ const Store = {
         if (user !== null) {
             return user.refreshToken;
           } else {
-            return "null";
+            return null;
           }
     },
 
