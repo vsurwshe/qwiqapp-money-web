@@ -1,7 +1,7 @@
 import React, { Component, Suspense } from "react";
 import { Route, Redirect, Switch } from "react-router-dom";
 import { Container } from "reactstrap";
-import {  AppFooter,  AppHeader,  AppSidebar,  AppSidebarFooter,  AppSidebarForm,  AppSidebarHeader,  AppSidebarNav} from "@coreui/react";
+import { AppFooter,  AppHeader,  AppSidebar,  AppSidebarFooter,  AppSidebarForm,  AppSidebarHeader,  AppSidebarNav} from "@coreui/react";
 import Dashboard from "../secure/Dashboard";
 import Signup from "./Signup";
 import Home from "./Home";
@@ -30,7 +30,7 @@ class Main extends Component {
     }
   }
 
-  //This Method Call the Routing Paths
+  //This Method Routes Components
   loadRoutes() {
     return (
       <Switch>
@@ -44,7 +44,6 @@ class Main extends Component {
         <Route exact path="/" component={Login} />
         <Route path="/home" component={Home} />
         <Route path="/listCategories" component={Categories} />
-
       </Switch>
     );
   }
