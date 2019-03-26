@@ -18,33 +18,32 @@ export class ViewLabel extends Component {
       deleteLabel: false,
     };
   }
-//This Toggel For Collesping
-toggle=()=> {
-  this.setState({ collapse: !this.state.collapse });
-}
-//this toggle for Delete Model
-toggleDanger = () => {
-   this.setState({danger: !this.state.danger});
-}
-//this method for the load Update Compoents
-updateLabel = (lid, lName,lNotes,lversion) => {
-  this.setState({ updateLabel: true, id: lid, name: lName, notes:lNotes,version:lversion })
-};
-//this method for the load delete Components
-deleteLabel = () => {
-  this.setState({ deleteLabel: true })
-};
-render() {
-    const {id,name,notes,version,subLabels}=this.props.labels;
-    const {updateLabel,deleteLabel}=this.state;
-   if (updateLabel) {
-      return (<UpdateLabel id={id} name={name} notes={notes} version={version} />)
-    } else if (deleteLabel) {
-      return ( <DeleteLabel id={id} /> )
-    }else
-    return<div>{this.loadSingleLable(id,name,notes,version,subLabels)}{this.loadDeleteLabel()}</div>
+  //This Toggel For Collesping
+  toggle=()=> {
+    this.setState({ collapse: !this.state.collapse });
   }
-
+  //this toggle for Delete Model
+  toggleDanger = () => {
+     this.setState({danger: !this.state.danger});
+  }
+  //this method for the load Update Compoents
+  updateLabel = (lid, lName,lNotes,lversion) => {
+    this.setState({ updateLabel: true, id: lid, name: lName, notes:lNotes,version:lversion })
+  };
+  //this method for the load delete Components
+  deleteLabel = () => {
+    this.setState({ deleteLabel: true })
+  };
+  render() {
+      const {id,name,notes,version,subLabels}=this.props.labels;
+      const {updateLabel,deleteLabel}=this.state;
+     if (updateLabel) {
+        return (<UpdateLabel id={id} name={name} notes={notes} version={version} />)
+      } else if (deleteLabel) {
+        return ( <DeleteLabel id={id} /> )
+      }else{
+        return<div>{this.loadSingleLable(id,name,notes,version,subLabels)}{this.loadDeleteLabel()}</div>}
+  }
   //this method for loading Single
   loadSingleLable=(id,name,notes,version,subLabels)=>{
     return(
@@ -60,16 +59,14 @@ render() {
               <Label>Label name</Label> :{name} <br/>
               <Label>Label notes</Label> :{notes} <br/>
               <Label>Label version</Label> :{version} <br/>
-      </b>
-  
+              </b>
         </Collapse>
       </Container>
     </div>)
   }
   //this method call the delete model
   loadDeleteLabel = () => {
-   return (
-    <Modal isOpen={this.state.danger} toggle={this.toggleDanger} backdrop={false}>
+   return (<Modal isOpen={this.state.danger} toggle={this.toggleDanger} backdrop={false}>
       <ModalHeader toggle={this.toggleDanger}>Delete Label</ModalHeader>
       <ModalBody>
         Are you Sure want to Delete This Label ?
