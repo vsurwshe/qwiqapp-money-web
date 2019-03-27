@@ -52,8 +52,7 @@ const Store = {
 
     //geting Access Token
     getToken:function(user){
-        console.log("User :",user)
-        if (user !== null) {
+      if (user !== null) {
             return user.oauthToken;
         } else {
             return null;
@@ -73,7 +72,6 @@ const Store = {
     isAppUserLoggedIn: function() {
         let appUser = this.getAppUser();
         let flag = appUser !== null && appUser.oauthToken !== null && appUser.oauthToken.length > 5;
-        console.log('isLoggedin: ', flag);
         return flag;
     },
     

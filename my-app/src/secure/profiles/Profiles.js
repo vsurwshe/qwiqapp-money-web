@@ -111,19 +111,11 @@ class Profiles extends Component {
           <Col sm="6">
             <Row>
               <CardBody>
+              <Container>
                 {profiles.map(profiles => {
-                  return (
-                    <Container>
-                      <Avatar name={profiles.name.charAt(0)} size="40" round={true} onClick={this.profileView} /> {profiles.name}
-                      <FaTrashAlt onClick={() => { this.setState({ id: profiles.id }); this.toggleDanger() }} className="float-right" style={{ marginLeft: "20px", color: 'red', marginTop: "15px"}} />
-                      <FaPen size={20} className="float-right" style={{ marginLeft: "20px", color: '#4385ef', marginTop: "15px" }} onClick={() => { this.updateProfile(profiles.id, profiles.name) }} />
-                      <hr />
-                      <Container>
-                        {viewProfileRequest ? <ViewProfile view={profiles} /> : " "}
-                      </Container>
-                    </Container>
-                  );
+                  return this.loadSingleProfile(profiles,viewProfileRequest);
                 })}
+                </Container>
                  <Button color="info" onClick={this.callCreateProfile}> Create Profile </Button>
               </CardBody>
             </Row>
@@ -131,6 +123,19 @@ class Profiles extends Component {
         </CardBody>
       </Card>
     </div>)
+  }
+
+  //this method load the single profile
+  loadSingleProfile=(profiles,viewProfileRequest)=>{
+    return (<div key={profiles.id}>
+      <Avatar name={profiles.name.charAt(0)} size="40" round={true} onClick={this.profileView} /> {profiles.name}
+      <FaTrashAlt onClick={() => { this.setState({ id: profiles.id }); this.toggleDanger() }} className="float-right" style={{ marginLeft: "20px", color: 'red', marginTop: "15px" }} />
+      <FaPen size={20} className="float-right" style={{ marginLeft: "20px", color: '#4385ef', marginTop: "15px" }} onClick={() => { this.updateProfile(profiles.id, profiles.name) }} />
+      <hr />
+      <Container>
+        {viewProfileRequest ? <ViewProfile view={profiles} /> : " "}
+      </Container>
+    </div>);
   }
 
   //this method call the delete model

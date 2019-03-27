@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { Alert, Button, Input, Card, CardBody, CardHeader,FormGroup,Col,Collapse,Label  } from "reactstrap";
 import { AppSwitch } from '@coreui/react'
 import LabelApi from "../../services/LabelApi";
-import ProfileApi from "../../services/ProfileApi";
 class CreateLable extends Component {
   constructor(props){
     super(props);

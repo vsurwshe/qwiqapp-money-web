@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { Card, CardHeader,CardBody } from "reactstrap";
 import LabelApi from "../../services/LabelApi";
-import ProfileApi from "../../services/ProfileApi";
 class DeleteLabel extends Component {
   constructor(props) {
     super(props);
@@ -44,7 +43,7 @@ class DeleteLabel extends Component {
     return(<div className="animated fadeIn">
       <Card>
         <CardHeader>
-          <strong>Profile</strong>
+          <strong>Label</strong>
         </CardHeader>
         <center style={{paddingTop:'20px'}}>
           <h5><b>{content}</b><br /> <br />

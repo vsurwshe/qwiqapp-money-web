@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { Button,Col, Input, Alert ,FormGroup,Card,CardHeader} from "reactstrap";
 import LabelApi from "../../services/LabelApi";
-import ProfileApi from "../../services/ProfileApi";
 class UpdateLabel extends Component {
   constructor(props) {
     super(props);

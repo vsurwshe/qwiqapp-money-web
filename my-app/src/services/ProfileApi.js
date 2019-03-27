@@ -44,7 +44,7 @@ function process(success, failure, Uurl, Umethod, data) {
 }
 
 let validResponse = function(resp, successMethod) {
-  console.log("Response: ", resp.data);
+  // console.log("Response: ", resp.data);
   if (successMethod != null) {
     successMethod(resp.data);
   }

@@ -35,19 +35,7 @@ function process(success, failure, Uurl, Umethod, data) {
     console.log(data)
      instance.request({ data })
       .then(resp => validResponse(resp, success))
-      .catch(err => {
-        console.log(err.response.status);
-        if (err.response.status===403)
-         { 
-           //When App User Token Access The new Resource That Time 403 Error Comeing So We sloved By Using Refresh Token....
-           console.log("Token Error Comeing");
-           //here i calling Refresh Method Which Get New Access Token And Set New App User Access Token
-           //Then we are Calling Again This Method For Creating label.
-           new LoginApi().refresh(()=>{ process(success,failure,Uurl,Umethod,data);},(err)=>{console.log(err)})
-           
-          
-         }
-      });
+      .catch(err => {Umethod==="PUT" ? errorResponse(err,failure) : error403(err,failure,Uurl, Umethod, data,success);});
   } else {
     instance.request()
       .then(resp => validResponse(resp, success))
@@ -55,8 +43,17 @@ function process(success, failure, Uurl, Umethod, data) {
   }
 }
 
+let error403 =function(err,failure,Uurl, Umethod, data,success){
+  console.log(err.response.status);
+  if (err.response.status===403)
+   { /*When App User Token Access The new Resource That Time 403 Error Comeing So We sloved By Using Refresh Token....here i calling Refresh Method Which Get New Access Token And Set New App User 
+    Access Token Then we are Calling Again This Method For Creating label.*/
+     new LoginApi().refresh(()=>{process(success,failure,Uurl,Umethod,data)},(err)=>{console.log(err)})
+   }else{errorResponse(err, failure)}
+}
+
 let validResponse = function(resp, successMethod) {
-  console.log("Response: ", resp.data);
+  // console.log("Response: ", resp.data);
   if (successMethod != null) {
     successMethod(resp.data);
   }

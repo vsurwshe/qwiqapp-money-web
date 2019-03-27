@@ -44,7 +44,7 @@ class Lables extends Component {
   }
   //this method set Profile Id
   setProfileId=(id)=>{
-    console.log(id);
+    // console.log(id);
     this.setState({profileId:id})
     this.getLabels(this.state.show);
   }
@@ -78,7 +78,6 @@ class Lables extends Component {
   };
   //this method toggel Lables tab
   toggleAccordion=(tab)=> {
-    console.log(tab);
     const prevState = this.state.accordion;
     const state = prevState.map((x, index) => tab === index ? !x : false);
     this.setState({accordion: state});
@@ -93,8 +92,6 @@ class Lables extends Component {
   getLabels=(value)=>{
     new LabelApi().getSublabels(this.successCall, this.errorCall,this.state.profileId,value);
   }
-
- 
 
   render() {
    const { labels,viewLabelRequest, createLabel,updateLabel,id,name,notes,version,deleteLabel, visible,profileId} = this.state
@@ -151,7 +148,7 @@ class Lables extends Component {
   }
   //Show the Single Label 
   loadSingleLable=(labels,ukey)=>{
-    return (<div className="animated fadeIn">
+    return (<div key={ukey} className="animated fadeIn">
       <Avatar name={labels.name.charAt(0)} size="40" round={true} onClick={() => this.toggleAccordion(ukey)} key={labels.id} /> {labels.name}
       <FaTrashAlt onClick={() => { this.setState({ id: labels.id }); this.toggleDanger(); }} className="float-right" style={{ marginLeft: "20px", color: 'red', marginTop: "15px" }} />
       <FaPen size={20} className="float-right" style={{ marginLeft: "20px", color: '#4385ef', marginTop: "15px" }} onClick={() => { this.updateLabel(labels.id, labels.name, labels.notes, labels.version) }} />
@@ -159,7 +156,7 @@ class Lables extends Component {
       <Container>
         <Collapse isOpen={this.state.accordion[ukey]}>
           { Array.isArray(labels.subLabels) ? labels.subLabels.map(lable=>{
-            return( <div><Avatar name={lable.name.charAt(0)} size="40" round={true} key={labels.id} />&nbsp;&nbsp;{lable.name}  <hr /></div>)
+            return( <div key={labels.id}><Avatar  name={lable.name.charAt(0)} size="40" round={true}  />&nbsp;&nbsp;{lable.name}  <hr /></div>)
           }) :""} 
          </Collapse>
       </Container>
