@@ -5,17 +5,18 @@ class DeleteCategory extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      pId: this.props.pid,
-      cId: this.props.cid,
+      profileId: this.props.pid,
+      categoryId: this.props.cid,
       categoryDeleted: false,
       color: "",
       content: ""
     };
   }
+
   componentDidMount = () => {
-    alert(this.state.pId)
-    new CategoryApi().deleteCategory(this.successCall, this.errorCall,this.state.pId, this.state.cId );
+    new CategoryApi().deleteCategory(this.successCall, this.errorCall,this.state.profileId, this.state.categoryId );
   };
+
   successCall = () => {
     this.setState({ categoryDeleted: true, content: "Category Deleted Successfully !!" });
   };
@@ -26,10 +27,7 @@ class DeleteCategory extends Component {
   };
 
   callAlertTimer = (color, content) => {
-    this.setState({
-      color: color,
-      content: content
-    });
+    this.setState({color: color,content: content});
     setTimeout(() => {
       this.setState({ color: "" });
     }, 5500);
@@ -43,36 +41,30 @@ class DeleteCategory extends Component {
       return <div>{this.loadDeleting()}</div>
     }
   }
-  //This Method called After Deleted Category
+
+  //This Method called After Deleting Category
   loadDeleteMessage=(content)=>{
     return(
-    <div className="animated fadeIn">
-    <Card>
-      <CardHeader>
-        <strong>Category</strong>
-      </CardHeader>
-      <center style={{paddingTop:'20px'}}>
-        <h5><b>{content}</b><br /> <br />
-          <a href="/listCategories">View Categories </a></h5>
-      </center>
-    </Card>
-  </div>)
+      <div className="animated fadeIn">
+        <Card>
+          <CardHeader><strong>Category</strong></CardHeader>
+          <center style={{paddingTop:'20px'}}>
+            <h5><b>{content}</b><br /> <br />
+            <a href="/listCategories">View Categories </a></h5>
+          </center>
+        </Card>
+      </div>)
   }
 
-  //this Method Call Between Deleting Process.
+  //This Method while Deletion is in process.
   loadDeleting=()=>{
     return(
       <div className="animated fadeIn">
-      <Card>
-        <CardHeader>
-          <strong>Category</strong>
-        </CardHeader>
-          <CardBody>  
-          <h5><b>Deleting Category.....</b></h5>
-          </CardBody>
+        <Card>
+          <CardHeader><strong>Category</strong></CardHeader>
+          <CardBody><h5><b>Deleting Category.....</b></h5></CardBody>
         </Card>
-        </div>
-    )
+      </div>)
   }
 }
 

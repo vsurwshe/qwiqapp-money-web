@@ -1,12 +1,12 @@
 import React, { Component } from "react";
-import { Label, Button, Input, Card, CardBody, CardHeader,FormGroup,CardTitle,Dropdown,DropdownItem,DropdownMenu,DropdownToggle,Collapse } from "reactstrap";
+import { Label, Button, Input, Card, CardBody, CardHeader, FormGroup, CardTitle, Collapse } from "reactstrap";
 import Store from "../../data/Store";
 import CategoryApi from "../../services/CategoryApi";
 class AddCategory extends Component {
   constructor(props){
     super(props)
     this.state={
-      id:props.id,
+      profileId:props.id,
       categories : props.category,
       parentId: 0,
       name: '',
@@ -32,16 +32,16 @@ class AddCategory extends Component {
     e.preventDefault();
     let data = {}
     if(this.state.parentId){
-       data = { name: this.state.name, code: this.state.code, parentId: this.state.parentId};
+       data = { name: this.state.name, code: this.state.code, parentId: this.state.parentId };
     }
     else{
-       data = { name: this.state.name, color: this.state.color, code: this.state.code, type: this.state.type};
+       data = { name: this.state.name, color: this.state.color, code: this.state.code};
     }
-    new CategoryApi().createCategory(() => { this.setState({categoryCreated: true }); }, this.errorCall, this.state.id, data);
+    new CategoryApi().createCategory(() => { this.setState({categoryCreated: true }); }, this.errorCall, this.state.profileId, data);
   };
 
   errorCall = err => {
-    alert("Category not Added")
+   console.log("Category not Added")
   };
 
   toggle =() =>{
@@ -61,71 +61,66 @@ class AddCategory extends Component {
     const align = { textAlign: "left" }
     const {name,color,code}=this.state
     return(
-        <div style={{ paddingTop: 50 }} className="animated fadeIn">
-            <center>
-                <Card style={{ width: 400, border: 0 }}>
-                <CardBody>
-                    <center>
-                    <CardTitle style={{ color: "teal" }}> CREATE CATEGORY  </CardTitle> <br />
-                    
-                    <FormGroup style={align}>
-                        <Label for="Name">Category Name </Label>
-                        <Input name="name" type="text" placeholder="Category" value={name} onChange={e => this.handleInput(e)}  />
-                    </FormGroup>
-                    <FormGroup style={align}>
-                        <Label style={{ align }} for="color">Color </Label>
-                        <Input name="color" type="color" value={color} onChange={e => { this.handleInput(e) }}/>
-                    </FormGroup>
-                    <FormGroup style={align}>
-                        <Label for="code">Code </Label>
-                        <Input name="code" type="text" placeholder="Your code" onChange={e => { this.handleInput(e)}} onKeyPress = {this.handleEnter} value={code} />
-                    </FormGroup>
-                    <FormGroup style={align}>
-                        <Label for="type">Type </Label>
-                        <Input name="type" type="select" onChange={e => { this.handleInput(e)}}>
-                            <option>Expense_Payable</option>
-                            <option>Income_Receivable</option>
-                        </Input>
-                    </FormGroup>
+      <div style={{ paddingTop: 50 }} className="animated fadeIn">
+        <center>
+          <Card style={{ width: 400, border: 0 }}>
+            <CardBody>
+              <center>
+                <CardTitle style={{ color: "teal" }}> CREATE CATEGORY  </CardTitle> <br />
+                  <FormGroup style={align}>
+                    <Label for="Name">Category Name </Label>
+                    <Input name="name" type="text" placeholder="Category" value={name} onChange={e => this.handleInput(e)}  />
+                  </FormGroup>
+                  <FormGroup style={align}>
+                    <Label style={{ align }} for="color">Color </Label>
+                    <Input name="color" type="color" value={color} onChange={e => { this.handleInput(e) }}/>
+                  </FormGroup>
+                  {/* <FormGroup style={align}>
+                    <Label for="code">Code </Label>
+                    <Input name="code" type="text" placeholder="Your code" onChange={e => { this.handleInput(e)}} onKeyPress = {this.handleEnter} value={code} />
+                  </FormGroup> */}
+                  {/* <FormGroup style={align}>
+                    <Label for="type">Type </Label>
+                    <Input name="type" type="select" onChange={e => { this.handleInput(e)}}>
+                        <option style={{backgroundColor:'#EF5753'}}>Expense_Payable</option>
+                        <option>Income_Receivable</option>
+                    </Input>
+                  </FormGroup> */}
+                  <FormGroup>
+                    <Input name="check" type="checkbox" onClick={this.toggle}/><Label for="mark">Make this as SubCategory </Label>
+                  </FormGroup>
+                  <Collapse isOpen={this.state.collapse}>
                     <FormGroup>
-                        <Input name="check" type="checkbox" onClick={this.toggle}/><Label for="mark">Make this as SubCategory </Label>
+                      <Input type="select" name="parentId" id="exampleSelect" onChange={e => { this.handleInput(e)}}>
+                        {this.state.categories.map((category) => { return <option value={category.id}>{category.name}</option> })}
+                      </Input>
                     </FormGroup>
-                    <Collapse isOpen={this.state.collapse}>
-                          <FormGroup>
-                          <Input type="select" name="parentId" id="exampleSelect" onChange={e => { this.handleInput(e)}}>
-                            {this.state.categories.map((category) => { return <option value={category.id}>{category.name}</option> })}
-                          </Input>
-                          </FormGroup>
-                    </Collapse>
-                    </center>
-                    <center>
-                    <Button color="info" onClick={this.handleSubmit}> Add </Button>&nbsp;&nbsp;&nbsp;
-                    <a href="/listCategories" style={{textDecoration:'none'}}> <Button active  color="light" aria-pressed="true">Cancel</Button></a>
-                    <CardBody>
-                    </CardBody>
-                    </center>
+                  </Collapse>
+              </center>
+              <center>
+                <Button color="info" onClick={this.handleSubmit}> Add </Button>&nbsp;&nbsp;&nbsp;
+                <a href="/listCategories" style={{textDecoration:'none'}}> <Button active  color="light" aria-pressed="true">Cancel</Button></a>
+                <CardBody>
                 </CardBody>
-                </Card>
-            </center>
-        </div>
-    );
+              </center>
+            </CardBody>
+          </Card>
+        </center>
+      </div>)
   }
 
-  //this method calls after Successful Creation Ofcategory
+  //This method calls after Successful Creation Of Category
   loadAddedMessage=()=>{
     return(
       <div className="animated fadeIn">
           <Card>
-            <CardHeader>
-              <strong>Category</strong>
-            </CardHeader>
-          <center style={{paddingTop:'20px'}}>
-            <h5><b>Category Added Successfully !!</b> <br /> <br />
+            <CardHeader><strong>Category</strong></CardHeader>
+            <center style={{paddingTop:'20px'}}>
+              <h5><b>Category Added Successfully !!</b> <br /> <br />
               <b><a href="/listCategories">ViewCategories</a></b></h5>
-          </center>
-        </Card>
-        </div>
-    )
+            </center>
+          </Card>
+      </div>)
   }
 }
 

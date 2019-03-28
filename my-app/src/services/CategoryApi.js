@@ -1,6 +1,7 @@
 import Axios from "axios";
 import Config from "../data/Config";
 import Store from "../data/Store";
+import LoginApi from './LoginApi'
 class CategoryApi {
   createCategory(success, failure, pid,data) {
     process(success, failure, "/profile/" + pid + "/categories", "POST", data);
@@ -9,9 +10,10 @@ class CategoryApi {
     process(success, failure, "/profile/" + pid + "/categories?subcategories=true" , "GET");
   }
 
-  getCategoriesById(success, failure, uid) {
-    process(success, failure, "/profile/" + uid, "GET");
+  getCategoriesById(success, failure, pid,cid) {
+    process(success, failure, "/profile/" + pid + "/categories/" + cid, "GET");
   }
+
   updateCategory(success, failure, data, uid,cid) {
     process(success, failure, "/profile/" + uid + "/categories/" + cid, "PUT", data);
   }
@@ -31,8 +33,11 @@ function process(success, failure, Uurl, Umethod, data) {
       .then(resp => validResponse(resp, success))
       .catch(error => {
        console.log(error.response.status);
-        if (error.response.status)
-          errorResponse("Sorry can't create Category!", failure);
+        if (error.response.status === 403){
+          // errorResponse("Sorry can't create Category!", failure);
+          console.log("Error with Token")
+          new LoginApi().refresh(()=>process(success,failure,Uurl,Umethod,data),()=>console.log("Error calling refresh Token"))
+        }
       });
   } else {
     let insta = createInstance(Uurl, Umethod);
