@@ -114,17 +114,19 @@ class Profiles extends Component {
   }
   //if one or more profile is there then this method Call
   loadShowProfile = (viewProfileRequest, visible, profiles) => {
-    return (<div className="animated fadeIn">
-        <Card>
-          <CardHeader>
-            <strong>Profile</strong>
-          </CardHeader>
-          <CardBody>
-            <h6>
-              <Alert isOpen={visible} color="danger">Internal Server Error</Alert>
-            </h6>
-            <Col sm="12" md={{ size: 5, offset: 4 }}>
-              <Row>
+    return (
+    <div className="animated fadeIn">
+      <Card>
+        <CardHeader>
+          <strong>Profile</strong>
+        </CardHeader>
+        <CardBody>
+          <h6>
+            <Alert isOpen={visible} color="danger">Internal Server Error</Alert>
+          </h6>
+          <Col sm="12"  md={{ size: 6, offset: 3 }}>
+            <Row>
+              <CardBody>
                 {profiles.map(profiles => {
                   return this.loadSingleProfile(profiles, viewProfileRequest);
                 })}

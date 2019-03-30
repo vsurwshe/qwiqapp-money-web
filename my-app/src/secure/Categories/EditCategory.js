@@ -81,7 +81,7 @@ class EditCategory extends Component {
           <Alert color="">{content}</Alert>
           <h5><b>EDIT CATEGORY</b></h5><br/>
           <FormGroup>
-            <Col sm="6">
+            <Col sm="12" md={{ size: 5, offset: 1.5 }}>
               <Input type="text" name="cName" value={cName} style={{fontWeight:'bold',color:'#000000'}} autoFocus={true} onChange={e => { this.setState({ cName: e.target.value }) }}/>                 
               <br />
               <Input name="color" type="color" value={color} style={{}} onChange={e => { this.handleInput(e) }}/><br/>

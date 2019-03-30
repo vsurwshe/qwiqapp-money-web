@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Label, Button, Input, Card, CardBody, CardHeader, FormGroup, CardTitle, Collapse } from "reactstrap";
+import { Label, Button, Input, Card, CardBody, CardHeader, FormGroup, CardTitle, Collapse,Col, Row } from "reactstrap";
 import Store from "../../data/Store";
 import CategoryApi from "../../services/CategoryApi";
 class AddCategory extends Component {
@@ -59,21 +59,30 @@ class AddCategory extends Component {
 
   loadAddingCategory=()=>{
     const align = { textAlign: "left" }
-    const {name,color,code}=this.state
+    const {name,color}=this.state
     return(
-      <div style={{ paddingTop: 50 }} className="animated fadeIn">
+      <div className="animated fadeIn">
         <center>
-          <Card style={{ width: 400, border: 0 }}>
-            <CardBody>
-              <center>
+          <Card >
+            <CardHeader><strong>Category</strong></CardHeader>
+             <CardBody>
+               <center> 
                 <CardTitle style={{ color: "teal" }}> CREATE CATEGORY  </CardTitle> <br />
-                  <FormGroup style={align}>
+                <Col sm="12" md={{ size: 5, offset: 3 }}>
+                  <Row>
+                  <FormGroup style={{align}}>
                     <Label for="Name">Category Name </Label>
-                    <Input name="name" type="text" placeholder="Category" value={name} onChange={e => this.handleInput(e)}  />
-                  </FormGroup>
-                  <FormGroup style={align}>
+                    <Input name="name" type="text" placeholder="Category" value={name} onChange={e => this.handleInput(e)}  /><br/>
                     <Label style={{ align }} for="color">Color </Label>
-                    <Input name="color" type="color" value={color} onChange={e => { this.handleInput(e) }}/>
+                    <Input name="color" type="color" value={color} onChange={e => { this.handleInput(e) }}/><br/>
+                    <Input name="check" type="checkbox" onClick={this.toggle}/><Label for="mark">Make this as SubCategory </Label><br/>
+                    <Collapse isOpen={this.state.collapse}>
+                    <FormGroup>
+                      <Input type="select" name="parentId" id="exampleSelect" onChange={e => { this.handleInput(e)}}>
+                        {this.state.categories.map((category) => { return <option value={category.id}>{category.name}</option> })}
+                      </Input>
+                    </FormGroup>
+                  </Collapse>
                   </FormGroup>
                   {/* <FormGroup style={align}>
                     <Label for="code">Code </Label>
@@ -86,22 +95,13 @@ class AddCategory extends Component {
                         <option>Income_Receivable</option>
                     </Input>
                   </FormGroup> */}
-                  <FormGroup>
-                    <Input name="check" type="checkbox" onClick={this.toggle}/><Label for="mark">Make this as SubCategory </Label>
-                  </FormGroup>
-                  <Collapse isOpen={this.state.collapse}>
-                    <FormGroup>
-                      <Input type="select" name="parentId" id="exampleSelect" onChange={e => { this.handleInput(e)}}>
-                        {this.state.categories.map((category) => { return <option value={category.id}>{category.name}</option> })}
-                      </Input>
-                    </FormGroup>
-                  </Collapse>
+                  
+                  </Row>
+                  </Col>
               </center>
               <center>
                 <Button color="info" onClick={this.handleSubmit}> Add </Button>&nbsp;&nbsp;&nbsp;
                 <a href="/listCategories" style={{textDecoration:'none'}}> <Button active  color="light" aria-pressed="true">Cancel</Button></a>
-                <CardBody>
-                </CardBody>
               </center>
             </CardBody>
           </Card>

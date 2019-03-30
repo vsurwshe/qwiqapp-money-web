@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Card, CardHeader, CardBody, Button, Col, Row, Container, Alert, Modal, ModalHeader, ModalBody, ModalFooter, Collapse} from 'reactstrap';
 import Avatar from 'react-avatar';
-import { FaPen, FaTrashAlt } from 'react-icons/fa';
+import { FaPen, FaTrashAlt, FaAngleDown } from 'react-icons/fa';
 import CategoryApi from "../../services/CategoryApi";
 import AddCategory from "./AddCategory";
 import EditCategory from "./EditCategory";
@@ -23,6 +23,7 @@ class Categories extends Component {
       toggle :false,
       accordion:[],
       danger: false,
+      showSubCategories:false,
     };
   }
 
@@ -53,7 +54,8 @@ class Categories extends Component {
   setProfielId=(id)=>{
     console.log(id);
     this.setState({profileId:id});
-    new CategoryApi().getCategories(this.successCall, this.errorCall, this.state.profileId );
+    // new CategoryApi().getCategories(this.successCall, this.errorCall, this.state.profileId );
+    this.showCategories(this.state.showSubCategories)
   }
 
   //Method that shows API's Error Call
@@ -77,7 +79,20 @@ class Categories extends Component {
   toggleDanger = () => {
     this.setState({danger: !this.state.danger});
   }
+
+  toggleShow = () =>{
+    this.setState({ showSubCategories: !this.state.showSubCategories  });
+    this.showCategories(!this.state.showSubCategories)
+  }
   
+  showCategories = (showSubCategories) =>{
+    if(showSubCategories){
+      new CategoryApi().getSubCategories(this.successCall,this.errorCall,this.state.profileId,showSubCategories)
+    }else{
+      new CategoryApi().getCategories(this.successCall,this.errorCall,this.state.profileId)
+    }
+  }
+
   //Method handle accoding tab variable
   toggleAccordion=(tab)=>{
     console.log(tab);
@@ -106,12 +121,15 @@ class Categories extends Component {
         <Card>
           <CardHeader> <strong>CATEGORIES : {this.state.categories.length}</strong> </CardHeader>
           <CardBody>
-            <Col sm="6">
+            <Col sm="12" md={{ size: 5, offset: 3 }}>
               <Row>
-                <CardBody>
+                <b style={{color:'#000080',fontSize:16}}>Enable SubCategories &nbsp;&nbsp;</b><label  class="switch switch-3d switch-primary" >
+                <input type="checkbox" class="switch-input" onClick={this.toggleShow} /><span class="switch-slider" />
+                </label>
+                <Container>
                   <Container><Avatar className="float-right" name="+" color="blue" size="50" round={true} onClick={this.callAddCategory} /></Container><br/><br/><br/>
                   {this.state.categories.map((category, key) => {return this.loadCategory(this.state.categories[key],key);})} 
-                </CardBody>
+                </Container>
               </Row>
             </Col>
           </CardBody>
@@ -122,14 +140,15 @@ class Categories extends Component {
   loadCategory=(category,uKey)=>{
     return( 
       <div className="animated fadeIn" key={uKey}>
-        <Avatar name={category.name.charAt(0)} color = {category.color} size="40" square={true} onClick={()=>{this.toggleAccordion(uKey)}} />&nbsp; {category.name}
+        <Avatar name={category.name.charAt(0)} color = {category.color} size="40" square={true} />&nbsp; {category.name}
+        {this.state.showSubCategories?<FaAngleDown onClick={()=>{this.toggleAccordion(uKey)}}/>:''}
         <FaTrashAlt onClick={() => { this.setState({ categoryId: category.id }); this.toggleDanger() }} className="float-right" style={{ marginLeft: "20px", color: 'red', marginTop: "15px"}} />
         <FaPen size={16} className="float-right" style={{ marginLeft: "20px", color: '#4385ef', marginTop: "15px" }} onClick={()=>this.updateCategory(category)} /><br />
         <Collapse isOpen={this.state.accordion[uKey]}>
           <Container style={{marginLeft:'30px'}}>
-            {category.subCategories != null ? category.subCategories.map(subCategory=>{return <p key={subCategory.id} onClick={()=>this.updateCategory(subCategory)}><Avatar name={subCategory.name.charAt(0)} color={subCategory.color} size="25" round={true} /><b>{subCategory.name}</b></p>}):''}
+            {category.subCategories != null ? category.subCategories.map(subCategory=>{return <p key={subCategory.id} onClick={()=>this.updateCategory(subCategory)}><Avatar name={subCategory.name.charAt(0)} color={subCategory.color} size="25" round={true} /><b>{subCategory.name}</b></p>}):<p style={{color:'red'}}>No SubCategories for this Category</p>}
           </Container>
-        </Collapse> <hr />  
+        </Collapse> <hr />
       </div>)
   }
 

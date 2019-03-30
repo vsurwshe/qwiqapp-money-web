@@ -7,7 +7,11 @@ class CategoryApi {
     process(success, failure, "/profile/" + pid + "/categories", "POST", data);
   }
   getCategories(success, failure ,pid) {
-    process(success, failure, "/profile/" + pid + "/categories?subcategories=true" , "GET");
+    process(success, failure, "/profile/" + pid + "/categories" , "GET");
+  }
+
+  getSubCategories(success, failure ,pid,show) {
+    process(success, failure, "/profile/" + pid + "/categories?subcategories=" + show, "GET");
   }
 
   getCategoriesById(success, failure, pid,cid) {
@@ -32,9 +36,8 @@ function process(success, failure, Uurl, Umethod, data) {
       .request({ data })
       .then(resp => validResponse(resp, success))
       .catch(error => {
-       console.log(error.response.status);
-        if (error.response.status === 403){
-          // errorResponse("Sorry can't create Category!", failure);
+       console.log("Token error=", error.response.status);
+        if (error.response.status === 403 || error.response.status === 401){
           console.log("Error with Token")
           new LoginApi().refresh(()=>process(success,failure,Uurl,Umethod,data),()=>console.log("Error calling refresh Token"))
         }
@@ -44,9 +47,15 @@ function process(success, failure, Uurl, Umethod, data) {
     insta
       .request()
       .then(resp => validResponse(resp, success))
-      .catch(err => errorResponse(err, failure));
+      .catch(err => {
+        if (err.response.status === 401 || err.response.status === 403){
+          console.log("Error with Token", err.response.status)
+          new LoginApi().refresh(()=>process(success,failure,Uurl,Umethod,data),()=>console.log("Error calling refresh Token"))
+        }
+        errorResponse(err, failure)
+      });
+      }
   }
-}
 
 let validResponse = function(resp, successMethod) {
   console.log("Response: ", resp.data);
