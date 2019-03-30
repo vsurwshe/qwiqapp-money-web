@@ -3,7 +3,7 @@ import { Container, Button, Card, CardBody, Col, Row, Alert, CardHeader,Collapse
 import CreateLabel from "./Createlabel";
 import Avatar from 'react-avatar';
 import { AppSwitch } from '@coreui/react'
-import { FaPen, FaTrashAlt ,FaPlusCircle } from 'react-icons/fa';
+import { FaPen, FaTrashAlt ,FaPlusCircle ,FaAngleDown} from 'react-icons/fa';
 import UpdateLabel from "./UpdateLabel";
 import DeleteLabel from "./DeleteLabel";
 import LabelApi from "../../services/LabelApi";
@@ -98,9 +98,9 @@ class Lables extends Component {
     if (labels.length === 0 && !createLabel) {
       return <div>{this.loadNotLabelProfile()}</div>
     } else if (createLabel) {
-      return (<Container> <CreateLabel pid={profileId} /> </Container>)
+      return ( <CreateLabel pid={profileId} />)
     }else if (updateLabel) {
-      return(<UpdateLabel id={id} name={name} notes={notes} pid={profileId} version={version} />)
+      return(<UpdateLabel pid={profileId} label={relable} lables={labels} />)
     }else if(deleteLabel) {
       return ( <DeleteLabel id={id}  pid={profileId}/> )
     }else{
@@ -125,41 +125,42 @@ class Lables extends Component {
   }
   //if one or more profile is there then this method Call
   loadShowLabel = (visible, labels) => {
-   return (<div className="animated fadeIn">
+    return (<div className="animated fadeIn">
       <Card>
         <CardHeader><strong>Label</strong></CardHeader>
         <CardBody>
           <h6><Alert isOpen={visible} color="danger">Internal Server Error</Alert></h6>
-          <Col sm="6">
-            <Row>
-              Show with Sub-Labels: <AppSwitch  className={'mx-1'} variant={'pill'} color={'danger'} onClick={()=>this.toggleSublabel()} label dataOn={'Yes'} dataOff={'No'}  />
+          <Col sm="12" md={{ size: 5, offset: 4 }}>
+            <Row >
+              Show with Sub-Labels: <AppSwitch className={'mx-1'} variant={'pill'} color={'danger'} onClick={() => this.toggleSublabel()} label dataOn={'Yes'} dataOff={'No'} /><br /><br />
               <Container >
-                {this.state.labels.map((labels, key) => {
-                  return this.loadSingleLable(this.state.labels[key],key);
-                  //  return <ViewLabel key={labels.id} labels={this.state.labels[key]} />
-                 })}
-                 <Label>Create More Label </Label> &nbsp;&nbsp;&nbsp; <FaPlusCircle size={30} onClick={this.callCreateLabel} />
-                </Container>
-             </Row>
+                {this.state.labels.map((labels, key) => { return this.loadSingleLable(this.state.labels[key], key); })}
+                <Label>Create More Label </Label> &nbsp;&nbsp;&nbsp; <FaPlusCircle size={30} onClick={this.callCreateLabel} />
+              </Container>
+            </Row>
           </Col>
         </CardBody>
       </Card>
     </div>)
+    
   }
   //Show the Single Label 
   loadSingleLable=(labels,ukey)=>{
     return (<div key={ukey} className="animated fadeIn">
-      <Avatar name={labels.name.charAt(0)} size="40" round={true} onClick={() => this.toggleAccordion(ukey)} key={labels.id} /> {labels.name}
-      <FaTrashAlt onClick={() => { this.setState({ id: labels.id }); this.toggleDanger(); }} className="float-right" style={{ marginLeft: "20px", color: 'red', marginTop: "15px" }} />
-      <FaPen size={20} className="float-right" style={{ marginLeft: "20px", color: '#4385ef', marginTop: "15px" }} onClick={() => { this.updateLabel(labels.id, labels.name, labels.notes, labels.version) }} />
-      <hr />
-      <Container>
-        <Collapse isOpen={this.state.accordion[ukey]}>
-          { Array.isArray(labels.subLabels) ? labels.subLabels.map(lable=>{
-            return( <div key={labels.id}><Avatar  name={lable.name.charAt(0)} size="40" round={true}  />&nbsp;&nbsp;{lable.name}  <hr /></div>)
-          }) :""} 
-         </Collapse>
-      </Container>
+      <Avatar name={labels.name.charAt(0)} color={labels.color} size="40" square={true} key={labels.id} /> {labels.name}
+      {this.state.show && Array.isArray(labels.subLabels) ? <FaAngleDown size={20} style={{ float: "right" }} onClick={() => this.toggleAccordion(ukey)} /> : ''}
+      <FaTrashAlt size={20} onClick={() => { this.setState({ id: labels.id }); this.toggleDanger(); }} style={{ color: 'red', float: "right", marginRight: 15 }} />
+      <FaPen size={20} style={{ color: '#4385ef', float: "right", marginRight: 15 }} onClick={() => { this.updateLabel(labels) }} />
+      <div style={{ padding: 5 }} />
+      <Collapse isOpen={this.state.accordion[ukey]}>
+        {Array.isArray(labels.subLabels) ? labels.subLabels.map(ulable => {
+          return (<div key={ulable.id}>
+            <Avatar name={ulable.name.charAt(0)} color={ulable.color} size="25" round={true} />&nbsp;&nbsp;{ulable.name}
+            <FaTrashAlt onClick={() => { this.setState({ id: ulable.id }); this.toggleDanger(); }} className="float-right" style={{ color: 'red', float: "right", marginRight: 15 }} />
+            <FaPen size={12} className="float-right" style={{ color: '#4385ef', float: "right", marginRight: 15 }} onClick={() => { this.updateLabel(ulable) }} />
+            <hr /></div>)
+        }) : ""}
+      </Collapse>
     </div>)
   }
   //this method call the delete model

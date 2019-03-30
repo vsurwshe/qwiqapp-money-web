@@ -1,6 +1,7 @@
 import Axios from "axios";
 import Config from "../data/Config";
 import Store from "../data/Store";
+import LoginApi from "./LoginApi";
 class ProfileApi {
   createProfile(success, failure, data) {
     process(success, failure, "/profiles/", "POST", data);
@@ -24,23 +25,24 @@ class ProfileApi {
 export default ProfileApi;
 
 function process(success, failure, Uurl, Umethod, data) {
-  let insta = createInstance(Uurl, Umethod);
+  let HTTP = httpCall(Uurl, Umethod);
   if (Umethod === "PUT" || Umethod === "POST") {
-    
-    insta
-      .request({ data })
+    HTTP.request({ data })
       .then(resp => validResponse(resp, success))
-      .catch(err => {
-        console.log(err.response.status);
-        if (err.response.status)
-          errorResponse("Sorry can't create Profile!", failure);
-      });
+      .catch(err => {AccessTokenError(err,failure, Uurl, Umethod, data,success)});
   } else {
-    insta
-      .request()
+    HTTP.request()
       .then(resp => validResponse(resp, success))
-      .catch(err => errorResponse(err, failure));
+      .catch(err => { AccessTokenError(err,failure, Uurl, Umethod, data,success)});
   }
+}
+
+//this method slove the Exprie Token Problem.
+let AccessTokenError =function(err,failure,Uurl, Umethod, data,success){
+  console.log(err.response.status);
+  if (err.response.status===403 || err.response.status===401)
+  {new LoginApi().refresh(()=>{process(success,failure,Uurl,Umethod,data)},(err)=>{console.log(err)})
+  }else{errorResponse(err, failure)}
 }
 
 let validResponse = function(resp, successMethod) {
@@ -57,7 +59,7 @@ let errorResponse = function(error, failure) {
   }
 };
 
-function createInstance(Uurl, Umethod) {
+function httpCall(Uurl, Umethod) {
   let instance = Axios.create({
     baseURL: Config.cloudBaseURL,
     method: Umethod,

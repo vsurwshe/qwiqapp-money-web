@@ -12,6 +12,10 @@ class LabelApi {
   getlabels(success, failure,pid) {
     process(success, failure, pid+"/labels", "GET");
   }
+  //This Method Get All labels
+  getlabelsById(success, failure,pid,lid) {
+    process(success, failure, pid+"/labels/"+lid, "GET");
+  }
   //This Method Get All Sub-labels
   getSublabels(success, failure,pid,value) {
     process(success, failure, pid+"/labels?sublabels="+value+"", "GET");
@@ -30,26 +34,25 @@ class LabelApi {
 export default LabelApi;
 //this is 
 function process(success, failure, Uurl, Umethod, data) {
-  let instance = createInstance(Uurl, Umethod);
+  let HTTP = httpCall(Uurl, Umethod);
   if (Umethod === "PUT" || Umethod === "POST") {
-    console.log(data)
-     instance.request({ data })
+      HTTP.request({ data })
       .then(resp => validResponse(resp, success))
-      .catch(err => {Umethod==="PUT" ? errorResponse(err,failure) : error403(err,failure,Uurl, Umethod, data,success);});
+      .catch(err => {AccessTokenError(err,failure,Uurl, Umethod, data,success)});
   } else {
-    instance.request()
+    HTTP.request()
       .then(resp => validResponse(resp, success))
-      .catch(err => errorResponse(err, failure));
+      .catch(err => {AccessTokenError(err,failure,Uurl, Umethod, data,success)});
   }
 }
 
-let error403 =function(err,failure,Uurl, Umethod, data,success){
-  console.log(err.response.status);
-  if (err.response.status===403)
-   { /*When App User Token Access The new Resource That Time 403 Error Comeing So We sloved By Using Refresh Token....here i calling Refresh Method Which Get New Access Token And Set New App User 
-    Access Token Then we are Calling Again This Method For Creating label.*/
-     new LoginApi().refresh(()=>{process(success,failure,Uurl,Umethod,data)},(err)=>{console.log(err)})
-   }else{errorResponse(err, failure)}
+//this method slove the Exprie Token Problem.
+let AccessTokenError =function(err,failure,Uurl, Umethod, data,success){
+  if(err.request.status=== 0)
+  {errorResponse(err, failure)
+  }else if (err.response.status===403 || err.response.status===401)
+  {new LoginApi().refresh(()=>{process(success,failure,Uurl,Umethod,data)},(err)=>{console.log(err)})
+  }else{errorResponse(err, failure)}
 }
 
 let validResponse = function(resp, successMethod) {
@@ -66,7 +69,7 @@ let errorResponse = function(error, failure) {
   }
 };
 
-function createInstance(Uurl, Umethod) {
+function httpCall(Uurl, Umethod) {
   let instance = Axios.create({
     baseURL: Config.labelBaseURL,
     method: Umethod,

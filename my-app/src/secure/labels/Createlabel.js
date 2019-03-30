@@ -1,6 +1,5 @@
 import React, { Component } from "react";
-import { Alert, Button, Input, Card, CardBody, CardHeader,FormGroup,Col,Collapse,Label  } from "reactstrap";
-import { AppSwitch } from '@coreui/react'
+import { Alert, Button, Input, Card, CardHeader,FormGroup,Col,Collapse,Label  } from "reactstrap";
 import LabelApi from "../../services/LabelApi";
 class CreateLable extends Component {
   constructor(props){
@@ -55,54 +54,52 @@ class CreateLable extends Component {
   }
   
   render() {
+    const { color, content} = this.state;
     if (!this.state.labelCreated) {
-      return <div>{this.loadCreatingProfile()}</div>
+      return <div>{this.loadCreatingLable(color,content)}</div>
     } else {
       return <div>{this.loadCreatedMessage()}</div>
     }
   }
   //this Method Call when Label Creation in porceess.
-  loadCreatingProfile=()=>{
-    return(<div className="animated fadeIn">
-          <Card>
-            <CardHeader>
-              <strong>Label</strong>
-            </CardHeader>
-            <Alert color={this.state.color}>{this.state.content}</Alert>
-            <CardBody>
-              <center>
-              <FormGroup>
-                <h5><b>CREATE LABEL</b></h5>
-                 <Col sm="6">
-                 <Input name="name" value={this.state.name} type="text" placeholder="Enter Label name" autoFocus={true} onChange={e => this.handleInput(e)} /><br/>
-                 <Input name="notes" value={this.state.notes} type="text" placeholder="Enter Label notes" autoFocus={true} onChange={e => this.handleInput(e)} /><br/>
-                 <FormGroup check className="checkbox">
-                        <Label check className="form-check-label" htmlFor="checkbox1">Enable this for Make as Sub-Label</Label><br/>
-                        <AppSwitch className={'mx-1'} color={'success'} onClick={this.toggle} outline label dataOn={'Yes'} dataOff={'No'}  />
-                </FormGroup><br />
-                {this.loadCollapse()}
-                </Col><br />
-                <Button color="info" disabled={!this.state.name || !this.state.notes } onClick={e => this.handleSubmit(e)} > Save label </Button>
-                <a href="/label/labels" style={{textDecoration:'none'}}> <Button active  color="light" aria-pressed="true">Cancel</Button></a>
-                </FormGroup>
-              </center>
-            </CardBody>
-          </Card>
-        </div>);
+  loadCreatingLable=(color,content)=>{
+    return (<div className="animated fadeIn" >
+      <Card>
+        <CardHeader>
+          <strong>Label</strong>
+        </CardHeader>
+        <Col sm="12" md={{ size: 5, offset: 4 }}>
+          <Alert color={color}>{content}</Alert>
+          <h5><b>CREATE LABEL</b></h5>
+          <FormGroup>
+            <Input name="name" value={this.state.name} type="text" placeholder="Enter Label name" autoFocus={true} onChange={e => this.handleInput(e)} /><br />
+            <Input name="notes" value={this.state.notes} type="text" placeholder="Enter Label notes" autoFocus={true} onChange={e => this.handleInput(e)} /><br />
+            <Input name="ucolor" value={this.state.ucolor} type="color" placeholder="Enter Label notes" autoFocus={true} onChange={e => this.handleInput(e)} /><br />
+            <FormGroup check className="checkbox">
+              <Input className="form-check-input" type="checkbox" onClick={this.toggle} value=" " />
+              <Label check className="form-check-label" htmlFor="checkbox1"> &nbsp;Enable this for Make as Sub-Label</Label>
+            </FormGroup><br />
+            {this.loadCollapse()}
+            <Button color="info" disabled={!this.state.name} onClick={e => this.handleSubmit(e)} > Save label </Button>
+            <a href="/label/labels" style={{ textDecoration: 'none' }}> <Button active color="light" aria-pressed="true">Cancel</Button></a>
+          </FormGroup>
+        </Col>
+      </Card>
+    </div>);
   }
   //this method calls after Successful Creation Of Label
   loadCreatedMessage=()=>{
-    return(<div className="animated fadeIn">
-          <Card>
-            <CardHeader>
-              <strong>Label</strong>
-            </CardHeader>
-          <center style={{paddingTop:'20px'}}>
-            <h5><b>Label Created Successfully !!</b> <br /> <br />
-              <b><a href="/label/labels">View Lables</a></b></h5>
-          </center>
-        </Card>
-        </div>)
+    return (<div className="animated fadeIn">
+      <Card>
+        <CardHeader>
+          <strong>Label</strong>
+        </CardHeader>
+        <center style={{ paddingTop: '20px' }}>
+          <h5><b>Label Created Successfully !!</b> <br /> <br />
+            <b><a href="/label/labels">View Lables</a></b></h5>
+        </center>
+      </Card>
+    </div>)
   }
   //This Method Called When Sublables Makes Enable true.
   loadCollapse=()=>{
