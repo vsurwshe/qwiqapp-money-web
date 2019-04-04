@@ -7,6 +7,7 @@ class ProfileApi {
     process(success, failure, "/profiles/", "POST", data);
   }
   getProfiles(success, failure) {
+    console.log("Calling Get Profiles");
     process(success, failure, "/profiles/", "GET");
   }
 
@@ -24,29 +25,29 @@ class ProfileApi {
 
 export default ProfileApi;
 
-function process(success, failure, Uurl, Umethod, data) {
+async function process(success, failure, Uurl, Umethod, data) {
   let HTTP = httpCall(Uurl, Umethod);
-  if (Umethod === "PUT" || Umethod === "POST") {
-    HTTP.request({ data })
-      .then(resp => validResponse(resp, success))
-      .catch(err => {AccessTokenError(err,failure, Uurl, Umethod, data,success)});
-  } else {
-    HTTP.request()
-      .then(resp => validResponse(resp, success))
-      .catch(err => { AccessTokenError(err,failure, Uurl, Umethod, data,success)});
-  }
+  let promise;
+    try{
+         data===null? promise=await HTTP.request(): promise=await HTTP.request({ data });
+         validResponse(promise, success)
+    }catch(err){ 
+      console.log(err);
+      AccessTokenError(err,failure,Uurl, Umethod, data,success);
+    }
 }
 
 //this method slove the Exprie Token Problem.
 let AccessTokenError =function(err,failure,Uurl, Umethod, data,success){
-  console.log(err.response.status);
-  if (err.response.status===403 || err.response.status===401)
-  {new LoginApi().refresh(()=>{process(success,failure,Uurl,Umethod,data)},(err)=>{console.log(err)})
+  if(err.request.status=== 0)
+  {errorResponse(err, failure)
+  }else if (err.response.status===403 || err.response.status===401)
+  {new LoginApi().refresh(()=>{process(success,failure,Uurl,Umethod,data)},errorResponse(err, failure))
   }else{errorResponse(err, failure)}
 }
 
 let validResponse = function(resp, successMethod) {
-  // console.log("Response: ", resp.data);
+  console.log("Profiles Response: ",resp.data)
   if (successMethod != null) {
     successMethod(resp.data);
   }

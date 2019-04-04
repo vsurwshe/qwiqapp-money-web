@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Alert, Button, Input, Card, CardHeader,FormGroup,Col,Collapse,Label  } from "reactstrap";
 import LabelApi from "../../services/LabelApi";
+import Lables from './Label';
 class CreateLable extends Component {
   constructor(props){
     super(props);
@@ -29,23 +30,23 @@ class CreateLable extends Component {
     this.setState({ [e.target.name]: e.target.value });
   };
   //this method handle the submition from user
-  handleSubmit = e => {
+ handleSubmit =async e => {
     e.preventDefault();
-    const data = { name: this.state.name,notes:this.state.notes,parentId:this.state.parentId };
-    new LabelApi().createLabel(this.successCreate,this.errorCall,this.state.profileId,data);
+    const data = {color:this.state.ucolor,name: this.state.name,notes:this.state.notes,parentId:this.state.parentId };
+    await new LabelApi().createLabel(this.successCreate,this.errorCall,this.state.profileId,data);
   };
   //this method call when lables created successfully
   successCreate=()=>{
-    this.setState({ labelCreated: true });
-    this.callAlertTimer("success", "New Label Created!!");
+     this.callAlertTimer("success", "New Label Created....");
   }
   //this handel the error response the when api calling
   errorCall = err => { this.callAlertTimer("danger", err);};
   //this method show the message wait some times
   callAlertTimer = (color, content) => {
     this.setState({ color: color, content: content });
-    setTimeout(() => {this.setState({ name: "", content: "", color: "" });
-    }, 2000);
+    setTimeout(() => {
+      this.setState({ name: "", content: "", color: "",labelCreated: true });
+     }, 2000);
   };
   //this method makes true or false for the collapse
   toggle=()=> {
@@ -55,12 +56,8 @@ class CreateLable extends Component {
   
   render() {
     const { color, content} = this.state;
-    if (!this.state.labelCreated) {
-      return <div>{this.loadCreatingLable(color,content)}</div>
-    } else {
-      return <div>{this.loadCreatedMessage()}</div>
+    return <div>{this.state.labelCreated?<Lables />:this.loadCreatingLable(color,content)}</div>
     }
-  }
   //this Method Call when Label Creation in porceess.
   loadCreatingLable=(color,content)=>{
     return (<div className="animated fadeIn" >
@@ -69,17 +66,19 @@ class CreateLable extends Component {
           <strong>Label</strong>
         </CardHeader>
         <Col sm="12" md={{ size: 5, offset: 4 }}>
+        <br/>
           <Alert color={color}>{content}</Alert>
           <h5><b>CREATE LABEL</b></h5>
           <FormGroup>
             <Input name="name" value={this.state.name} type="text" placeholder="Enter Label name" autoFocus={true} onChange={e => this.handleInput(e)} /><br />
             <Input name="notes" value={this.state.notes} type="text" placeholder="Enter Label notes" autoFocus={true} onChange={e => this.handleInput(e)} /><br />
-            <Input name="ucolor" value={this.state.ucolor} type="color" placeholder="Enter Label notes" autoFocus={true} onChange={e => this.handleInput(e)} /><br />
+            <Input name="ucolor" value={this.state.ucolor===""?'#000000':this.state.ucolor} type="color" placeholder="Enter Label notes" autoFocus={true} onChange={e => this.handleInput(e)} /><br />
             <FormGroup check className="checkbox">
               <Input className="form-check-input" type="checkbox" onClick={this.toggle} value=" " />
-              <Label check className="form-check-label" htmlFor="checkbox1"> &nbsp;Enable this for Make as Sub-Label</Label>
+              <Label check className="form-check-label" htmlFor="checkbox1"> &nbsp;Nest label under </Label>
             </FormGroup><br />
             {this.loadCollapse()}
+            <br />
             <Button color="info" disabled={!this.state.name} onClick={e => this.handleSubmit(e)} > Save label </Button>
             <a href="/label/labels" style={{ textDecoration: 'none' }}> <Button active color="light" aria-pressed="true">Cancel</Button></a>
           </FormGroup>
@@ -89,6 +88,7 @@ class CreateLable extends Component {
   }
   //this method calls after Successful Creation Of Label
   loadCreatedMessage=()=>{
+    
     return (<div className="animated fadeIn">
       <Card>
         <CardHeader>

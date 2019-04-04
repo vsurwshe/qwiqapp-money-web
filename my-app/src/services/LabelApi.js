@@ -5,12 +5,11 @@ import LoginApi from "./LoginApi";
 class LabelApi {
    //This Method Create label 
   createLabel(success, failure, pid,data) {
-    console.log(pid);
-    process(success, failure, pid+"/labels", "POST", data);
+    process(success, failure, pid+"/labels", "POST",pid, data);
   }
   //This Method Get All labels
   getlabels(success, failure,pid) {
-    process(success, failure, pid+"/labels", "GET");
+    Store.getLabels()===null? process(success, failure, pid+"/labels?sublabels=true", "GET"): success(Store.getLabels());
   }
   //This Method Get All labels
   getlabelsById(success, failure,pid,lid) {
@@ -18,32 +17,37 @@ class LabelApi {
   }
   //This Method Get All Sub-labels
   getSublabels(success, failure,pid,value) {
-    process(success, failure, pid+"/labels?sublabels="+value+"", "GET");
-  }
+    Store.getLabels()===null ||value==="True" ? process(success, failure, pid+"/labels?sublabels=true", "GET"): success(Store.getLabels());
+   }
   
   //This Method Update labels 
   updateLabel(success, failure, data, pid,lid) {
-    process(success, failure,pid+"/labels/"+lid, "PUT", data);
+    process(success, failure,pid+"/labels/"+lid, "PUT",pid, data);
   }
   //This Method Delete the lables
   deleteLabel(success, failure, pid,lid) {
-    process(success, failure, pid+"/labels/"+lid, "DELETE");
+    process(success, failure, pid+"/labels/"+lid, "DELETE",pid);
   }
 }
 
 export default LabelApi;
-//this is 
-function process(success, failure, Uurl, Umethod, data) {
+
+async function process(success, failure, Uurl, Umethod,uPid, data) {
   let HTTP = httpCall(Uurl, Umethod);
-  if (Umethod === "PUT" || Umethod === "POST") {
-      HTTP.request({ data })
-      .then(resp => validResponse(resp, success))
-      .catch(err => {AccessTokenError(err,failure,Uurl, Umethod, data,success)});
-  } else {
-    HTTP.request()
-      .then(resp => validResponse(resp, success))
-      .catch(err => {AccessTokenError(err,failure,Uurl, Umethod, data,success)});
-  }
+  let promise;
+    try {
+      data === null ? promise = await HTTP.request() : promise = await HTTP.request({ data });
+      if (Umethod === "GET") {
+        Store.storeLabels(promise.data);
+        validResponse(promise, success)
+      } else {
+        new LabelApi().getSublabels(success,failure,uPid,"True");
+        validResponse(promise, success)
+      }
+    } catch (err) {
+      console.log(err);
+      AccessTokenError(err, failure, Uurl, Umethod, data, success);
+    }
 }
 
 //this method slove the Exprie Token Problem.
@@ -51,19 +55,18 @@ let AccessTokenError =function(err,failure,Uurl, Umethod, data,success){
   if(err.request.status=== 0)
   {errorResponse(err, failure)
   }else if (err.response.status===403 || err.response.status===401)
-  {new LoginApi().refresh(()=>{process(success,failure,Uurl,Umethod,data)},(err)=>{console.log(err)})
+  {new LoginApi().refresh(()=>{process(success,failure,Uurl,Umethod,data)},errorResponse(err, failure))
   }else{errorResponse(err, failure)}
 }
 
 let validResponse = function(resp, successMethod) {
-  // console.log("Response: ", resp.data);
+  console.log("Response: ", resp.data);
   if (successMethod != null) {
     successMethod(resp.data);
   }
 };
 
 let errorResponse = function(error, failure) {
-  console.log("Error: ", error);
   if (failure != null) {
     failure(error);
   }

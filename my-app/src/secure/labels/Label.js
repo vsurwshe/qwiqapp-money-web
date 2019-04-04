@@ -1,8 +1,7 @@
 import React, { Component } from "react";
-import { Container, Button, Card, CardBody, Col, Row, Alert, CardHeader,Collapse,Label,Modal, ModalHeader, ModalBody, ModalFooter} from "reactstrap";
+import { Container, Button, Card, CardBody, Col, Row, Alert, CardHeader,Collapse,Label,Modal, ModalHeader, ModalBody, ModalFooter,Dropdown,DropdownToggle,DropdownMenu,DropdownItem} from "reactstrap";
 import CreateLabel from "./Createlabel";
 import Avatar from 'react-avatar';
-import { AppSwitch } from '@coreui/react'
 import { FaPen, FaTrashAlt ,FaPlusCircle ,FaAngleDown} from 'react-icons/fa';
 import UpdateLabel from "./UpdateLabel";
 import DeleteLabel from "./DeleteLabel";
@@ -27,7 +26,8 @@ class Lables extends Component {
       profileId:0,
       accordion: [],
       danger: false,
-      show:false,
+      show:true,
+      dropdownOpen:[]
     };
   }
   //this method get All Labels Realted That Profile
@@ -36,6 +36,7 @@ class Lables extends Component {
   }
   //this method seting Profile id 
   successProfileid=json=>{
+    console.log("successProfileid ",json)
     if (json === []) { this.setState({ profileId:'' })}
     else {
       const iterator = json.values();
@@ -46,23 +47,21 @@ class Lables extends Component {
   setProfileId=(id)=>{
     // console.log(id);
     this.setState({profileId:id})
-    this.getLabels(this.state.show);
+    this.getLabels();
   }
   //this method seting labels when api given successfull Response
   successCall = json => {
-  if (json === "Deleted Successfully") {
-    this.setState({ labels: [0] })
-  }else {
-    this.setState({ labels: json })
-    this.loadCollapse();}
+    if (json === "Deleted Successfully") {
+      this.setState({ labels: [0] })
+    } else {
+      this.setState({ labels: json })
+      this.loadCollapse();
+    }
   };
-
   errorCall = err => { this.setState({ visible: true }) }
-
   callCreateLabel = () => { this.setState({ createLabel: true })}
-
   loadCollapse=()=>{
-    this.state.labels.map(lables=>{return this.setState(prevState => ({accordion: [...prevState.accordion, false]}))});
+     this.state.labels.map(lables=>{return this.setState(prevState => ({accordion: [...prevState.accordion, false],dropdownOpen: [...prevState.dropdownOpen, false]}))});
   }
   //this toggle for Delete Model
   toggleDanger = () => {
@@ -87,10 +86,17 @@ class Lables extends Component {
     this.setState({show:!this.state.show});
     this.getLabels(!this.state.show);
   }
+  toggleDropDown=(tab)=> {
+    const prevState = this.state.dropdownOpen;
+    const state = prevState.map((x, index) => tab === index ? !x : false);
+    this.setState({dropdownOpen: state});
+  }
+
+
 
   //this is geting labels
-  getLabels=(value)=>{
-    new LabelApi().getSublabels(this.successCall, this.errorCall,this.state.profileId,value);
+  getLabels=()=>{
+      new LabelApi().getSublabels(this.successCall, this.errorCall,this.state.profileId);
   }
 
   render() {
@@ -125,16 +131,15 @@ class Lables extends Component {
   }
   //if one or more profile is there then this method Call
   loadShowLabel = (visible, labels) => {
-    return (<div className="animated fadeIn">
+     return (<div className="animated fadeIn">
       <Card>
         <CardHeader><strong>Label</strong></CardHeader>
         <CardBody>
           <h6><Alert isOpen={visible} color="danger">Internal Server Error</Alert></h6>
           <Col sm="12" md={{ size: 5, offset: 4 }}>
             <Row >
-              Show with Sub-Labels: <AppSwitch className={'mx-1'} variant={'pill'} color={'danger'} onClick={() => this.toggleSublabel()} label dataOn={'Yes'} dataOff={'No'} /><br /><br />
               <Container >
-                {this.state.labels.map((labels, key) => { return this.loadSingleLable(this.state.labels[key], key); })}
+                {this.state.labels.map((label, key) => {return this.loadSingleLable(this.state.labels[key], key); })}
                 <Label>Create More Label </Label> &nbsp;&nbsp;&nbsp; <FaPlusCircle size={30} onClick={this.callCreateLabel} />
               </Container>
             </Row>
@@ -146,16 +151,15 @@ class Lables extends Component {
   }
   //Show the Single Label 
   loadSingleLable=(labels,ukey)=>{
-    return (<div key={ukey} className="animated fadeIn">
-      <Avatar name={labels.name.charAt(0)} color={labels.color} size="40" square={true} key={labels.id} /> {labels.name}
-      {this.state.show && Array.isArray(labels.subLabels) ? <FaAngleDown size={20} style={{ float: "right" }} onClick={() => this.toggleAccordion(ukey)} /> : ''}
-      <FaTrashAlt size={20} onClick={() => { this.setState({ id: labels.id }); this.toggleDanger(); }} style={{ color: 'red', float: "right", marginRight: 15 }} />
-      <FaPen size={20} style={{ color: '#4385ef', float: "right", marginRight: 15 }} onClick={() => { this.updateLabel(labels) }} />
+      return (<div key={ukey} className="animated fadeIn">
+      <Avatar name={labels.name.charAt(0)} color={labels.color===""? "#000000":labels.color} size="40" square={true} key={labels.id} /> {labels.name}
+      {this.loadDropDown(labels,ukey)}
+      {Array.isArray(labels.subLabels) ? <FaAngleDown size={20} style={{ float: "right" }} onClick={() => this.toggleAccordion(ukey)} /> : ''}
       <div style={{ padding: 5 }} />
       <Collapse isOpen={this.state.accordion[ukey]}>
         {Array.isArray(labels.subLabels) ? labels.subLabels.map(ulable => {
           return (<div key={ulable.id}>
-            <Avatar name={ulable.name.charAt(0)} color={ulable.color} size="25" round={true} />&nbsp;&nbsp;{ulable.name}
+            <span style={{paddingLeft: 40}} ></span><Avatar name={ulable.name.charAt(0)} color={ulable.color} size="25" squre={true} />&nbsp;&nbsp;{ulable.name}
             <FaTrashAlt onClick={() => { this.setState({ id: ulable.id }); this.toggleDanger(); }} className="float-right" style={{ color: 'red', float: "right", marginRight: 15 }} />
             <FaPen size={12} className="float-right" style={{ color: '#4385ef', float: "right", marginRight: 15 }} onClick={() => { this.updateLabel(ulable) }} />
             <hr /></div>)
@@ -165,8 +169,7 @@ class Lables extends Component {
   }
   //this method call the delete model
   loadDeleteLabel = () => {
-    return (
-     <Modal isOpen={this.state.danger} toggle={this.toggleDanger} backdrop={false}>
+    return (<Modal isOpen={this.state.danger} toggle={this.toggleDanger} style={{paddingTop: "20%"}} backdrop={true}>
        <ModalHeader toggle={this.toggleDanger}>Delete Label</ModalHeader>
        <ModalBody>
          Are you Sure want to Delete This Label ?
@@ -177,6 +180,19 @@ class Lables extends Component {
        </ModalFooter>
      </Modal>)
    }
+ //this Method load Browser DropDown
+ loadDropDown=(labels,ukey)=>{
+   return (<Dropdown isOpen={this.state.dropdownOpen[ukey]} style={{ float: "right" }} toggle={() => { this.toggleDropDown(ukey); }} size="sm">
+       <DropdownToggle tag="span" onClick={() => { this.toggleDropDown(ukey); }} data-toggle="dropdown" aria-expanded={this.state.dropdownOpen[ukey]}>
+         <i className="cui-options icons font-sm" />
+       </DropdownToggle>
+       <DropdownMenu>
+         <DropdownItem><FaPen size={15} style={{ color: '#4385ef' }} onClick={() => { this.updateLabel(labels) }} />&nbsp;Update</DropdownItem>
+         <DropdownItem><FaTrashAlt size={15} onClick={() => { this.setState({ id: labels.id }); this.toggleDanger(); }} style={{ color: 'red' }} /> &nbsp;Delete</DropdownItem>
+       </DropdownMenu>
+     </Dropdown>);
+ }
+
 
 }
 export default Lables;

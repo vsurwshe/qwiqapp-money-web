@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Button,Col, Input, Alert ,FormGroup,Card,CardHeader,Label,Collapse} from "reactstrap";
 import LabelApi from "../../services/LabelApi";
+import Lables from "./Label";
 class UpdateLabel extends Component {
   constructor(props) {
     super(props);
@@ -25,7 +26,8 @@ class UpdateLabel extends Component {
   };
   //this called When Componets Calling SucessFully
   SuccessCall = json => {
-    this.setState({ updateSuccess: true });
+    // this.setState({ updateSuccess: true });
+    this.callAlertTimer( "success", "Label Updated Successfully... ");
   };
  //when any api goto the api executions failed then called this method 
   errorCall = err => {
@@ -33,10 +35,9 @@ class UpdateLabel extends Component {
   };
 //this  method show the on page alert
   callAlertTimer = (color, content) => {
-    this.setState({ color: color, content: content });
-    setTimeout(() => {this.setState({ name: '', color: ''});
-    }, 4000);
-
+    this.setState({ color: color, content: content});
+    setTimeout(() => {this.setState({ name: '', color: '',updateSuccess: true });
+    }, 2000);
   };
   //this method make lable as main lable
   changeParentId=()=>{
@@ -48,12 +49,12 @@ class UpdateLabel extends Component {
   }
 
   render() {
-    const { name,notes, color, content, updateSuccess } = this.state;
-    if (updateSuccess) {
-      return <div>{this.loadUpdateMessage()}</div>
-    } else {
-      return <div>{this.loadUpdatingLable(name,notes,color,content)}</div>
-    }
+    const { name,notes, color, content, updateSuccess,ucolor } = this.state;
+    // if (updateSuccess) {
+    //   return <div>{this.loadUpdateMessage()}</div>
+    // } else {
+      return <div>{updateSuccess ?<Lables />:this.loadUpdatingLable(name,notes,color,content,ucolor)}</div>
+    // }
   }
 
   //this method call after successfully updtaed profile
@@ -79,12 +80,13 @@ class UpdateLabel extends Component {
              <strong>Label</strong>
            </CardHeader>
            <Col sm="12" md={{ size: 5, offset: 4 }}>
+           <br/>
              <Alert color={color}>{content}</Alert>
              <FormGroup>
                <h5><b>EDIT LABEL</b></h5>
                  <Input type="text" name="Label name" value={name} style={{ fontWeight: 'bold', color: '#000000' }} autoFocus={true} onChange={e => { this.setState({ name: e.target.value }) }} /><br />
                  <Input type="text" name="Label Notes" value={notes} style={{ fontWeight: 'bold', color: '#000000' }} onChange={e => { this.setState({ notes: e.target.value }) }} /><br/>
-                 <Input type="color" name="Label Color" value={ucolor} style={{ fontWeight: 'bold', color: '#000000' }} onChange={e => { this.setState({ ucolor: e.target.value }) }} /><br/>
+                 <Input type="color" name="Label Color" value={ucolor===""?'#000000':ucolor} style={{ fontWeight: 'bold', color: '#000000' }} onChange={e => { this.setState({ ucolor: e.target.value }) }} /><br/>
                  {this.state.parentId !== null ?this.loadSublabelMakeParentLabel() : this.loadParentLableMakeSubLable()}
                  {this.loadCollapse()}
                 <br />
@@ -99,14 +101,14 @@ class UpdateLabel extends Component {
   loadSublabelMakeParentLabel=()=>{
     return(<FormGroup check className="checkbox">
     <Input className="form-check-input" type="checkbox"   onClick={this.changeParentId}  value=" " />
-    <Label check className="form-check-label" htmlFor="checkbox1"> &nbsp;Enable this for Make as  Parent-Label</Label>
+    <Label check className="form-check-label" htmlFor="checkbox1"> &nbsp;Make as Parent-Label</Label>
   </FormGroup>)
   }
 
   loadParentLableMakeSubLable=()=>{
     return(<FormGroup check className="checkbox">
     <Input className="form-check-input" type="checkbox"   onClick={this.toggle}  value=" " />
-    <Label check className="form-check-label" htmlFor="checkbox1"> &nbsp;Enable this for Make as Sub-Label</Label>
+    <Label check className="form-check-label" htmlFor="checkbox1"> &nbsp;Nest label under</Label>
   </FormGroup>)
   }
 

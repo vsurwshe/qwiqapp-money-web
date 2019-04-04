@@ -112,9 +112,10 @@ class Profiles extends Component {
                 {profiles.map(profiles => {
                   return this.loadSingleProfile(profiles, viewProfileRequest);
                 })}
-                <Button color="info" onClick={this.callCreateProfile}> Create Profile </Button>
               </Row>
+              <Button color="info" onClick={this.callCreateProfile}> Create Profile </Button>
             </Col>
+           
           </CardBody>
         </Card>
       </div>)
