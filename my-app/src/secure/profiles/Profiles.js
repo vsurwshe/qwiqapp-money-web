@@ -26,8 +26,9 @@ class Profiles extends Component {
     };
   }
 
-  componentDidMount() {
-    new ProfileApi().getProfiles(this.successCall, this.errorCall);
+  async componentDidMount() {
+   const response= await new ProfileApi().getProfiles(this.successCall, this.errorCall);
+   console.table(response)
   }
 
   successCall = json => {

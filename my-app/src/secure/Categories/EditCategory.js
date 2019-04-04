@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Button, Card, Col, Input, Alert, CardHeader, FormGroup, Label, Collapse} from "reactstrap";
 import CategoryApi from "../../services/CategoryApi";
+import Categories from "./Categories";
 
 class EditCategory extends Component {
   constructor(props) {
@@ -11,37 +12,38 @@ class EditCategory extends Component {
       categoryId : props.category.id,
       parentId:props.category.parentId,
       cName: props.category.name,
-      color: props.category.color,
+      categoryColor: props.category.color,
       code: props.category.code,
       version : props.category.version,
-      content: "",
+      color:'',
+      content: '',
       updateSuccess: false,
       collapse:true
     };
   }
 
   handleUpdate = () => {
-    const data = { name: this.state.cName, color: this.state.color, code: this.state.code, parentId:this.state.parentId, version: this.state.version };
+    const data = { name: this.state.cName, color: this.state.categoryColor, code: this.state.code, parentId:this.state.parentId, version: this.state.version };
     new CategoryApi().updateCategory(this.successCall, this.errorCall, data, this.state.profileId, this.state.categoryId );
   };
 
   successCall =() =>{
-    this.setState({ updateSuccess: true })
+    this.callAlertTimer('success','Category Updated!')
   }
 
   errorCall = err => {
-    this.callAlertTimer("Something went wrong, Please Try Again later... ");
+    this.callAlertTimer('danger','Something went wrong, Please Try Again later... ');
   };
 
   handleInput = e => {
     this.setState({ [e.target.name]: e.target.value });
   };
 
-  callAlertTimer = ( content) => {
-    this.setState({ content });
+  callAlertTimer = (color,content) => {
+    this.setState({ color,content });
     setTimeout(() => {
-      this.setState({ name: ''});
-    }, 4000);
+      this.setState({ updateSuccess: true});
+    }, 2000);
   };
 
   toggle =() =>{
@@ -49,42 +51,25 @@ class EditCategory extends Component {
   }
 
   render() {
-    const { cName, color, content, updateSuccess, parentId } = this.state;
-    if (updateSuccess) {
-      return <div>{this.loadUpdatedMessage()}</div>
-    } else if(parentId === null){
-      return <div>{this.loadCategoryToUpdate(cName,color,content)}</div>
-    }else{
-      return <div>{this.loadSubCategoryToUpdate(cName,color,content)}</div>
-    }
-  }
-
-  loadUpdatedMessage=()=>{
+    const { cName, categoryColor, color, content, updateSuccess, parentId } = this.state;
     return(
-      <div className="animated fadeIn">
-        <Card>
-          <CardHeader><strong>Category</strong></CardHeader>
-          <center style={{paddingTop:'20px'}}>
-            <h5><b>Your Category Updated Successfully !!</b><br /><br />
-            <a href="/listCategories">View Categories</a></h5>
-          </center>
-        </Card>
-      </div>)
+      <div>
+      {updateSuccess?<Categories/>:parentId === null?<div>{this.loadCategoryToUpdate(cName,categoryColor,color,content)}</div>:<div>{this.loadSubCategoryToUpdate(cName,categoryColor,color,content)}</div>}</div>
+    )
   }
 
-  //This method Updates parent Category
-  loadCategoryToUpdate = (cName,color,content) => {
+  loadCategoryToUpdate = (cName,categoryColor,color,content) => {
     return( 
       <Card>
-        <CardHeader><strong>Category</strong></CardHeader>
+        <CardHeader><strong>Category</strong></CardHeader><br/>
         <center>
-          <Alert color="">{content}</Alert>
           <h5><b>EDIT CATEGORY</b></h5><br/>
           <FormGroup>
             <Col sm="12" md={{ size: 5, offset: 1.5 }}>
+              <Alert color={color}>{content}</Alert>
               <Input type="text" name="cName" value={cName} style={{fontWeight:'bold',color:'#000000'}} autoFocus={true} onChange={e => { this.setState({ cName: e.target.value }) }}/>                 
               <br />
-              <Input name="color" type="color" value={color} style={{}} onChange={e => { this.handleInput(e) }}/><br/>
+              <Input name="categoryColor" type="color" value={categoryColor} onChange={e => { this.handleInput(e) }}/><br/>
               <Button color="success" disabled={!cName} onClick={this.handleUpdate} >Update  </Button>&nbsp;&nbsp;&nbsp;
               <a href="/listCategories" style={{textDecoration:'none'}}> <Button active  color="light" aria-pressed="true">Cancel</Button></a>
             </Col>
@@ -94,18 +79,18 @@ class EditCategory extends Component {
   }
 
   //This method Updates SubCategory
-  loadSubCategoryToUpdate = (cName,color,content) =>{
+  loadSubCategoryToUpdate = (cName,categoryColor,color,content) =>{
     return( 
       <Card>
-        <CardHeader><strong>Category</strong></CardHeader>
+        <CardHeader><strong>Category</strong></CardHeader><br/>
         <center>
-          <Alert color="">{content}</Alert>
-          <h5><b>EDIT CATEGORY</b></h5><br/>
+          <h5><b>EDIT SUB-CATEGORY</b></h5><br/>
           <FormGroup>
             <Col sm="6">
+              <Alert color={color}>{content}</Alert>
               <Input type="text" name="cName" value={cName} style={{fontWeight:'bold',color:'#000000'}} autoFocus={true} onChange={e => { this.setState({ cName: e.target.value }) }}/>                 
               <br />
-              <Input name="color" type="color" value={color} style={{}} onChange={e => { this.handleInput(e) }}/><br/>
+              <Input name="categoryColor" type="color" value={categoryColor} onChange={e => { this.handleInput(e) }}/><br/>
               <Input name="check" type="checkbox" onClick={this.toggle}/><Label for="mark">Make it a Parent Category </Label> <br/>
               <Collapse isOpen={this.state.collapse}>
                     <FormGroup>

@@ -4,61 +4,63 @@ import Store from "../data/Store";
 import LoginApi from './LoginApi'
 class CategoryApi {
   createCategory(success, failure, pid,data) {
-    process(success, failure, "/profile/" + pid + "/categories", "POST", data);
+    process(success, failure,  pid +"/categories", "POST",pid, data);
   }
-  getCategories(success, failure ,pid) {
-    process(success, failure, "/profile/" + pid + "/categories" , "GET");
+  getCategories(success, failure ,pid,value) {
+    Store.getCategories() === null || value === 'true'
+      ? process(success, failure,  pid +"/categories?subcategories=true" ,'GET', pid) 
+      : success(Store.getCategories())
+     console.log('local storage is: ',Store.getCategories())
   }
 
-  getSubCategories(success, failure ,pid,show) {
-    process(success, failure, "/profile/" + pid + "/categories?subcategories=" + show, "GET");
-  }
+  // getSubCategories(success, failure ,pid,show) {
+  //   process(success, failure,  pid + "/categories?subcategories=" + show, "GET");
+  // }
 
   getCategoriesById(success, failure, pid,cid) {
-    process(success, failure, "/profile/" + pid + "/categories/" + cid, "GET");
+    process(success, failure,  pid + "/categories/" + cid, "GET",pid);
   }
 
-  updateCategory(success, failure, data, uid,cid) {
-    process(success, failure, "/profile/" + uid + "/categories/" + cid, "PUT", data);
+  updateCategory(success, failure, data, pid,cid) {
+    process(success, failure,  pid + "/categories/" + cid, "PUT",pid, data);
   }
 
   deleteCategory(success, failure, pid, cid) {
-    process(success, failure, "/profile/" + pid + "/categories/" + cid, "DELETE");
+    process(success, failure,  pid + "/categories/" + cid, "DELETE",pid);
   }
 }
 
 export default CategoryApi;
 
-function process(success, failure, Uurl, Umethod, data) {
-  if (Umethod === "PUT" || Umethod === "POST") {
-    let insta = createInstance(Uurl, Umethod);
-    insta
-      .request({ data })
-      .then(resp => validResponse(resp, success))
-      .catch(error => {
-       console.log("Token error=", error.response.status);
-        if (error.response.status === 403 || error.response.status === 401){
-          console.log("Error with Token")
-          new LoginApi().refresh(()=>process(success,failure,Uurl,Umethod,data),()=>console.log("Error calling refresh Token"))
-        }
-      });
-  } else {
-    let insta = createInstance(Uurl, Umethod);
-    insta
-      .request()
-      .then(resp => validResponse(resp, success))
-      .catch(err => {
-        if (err.response.status === 401 || err.response.status === 403){
-          console.log("Error with Token", err.response.status)
-          new LoginApi().refresh(()=>process(success,failure,Uurl,Umethod,data),()=>console.log("Error calling refresh Token"))
-        }
-        errorResponse(err, failure)
-      });
-      }
+async function process(success, failure, Uurl, Umethod, pid, data) {
+  let HTTP = httpCall(Uurl, Umethod);
+  let promise;
+  try{
+     data===null?promise = await HTTP.request():promise = await HTTP.request({data})
+     if(Umethod === 'GET'){
+        Store.saveCategories(promise.data)
+     }else{
+        new CategoryApi().getCategories(success,failure,pid,'true')
+     }
+     validResponse(promise, success);
+  }catch(error){
+     AccessTokenError(error,failure, Uurl, Umethod, data,success)
   }
+}
+
+let AccessTokenError=(err,failure, Uurl, Umethod, data,success)=>{
+  if(err.request.status===0){
+    errorResponse(err, failure)
+  }else if(err.response.status===401 ||err.response.status===403){
+    new LoginApi().refresh(()=>process(success,failure,Uurl,Umethod,data), errorResponse(err, failure))
+  }else{
+    errorResponse(err, failure)
+  }
+}
+
 
 let validResponse = function(resp, successMethod) {
-  console.log("Response: ", resp.data);
+  console.log("Response Data= ", resp.data);
   if (successMethod != null) {
     successMethod(resp.data);
   }
@@ -71,7 +73,7 @@ let errorResponse = function(error, failure) {
   }
 };
 
-function createInstance(Uurl, Umethod) {
+function httpCall(Uurl, Umethod) {
   let instance = Axios.create({
     baseURL: Config.profileURL,
     method: Umethod,

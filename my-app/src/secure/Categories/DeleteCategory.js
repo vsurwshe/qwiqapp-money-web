@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import { Card, CardHeader,CardBody } from "reactstrap";
 import CategoryApi from "../../services/CategoryApi";
+import Categories from "./Categories";
 class DeleteCategory extends Component {
   constructor(props) {
     super(props);
@@ -8,8 +8,8 @@ class DeleteCategory extends Component {
       profileId: this.props.pid,
       categoryId: this.props.cid,
       categoryDeleted: false,
-      color: "",
-      content: ""
+      color: '',
+      content: ''
     };
   }
 
@@ -18,54 +18,51 @@ class DeleteCategory extends Component {
   };
 
   successCall = () => {
-    this.setState({ categoryDeleted: true, content: "Category Deleted Successfully !!" });
+    this.callAlertTimer("info","Deleted Successfully !")
   };
 
   errorCall = () => {
-    this.setState({ categoryDeleted: true });
-    this.callAlertTimer("danger","Something went wrong, Please Try Again...  ");
+    this.callAlertTimer("warning","Delete Failed !")
   };
 
-  callAlertTimer = (color, content) => {
-    this.setState({color: color,content: content});
+  callAlertTimer = (color,content) => {
+    this.setState({ color,content });
     setTimeout(() => {
-      this.setState({ color: "" });
-    }, 5500);
+      this.setState({ categoryDeleted: true});
+    }, 2000);
   };
 
   render() {
-    const { categoryDeleted, content } = this.state;
-    if (categoryDeleted) {
-      return <div>{this.loadDeleteMessage(content)}</div>
-    } else {
-      return <div>{this.loadDeleting()}</div>
-    }
+     const { categoryDeleted, color,content } = this.state;
+     return  categoryDeleted?<Categories color={color} content={content}/>:<p> Deleting .......</p>
   }
 
   //This Method called After Deleting Category
-  loadDeleteMessage=(content)=>{
-    return(
-      <div className="animated fadeIn">
-        <Card>
-          <CardHeader><strong>Category</strong></CardHeader>
-          <center style={{paddingTop:'20px'}}>
-            <h5><b>{content}</b><br /> <br />
-            <a href="/listCategories">View Categories </a></h5>
-          </center>
-        </Card>
-      </div>)
-  }
+  // loadDeleteMessage=(content)=>{
+  //   return(
+  //     <div className="animated fadeIn">
+  //       <Card>
+  //         <CardHeader><strong>Category</strong></CardHeader>
+  //         <center style={{paddingTop:'20px'}}>
+  //           <h5><b>{content}</b><br /> <br />
+  //           <a href="/listCategories">View Categories </a></h5>
+  //         </center>
+  //       </Card>
+  //     </div>)
+  // }
 
-  //This Method while Deletion is in process.
-  loadDeleting=()=>{
-    return(
-      <div className="animated fadeIn">
-        <Card>
-          <CardHeader><strong>Category</strong></CardHeader>
-          <CardBody><h5><b>Deleting Category.....</b></h5></CardBody>
-        </Card>
-      </div>)
-  }
+  // This Method while Deletion is in process.
+  // loadDeleting=(color,content)=>{
+  //   return(
+  //     <div className="animated fadeIn">
+  //      {/* <CardHeader><strong>Category</strong></CardHeader>
+  //       <Card>
+  //         <CardBody>
+  //         <Alert color={color}>{content}</Alert>
+  //         </CardBody>
+  //       </Card> */}
+  //     </div>)
+  // }
 }
 
 export default DeleteCategory;

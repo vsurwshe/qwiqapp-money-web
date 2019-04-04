@@ -1,7 +1,8 @@
 import React, { Component } from "react";
-import { Label, Button, Input, Card, CardBody, CardHeader, FormGroup, CardTitle, Collapse,Col, Row } from "reactstrap";
+import { Label, Button, Input, Card, CardBody, CardHeader, FormGroup, CardTitle, Collapse,Col, Alert } from "reactstrap";
 import Store from "../../data/Store";
 import CategoryApi from "../../services/CategoryApi";
+import Categories from "./Categories";
 class AddCategory extends Component {
   constructor(props){
     super(props)
@@ -14,6 +15,7 @@ class AddCategory extends Component {
       color: '',
       code:'',
       type:'Expense_Payable',
+      alertColor:'',
       content: '',
       collapse:false,
       categoryCreated: false,
@@ -30,64 +32,56 @@ class AddCategory extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    let data = {}
-    if(this.state.parentId){
-       data = { name: this.state.name, code: this.state.code, parentId: this.state.parentId };
-    }
-    else{
-       data = { name: this.state.name, color: this.state.color, code: this.state.code};
-    }
-    new CategoryApi().createCategory(() => { this.setState({categoryCreated: true }); }, this.errorCall, this.state.profileId, data);
+    const data = { name: this.state.name, color: this.state.color,code: this.state.code, parentId: this.state.parentId };
+    new CategoryApi().createCategory(this.successCall, this.errorCall, this.state.profileId, data);
   };
 
+  successCall = () =>{
+    this.callAlertTimer('success','Category Added !')
+  }
+
   errorCall = err => {
-   console.log("Category not Added")
+    this.callAlertTimer('danger','Category Not Added')
   };
 
   toggle =() =>{
     this.setState({ collapse: !this.state.collapse  });
   }
 
+  callAlertTimer = (alertColor,content) => {
+    this.setState({ alertColor, content });
+    setTimeout(() => {
+      this.setState({ categoryCreated: true});
+    }, 2000);
+  };
  
   render() {
-    if (!this.state.categoryCreated) {
-      return <div>{this.loadAddingCategory()}</div>
-    } else {
-      return <div>{this.loadAddedMessage()}</div>
-    }
+    return(
+    <div>{this.state.categoryCreated ? <Categories/> :this.loadAddingCategory()}</div>
+    )
   }
 
   loadAddingCategory=()=>{
     const align = { textAlign: "left" }
-    const {name,color}=this.state
+    const {name,color,alertColor,content}=this.state
     return(
-      <div className="animated fadeIn">
-        <center>
           <Card >
-            <CardHeader><strong>Category</strong></CardHeader>
-             <CardBody>
-               <center> 
-                <CardTitle style={{ color: "teal" }}> CREATE CATEGORY  </CardTitle> <br />
-                <Col sm="12" md={{ size: 5, offset: 3 }}>
-                  <Row>
-                  <FormGroup style={{align}}>
-                    <Label for="Name">Category Name </Label>
-                    <Input name="name" type="text" placeholder="Category" value={name} onChange={e => this.handleInput(e)}  /><br/>
-                    <Label style={{ align }} for="color">Color </Label>
+            <CardHeader><strong>Category</strong></CardHeader><br/>
+             <center>
+                <h5><b>CREATE CATEGORY</b></h5><br/>
+                <FormGroup style={{ align }}>
+                  <Col sm="12" md={{ size: 3, offset: 1.5 }}>
+                    <Alert color={alertColor} >{content}</Alert>
+                    <Input name="name" type="text" placeholder="Category Name" value={name} onChange={e => this.handleInput(e)}  /><br/>
                     <Input name="color" type="color" value={color} onChange={e => { this.handleInput(e) }}/><br/>
                     <Input name="check" type="checkbox" onClick={this.toggle}/><Label for="mark">Make this as SubCategory </Label><br/>
                     <Collapse isOpen={this.state.collapse}>
-                    <FormGroup>
                       <Input type="select" name="parentId" id="exampleSelect" onChange={e => { this.handleInput(e)}}>
                         {this.state.categories.map((category) => { return <option value={category.id}>{category.name}</option> })}
                       </Input>
-                    </FormGroup>
-                  </Collapse>
-                  </FormGroup>
-                  {/* <FormGroup style={align}>
-                    <Label for="code">Code </Label>
-                    <Input name="code" type="text" placeholder="Your code" onChange={e => { this.handleInput(e)}} onKeyPress = {this.handleEnter} value={code} />
-                  </FormGroup> */}
+                    </Collapse>
+                  </Col>
+                </FormGroup>
                   {/* <FormGroup style={align}>
                     <Label for="type">Type </Label>
                     <Input name="type" type="select" onChange={e => { this.handleInput(e)}}>
@@ -95,32 +89,14 @@ class AddCategory extends Component {
                         <option>Income_Receivable</option>
                     </Input>
                   </FormGroup> */}
-                  
-                  </Row>
-                  </Col>
-              </center>
+                  {/* </Row>
+                  </Col> */}
               <center>
                 <Button color="info" onClick={this.handleSubmit}> Add </Button>&nbsp;&nbsp;&nbsp;
-                <a href="/listCategories" style={{textDecoration:'none'}}> <Button active  color="light" aria-pressed="true">Cancel</Button></a>
+                <a href="/listCategories" style={{textDecoration:'none'}}> <Button active  color="light" aria-pressed="true">Cancel</Button></a><br/><br/>
               </center>
-            </CardBody>
-          </Card>
-        </center>
-      </div>)
-  }
-
-  //This method calls after Successful Creation Of Category
-  loadAddedMessage=()=>{
-    return(
-      <div className="animated fadeIn">
-          <Card>
-            <CardHeader><strong>Category</strong></CardHeader>
-            <center style={{paddingTop:'20px'}}>
-              <h5><b>Category Added Successfully !!</b> <br /> <br />
-              <b><a href="/listCategories">ViewCategories</a></b></h5>
             </center>
-          </Card>
-      </div>)
+          </Card>)
   }
 }
 
