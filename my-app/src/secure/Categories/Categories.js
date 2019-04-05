@@ -1,7 +1,7 @@
 import React, { Component } from "react";
-import { Card, CardHeader, CardBody, Button, Col, Row, Container, Alert, Modal, ModalHeader, ModalBody, ModalFooter, Collapse} from 'reactstrap';
+import { Card, CardHeader, CardBody, Button, Col, Row, Container, Modal, ModalHeader, ModalBody, ModalFooter, Collapse, Alert,Dropdown,DropdownItem,DropdownToggle,DropdownMenu} from 'reactstrap';
 import Avatar from 'react-avatar';
-import { FaPen, FaTrashAlt, FaAngleDown } from 'react-icons/fa';
+import { FaPen, FaTrashAlt, FaAngleDown, FaEllipsisV } from 'react-icons/fa';
 import CategoryApi from "../../services/CategoryApi";
 import AddCategory from "./AddCategory";
 import EditCategory from "./EditCategory";
@@ -22,9 +22,12 @@ class Categories extends Component {
       viewRequest : false,
       toggle : false,
       accordion : [],
+      hoverAccord : [],
+      dropDownAccord : [],
       danger : false,
       alertColor : this.props.color,
       content : this.props.content,
+      onHover:false,
     };
   }
 
@@ -39,7 +42,11 @@ class Categories extends Component {
   }
 
   loadCollapse = () => {
-    this.state.categories.map(category=>{return this.setState(prevState=>({ accordion : [...prevState.accordion,false] }))})
+    this.state.categories.map(category=>{return this.setState(prevState=>({ 
+      accordion : [...prevState.accordion,false],
+      hoverAccord : [...prevState.hoverAccord,false],
+      dropDownAccord : [...prevState.dropDownAccord,false]
+    }))})
   }  
 
   //Method showing Initialising Profiles values got from API
@@ -102,12 +109,32 @@ class Categories extends Component {
 
   //Method handle accoding tab variable
   toggleAccordion = (tab) => {
-    console.log(tab);
     const prevState = this.state.accordion;
     const state = prevState.map((x,index)=> tab===index? !x : false );
     this.setState({ accordion : state });
   } 
 
+  hoverAccordion = (hKey) => {
+    const prevState = this.state.hoverAccord;
+    const state = prevState.map((x,index)=> hKey===index? !x : false );
+    this.setState({ hoverAccord : state });
+  }
+
+  dropDownAccordion = (dKey) => {
+    const prevStat = this.state.dropDownAccord;
+    const state = prevStat.map((x,index)=> dKey===index? !x : false );
+    this.setState({ dropDownAccord : state });
+  }
+
+  onHover = (hKey) =>{
+    this.setState({ onHover : true });
+    this.hoverAccordion(hKey)
+  }
+
+  onHoverOff = (hKey) =>{
+    this.setState({ onHover : false });
+  }
+  
   render() {
     const { categories,requiredCategory,createCategory,updateCategory,deleteCategory,profileId,categoryId,alertColor,content } = this.state;
     if(createCategory){
@@ -144,16 +171,18 @@ class Categories extends Component {
   
   loadCategory = (category,uKey) => {
     return( 
-      <div className="animated fadeIn" key={uKey}>
-        <Avatar name={category.name.charAt(0)} color = {category.color===null?'#000000':category.color} size="40" square={true} />&nbsp; {category.name}
+      <div className="animated fadeIn" key={uKey} onPointerEnter={()=>this.onHover(uKey)} onPointerLeave={()=>this.onHoverOff(uKey)}>
+        <p><Avatar name={category.name.charAt(0)} color = {category.color===null?'#000000':category.color} size="40" square={true} />&nbsp; {category.name}
         {Array.isArray(category.subCategories)?<FaAngleDown onClick={()=>{this.toggleAccordion(uKey)}}/>:''}
-        <FaTrashAlt onClick={() => { this.setState({ categoryId: category.id }); this.toggleDanger() }} className="float-right" style={{ marginLeft: "20px", color: 'red', marginTop: "15px"}} />
-        <FaPen size={16} className="float-right" style={{ marginLeft: "20px", color: '#4385ef', marginTop: "15px" }} onClick={()=>this.updateCategory(category)} /><br />
+        {this.state.onHover && this.state.hoverAccord[uKey]?this.showDropdown(category,uKey):''}</p>
         <Collapse isOpen={this.state.accordion[uKey]}>
-          <Container style={{marginLeft:'35px'}}>
-            <br/>{category.subCategories != null ? category.subCategories.map(subCategory=>{return <p key={subCategory.id} onClick={()=>this.updateCategory(subCategory)} >
-               <Avatar name={subCategory.name.charAt(0)} color={subCategory.color===null?'#000000':subCategory.color} size="40" square={true}/><b>&nbsp;&nbsp;{subCategory.name}</b></p>})
-                                            :<p style={{color : 'red'}}>No SubCategories for this Category</p>
+          <Container style={{marginLeft:'35px'}} onPointerEnter={()=>this.onHover} onPointerLeave={()=>this.onHoverOff}>
+            {category.subCategories != null ? category.subCategories.map(subCategory=>{return <p key={subCategory.id} >
+               <Avatar name={subCategory.name.charAt(0)} color={subCategory.color===null?'#000000':subCategory.color} size="40" square={true}/><b>&nbsp;&nbsp;{subCategory.name}</b>
+               {this.state.onHover?<><FaTrashAlt onClick={() => { this.setState({ categoryId: subCategory.id }); this.toggleDanger() }} className="float-right" style={{ marginLeft: "20px", color: 'red', marginTop: "15px"}} />
+                                     <FaPen size={16} className="float-right" style={{ marginLeft: "20px", color: 'blue', marginTop: "15px"}} onClick={()=>this.updateCategory(subCategory)} /><br /></>:''}
+               </p>})
+              :''
             } 
           </Container>
         </Collapse> <hr />
@@ -170,6 +199,23 @@ class Categories extends Component {
           <Button color="secondary" onClick={this.toggleDanger}>Cancel</Button>
         </ModalFooter>
       </Modal>)
+  }
+
+  showDropdown = (category,uKey) =>{
+    var style={
+      marginLeft: "20px", 
+      marginTop: "15px"
+    }
+    return(
+      <Dropdown isOpen={this.state.dropDownAccord[uKey]} className= "float-right"  toggle={() => { this.dropDownAccordion(uKey); }} size="sm">
+       <DropdownToggle tag="span" onClick={() => { this.dropDownAccordion(uKey); }} data-toggle="dropdown" >
+        <FaEllipsisV style={style}/></DropdownToggle>
+      <DropdownMenu style={style}>
+        <DropdownItem onClick={()=>this.updateCategory(category)}>Edit </DropdownItem>
+        <DropdownItem onClick={()=>{ this.setState({ categoryId: category.id }); this.toggleDanger() }}>Delete</DropdownItem>
+      </DropdownMenu>
+    </Dropdown>
+    )
   }
 }
 
