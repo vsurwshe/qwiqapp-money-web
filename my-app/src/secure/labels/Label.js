@@ -2,12 +2,11 @@ import React, { Component } from "react";
 import { Container, Button, Card, CardBody, Col, Row, Alert, CardHeader,Collapse,Label,Modal, ModalHeader, ModalBody, ModalFooter,Dropdown,DropdownToggle,DropdownMenu,DropdownItem} from "reactstrap";
 import CreateLabel from "./Createlabel";
 import Avatar from 'react-avatar';
-import { FaPen, FaTrashAlt ,FaPlusCircle ,FaAngleDown} from 'react-icons/fa';
+import { FaPen, FaTrashAlt ,FaPlusCircle ,FaAngleDown,FaEllipsisV} from 'react-icons/fa';
 import UpdateLabel from "./UpdateLabel";
 import DeleteLabel from "./DeleteLabel";
 import LabelApi from "../../services/LabelApi";
 import ProfileApi from "../../services/ProfileApi";
-
 class Lables extends Component {
   constructor(props) {
     super(props);
@@ -91,13 +90,11 @@ class Lables extends Component {
     const state = prevState.map((x, index) => tab === index ? !x : false);
     this.setState({dropdownOpen: state});
   }
-
-
-
   //this is geting labels
   getLabels=()=>{
       new LabelApi().getSublabels(this.successCall, this.errorCall,this.state.profileId);
   }
+  
 
   render() {
    const { labels,viewLabelRequest, createLabel,updateLabel,id,name,notes,version,deleteLabel, visible,profileId} = this.state
@@ -151,7 +148,7 @@ class Lables extends Component {
   }
   //Show the Single Label 
   loadSingleLable=(labels,ukey)=>{
-      return (<div key={ukey} className="animated fadeIn">
+      return (<div key={ukey} className="animated fadeIn" onMouseEnter={()=>{console.log(ukey)}} onMouseLeave={()=>{console.clear()}}> 
       <Avatar name={labels.name.charAt(0)} color={labels.color===""? "#000000":labels.color} size="40" square={true} key={labels.id} /> {labels.name}
       {this.loadDropDown(labels,ukey)}
       {Array.isArray(labels.subLabels) ? <FaAngleDown size={20} style={{ float: "right" }} onClick={() => this.toggleAccordion(ukey)} /> : ''}
@@ -184,15 +181,14 @@ class Lables extends Component {
  loadDropDown=(labels,ukey)=>{
    return (<Dropdown isOpen={this.state.dropdownOpen[ukey]} style={{ float: "right" }} toggle={() => { this.toggleDropDown(ukey); }} size="sm">
        <DropdownToggle tag="span" onClick={() => { this.toggleDropDown(ukey); }} data-toggle="dropdown" aria-expanded={this.state.dropdownOpen[ukey]}>
-         <i className="cui-options icons font-sm" />
+         {/* <i className="cui-options icons font-sm" /> */}
+         <FaEllipsisV />
        </DropdownToggle>
        <DropdownMenu>
-         <DropdownItem><FaPen size={15} style={{ color: '#4385ef' }} onClick={() => { this.updateLabel(labels) }} />&nbsp;Update</DropdownItem>
-         <DropdownItem><FaTrashAlt size={15} onClick={() => { this.setState({ id: labels.id }); this.toggleDanger(); }} style={{ color: 'red' }} /> &nbsp;Delete</DropdownItem>
+         <DropdownItem onClick={() => { this.updateLabel(labels) }}> Update </DropdownItem>
+         <DropdownItem onClick={() => { this.setState({ id: labels.id }); this.toggleDanger(); }}> Delete</DropdownItem>
        </DropdownMenu>
      </Dropdown>);
  }
-
-
 }
 export default Lables;

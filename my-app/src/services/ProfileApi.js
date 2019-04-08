@@ -7,7 +7,6 @@ class ProfileApi {
     process(success, failure, "/profiles/", "POST", data);
   }
   getProfiles(success, failure) {
-    console.log("Calling Get Profiles");
     process(success, failure, "/profiles/", "GET");
   }
 
