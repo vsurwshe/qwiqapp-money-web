@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Label, Button, Input, Card, CardBody, CardHeader, FormGroup, CardTitle, Collapse,Col, Alert } from "reactstrap";
+import { Label, Button, Input, Card, CardHeader, FormGroup, Collapse,Col, Alert } from "reactstrap";
 import Store from "../../data/Store";
 import CategoryApi from "../../services/CategoryApi";
 import Categories from "./Categories";
@@ -74,7 +74,7 @@ class AddCategory extends Component {
                     <Alert color={alertColor} >{content}</Alert>
                     <Input name="name" type="text" placeholder="Category Name" value={name} onChange={e => this.handleInput(e)}  /><br/>
                     <Input name="color" type="color" value={color} onChange={e => { this.handleInput(e) }}/><br/>
-                    <Input name="check" type="checkbox" onClick={this.toggle}/><Label for="mark">Make this as SubCategory </Label><br/>
+                    <Input name="check" type="checkbox" onClick={this.toggle}/><Label for="mark">Nest Category Under</Label><br/>
                     <Collapse isOpen={this.state.collapse}>
                       <Input type="select" name="parentId" id="exampleSelect" onChange={e => { this.handleInput(e)}}>
                         {this.state.categories.map((category) => { return <option value={category.id}>{category.name}</option> })}
