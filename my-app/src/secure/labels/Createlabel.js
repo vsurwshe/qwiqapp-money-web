@@ -72,7 +72,7 @@ class CreateLable extends Component {
           <FormGroup>
             <Input name="name" value={this.state.name} type="text" placeholder="Enter Label name" autoFocus={true} onChange={e => this.handleInput(e)} /><br />
             <Input name="notes" value={this.state.notes} type="text" placeholder="Enter Label notes" autoFocus={true} onChange={e => this.handleInput(e)} /><br />
-            <Input name="ucolor" value={this.state.ucolor===""?'#000000':this.state.ucolor} type="color" placeholder="Enter Label notes" autoFocus={true} onChange={e => this.handleInput(e)} /><br />
+            <Input name="ucolor" type="color" list="colors" value={this.state.ucolor===""?'#000000':this.state.ucolor}  placeholder="Enter Label Color" autoFocus={true} onChange={e => {this.handleInput(e)}} /><br />
             <FormGroup check className="checkbox">
               <Input className="form-check-input" type="checkbox" onClick={this.toggle} value=" " />
               <Label check className="form-check-label" htmlFor="checkbox1"> &nbsp;Nest label under </Label>

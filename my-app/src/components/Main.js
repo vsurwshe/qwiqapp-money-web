@@ -36,12 +36,9 @@ class Main extends Component {
         <Route path="/login" component={Login} />
         <Route path="/signup" component={Signup} />
         <Route path="/register/:id/verify" component={SignupVerify} />
-
-        <Route path="/profiles" component={Profiles} />
-     
-        <Route path="/label/createLabel" component={CreateLable} />
-        <Route path="/label/labels" component={Lables} />
-        
+        <PrivateRoute path="/profiles" component={Profiles} />
+        <PrivateRoute path="/label/labels" component={Lables} />
+        <PrivateRoute path="/label/createLabel" component={CreateLable} />
         <Route exact path="/" component={Login} />
         <Route path="/home" component={Home} />
       </Switch>

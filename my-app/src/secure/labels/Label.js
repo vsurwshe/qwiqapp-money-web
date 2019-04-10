@@ -181,7 +181,6 @@ class Lables extends Component {
  loadDropDown=(labels,ukey)=>{
    return (<Dropdown isOpen={this.state.dropdownOpen[ukey]} style={{ float: "right" }} toggle={() => { this.toggleDropDown(ukey); }} size="sm">
        <DropdownToggle tag="span" onClick={() => { this.toggleDropDown(ukey); }} data-toggle="dropdown" aria-expanded={this.state.dropdownOpen[ukey]}>
-         {/* <i className="cui-options icons font-sm" /> */}
          <FaEllipsisV />
        </DropdownToggle>
        <DropdownMenu>
