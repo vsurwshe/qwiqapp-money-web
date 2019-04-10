@@ -126,13 +126,15 @@ class Categories extends Component {
     this.setState({ dropDownAccord : state });
   }
 
-  onHover = (hKey) =>{
+  onHover = (e,hKey) =>{
     this.setState({ onHover : true });
     this.hoverAccordion(hKey)
+    // console.log(e.nativeEvent)
   }
 
-  onHoverOff = (hKey) =>{
+  onHoverOff = (e,hKey) =>{
     this.setState({ onHover : false });
+    this.hoverAccordion(hKey)
   }
   
   render() {
@@ -182,14 +184,14 @@ class Categories extends Component {
     }
 
     return( 
-      <div className="animated fadeIn" key={uKey} onPointerEnter={()=>this.onHover(uKey)} onPointerLeave={()=>this.onHoverOff(uKey)}>
+      <div className="animated fadeIn" key={uKey} onPointerEnter={(e)=>this.onHover(e, uKey)} onPointerLeave={(e)=>this.onHoverOff(e,uKey)}>
         <p>
           <Avatar name={category.name.charAt(0)} color = {category.color===null?'#000000':category.color} size="40" square={true} />&nbsp; {category.name} &nbsp;
             {Array.isArray(category.subCategories)?<FaAngleDown onClick={()=>{this.toggleAccordion(uKey)}}/>:''}
             {this.state.onHover && this.state.hoverAccord[uKey]?this.showDropdown(category,uKey,styles):''}
         </p>
         <Collapse isOpen={this.state.accordion[uKey]}>
-          <Container style={{marginLeft:'35px'}} onPointerEnter={()=>this.onHover} onPointerLeave={()=>this.onHoverOff}>
+          <Container style={{marginLeft:'35px'}} onPointerOver={(e)=>this.onHover(e)} onPointerOut={(e)=>this.onHoverOff(e)}>
             {category.subCategories != null ? category.subCategories.map(subCategory=>{return <p key={subCategory.id} >
                <Avatar name={subCategory.name.charAt(0)} color={subCategory.color===null?'#000000':subCategory.color} size="40" square={true}/><b>&nbsp;&nbsp;{subCategory.name}</b>
                {this.state.onHover ?

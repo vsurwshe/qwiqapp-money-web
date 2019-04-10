@@ -69,7 +69,7 @@ class EditCategory extends Component {
               <Alert color={color}>{content}</Alert>
               <Input type="text" name="cName" value={cName} style={{fontWeight:'bold',color:'#000000'}} autoFocus={true} onChange={e => { this.setState({ cName: e.target.value }) }}/>                 
               <br />
-              <Input name="categoryColor" type="color" value={categoryColor} onChange={e => { this.handleInput(e) }}/><br/>
+              <Input name="categoryColor" type="color" list="colors" value={categoryColor} onChange={e => { this.handleInput(e) }}/><br/>
               <Button color="success" disabled={!cName} onClick={this.handleUpdate} >Update  </Button>&nbsp;&nbsp;&nbsp;
               <a href="/listCategories" style={{textDecoration:'none'}}> <Button active  color="light" aria-pressed="true">Cancel</Button></a>
             </Col>
@@ -90,7 +90,7 @@ class EditCategory extends Component {
               <Alert color={color}>{content}</Alert>
               <Input type="text" name="cName" value={cName} style={{fontWeight:'bold',color:'#000000'}} autoFocus={true} onChange={e => { this.setState({ cName: e.target.value }) }}/>                 
               <br />
-              <Input name="categoryColor" type="color" value={categoryColor} onChange={e => { this.handleInput(e) }}/><br/>
+              <Input name="categoryColor" type="color" list="colors" value={categoryColor} onChange={e => { this.handleInput(e) }}/><br/>
               <Input name="check" type="checkbox" onClick={this.toggle}/><Label for="mark">Make it a Parent Category </Label> <br/>
               <Collapse isOpen={this.state.collapse}>
                     <FormGroup>

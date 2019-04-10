@@ -73,7 +73,7 @@ class AddCategory extends Component {
                   <Col sm="12" md={{ size: 3, offset: 1.5 }}>
                     <Alert color={alertColor} >{content}</Alert>
                     <Input name="name" type="text" placeholder="Category Name" value={name} onChange={e => this.handleInput(e)}  /><br/>
-                    <Input name="color" type="color" value={color} onChange={e => { this.handleInput(e) }}/><br/>
+                    <Input name="color" type="color" list="colors" value={color} onChange={e => { this.handleInput(e) }}/><br/>
                     <Input name="check" type="checkbox" onClick={this.toggle}/><Label for="mark">Nest Category Under</Label><br/>
                     <Collapse isOpen={this.state.collapse}>
                       <Input type="select" name="parentId" id="exampleSelect" onChange={e => { this.handleInput(e)}}>
