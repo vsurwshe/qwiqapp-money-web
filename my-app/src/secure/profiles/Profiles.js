@@ -6,6 +6,7 @@ import CreateProfile from "./CreateProfile";
 import DeleteProfile from "./DeleteProfile";
 import Avatar from 'react-avatar';
 import ViewProfile from "./ViewProfile";
+import Loader from 'react-loader-spinner'
 import { FaPen, FaTrashAlt } from 'react-icons/fa';
 class Profiles extends Component {
   constructor(props) {
@@ -20,7 +21,8 @@ class Profiles extends Component {
       viewProfileRequest: false,
       visible: false,
       id: 0,
-      name: ""
+      name: "",
+      spinner:false
     };
   }
 
@@ -34,7 +36,7 @@ class Profiles extends Component {
       this.setState({ profiles: [0] })
     }
     else {
-      this.setState({ profiles: json })
+      this.setState({ profiles: json ,spinner:true})
     }
   };
 
@@ -67,9 +69,9 @@ class Profiles extends Component {
   }
 
   render() {
-    const { profiles, id, viewProfileRequest, createProfile, updateProfile, deleteProfile, visible, name } = this.state
+    const { profiles, id, viewProfileRequest, createProfile, updateProfile, deleteProfile, visible, name ,spinner} = this.state
     if (profiles.length === 0 && !createProfile) {
-      return <div>{this.loadNotCreateProfile()}</div>
+      return <div>{profiles.length === 0 && !createProfile && !spinner ? this.loadLoader() :this.loadNotCreateProfile()}</div>
     } else if (createProfile) {
       return (<Container> <CreateProfile /> </Container>)
     } else if (updateProfile) {
@@ -80,6 +82,22 @@ class Profiles extends Component {
       return <div>{this.loadShowProfile(viewProfileRequest, visible, profiles)}{this.loadDeleteProfile()}</div>
     }
   }
+   //this method load the spinner
+   loadLoader=()=>{
+    return( <div className="animated fadeIn">
+    <Card>
+      <CardHeader>
+        <strong>Total Labels: {this.state.profiles.length}</strong>
+      </CardHeader>
+      <center style={{paddingTop:'20px'}}>
+        <CardBody>
+        <Loader type="Circles" color="#2E86C1" height={80} width={80}/>
+        </CardBody>
+      </center>
+    </Card>
+  </div>)
+   }
+
   //this method call when if any profile not created.
   loadNotCreateProfile = () => {
     return (<div className="animated fadeIn">

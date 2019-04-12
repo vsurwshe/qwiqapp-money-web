@@ -86,7 +86,7 @@ class UpdateLabel extends Component {
                <h5><b>EDIT LABEL</b></h5>
                  <Input type="text" name="Label name" value={name} style={{ fontWeight: 'bold', color: '#000000' }} autoFocus={true} onChange={e => { this.setState({ name: e.target.value }) }} /><br />
                  <Input type="text" name="Label Notes" value={notes} style={{ fontWeight: 'bold', color: '#000000' }} onChange={e => { this.setState({ notes: e.target.value }) }} /><br/>
-                 <Input type="color" name="Label Color" value={ucolor===""?'#000000':ucolor} style={{ fontWeight: 'bold', color: '#000000' }} onChange={e => { this.setState({ ucolor: e.target.value }) }} /><br/>
+                 <Input type="color" name="Label Color" list="Colors" value={ucolor===""?'#000000':ucolor} style={{ fontWeight: 'bold', color: '#000000' }} onChange={e => { this.setState({ ucolor: e.target.value }) }} /><br/>
                  {this.state.parentId !== null ?this.loadSublabelMakeParentLabel() : this.loadParentLableMakeSubLable()}
                  {this.loadCollapse()}
                 <br />

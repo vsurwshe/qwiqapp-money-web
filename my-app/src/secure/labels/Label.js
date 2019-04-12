@@ -1,12 +1,13 @@
 import React, { Component } from "react";
-import { Container, Button, Card, CardBody, Col, Row, Alert, CardHeader,Collapse,Label,Modal, ModalHeader, ModalBody, ModalFooter,Dropdown,DropdownToggle,DropdownMenu,DropdownItem} from "reactstrap";
+import { Container, Button, Card, CardBody, Col, Row, Alert, CardHeader,Collapse,Modal, ModalHeader, ModalBody, ModalFooter,Dropdown,DropdownToggle,DropdownMenu,DropdownItem} from "reactstrap";
 import CreateLabel from "./Createlabel";
 import Avatar from 'react-avatar';
-import { FaPen, FaTrashAlt ,FaPlusCircle ,FaAngleDown,FaEllipsisV} from 'react-icons/fa';
+import { FaPen, FaTrashAlt ,FaAngleDown,FaEllipsisV} from 'react-icons/fa';
 import UpdateLabel from "./UpdateLabel";
 import DeleteLabel from "./DeleteLabel";
 import LabelApi from "../../services/LabelApi";
 import ProfileApi from "../../services/ProfileApi";
+import Loader from 'react-loader-spinner'
 class Lables extends Component {
   constructor(props) {
     super(props);
@@ -26,7 +27,10 @@ class Lables extends Component {
       accordion: [],
       danger: false,
       show:true,
-      dropdownOpen:[]
+      dropdownOpen:[],
+      onHover:false,
+      hoverAccord : [],
+      spinner:false
     };
   }
   //this method get All Labels Realted That Profile
@@ -53,14 +57,16 @@ class Lables extends Component {
     if (json === "Deleted Successfully") {
       this.setState({ labels: [0] })
     } else {
-      this.setState({ labels: json })
+      this.setState({ labels: json,spinner:true })
       this.loadCollapse();
     }
   };
   errorCall = err => { this.setState({ visible: true }) }
   callCreateLabel = () => { this.setState({ createLabel: true })}
   loadCollapse=()=>{
-     this.state.labels.map(lables=>{return this.setState(prevState => ({accordion: [...prevState.accordion, false],dropdownOpen: [...prevState.dropdownOpen, false]}))});
+     this.state.labels.map(lables=>{return this.setState(prevState => ({accordion: [...prevState.accordion, false],
+      hoverAccord : [...prevState.hoverAccord,false],
+      dropdownOpen: [...prevState.dropdownOpen, false]}))});
   }
   //this toggle for Delete Model
   toggleDanger = () => {
@@ -94,12 +100,27 @@ class Lables extends Component {
   getLabels=()=>{
       new LabelApi().getSublabels(this.successCall, this.errorCall,this.state.profileId);
   }
-  
+
+  hoverAccordion = (hKey) => {
+    const prevState = this.state.hoverAccord;
+    const state = prevState.map((x,index)=> hKey===index? !x : false );
+    this.setState({ hoverAccord : state });
+  }
+  onHover = (e,hKey) =>{
+    this.setState({ onHover : true });
+    this.hoverAccordion(hKey)
+    // console.log(e.nativeEvent)
+  }
+
+  onHoverOff = (e,hKey) =>{
+    this.setState({ onHover : false });
+    this.hoverAccordion(hKey)
+  }
 
   render() {
-   const { labels,viewLabelRequest, createLabel,updateLabel,id,name,notes,version,deleteLabel, visible,profileId} = this.state
-    if (labels.length === 0 && !createLabel) {
-      return <div>{this.loadNotLabelProfile()}</div>
+   const { labels,viewLabelRequest, createLabel,updateLabel,id,deleteLabel, visible,profileId,relable,spinner} = this.state
+    if (labels.length === 0 && !createLabel ) {
+      return <div>{labels.length === 0 && !createLabel && !spinner ? this.loadLoader() :this.loadNotLabel()}</div>
     } else if (createLabel) {
       return ( <CreateLabel pid={profileId} />)
     }else if (updateLabel) {
@@ -110,8 +131,23 @@ class Lables extends Component {
       return <div>{this.loadShowLabel(viewLabelRequest, visible, labels)}{this.loadDeleteLabel()}</div>
     }
   }
+  //this method load the spinner
+  loadLoader=()=>{
+   return( <div className="animated fadeIn">
+   <Card>
+     <CardHeader>
+       <strong>Total Labels: {this.state.labels.length}</strong>
+     </CardHeader>
+     <center style={{paddingTop:'20px'}}>
+       <CardBody>
+       <Loader type="Circles" color="#2E86C1" height={80} width={80}/>
+       </CardBody>
+     </center>
+   </Card>
+ </div>)
+  }
   //this method call when if any profile not created.
-  loadNotLabelProfile = () => {
+  loadNotLabel = () => {
     return (<div className="animated fadeIn">
       <Card>
         <CardHeader>
@@ -119,7 +155,7 @@ class Lables extends Component {
         </CardHeader>
         <center style={{paddingTop:'20px'}}>
           <CardBody>
-            <h5><b>You haven't created any Lables yet... </b></h5><br/>
+              <h5><b>You haven't created any Lables yet... </b></h5><br/>
             <Button color="info" onClick={this.callCreateLabel}> Create Label </Button>
           </CardBody>
         </center>
@@ -136,8 +172,10 @@ class Lables extends Component {
           <Col sm="12" md={{ size: 5, offset: 4 }}>
             <Row >
               <Container >
+              {/* {this.state.spinner && this.state.labels.length ===0 ? <Loader type="Circles" color="#somecolor" height={80} width={80}/> : }   */}
+              <Avatar className="float-right" name="+" color="blue" size="50" round={true} onClick={this.callCreateLabel} /><br/><br/><br/>
+                 {/* <FaPlusCircle className="float-right"  size={30} onClick={this.callCreateLabel} />   */}
                 {this.state.labels.map((label, key) => {return this.loadSingleLable(this.state.labels[key], key); })}
-                <Label>Create More Label </Label> &nbsp;&nbsp;&nbsp; <FaPlusCircle size={30} onClick={this.callCreateLabel} />
               </Container>
             </Row>
           </Col>
@@ -148,20 +186,32 @@ class Lables extends Component {
   }
   //Show the Single Label 
   loadSingleLable=(labels,ukey)=>{
-      return (<div key={ukey} className="animated fadeIn" onMouseEnter={()=>{console.log(ukey)}} onMouseLeave={()=>{console.clear()}}> 
-      <Avatar name={labels.name.charAt(0)} color={labels.color===""? "#000000":labels.color} size="40" square={true} key={labels.id} /> {labels.name}
-      {this.loadDropDown(labels,ukey)}
-      {Array.isArray(labels.subLabels) ? <FaAngleDown size={20} style={{ float: "right" }} onClick={() => this.toggleAccordion(ukey)} /> : ''}
-      <div style={{ padding: 5 }} />
-      <Collapse isOpen={this.state.accordion[ukey]}>
-        {Array.isArray(labels.subLabels) ? labels.subLabels.map(ulable => {
-          return (<div key={ulable.id}>
-            <span style={{paddingLeft: 40}} ></span><Avatar name={ulable.name.charAt(0)} color={ulable.color} size="25" squre={true} />&nbsp;&nbsp;{ulable.name}
-            <FaTrashAlt onClick={() => { this.setState({ id: ulable.id }); this.toggleDanger(); }} className="float-right" style={{ color: 'red', float: "right", marginRight: 15 }} />
-            <FaPen size={12} className="float-right" style={{ color: '#4385ef', float: "right", marginRight: 15 }} onClick={() => { this.updateLabel(ulable) }} />
-            <hr /></div>)
-        }) : ""}
-      </Collapse>
+    const styles={
+      marginLeft: "20px",
+      marginTop: "15px"
+    }
+    const penColor = {
+      color: 'blue'
+    }
+    const trashColor = {
+        color: 'red'
+    }
+    return (
+    <div key={ukey} className="animated fadeIn" onPointerEnter={(e)=>this.onHover(e, ukey)} onPointerLeave={(e)=>this.onHoverOff(e,ukey)}> 
+    <Avatar name={labels.name.charAt(0)} color={labels.color===""? "#000000":labels.color} size="40" square={true} key={labels.id} /> &nbsp;&nbsp;{labels.name}
+    {Array.isArray(labels.subLabels) ? <span style={{paddingLeft:10}}><FaAngleDown onClick={() => this.toggleAccordion(ukey)} /></span>  : ''}
+    {this.state.onHover && this.state.hoverAccord[ukey]?this.loadDropDown(labels,ukey,styles):''}
+    <div style={{ padding: 5 }} />
+    <Collapse isOpen={this.state.accordion[ukey]}>
+      {Array.isArray(labels.subLabels) ? labels.subLabels.map(ulable => {
+        return (<div style={{paddingBottom:10}} key={ulable.id}>
+          <span style={{paddingLeft: 55}} ></span>
+          <Avatar name={ulable.name.charAt(0)} color={ulable.color} size="40" square={true} />&nbsp;&nbsp;{ulable.name}
+          <FaTrashAlt onClick={() => { this.setState({ id: ulable.id }); this.toggleDanger(); }} className="float-right" style={Object.assign({},styles,trashColor)} />
+          <FaPen size={12} className="float-right" style={Object.assign({},styles,penColor)} onClick={() => { this.updateLabel(ulable) }} />
+         </div>)
+      }) : ""}
+    </Collapse>
     </div>)
   }
   //this method call the delete model
@@ -178,10 +228,10 @@ class Lables extends Component {
      </Modal>)
    }
  //this Method load Browser DropDown
- loadDropDown=(labels,ukey)=>{
+ loadDropDown=(labels,ukey,styles)=>{
    return (<Dropdown isOpen={this.state.dropdownOpen[ukey]} style={{ float: "right" }} toggle={() => { this.toggleDropDown(ukey); }} size="sm">
        <DropdownToggle tag="span" onClick={() => { this.toggleDropDown(ukey); }} data-toggle="dropdown" aria-expanded={this.state.dropdownOpen[ukey]}>
-         <FaEllipsisV />
+         <FaEllipsisV style={{styles}}/>
        </DropdownToggle>
        <DropdownMenu>
          <DropdownItem onClick={() => { this.updateLabel(labels) }}> Update </DropdownItem>

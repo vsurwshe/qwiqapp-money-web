@@ -32,7 +32,7 @@ class LabelApi {
 
 export default LabelApi;
 
-async function process(success, failure, Uurl, Umethod,uPid, data) {
+async function process(success, failure, Uurl, Umethod,profileId, data) {
   let HTTP = httpCall(Uurl, Umethod);
   let promise;
     try {
@@ -41,19 +41,20 @@ async function process(success, failure, Uurl, Umethod,uPid, data) {
         Store.storeLabels(promise.data);
         validResponse(promise, success)
       } else {
-        new LabelApi().getSublabels(success,failure,uPid,"True");
+        new LabelApi().getSublabels(success,failure,profileId,"True");
         validResponse(promise, success)
       }
     } catch (err) {
-      console.log(err);
-      AccessTokenError(err, failure, Uurl, Umethod, data, success);
+      console.log(err.request.status)      
+      console.table(err);
+      AccessTokenError(profileId,err, failure, Uurl, Umethod, data, success);
     }
 }
 
 //this method slove the Exprie Token Problem.
-let AccessTokenError =function(err,failure,Uurl, Umethod, data,success){
+let AccessTokenError =function(profileId,err,failure,Uurl, Umethod, data,success){
   if(err.request.status=== 0)
-  {errorResponse(err, failure)
+  { new LabelApi().getSublabels(success,failure,profileId,"True");
   }else if (err.response.status===403 || err.response.status===401)
   {new LoginApi().refresh(()=>{process(success,failure,Uurl,Umethod,data)},errorResponse(err, failure))
   }else{errorResponse(err, failure)}
