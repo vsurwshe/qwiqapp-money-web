@@ -191,7 +191,7 @@ class Categories extends Component {
             {this.state.onHover && this.state.hoverAccord[uKey]?this.showDropdown(category,uKey,styles):''}
         </p>
         <Collapse isOpen={this.state.accordion[uKey]}>
-          <Container style={{marginLeft:'35px'}} onPointerOver={(e)=>this.onHover(e)} onPointerOut={(e)=>this.onHoverOff(e)}>
+          <Container style={{marginLeft:'35px'}}>
             {category.subCategories != null ? category.subCategories.map(subCategory=>{return <p key={subCategory.id} >
                <Avatar name={subCategory.name.charAt(0)} color={subCategory.color===null?'#000000':subCategory.color} size="40" square={true}/><b>&nbsp;&nbsp;{subCategory.name}</b>
                {this.state.onHover ?
