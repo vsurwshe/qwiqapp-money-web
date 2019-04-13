@@ -10,9 +10,9 @@ class UpdateLabel extends Component {
       name: this.props.label.name,
       notes:this.props.label.notes,
       version:this.props.label.version,
-      ucolor:this.props.label.color,
+      userColor:this.props.label.color,
       parentId:this.props.label.parentId,
-      color: "",
+      alertColor: "#000000",
       content: "",
       updateSuccess: false,
       profileId:this.props.pid,
@@ -21,7 +21,7 @@ class UpdateLabel extends Component {
     };
   }
   handleUpdate = () => {
-    let data = { color:this.state.ucolor,
+    let data = { color:this.state.userColor,
       name: this.state.name,
       notes:this.state.notes,
       parentId:this.state.parentId,
@@ -37,9 +37,9 @@ class UpdateLabel extends Component {
     this.callAlertTimer( "danger", "Something went wrong, Please Try Again... ");
   };
 //this  method show the on page alert
-  callAlertTimer = (color, content) => {
-    this.setState({ color, content});
-    setTimeout(() => {this.setState({ name: '', color: '',updateSuccess: true });
+  callAlertTimer = (alertColor, content) => {
+    this.setState({ alertColor, content});
+    setTimeout(() => {this.setState({ name: '', alertColor: '',updateSuccess: true });
     }, 2000);
   };
   //this method make lable as main lable
@@ -52,8 +52,8 @@ class UpdateLabel extends Component {
   }
 
   render() {
-    const { name,notes, color, content, updateSuccess,ucolor } = this.state;
-    return <div>{updateSuccess ?<Lables />:this.loadUpdatingLable(name,notes,color,content,ucolor)}</div>
+    const { name,notes, alertColor, content, updateSuccess,userColor } = this.state;
+    return <div>{updateSuccess ?<Lables />:this.loadUpdatingLable(name,notes,alertColor,content,userColor)}</div>
   }
 
   //this method call after successfully updtaed profile
@@ -71,7 +71,7 @@ class UpdateLabel extends Component {
       </div>)
   }
   //this method call when updating profile
-  loadUpdatingLable=(name,notes,color,content,ucolor)=>{
+  loadUpdatingLable=(name,notes,alertColor,content,userColor)=>{
      return( 
        <div className="animated fadeIn" >
          <Card>
@@ -80,12 +80,12 @@ class UpdateLabel extends Component {
            </CardHeader>
            <Col sm="12" md={{ size: 5, offset: 4 }}>
            <br/>
-             <Alert color={color}>{content}</Alert>
+             <Alert color={alertColor}>{content}</Alert>
              <FormGroup>
                <h5><b>EDIT LABEL</b></h5>
                  <Input type="text" name="Label name" value={name} style={{ fontWeight: 'bold', color: '#000000' }} autoFocus={true} onChange={e => { this.setState({ name: e.target.value }) }} /><br />
                  <Input type="text" name="Label Notes" value={notes} style={{ fontWeight: 'bold', color: '#000000' }} onChange={e => { this.setState({ notes: e.target.value }) }} /><br/>
-                 <Input type="color" name="Label Color" list="Colors" value={ucolor===""?'#000000':ucolor} style={{ fontWeight: 'bold', color: '#000000' }} onChange={e => { this.setState({ ucolor: e.target.value }) }} /><br/>
+                 <Input type="color" name="Label Color" list="Colors" value={userColor} style={{ fontWeight: 'bold', color: '#000000' }} onChange={e => { this.setState({ userColor: e.target.value }) }} /><br/>
                  {this.state.parentId !== null ?this.loadSublabelMakeParentLabel() : this.loadParentLableMakeSubLable()}
                  {this.loadCollapse()}
                 <br />

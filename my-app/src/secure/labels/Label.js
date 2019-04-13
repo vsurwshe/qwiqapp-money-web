@@ -14,6 +14,7 @@ class Lables extends Component {
     this.state = {
       labels: [],
       collapse: [],
+      relable:[],
       id: 0,
       name: "",
       version:"",
@@ -73,8 +74,8 @@ class Lables extends Component {
     this.setState({danger: !this.state.danger});
   }
   //this method for the load Update Compoents
-  updateLabel = (lid, lName,lNotes,lversion) => {
-   this.setState({ updateLabel: true, id: lid, name: lName, notes:lNotes,version:lversion })
+  updateLabel = (ulable) => {
+   this.setState({ updateLabel: true,relable:ulable })
   };
   //this method for the load delete Components
   deleteLabel = () => {
