@@ -93,13 +93,11 @@ const Store = {
     },
 
     saveCategories: function(data) {
-      console.log("Categories in Store= ", data)
       db.setItem("CATEGORIES",JSON.stringify(data))
     },
 
     getCategories: function(){
         const categories = db.getItem("CATEGORIES")
-        console.log("Categories get =",JSON.parse(categories))
         return JSON.parse(categories)
     }
 }

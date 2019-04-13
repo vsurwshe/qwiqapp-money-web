@@ -23,7 +23,11 @@ class EditCategory extends Component {
   }
 
   handleUpdate = () => {
-    const data = { name: this.state.cName, color: this.state.categoryColor, code: this.state.code, parentId:this.state.parentId, version: this.state.version };
+    const data = { 
+        name: this.state.cName,
+        color: this.state.categoryColor,
+        code: this.state.code, parentId:this.state.parentId, 
+        version: this.state.version };
     new CategoryApi().updateCategory(this.successCall, this.errorCall, data, this.state.profileId, this.state.categoryId );
   };
 

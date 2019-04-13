@@ -14,7 +14,6 @@ class AddCategory extends Component {
       userToken: '',
       color: '',
       code:'',
-      type:'Expense_Payable',
       alertColor:'',
       content: '',
       collapse:false,
@@ -82,15 +81,6 @@ class AddCategory extends Component {
                     </Collapse>
                   </Col>
                 </FormGroup>
-                  {/* <FormGroup style={align}>
-                    <Label for="type">Type </Label>
-                    <Input name="type" type="select" onChange={e => { this.handleInput(e)}}>
-                        <option style={{backgroundColor:'#EF5753'}}>Expense_Payable</option>
-                        <option>Income_Receivable</option>
-                    </Input>
-                  </FormGroup> */}
-                  {/* </Row>
-                  </Col> */}
               <center>
                 <Button color="info" onClick={this.handleSubmit}> Add </Button>&nbsp;&nbsp;&nbsp;
                 <a href="/listCategories" style={{textDecoration:'none'}}> <Button active  color="light" aria-pressed="true">Cancel</Button></a><br/><br/>

@@ -36,33 +36,6 @@ class DeleteCategory extends Component {
      const { categoryDeleted, color,content } = this.state;
      return  categoryDeleted?<Categories color={color} content={content}/>:<p> Deleting .......</p>
   }
-
-  //This Method called After Deleting Category
-  // loadDeleteMessage=(content)=>{
-  //   return(
-  //     <div className="animated fadeIn">
-  //       <Card>
-  //         <CardHeader><strong>Category</strong></CardHeader>
-  //         <center style={{paddingTop:'20px'}}>
-  //           <h5><b>{content}</b><br /> <br />
-  //           <a href="/listCategories">View Categories </a></h5>
-  //         </center>
-  //       </Card>
-  //     </div>)
-  // }
-
-  // This Method while Deletion is in process.
-  // loadDeleting=(color,content)=>{
-  //   return(
-  //     <div className="animated fadeIn">
-  //      {/* <CardHeader><strong>Category</strong></CardHeader>
-  //       <Card>
-  //         <CardBody>
-  //         <Alert color={color}>{content}</Alert>
-  //         </CardBody>
-  //       </Card> */}
-  //     </div>)
-  // }
 }
 
 export default DeleteCategory;

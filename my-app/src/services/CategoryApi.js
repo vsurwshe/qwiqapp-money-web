@@ -10,12 +10,7 @@ class CategoryApi {
     Store.getCategories() === null || value === 'true'
       ? process(success, failure,  pid +"/categories?subcategories=true" ,'GET', pid) 
       : success(Store.getCategories())
-     console.log('local storage is: ',Store.getCategories())
-  }
-
-  // getSubCategories(success, failure ,pid,show) {
-  //   process(success, failure,  pid + "/categories?subcategories=" + show, "GET");
-  // }
+       }
 
   getCategoriesById(success, failure, pid,cid) {
     process(success, failure,  pid + "/categories/" + cid, "GET",pid);
@@ -57,17 +52,13 @@ let AccessTokenError=(err,failure, Uurl, Umethod, data,success)=>{
     errorResponse(err, failure)
   }
 }
-
-
 let validResponse = function(resp, successMethod) {
-  console.log("Response Data= ", resp.data);
   if (successMethod != null) {
     successMethod(resp.data);
   }
 };
 
 let errorResponse = function(error, failure) {
-  console.log("Error: ", error);
   if (failure != null) {
     failure(error);
   }
