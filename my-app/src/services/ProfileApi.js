@@ -46,8 +46,7 @@ let AccessTokenError =function(err,failure,Uurl, Umethod, data,success){
 }
 
 let validResponse = function(resp, successMethod) {
-  console.log("Profiles Response: ",resp.data)
-  if (successMethod != null) {
+ if (successMethod != null) {
     successMethod(resp.data);
   }
 };

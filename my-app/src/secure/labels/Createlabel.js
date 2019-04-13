@@ -19,7 +19,6 @@ class CreateLable extends Component {
   }
   //this method handle the successfull response form geting api
   successCall = json => {
-    console.log(json);
     if (json === []) {
       this.setState({ labels: [0] })
     }else {

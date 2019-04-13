@@ -35,11 +35,10 @@ class Lables extends Component {
   }
   //this method get All Labels Realted That Profile
   componentDidMount=()=> {
-         new ProfileApi().getProfiles(this.successProfileid,this.errorCall);
+    new ProfileApi().getProfiles(this.successProfileid,this.errorCall);
   }
   //this method seting Profile id 
   successProfileid=json=>{
-    console.log("successProfileid ",json)
     if (json === []) { this.setState({ profileId:'' })}
     else {
       const iterator = json.values();
@@ -48,7 +47,6 @@ class Lables extends Component {
   }
   //this method set Profile Id
   setProfileId=(id)=>{
-    // console.log(id);
     this.setState({profileId:id})
     this.getLabels();
   }
@@ -62,7 +60,9 @@ class Lables extends Component {
     }
   };
   errorCall = err => { this.setState({ visible: true }) }
+
   callCreateLabel = () => { this.setState({ createLabel: true })}
+
   loadCollapse=()=>{
      this.state.labels.map(lables=>{return this.setState(prevState => ({accordion: [...prevState.accordion, false],
       hoverAccord : [...prevState.hoverAccord,false],
@@ -109,7 +109,6 @@ class Lables extends Component {
   onHover = (e,hKey) =>{
     this.setState({ onHover : true });
     this.hoverAccordion(hKey)
-    // console.log(e.nativeEvent)
   }
 
   onHoverOff = (e,hKey) =>{
@@ -172,9 +171,7 @@ class Lables extends Component {
           <Col sm="12" md={{ size: 5, offset: 4 }}>
             <Row >
               <Container >
-              {/* {this.state.spinner && this.state.labels.length ===0 ? <Loader type="Circles" color="#somecolor" height={80} width={80}/> : }   */}
-              <Avatar className="float-right" name="+" color="blue" size="50" round={true} onClick={this.callCreateLabel} /><br/><br/><br/>
-                 {/* <FaPlusCircle className="float-right"  size={30} onClick={this.callCreateLabel} />   */}
+               <Avatar className="float-right" name="+" color="blue" size="45" round={true} onClick={this.callCreateLabel} /><br/><br/><br/>
                 {this.state.labels.map((label, key) => {return this.loadSingleLable(this.state.labels[key], key); })}
               </Container>
             </Row>
@@ -229,7 +226,7 @@ class Lables extends Component {
    }
  //this Method load Browser DropDown
  loadDropDown=(labels,ukey,styles)=>{
-   return (<Dropdown isOpen={this.state.dropdownOpen[ukey]} style={{ float: "right" }} toggle={() => { this.toggleDropDown(ukey); }} size="sm">
+   return (<Dropdown isOpen={this.state.dropdownOpen[ukey]} style={{marginTop: 7, float: "right" }} toggle={() => { this.toggleDropDown(ukey); }} size="sm">
        <DropdownToggle tag="span" onClick={() => { this.toggleDropDown(ukey); }} data-toggle="dropdown" aria-expanded={this.state.dropdownOpen[ukey]}>
          <FaEllipsisV style={{styles}}/>
        </DropdownToggle>

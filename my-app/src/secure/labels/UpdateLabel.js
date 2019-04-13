@@ -21,13 +21,16 @@ class UpdateLabel extends Component {
     };
   }
   handleUpdate = () => {
-    let data = { color:this.state.ucolor,name: this.state.name,notes:this.state.notes,parentId:this.state.parentId,version:this.state.version };
+    let data = { color:this.state.ucolor,
+      name: this.state.name,
+      notes:this.state.notes,
+      parentId:this.state.parentId,
+      version:this.state.version };
     new LabelApi().updateLabel(this.SuccessCall, this.errorCall, data,this.state.profileId, this.state.id )
   };
   //this called When Componets Calling SucessFully
   SuccessCall = json => {
-    // this.setState({ updateSuccess: true });
-    this.callAlertTimer( "success", "Label Updated Successfully... ");
+     this.callAlertTimer( "success", "Label Updated Successfully... ");
   };
  //when any api goto the api executions failed then called this method 
   errorCall = err => {
@@ -35,7 +38,7 @@ class UpdateLabel extends Component {
   };
 //this  method show the on page alert
   callAlertTimer = (color, content) => {
-    this.setState({ color: color, content: content});
+    this.setState({ color, content});
     setTimeout(() => {this.setState({ name: '', color: '',updateSuccess: true });
     }, 2000);
   };
@@ -50,11 +53,7 @@ class UpdateLabel extends Component {
 
   render() {
     const { name,notes, color, content, updateSuccess,ucolor } = this.state;
-    // if (updateSuccess) {
-    //   return <div>{this.loadUpdateMessage()}</div>
-    // } else {
-      return <div>{updateSuccess ?<Lables />:this.loadUpdatingLable(name,notes,color,content,ucolor)}</div>
-    // }
+    return <div>{updateSuccess ?<Lables />:this.loadUpdatingLable(name,notes,color,content,ucolor)}</div>
   }
 
   //this method call after successfully updtaed profile

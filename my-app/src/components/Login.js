@@ -102,11 +102,10 @@ class Login extends Component {
                   <FormGroup>
                   <Input name="email" type="email" placeholder="Your Email" value={this.state.email} valid={ emailState === 'success' }
                       invalid={ emailState === 'danger'} onChange={ (e) => { this.validateEmail(e);this.handleEvent(e) }} />
-                  <FormFeedback invalid> Uh oh! Incorrect email. </FormFeedback>  
+                  <FormFeedback> Uh oh! Incorrect email. </FormFeedback>  
                   </FormGroup>
                   <FormGroup>
-                  {/* cols="3" */}
-                  <Input type="password"  name="password" onChange={(e) => { this.handleEvent(e)}}
+                   <Input type="password"  name="password" onChange={(e) => { this.handleEvent(e)}}
                    onKeyPress={this.handleEnter} placeholder="Your Password" value={this.state.password} /> 
                   </FormGroup>
                   <Button color="info" onClick={this.handleButton}>

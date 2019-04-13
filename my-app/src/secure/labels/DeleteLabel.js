@@ -18,13 +18,11 @@ class DeleteLabel extends Component {
    };
   //this method call when the delete api called and successfully Executed.
   successCall = () => {
-    // this.setState({labelDeleted: true,content: "Profile Deleted Successfully !!"});
     this.callAlertTimer("success","Profile Deleted Successfully....");
   };
   
   //when any api goto the api executions failed then called this method 
   errorCall = () => {
-    // this.setState({ labelDeleted: true });
     this.callAlertTimer("danger","Something went wrong, Please Try Again...  ");
   };
 

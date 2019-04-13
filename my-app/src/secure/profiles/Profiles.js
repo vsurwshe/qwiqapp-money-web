@@ -31,7 +31,6 @@ class Profiles extends Component {
   }
 
   successCall = json => {
-    console.log(json);
     if (json === "Deleted Successfully") {
       this.setState({ profiles: [0] })
     }
