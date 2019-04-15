@@ -41,9 +41,10 @@ class Main extends Component {
         <PrivateRoute path="/profiles" component={Profiles} />
         <PrivateRoute path="/label/labels" component={Lables} />
         <PrivateRoute path="/label/createLabel" component={CreateLable} />
+        <PrivateRoute path="/listCategories" component={Categories} />
         <Route exact path="/" component={Login} />
         <Route path="/home" component={Home} />
-        <Route path="/listCategories" component={Categories} />
+        
       </Switch>
     );
   }

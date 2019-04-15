@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Container, Button, Card, CardBody, Col, Row, Alert, CardHeader,Collapse,Modal, ModalHeader, ModalBody, ModalFooter,Dropdown,DropdownToggle,DropdownMenu,DropdownItem} from "reactstrap";
+import { Container, Button, Card, CardBody, Col, Row, Alert, CardHeader,Collapse,Modal, ModalHeader, ModalBody, ModalFooter,Dropdown,DropdownToggle,DropdownMenu,DropdownItem,ListGroupItem,ListGroup} from "reactstrap";
 import CreateLabel from "./Createlabel";
 import Avatar from 'react-avatar';
 import { FaPen, FaTrashAlt ,FaAngleDown,FaEllipsisV} from 'react-icons/fa';
@@ -31,16 +31,24 @@ class Lables extends Component {
       dropdownOpen:[],
       onHover:false,
       hoverAccord : [],
-      spinner:false
+      spinner:false,
+      screenWidth:""
     };
   }
   //this method get All Labels Realted That Profile
   componentDidMount=()=> {
     new ProfileApi().getProfiles(this.successProfileid,this.errorCall);
+    window.addEventListener("resize", this.resize.bind(this));
+    this.resize();
+  }
+  //this mwthod get the dimessions of screen
+  resize(){
+    // console.log(window.innerWidth,window.innerHeight);
+    this.setState({screenWidth:window.innerWidth})
   }
   //this method seting Profile id 
   successProfileid=json=>{
-    if (json === []) { this.setState({ profileId:'' })}
+    if (json === []) { this.setState({ profileId:'',spinner:false })}
     else {
       const iterator = json.values();
       for (const value of iterator) {this.setProfileId(value.id)}
@@ -140,7 +148,7 @@ class Lables extends Component {
      </CardHeader>
      <center style={{paddingTop:'20px'}}>
        <CardBody>
-       <Loader type="Circles" color="#2E86C1" height={80} width={80}/>
+       <Loader type="Ball-Triangle" color="#2E86C1" height={80} width={80}/>
        </CardBody>
      </center>
    </Card>
@@ -169,7 +177,7 @@ class Lables extends Component {
         <CardHeader><strong>Label</strong></CardHeader>
         <CardBody>
           <h6><Alert isOpen={visible} color="danger">Internal Server Error</Alert></h6>
-          <Col sm="12" md={{ size: 5, offset: 4 }}>
+          <Col sm="12" md={{  size: 7, offset: 2 }}>
             <Row >
               <Container >
                <Avatar className="float-right" name="+" color="blue" size="45" round={true} onClick={this.callCreateLabel} /><br/><br/><br/>
@@ -189,28 +197,36 @@ class Lables extends Component {
       marginTop: "15px"
     }
     const penColor = {
+      marginTop: "15px",
       color: 'blue'
     }
     const trashColor = {
-        color: 'red'
+      marginLeft: "10px",
+      marginTop: "15px",
+      color: 'red'
     }
     return (
-    <div key={ukey} className="animated fadeIn" onPointerEnter={(e)=>this.onHover(e, ukey)} onPointerLeave={(e)=>this.onHoverOff(e,ukey)}> 
-    <Avatar name={labels.name.charAt(0)} color={labels.color===""? "#000000":labels.color} size="40" square={true} key={labels.id} /> &nbsp;&nbsp;{labels.name}
-    {Array.isArray(labels.subLabels) ? <span style={{paddingLeft:10}}><FaAngleDown onClick={() => this.toggleAccordion(ukey)} /></span>  : ''}
-    {this.state.onHover && this.state.hoverAccord[ukey]?this.loadDropDown(labels,ukey,styles):''}
-    <div style={{ padding: 5 }} />
-    <Collapse isOpen={this.state.accordion[ukey]}>
-      {Array.isArray(labels.subLabels) ? labels.subLabels.map(ulable => {
-        return (<div style={{paddingBottom:10}} key={ulable.id}>
-          <span style={{paddingLeft: 55}} ></span>
-          <Avatar name={ulable.name.charAt(0)} color={ulable.color} size="40" square={true} />&nbsp;&nbsp;{ulable.name}
-          <FaTrashAlt onClick={() => { this.setState({ id: ulable.id }); this.toggleDanger(); }} className="float-right" style={Object.assign({},styles,trashColor)} />
-          <FaPen size={12} className="float-right" style={Object.assign({},styles,penColor)} onClick={() => { this.updateLabel(ulable) }} />
-         </div>)
-      }) : ""}
-    </Collapse>
-    </div>)
+      <ListGroup flush key={ukey} onPointerEnter={(e) => this.onHover(e, ukey)} onPointerLeave={(e) => this.onHoverOff(e, ukey)}>
+      <ListGroupItem className="justify-content-between" action>
+        <Avatar name={labels.name.charAt(0)} color={labels.color === "" ? "#000000" : labels.color} size="40" square={true} key={labels.id} /> &nbsp;&nbsp;{this.displayName(labels.name, styles)}
+        {Array.isArray(labels.subLabels) ? <span style={{ paddingLeft: 10 }}><FaAngleDown onClick={() => this.toggleAccordion(ukey)} /></span> : ''}
+        {this.state.onHover && this.state.hoverAccord[ukey] ? this.loadDropDown(labels, ukey, styles) : ''}
+        <Collapse isOpen={this.state.accordion[ukey]}>
+          {Array.isArray(labels.subLabels) ? labels.subLabels.map(ulable => {
+            return (<ListGroupItem  style={{ paddingLeft: 55 }} className="justify-content-between" key={ulable.id}>
+                  <Avatar name={ulable.name.charAt(0)} color={ulable.color} size="40" square={true} />&nbsp;&nbsp;{this.displayName(ulable.name, styles)}
+                  <FaTrashAlt className="float-right" onClick={() => { this.setState({ id: ulable.id }); this.toggleDanger(); }} style={Object.assign({}, trashColor)} />
+                  <FaPen className="float-right" size={12} style={Object.assign({}, penColor)} onClick={() => { this.updateLabel(ulable) }} />
+                </ListGroupItem>)
+          }) : ""}
+        </Collapse>
+      </ListGroupItem>
+    </ListGroup>)
+  }
+  //this method display name after avtar for large string
+  displayName=(name,styles)=>{
+    const {screenWidth}=this.state
+    return(<span style={{styles}}>{screenWidth <=425  ? (name.length>5 ? (name.slice(0,5)+"..."):name):name}</span>)
   }
   //this method call the delete model
   loadDeleteLabel = () => {

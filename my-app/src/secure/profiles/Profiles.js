@@ -26,9 +26,8 @@ class Profiles extends Component {
     };
   }
 
-  async componentDidMount() {
-   const response= await new ProfileApi().getProfiles(this.successCall, this.errorCall);
-   console.table(response)
+  componentDidMount() {
+    new ProfileApi().getProfiles(this.successCall, this.errorCall);
   }
 
   successCall = json => {
@@ -115,19 +114,17 @@ class Profiles extends Component {
   }
   //if one or more profile is there then this method Call
   loadShowProfile = (viewProfileRequest, visible, profiles) => {
-    return (
-    <div className="animated fadeIn">
-      <Card>
-        <CardHeader>
-          <strong>Profile</strong>
-        </CardHeader>
-        <CardBody>
-          <h6>
-            <Alert isOpen={visible} color="danger">Internal Server Error</Alert>
-          </h6>
-          <Col sm="12"  md={{ size: 6, offset: 3 }}>
-            <Row>
-              <CardBody>
+    return (<div className="animated fadeIn">
+        <Card>
+          <CardHeader>
+            <strong>Profile</strong>
+          </CardHeader>
+          <CardBody>
+            <h6>
+              <Alert isOpen={visible} color="danger">Internal Server Error</Alert>
+            </h6>
+            <Col sm="12" md={{ size: 5, offset: 4 }}>
+              <Row>
                 {profiles.map(profiles => {
                   return this.loadSingleProfile(profiles, viewProfileRequest);
                 })}

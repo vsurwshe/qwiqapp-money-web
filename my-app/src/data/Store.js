@@ -3,10 +3,10 @@ const DUMMY_KEY = 'dummy';
 const db = sessionStorage;
 const Store = {
     storeLabels: function(categoriesJSON) {
-        this.storeJson('LABELS', categoriesJSON);
+        this.storeJson("LABELS", categoriesJSON);
     },
     getLabels: function(){
-       return this.getJson('LABELS');
+       return this.getJson("LABELS");
     },
     storeJson: function(keyName, jsonValue) {
         db.setItem(keyName, JSON.stringify(jsonValue));
@@ -99,7 +99,13 @@ const Store = {
     getCategories: function(){
         const categories = db.getItem("CATEGORIES")
         return JSON.parse(categories)
+    },
+
+    clearLocalStroge: function(){
+        db.removeItem("CATEGORIES");
+        db.removeItem("LABELS");
     }
+
 }
 export default Store;
 
