@@ -1,11 +1,12 @@
 import React, { Component } from "react";
 import { Container, Button, Card, CardBody, Col, Row, Alert, CardHeader, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
-import ProfileApi from "../services/ProfileApi";
-import UpdateProfile from "../secure/UpdateProfile";
+import ProfileApi from "../../services/ProfileApi";
+import UpdateProfile from "./UpdateProfile";
 import CreateProfile from "./CreateProfile";
 import DeleteProfile from "./DeleteProfile";
 import Avatar from 'react-avatar';
 import ViewProfile from "./ViewProfile";
+import Loader from 'react-loader-spinner'
 import { FaPen, FaTrashAlt } from 'react-icons/fa';
 class Profiles extends Component {
   constructor(props) {
@@ -20,7 +21,8 @@ class Profiles extends Component {
       viewProfileRequest: false,
       visible: false,
       id: 0,
-      name: ""
+      name: "",
+      spinner:false
     };
   }
 
@@ -29,12 +31,11 @@ class Profiles extends Component {
   }
 
   successCall = json => {
-    console.log(json);
     if (json === "Deleted Successfully") {
       this.setState({ profiles: [0] })
     }
     else {
-      this.setState({ profiles: json })
+      this.setState({ profiles: json ,spinner:true})
     }
   };
 
@@ -67,9 +68,9 @@ class Profiles extends Component {
   }
 
   render() {
-    const { profiles, id, viewProfileRequest, createProfile, updateProfile, deleteProfile, visible, name } = this.state
+    const { profiles, id, viewProfileRequest, createProfile, updateProfile, deleteProfile, visible, name ,spinner} = this.state
     if (profiles.length === 0 && !createProfile) {
-      return <div>{this.loadNotCreateProfile()}</div>
+      return <div>{profiles.length === 0 && !createProfile && !spinner ? this.loadLoader() :this.loadNotCreateProfile()}</div>
     } else if (createProfile) {
       return (<Container> <CreateProfile /> </Container>)
     } else if (updateProfile) {
@@ -80,6 +81,22 @@ class Profiles extends Component {
       return <div>{this.loadShowProfile(viewProfileRequest, visible, profiles)}{this.loadDeleteProfile()}</div>
     }
   }
+   //this method load the spinner
+   loadLoader=()=>{
+    return( <div className="animated fadeIn">
+    <Card>
+      <CardHeader>
+        <strong>Total Labels: {this.state.profiles.length}</strong>
+      </CardHeader>
+      <center style={{paddingTop:'20px'}}>
+        <CardBody>
+        <Loader type="Circles" color="#2E86C1" height={80} width={80}/>
+        </CardBody>
+      </center>
+    </Card>
+  </div>)
+   }
+
   //this method call when if any profile not created.
   loadNotCreateProfile = () => {
     return (<div className="animated fadeIn">
@@ -98,45 +115,46 @@ class Profiles extends Component {
   }
   //if one or more profile is there then this method Call
   loadShowProfile = (viewProfileRequest, visible, profiles) => {
-    return (
-    <div className="animated fadeIn">
-      <Card>
-        <CardHeader>
-          <strong>Profile</strong>
-        </CardHeader>
-        <CardBody>
-          <h6>
-            <Alert isOpen={visible} color="danger">Internal Server Error</Alert>
-          </h6>
-          <Col sm="6">
-            <Row>
-              <CardBody>
+    return (<div className="animated fadeIn">
+        <Card>
+          <CardHeader>
+            <strong>Profile</strong>
+          </CardHeader>
+          <CardBody>
+            <h6>
+              <Alert isOpen={visible} color="danger">Internal Server Error</Alert>
+            </h6>
+            <Col sm="12" md={{ size: 5, offset: 4 }}>
+              <Row>
                 {profiles.map(profiles => {
-                  return (
-                    <Container>
-                      <Avatar name={profiles.name.charAt(0)} size="40" round={true} onClick={this.profileView} /> {profiles.name}
-                      <FaTrashAlt onClick={() => { this.setState({ id: profiles.id }); this.toggleDanger() }} className="float-right" style={{ marginLeft: "20px", color: 'red', marginTop: "15px"}} />
-                      <FaPen size={20} className="float-right" style={{ marginLeft: "20px", color: '#4385ef', marginTop: "15px" }} onClick={() => { this.updateProfile(profiles.id, profiles.name) }} />
-                      <hr />
-                      <Container>
-                        {viewProfileRequest ? <ViewProfile view={profiles} /> : " "}
-                      </Container>
-                    </Container>
-                  );
+                  return this.loadSingleProfile(profiles, viewProfileRequest);
                 })}
-              </CardBody>
-            </Row>
-          </Col>
-        </CardBody>
-      </Card>
-    </div>)
+              </Row>
+              <Button color="info" onClick={this.callCreateProfile}> Create Profile </Button>
+            </Col>
+           
+          </CardBody>
+        </Card>
+      </div>)
+  }
+
+  //this method load the single profile
+  loadSingleProfile=(profiles,viewProfileRequest)=>{
+    return (<div key={profiles.id}>
+      <Avatar name={profiles.name.charAt(0)} size="40" round={true} onClick={this.profileView} /> {profiles.name}
+      <FaTrashAlt onClick={() => { this.setState({ id: profiles.id }); this.toggleDanger() }} className="float-right" style={{ marginLeft: "20px", color: 'red', marginTop: "15px" }} />
+      <FaPen size={20} className="float-right" style={{ marginLeft: "20px", color: '#4385ef', marginTop: "15px" }} onClick={() => { this.updateProfile(profiles.id, profiles.name) }} />
+      <hr />
+      <Container>
+        {viewProfileRequest ? <ViewProfile view={profiles} /> : " "}
+      </Container>
+    </div>);
   }
 
   //this method call the delete model
   loadDeleteProfile = () => {
     return (
-    <Modal isOpen={this.state.danger} toggle={this.toggleDanger}
-      className={'modal-danger '}>
+    <Modal isOpen={this.state.danger} toggle={this.toggleDanger} backdrop={false}>
       <ModalHeader toggle={this.toggleDanger}>Delete Profile</ModalHeader>
       <ModalBody>
         Are you Sure want to Delete This Profile ?

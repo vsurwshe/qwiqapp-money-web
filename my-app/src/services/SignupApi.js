@@ -16,8 +16,8 @@ class SignupApi {
   async existsUser(success, failure, data) {
     this.getToken();
     setTimeout(()=>{
-      let instance = createInstance(Config.cloudBaseURL + "/register/exists?email=" + data.email,"GET");
-      instance.request().then(resp => { if (resp.data) { 
+      let HTTP = httpCall(Config.cloudBaseURL + "/register/exists?email=" + data.email,"GET");
+      HTTP.request().then(resp => { if (resp.data) { 
           validResponse(resp,success) 
       } })
       .catch(err => { if (err.response.status === "404") console.log("Internal Error")});
@@ -36,11 +36,11 @@ class SignupApi {
 export default SignupApi;
 
 let process = function(success, failure, Uurl, Umethod, data) {
-  let instance = createInstance(Uurl, Umethod);
+  let HTTP = httpCall(Uurl, Umethod);
   if ([data].length > 0) {
-    instance.request({ data }).then(resp => validResponse(resp, success)).catch(err => errorResponse(err, failure));
+    HTTP.request({ data }).then(resp => validResponse(resp, success)).catch(err => errorResponse(err, failure));
   } else {
-    instance.request().then(resp => validResponse(resp, success)).catch(err => errorResponse(err, failure));
+    HTTP.request().then(resp => validResponse(resp, success)).catch(err => errorResponse(err, failure));
   }
 };
 let validResponse = function(resp, successMethod) { if (successMethod != null) {successMethod(resp.data);}};
@@ -48,9 +48,9 @@ let errorResponse = function(error, failure) {
  if(error.response.status === 404 && failure != null){failure(error)}
 };
 
-function createInstance(Uurl, Umethod) {
+function httpCall(Uurl, Umethod) {
   console.log("Dummy Token",Store.getDummyUserAccessToken())
-  let instance = Axios.create({
+  let HTTP = Axios.create({
     method: Umethod,
     url: Uurl,
     headers: {
@@ -58,5 +58,5 @@ function createInstance(Uurl, Umethod) {
       Authorization: "Bearer " + Store.getDummyUserAccessToken()
     }
   });
-  return instance;
+  return HTTP;
 }

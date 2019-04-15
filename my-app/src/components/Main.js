@@ -8,10 +8,10 @@ import Home from "./Home";
 import Login from "./Login";
 import Store from "../data/Store";
 import SignupVerify from "../components/SignupVerify";
-import Profiles from "../secure/Profiles";
-import CreateProfile from "../secure/CreateProfile";
+import Profiles from "../secure/profiles/Profiles";
 import navigation from "../data/navigations";
-import UpdateProfile from "../secure/UpdateProfile";
+import CreateLable from "../secure/labels/Createlabel";
+import Lables from "../secure/labels/Label";
 
 const DefaultFooter = React.lazy(() =>import("../secure/Sidebar/DefaultFooter"));
 const DefaultHeader = React.lazy(() =>  import("../secure/Sidebar/DefaultHeader"));
@@ -35,10 +35,10 @@ class Main extends Component {
         <PrivateRoute path="/dashboard" component={Dashboard} />
         <Route path="/login" component={Login} />
         <Route path="/signup" component={Signup} />
-        <Route path="/updateProfile" component={UpdateProfile} />
-        <Route path="/createProfile" component={CreateProfile} />
-        <Route path="/profiles" component={Profiles} />
         <Route path="/register/:id/verify" component={SignupVerify} />
+        <PrivateRoute path="/profiles" component={Profiles} />
+        <PrivateRoute path="/label/labels" component={Lables} />
+        <PrivateRoute path="/label/createLabel" component={CreateLable} />
         <Route exact path="/" component={Login} />
         <Route path="/home" component={Home} />
       </Switch>

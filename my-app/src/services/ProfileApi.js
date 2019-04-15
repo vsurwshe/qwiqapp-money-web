@@ -1,6 +1,7 @@
 import Axios from "axios";
 import Config from "../data/Config";
 import Store from "../data/Store";
+import LoginApi from "./LoginApi";
 class ProfileApi {
   createProfile(success, failure, data) {
     process(success, failure, "/profiles/", "POST", data);
@@ -23,29 +24,29 @@ class ProfileApi {
 
 export default ProfileApi;
 
-function process(success, failure, Uurl, Umethod, data) {
-  if (Umethod === "PUT" || Umethod === "POST") {
-    let insta = createInstance(Uurl, Umethod);
-    insta
-      .request({ data })
-      .then(resp => validResponse(resp, success))
-      .catch(err => {
-        console.log(err.response.status);
-        if (err.response.status)
-          errorResponse("Sorry can't create Profile!", failure);
-      });
-  } else {
-    let insta = createInstance(Uurl, Umethod);
-    insta
-      .request()
-      .then(resp => validResponse(resp, success))
-      .catch(err => errorResponse(err, failure));
-  }
+async function process(success, failure, Uurl, Umethod, data) {
+  let HTTP = httpCall(Uurl, Umethod);
+  let promise;
+    try{
+         data===null? promise=await HTTP.request(): promise=await HTTP.request({ data });
+         validResponse(promise, success)
+    }catch(err){ 
+      console.log(err);
+      AccessTokenError(err,failure,Uurl, Umethod, data,success);
+    }
+}
+
+//this method slove the Exprie Token Problem.
+let AccessTokenError =function(err,failure,Uurl, Umethod, data,success){
+  if(err.request.status=== 0)
+  {errorResponse(err, failure)
+  }else if (err.response.status===403 || err.response.status===401)
+  {new LoginApi().refresh(()=>{process(success,failure,Uurl,Umethod,data)},errorResponse(err, failure))
+  }else{errorResponse(err, failure)}
 }
 
 let validResponse = function(resp, successMethod) {
-  console.log("Response: ", resp.data);
-  if (successMethod != null) {
+ if (successMethod != null) {
     successMethod(resp.data);
   }
 };
@@ -57,7 +58,7 @@ let errorResponse = function(error, failure) {
   }
 };
 
-function createInstance(Uurl, Umethod) {
+function httpCall(Uurl, Umethod) {
   let instance = Axios.create({
     baseURL: Config.cloudBaseURL,
     method: Umethod,

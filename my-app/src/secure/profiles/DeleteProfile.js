@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Card, CardHeader,CardBody } from "reactstrap";
-import ProfileApi from "../services/ProfileApi";
+import ProfileApi from "../../services/ProfileApi";
 class DeleteProfile extends Component {
   constructor(props) {
     super(props);
