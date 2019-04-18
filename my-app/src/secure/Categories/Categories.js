@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Card, CardHeader, CardBody, Button, Col, Row, Container, Modal, ModalHeader, ModalBody, ModalFooter, Collapse, Alert,Dropdown,DropdownItem,DropdownToggle,DropdownMenu} from 'reactstrap';
+import { Card,CardHeader, CardBody, Button, Col, Row, Container, Modal, ModalHeader, ModalBody, ModalFooter, Collapse,ListGroup,ListGroupItem,Alert,Dropdown,DropdownItem,DropdownToggle,DropdownMenu} from 'reactstrap';
 import Avatar from 'react-avatar';
 import { FaPen, FaTrashAlt, FaAngleDown, FaEllipsisV } from 'react-icons/fa';
 import CategoryApi from "../../services/CategoryApi";
@@ -7,8 +7,10 @@ import AddCategory from "./AddCategory";
 import EditCategory from "./EditCategory";
 import DeleteCategory from "./DeleteCategory";
 import ProfileApi from "../../services/ProfileApi";
-
+import "default-passive-events";
 class Categories extends Component {
+
+  isUnmount= false;
   constructor(props) {
     super(props);
     this.state = {
@@ -28,15 +30,32 @@ class Categories extends Component {
       alertColor : this.props.color,
       content : this.props.content,
       onHover:false,
+      screenWidth:"",
+      screenHeight:""
     };
+    this.componentDidMount = this.componentDidMount.bind(this);
+    // this.resize = this.resize.bind(this)
   }
 
   componentDidMount() {
+    this.isUnmount = true;
     new ProfileApi().getProfiles( this.successProfileId, this.errorCall )
+    window.addEventListener("resize", this.resize.bind(this));
+    this.resize();
   }
-  
+    
+  resize() {
+    if(this.isUnmount){
+    this.setState({ screenWidth: window.innerWidth });
+    }
+  }
+
+  componentWillUnmount = () => {
+    this.isUnmount=false;
+  }
+   
   //This Method is called for Api's Success Call
-  successCall = json => {
+  successCall = json => { 
     this.setState({ categories : json })
     this.loadCollapse();
   }
@@ -60,7 +79,7 @@ class Categories extends Component {
 
   //Method to set Profile Id 
   setProfielId = (id) => {
-       this.setState({ profileId : id });
+    this.setState({ profileId : id });
     new CategoryApi().getCategories(this.successCall, this.errorCall, this.state.profileId );
   }
 
@@ -86,9 +105,10 @@ class Categories extends Component {
     this.setState({ danger : !this.state.danger });
   }
 
-  callAlertTimer = (alertColor,content) => {
+  callAlertTimer = () => {
     setTimeout(() => {
-      this.setState({ alertColor : '', content : '' });
+      if(this.isUnmount){
+      this.setState({ alertColor : '', content : '' });}
     }, 2000);
   };
 
@@ -124,7 +144,7 @@ class Categories extends Component {
   render() {
     const { categories,requiredCategory,createCategory,updateCategory,deleteCategory,profileId,categoryId,alertColor,content } = this.state;
     if(createCategory){
-      return <AddCategory category = {categories} id={profileId}/>
+      return <AddCategory category = {categories} id= {profileId} />
     }else if(updateCategory){
       return <Container><EditCategory categories = {categories} category = {requiredCategory} id = {profileId}/></Container>
     }else if(deleteCategory){
@@ -141,11 +161,11 @@ class Categories extends Component {
         <Card>
           <CardHeader> <strong>CATEGORIES : {this.state.categories.length}</strong> </CardHeader>
           <CardBody>
-            <Col sm="12" md={{ size : 5, offset : 3 }}>
+            <Alert color={alertColor===undefined? '' : alertColor}>{content}</Alert>
+            <Col sm="12" md={{ size : 7, offset : 2 }}>
               <Row>
                 <Container>
-                  <Alert color={alertColor===undefined? '' : alertColor}>{content}</Alert>
-                  <Container><Avatar className="float-right" name="+" color="blue" size="50" round={true} onClick={this.callAddCategory} /></Container><br/><br/><br/>
+                  <Avatar className="float-right" name="+" color="blue" size="45" round={true} onClick={this.callAddCategory} /><br/><br/><br/>
                   {this.state.categories.map((category, key) => {return this.loadCategory(this.state.categories[key],key);})} 
                 </Container>
               </Row>
@@ -153,6 +173,11 @@ class Categories extends Component {
           </CardBody>
         </Card>
       </div>)
+  }
+
+  displayNames = (name) => {
+    const {screenWidth} = this.state;
+    return (<span>{screenWidth<=425 ? (name.length>5? name.slice(0, 5)+"..." : name) : name }</span>)
   }
   
   loadCategory = (category,uKey) => {
@@ -168,23 +193,22 @@ class Categories extends Component {
     }
 
     return( 
-      <div className="animated fadeIn" key={uKey} onPointerEnter={(e) => this.onHover(e, uKey)} onPointerLeave={(e) => this.onHoverOff(e, uKey)}>
-        <Avatar name={category.name.charAt(0)} color={category.color === null ? '#000000' : category.color} size="40" square={true} />&nbsp; {category.name} &nbsp;
-            {Array.isArray(category.subCategories) ? <FaAngleDown onClick={() => { this.toggleAccordion(uKey) }} /> : ''}
-        {this.state.onHover && this.state.hoverAccord[uKey] ? this.showDropdown(category, uKey, styles) : ''}
-        <div style={{paddingBottom:10}}/>
+      <ListGroup flush className="animated fadeIn" key={uKey} onPointerEnter={(e)=>this.onHover(e, uKey)} onPointerLeave={(e)=>this.onHoverOff(e,uKey)}>
+        <ListGroupItem action >
+          <Avatar name={category.name.charAt(0)} color = {category.color===null || category.color === "" ?'#000000':category.color} size="40" square={true} />&nbsp;&nbsp; {this.displayNames(category.name)} &nbsp;
+            {Array.isArray(category.subCategories)?<FaAngleDown onClick={()=>{this.toggleAccordion(uKey)}}/>:''}
+            {this.state.onHover && this.state.hoverAccord[uKey]?this.showDropdown(category,uKey,styles):''}
+        <div style={{padding:5}} />
         <Collapse isOpen={this.state.accordion[uKey]}>
-       
-            {category.subCategories != null ? category.subCategories.map(subCategory => {
-              return <div key={subCategory.id} style={{paddingLeft: 55,paddingBottom: 10 }} >
-                <Avatar name={subCategory.name.charAt(0)} color={subCategory.color === null ? '#000000' : subCategory.color} size="40" square={true} /><b>&nbsp;&nbsp;{subCategory.name}</b>
-                <FaTrashAlt className="float-right" style={Object.assign({}, styles, trashColor)} onClick={() => { this.setState({ categoryId: subCategory.id }); this.toggleDanger() }} />
-                <FaPen size={16} className="float-right" style={Object.assign({}, styles, penColor)} onClick={() => this.updateCategory(subCategory)} /><br />
-              </div>
-            })
-              : ''}
-        </Collapse> 
-      </div>)
+            {category.subCategories != null ? category.subCategories.map(subCategory=>{return (
+              <ListGroupItem tag="a" key={subCategory.id} style={{paddingBottom:10, paddingLeft:70}} >
+               <Avatar name={subCategory.name.charAt(0)} color={subCategory.color===null?'#000000':subCategory.color} size="40" square={true}/><b>&nbsp;&nbsp;{this.displayNames(subCategory.name)}</b>
+               <FaTrashAlt className="float-right" style={Object.assign({},styles,trashColor)} onClick={() => { this.setState({ categoryId: subCategory.id }); this.toggleDanger() }}/>
+               <FaPen size={16} className="float-right" style={Object.assign({},styles,penColor)} onClick={()=>this.updateCategory(subCategory)} /><br />
+               </ListGroupItem>)})
+              : ''} 
+        </Collapse> </ListGroupItem>
+      </ListGroup>)
   }
 
   loadDeleteCategory = () => {

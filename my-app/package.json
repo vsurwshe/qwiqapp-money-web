@@ -12,6 +12,7 @@
     "axios": "^0.18.0",
     "babel-plugin-styled-components": "^1.10.0",
     "bootstrap": "^4.3.1",
+    "default-passive-events": "^1.0.10",
     "flag-icon-css": "^3.3.0",
     "font-awesome": "^4.7.0",
     "jest-transform-css": "^2.0.0",

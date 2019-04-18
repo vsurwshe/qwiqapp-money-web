@@ -3,6 +3,7 @@ import { Label, Button, Input, Card, CardHeader, FormGroup, Collapse,Col, Alert 
 import Store from "../../data/Store";
 import CategoryApi from "../../services/CategoryApi";
 import Categories from "./Categories";
+import "default-passive-events";
 class AddCategory extends Component {
   constructor(props){
     super(props)
@@ -76,13 +77,13 @@ class AddCategory extends Component {
                     <Input name="check" type="checkbox" onClick={this.toggle}/><Label for="mark">Nest Category Under</Label><br/>
                     <Collapse isOpen={this.state.collapse}>
                       <Input type="select" name="parentId" id="exampleSelect" onChange={e => { this.handleInput(e)}}>
-                        {this.state.categories.map((category) => { return <option value={category.id}>{category.name}</option> })}
+                        {this.state.categories.map((category,key) => { return <option key={key} value={category.id}>{category.name}</option> })}
                       </Input>
                     </Collapse>
                   </Col>
                 </FormGroup>
               <center>
-                <Button color="info" onClick={this.handleSubmit}> Add </Button>&nbsp;&nbsp;&nbsp;
+                <Button color="info" disabled={!this.state.name} onClick={this.handleSubmit}> Add </Button>&nbsp;&nbsp;&nbsp;
                 <a href="/listCategories" style={{textDecoration:'none'}}> <Button active  color="light" aria-pressed="true">Cancel</Button></a><br/><br/>
               </center>
             </center>

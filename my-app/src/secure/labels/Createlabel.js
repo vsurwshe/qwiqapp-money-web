@@ -110,7 +110,10 @@ class CreateLable extends Component {
     return (<Collapse isOpen={this.state.collapse}>
         <Input type="select" name="selectLg" id="selectLg" onChange={(event)=>this.setState({parentId:event.target.value})} bsSize="lg">
           <option value="null">Please select Parent Lables</option>
-          {this.state.labels.map(label => {return(<option  key={label.id} value={label.id}>{label.name}</option>)})}
+          {this.state.labels.map((label,key) => {return(
+            <option key={key} value={label.id}>{label.name}
+              </option>
+              )})}
          </Input>
       </Collapse>);
   }

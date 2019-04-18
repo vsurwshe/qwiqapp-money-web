@@ -9,6 +9,7 @@ import LabelApi from "../../services/LabelApi";
 import ProfileApi from "../../services/ProfileApi";
 import Loader from 'react-loader-spinner'
 class Lables extends Component {
+  isUnmount = false;
   constructor(props) {
     super(props);
     this.state = {
@@ -37,6 +38,7 @@ class Lables extends Component {
   }
   //this method get All Labels Realted That Profile
   componentDidMount=()=> {
+    this.isUnmount = false;
     new ProfileApi().getProfiles(this.successProfileid,this.errorCall);
     window.addEventListener("resize", this.resize.bind(this));
     this.resize();
@@ -45,6 +47,9 @@ class Lables extends Component {
   resize(){
     // console.log(window.innerWidth,window.innerHeight);
     this.setState({screenWidth:window.innerWidth})
+  }
+  componentWillUnmount = () => {
+    this.isUnmount = false;
   }
   //this method seting Profile id 
   successProfileid=json=>{
@@ -64,7 +69,7 @@ class Lables extends Component {
     if (json === "Deleted Successfully") {
       this.setState({ labels: [0] })
     } else {
-      this.setState({ labels: json,spinner:true })
+      this.setState({ labels: json, spinner:true })
       this.loadCollapse();
     }
   };
@@ -213,7 +218,7 @@ class Lables extends Component {
         {this.state.onHover && this.state.hoverAccord[ukey] ? this.loadDropDown(labels, ukey, styles) : ''}
         <Collapse isOpen={this.state.accordion[ukey]}>
           {Array.isArray(labels.subLabels) ? labels.subLabels.map(ulable => {
-            return (<ListGroupItem  style={{ paddingLeft: 55 }} className="justify-content-between" key={ulable.id}>
+            return (<ListGroupItem tag="a" style={{ paddingLeft: 55 }} className="justify-content-between" key={ulable.id}>
                   <Avatar name={ulable.name.charAt(0)} color={ulable.color} size="40" square={true} />&nbsp;&nbsp;{this.displayName(ulable.name, styles)}
                   <FaTrashAlt className="float-right" onClick={() => { this.setState({ id: ulable.id }); this.toggleDanger(); }} style={Object.assign({}, trashColor)} />
                   <FaPen className="float-right" size={12} style={Object.assign({}, penColor)} onClick={() => { this.updateLabel(ulable) }} />

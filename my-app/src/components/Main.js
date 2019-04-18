@@ -1,7 +1,8 @@
 import React, { Component, Suspense } from "react";
 import { Route, Redirect, Switch } from "react-router-dom";
+import { withRouter } from "react-router";
 import { Container } from "reactstrap";
-import { AppFooter,  AppHeader,  AppSidebar,  AppSidebarFooter,  AppSidebarForm,  AppSidebarHeader,  AppSidebarNav} from "@coreui/react";
+import { AppFooter, AppHeader, AppSidebar, AppSidebarFooter, AppSidebarForm, AppSidebarHeader, AppSidebarNav} from "@coreui/react";
 import Dashboard from "../secure/Dashboard";
 import Signup from "./Signup";
 import Home from "./Home";
@@ -44,7 +45,6 @@ class Main extends Component {
         <PrivateRoute path="/listCategories" component={Categories} />
         <Route exact path="/" component={Login} />
         <Route path="/home" component={Home} />
-        
       </Switch>
     );
   }
@@ -85,7 +85,7 @@ class Main extends Component {
     );
   }
 }
-export default Main;
+export default withRouter(Main);
 
 //This is provide the Security to app Routing
 const PrivateRoute = ({ component: Component, ...rest }) => (
