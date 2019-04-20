@@ -62,16 +62,16 @@ class AddCategory extends Component {
   }
 
   loadAddingCategory=()=>{
-    const align = { textAlign: "left" }
+    // const align = { textAlign: "left" }
     const {name,color,alertColor,content}=this.state
     return(
           <Card >
             <CardHeader><strong>Category</strong></CardHeader><br/>
              <center>
-                <h5><b>CREATE CATEGORY</b></h5><br/>
-                <FormGroup style={{ align }}>
+                <FormGroup >
                   <Col sm="12" md={{ size: 3, offset: 1.5 }}>
                     <Alert color={alertColor} >{content}</Alert>
+                    <h5><b>CREATE CATEGORY</b></h5><br/>
                     <Input name="name" type="text" placeholder="Category Name" value={name} onChange={e => this.handleInput(e)}  /><br/>
                     <Input name="color" type="color" list="colors" value={color} onChange={e => { this.handleInput(e) }}/><br/>
                     <Input name="check" type="checkbox" onClick={this.toggle}/><Label for="mark">Nest Category Under</Label><br/>

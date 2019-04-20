@@ -12,7 +12,7 @@ class EditCategory extends Component {
       categoryId : props.category.id,
       parentId:props.category.parentId,
       cName: props.category.name,
-      categoryColor: props.category.color,
+      categoryColor: props.category.color=== null? '#000000': props.category.color,
       code: props.category.code,
       version : props.category.version,
       color:'',
@@ -73,7 +73,7 @@ class EditCategory extends Component {
               <Alert color={color}>{content}</Alert>
               <Input type="text" name="cName" value={cName} style={{fontWeight:'bold',color:'#000000'}} autoFocus={true} onChange={e => { this.setState({ cName: e.target.value }) }}/>                 
               <br />
-              <Input name="categoryColor" type="color" list="colors" value={categoryColor} onChange={e => { this.handleInput(e) }}/><br/>
+              <Input name="categoryColor" type="color" list="colors" value={`${categoryColor}`} onChange={e => { this.handleInput(e) }}/><br/>
               <Button color="success" disabled={!cName} onClick={this.handleUpdate} >Update  </Button>&nbsp;&nbsp;&nbsp;
               <a href="/listCategories" style={{textDecoration:'none'}}> <Button active  color="light" aria-pressed="true">Cancel</Button></a>
             </Col>
@@ -94,12 +94,12 @@ class EditCategory extends Component {
               <Alert color={color}>{content}</Alert>
               <Input type="text" name="cName" value={cName} style={{fontWeight:'bold',color:'#000000'}} autoFocus={true} onChange={e => { this.setState({ cName: e.target.value }) }}/>                 
               <br />
-              <Input name="categoryColor" type="color" list="colors" value={categoryColor} onChange={e => { this.handleInput(e) }}/><br/>
+              <Input name="categoryColor" type="color" list="colors" value={`${categoryColor}`} onChange={e => { this.handleInput(e) }}/><br/>
               <Input name="check" type="checkbox" onClick={this.toggle}/><Label for="mark">Make it a Parent Category </Label> <br/>
               <Collapse isOpen={this.state.collapse}>
                     <FormGroup>
                       <Input type="select" name="parentId" id="exampleSelect" onChange={e => { this.handleInput(e)}}>
-                        {this.state.categories.map((category) => { return <option value={category.id}>{category.name}</option> })}
+                        {this.state.categories.map(category => { return <option key={category.id} value={category.id}>{category.name}</option> })}
                       </Input>
                     </FormGroup>
                   </Collapse>
