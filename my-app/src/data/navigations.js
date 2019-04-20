@@ -1,14 +1,15 @@
+
 export default {
   items: [
     {
-      name: "Dashboard",
-      url: "/dashboard",
-      icon: "cui-speedometer"
+      name : "Dashboard",
+      url : "/dashboard",
+      icon : "cui-speedometer"
     },
     {
-      name: "Profiles",
-      url: "/profiles",
-      icon: "cui-puzzle"
+      name : "Labels",
+      url : "/label/labels",
+      icon : "cui-align-center"
     },
     {
       name: "Labels",
@@ -22,3 +23,18 @@ export default {
     }
   ]
 };
+
+export const item = {
+  items : [
+    {
+      name : "Manage Profiles",
+      url : "/profiles",
+      icon : "cui-settings"
+    },
+    {
+      name : "Create Profile",
+      url : "/profiles/createProfile",
+      icon : "cui-pencil"
+    },
+  ]
+}

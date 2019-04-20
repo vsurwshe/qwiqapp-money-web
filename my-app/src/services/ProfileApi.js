@@ -37,11 +37,11 @@ async function process(success, failure, Uurl, Umethod, data) {
 }
 
 //this method slove the Exprie Token Problem.
-let AccessTokenError =function(err,failure,Uurl, Umethod, data,success){
-  if(err.request.status=== 0)
-  {errorResponse(err, failure)
-  }else if (err.response.status===403 || err.response.status===401)
-  {new LoginApi().refresh(()=>{process(success,failure,Uurl,Umethod,data)},errorResponse(err, failure))
+let AccessTokenError = function(err,failure,Uurl, Umethod, data,success){
+  if(err.request.status === 0){
+    errorResponse(err, failure)
+  }else if (err.response.status===403 || err.response.status===401){
+    new LoginApi().refresh(()=>{process(success,failure,Uurl,Umethod,data)},errorResponse(err, failure))
   }else{errorResponse(err, failure)}
 }
 

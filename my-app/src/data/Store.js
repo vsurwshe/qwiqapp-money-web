@@ -1,6 +1,7 @@
 const USER_KEY = 'user';
 const DUMMY_KEY = 'dummy';
 const db = sessionStorage;
+
 const Store = {
     storeLabels: function(categoriesJSON) {
         this.storeJson("LABELS", categoriesJSON);

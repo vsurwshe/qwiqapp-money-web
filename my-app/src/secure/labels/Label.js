@@ -77,21 +77,21 @@ class Lables extends Component {
   callCreateLabel = () => { this.setState({ createLabel: true })}
 
   loadCollapse=()=>{
-     this.state.labels.map(lables=>{return this.setState(prevState => ({accordion: [...prevState.accordion, false],
-      hoverAccord : [...prevState.hoverAccord,false],
-      dropdownOpen: [...prevState.dropdownOpen, false]}))});
-  }
+    this.state.labels.map(lables=>{return this.setState(prevState => ({accordion: [...prevState.accordion, false],
+    hoverAccord : [...prevState.hoverAccord,false],
+    dropdownOpen: [...prevState.dropdownOpen, false]}))});
+  }  
   //this toggle for Delete Model
   toggleDanger = () => {
     this.setState({danger: !this.state.danger});
   }
   //this method for the load Update Compoents
   updateLabel = (ulable) => {
-   this.setState({ updateLabel: true,relable:ulable })
+    this.setState({ updateLabel: true,relable:ulable })
   };
   //this method for the load delete Components
   deleteLabel = () => {
-   this.setState({ deleteLabel: true })
+    this.setState({ deleteLabel: true })
   };
   //this method toggel Lables tab
   toggleAccordion=(tab)=> {
@@ -111,7 +111,7 @@ class Lables extends Component {
   }
   //this is geting labels
   getLabels=()=>{
-      new LabelApi().getSublabels(this.successCall, this.errorCall,this.state.profileId);
+    new LabelApi().getSublabels(this.successCall, this.errorCall,this.state.profileId);
   }
 
   hoverAccordion = (hKey) => {
@@ -152,7 +152,7 @@ class Lables extends Component {
      </CardHeader>
      <center style={{paddingTop:'20px'}}>
        <CardBody>
-       <Loader type="Ball-Triangle" color="#2E86C1" height={80} width={80}/>
+       <Loader type="TailSpin" color="#2E86C1" height={60} width={60}/>
        </CardBody>
      </center>
    </Card>
