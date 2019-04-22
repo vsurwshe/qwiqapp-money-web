@@ -1,7 +1,8 @@
 import React, { Component, Suspense } from "react";
 import { Route, Redirect, Switch } from "react-router-dom";
+import { withRouter } from "react-router";
 import { Container } from "reactstrap";
-import {  AppFooter,  AppHeader,  AppSidebar,  AppSidebarFooter,  AppSidebarForm,  AppSidebarHeader,  AppSidebarNav} from "@coreui/react";
+import { AppFooter, AppHeader, AppSidebar, AppSidebarFooter, AppSidebarForm, AppSidebarHeader, AppSidebarNav} from "@coreui/react";
 import Dashboard from "../secure/Dashboard";
 import Signup from "./Signup";
 import Home from "./Home";
@@ -12,6 +13,8 @@ import Profiles from "../secure/profiles/Profiles";
 import navigation from "../data/navigations";
 import CreateLable from "../secure/labels/Createlabel";
 import Lables from "../secure/labels/Label";
+// import UpdateProfile from "../secure/UpdateProfile";
+import Categories from "../secure/Categories/Categories";
 
 const DefaultFooter = React.lazy(() =>import("../secure/Sidebar/DefaultFooter"));
 const DefaultHeader = React.lazy(() =>  import("../secure/Sidebar/DefaultHeader"));
@@ -28,7 +31,7 @@ class Main extends Component {
     }
   }
 
-  //This Method Call the Routing Paths
+  //This Method Routes Components
   loadRoutes() {
     return (
       <Switch>
@@ -39,6 +42,7 @@ class Main extends Component {
         <PrivateRoute path="/profiles" component={Profiles} />
         <PrivateRoute path="/label/labels" component={Lables} />
         <PrivateRoute path="/label/createLabel" component={CreateLable} />
+        <PrivateRoute path="/listCategories" component={Categories} />
         <Route exact path="/" component={Login} />
         <Route path="/home" component={Home} />
       </Switch>
@@ -81,7 +85,7 @@ class Main extends Component {
     );
   }
 }
-export default Main;
+export default withRouter(Main);
 
 //This is provide the Security to app Routing
 const PrivateRoute = ({ component: Component, ...rest }) => (

@@ -29,7 +29,7 @@ async function process(success, failure, Uurl, Umethod, data) {
   let promise;
     try{
          data===null? promise=await HTTP.request(): promise=await HTTP.request({ data });
-         validResponse(promise, success)
+         validResponse(promise, success,Umethod)
     }catch(err){ 
       console.log(err);
       AccessTokenError(err,failure,Uurl, Umethod, data,success);
@@ -45,8 +45,11 @@ let AccessTokenError =function(err,failure,Uurl, Umethod, data,success){
   }else{errorResponse(err, failure)}
 }
 
-let validResponse = function(resp, successMethod) {
+let validResponse = function(resp, successMethod,Umethod) {
  if (successMethod != null) {
+    if(Umethod==="DELETE" ){
+      Store.clearLocalStroge() ;
+    }
     successMethod(resp.data);
   }
 };

@@ -97,7 +97,7 @@ class Login extends Component {
               <Alert color={this.state.color}>{this.state.content}</Alert>
               <Card style={{ width: 300, borderRadius: 8 }}>
                 <CardBody>
-                  <CardTitle>Welcome Back!</CardTitle>
+                  <CardTitle>Login to Web-Money !</CardTitle>
                   <br />
                   <FormGroup>
                   <Input name="email" type="email" placeholder="Your Email" value={this.state.email} valid={ emailState === 'success' }

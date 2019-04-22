@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Container, Button, Card, CardBody, Col, Row, Alert, CardHeader,Collapse,Modal, ModalHeader, ModalBody, ModalFooter,Dropdown,DropdownToggle,DropdownMenu,DropdownItem} from "reactstrap";
+import { Button,Row, Col, Card, CardBody, Alert, CardHeader,Collapse,Modal, ModalHeader, ModalBody, ModalFooter,Dropdown,DropdownToggle,DropdownMenu,DropdownItem,ListGroupItem,ListGroup} from "reactstrap";
 import CreateLabel from "./Createlabel";
 import Avatar from 'react-avatar';
 import { FaPen, FaTrashAlt ,FaAngleDown,FaEllipsisV} from 'react-icons/fa';
@@ -9,6 +9,7 @@ import LabelApi from "../../services/LabelApi";
 import ProfileApi from "../../services/ProfileApi";
 import Loader from 'react-loader-spinner'
 class Lables extends Component {
+  isUnmount = false;
   constructor(props) {
     super(props);
     this.state = {
@@ -31,16 +32,27 @@ class Lables extends Component {
       dropdownOpen:[],
       onHover:false,
       hoverAccord : [],
-      spinner:false
+      spinner:false,
+      screenWidth:""
     };
   }
   //this method get All Labels Realted That Profile
   componentDidMount=()=> {
+    this.isUnmount = true;
     new ProfileApi().getProfiles(this.successProfileid,this.errorCall);
+    window.addEventListener("resize", this.resize.bind(this));
+    this.resize();
+  }
+  //this mwthod get the dimessions of screen
+  resize(){
+    if(this.isUnmount){ this.setState({screenWidth:window.innerWidth}) }
+  }
+  componentWillUnmount = () => {
+    this.isUnmount = false;
   }
   //this method seting Profile id 
   successProfileid=json=>{
-    if (json === []) { this.setState({ profileId:'' })}
+    if (json === []) { this.setState({ profileId:'',spinner:false })}
     else {
       const iterator = json.values();
       for (const value of iterator) {this.setProfileId(value.id)}
@@ -56,7 +68,7 @@ class Lables extends Component {
     if (json === "Deleted Successfully") {
       this.setState({ labels: [0] })
     } else {
-      this.setState({ labels: json,spinner:true })
+      this.setState({ labels: json, spinner:true })
       this.loadCollapse();
     }
   };
@@ -140,7 +152,7 @@ class Lables extends Component {
      </CardHeader>
      <center style={{paddingTop:'20px'}}>
        <CardBody>
-       <Loader type="Circles" color="#2E86C1" height={80} width={80}/>
+       <Loader type="Ball-Triangle" color="#2E86C1" height={80} width={80}/>
        </CardBody>
      </center>
    </Card>
@@ -166,18 +178,10 @@ class Lables extends Component {
   loadShowLabel = (visible, labels) => {
      return (<div className="animated fadeIn">
       <Card>
-        <CardHeader><strong>Label</strong></CardHeader>
-        <CardBody>
+        <CardHeader><strong>Labels</strong><Button color="success" className="float-right" onClick={this.callCreateLabel}> + ADD LABEL</Button></CardHeader>
+        <div style={{margin:30, paddingLeft:100}}>
           <h6><Alert isOpen={visible} color="danger">Internal Server Error</Alert></h6>
-          <Col sm="12" md={{ size: 5, offset: 4 }}>
-            <Row >
-              <Container >
-               <Avatar className="float-right" name="+" color="blue" size="45" round={true} onClick={this.callCreateLabel} /><br/><br/><br/>
-                {this.state.labels.map((label, key) => {return this.loadSingleLable(this.state.labels[key], key); })}
-              </Container>
-            </Row>
-          </Col>
-        </CardBody>
+          {this.state.labels.map((label, key) => {return this.loadSingleLable(this.state.labels[key], key); })}</div>
       </Card>
     </div>)
     
@@ -185,33 +189,48 @@ class Lables extends Component {
   //Show the Single Label 
   loadSingleLable=(labels,ukey)=>{
     const styles={
-      marginLeft: "20px",
-      marginTop: "15px"
+      margin: "6px"
     }
     const penColor = {
+      marginTop: "15px",
       color: 'blue'
     }
     const trashColor = {
-        color: 'red'
+      marginLeft: "10px",
+      marginTop: "15px",
+      color: 'red'
     }
     return (
-    <div key={ukey} className="animated fadeIn" onPointerEnter={(e)=>this.onHover(e, ukey)} onPointerLeave={(e)=>this.onHoverOff(e,ukey)}> 
-    <Avatar name={labels.name.charAt(0)} color={labels.color===""? "#000000":labels.color} size="40" square={true} key={labels.id} /> &nbsp;&nbsp;{labels.name}
-    {Array.isArray(labels.subLabels) ? <span style={{paddingLeft:10}}><FaAngleDown onClick={() => this.toggleAccordion(ukey)} /></span>  : ''}
-    {this.state.onHover && this.state.hoverAccord[ukey]?this.loadDropDown(labels,ukey,styles):''}
-    <div style={{ padding: 5 }} />
-    <Collapse isOpen={this.state.accordion[ukey]}>
-      {Array.isArray(labels.subLabels) ? labels.subLabels.map(ulable => {
-        return (<div style={{paddingBottom:10}} key={ulable.id}>
-          <span style={{paddingLeft: 55}} ></span>
-          <Avatar name={ulable.name.charAt(0)} color={ulable.color} size="40" square={true} />&nbsp;&nbsp;{ulable.name}
-          <FaTrashAlt onClick={() => { this.setState({ id: ulable.id }); this.toggleDanger(); }} className="float-right" style={Object.assign({},styles,trashColor)} />
-          <FaPen size={12} className="float-right" style={Object.assign({},styles,penColor)} onClick={() => { this.updateLabel(ulable) }} />
-         </div>)
-      }) : ""}
-    </Collapse>
-    </div>)
+      <ListGroup flush key={ukey} className="animated fadeIn" onPointerEnter={(e) => this.onHover(e, ukey)} onPointerLeave={(e) => this.onHoverOff(e, ukey)}>
+      <ListGroupItem action>
+        <Row><Col sm={10}>
+            <Avatar name={labels.name.charAt(0)} color={labels.color === "" ? "#000000" : labels.color} size="40" square={true} key={labels.id} /> &nbsp;&nbsp;{this.displayName(labels.name, styles)} 
+        </Col><Col>
+        {Array.isArray(labels.subLabels) ? <span style={{ paddingLeft: 10 }}><FaAngleDown style={{marginTop:12}} onClick={() => this.toggleAccordion(ukey)} /></span> : ''}
+        {this.state.onHover && this.state.hoverAccord[ukey] ? this.loadDropDown(labels, ukey, styles) : ''}</Col></Row>
+        <Collapse isOpen={this.state.accordion[ukey]}>
+          {Array.isArray(labels.subLabels) ? labels.subLabels.map(ulable => {
+            return (<ListGroupItem tag="a" style={{ paddingLeft: 55 }} className="justify-content-between" key={ulable.id}>
+              <Row>
+                <Col sm={{size: 9}}>
+                    <Avatar name={ulable.name.charAt(0)} color={ulable.color} size="40" square={true} />&nbsp;&nbsp;{this.displayName(ulable.name, styles)}
+                  </Col>
+                <Col>
+                  <FaTrashAlt className="float-right" onClick={() => { this.setState({ id: ulable.id }); this.toggleDanger(); }} style={Object.assign({}, styles, trashColor)} />
+                  <FaPen className="float-right" size={12} style={Object.assign({}, styles, penColor)} onClick={() => { this.updateLabel(ulable) }} /></Col>
+              </Row>
+            </ListGroupItem>)
+          }) : ""}
+        </Collapse>
+      </ListGroupItem>
+    </ListGroup>)
   }
+  //this method display name after avtar for large string
+  displayName=(name,styles)=>{
+    const {screenWidth}=this.state;
+    return(<span style={{styles}}>{screenWidth<=390 ? (name.length>15? name.slice(0, 15)+"..." : name) : (screenWidth <= 550 ? (name.length>35? name.slice(0, 35)+"..." : name) : (screenWidth <= 700 ? (name.length>55? name.slice(0, 55)+"..." : name) : (screenWidth <= 900 ? (name.length>70? name.slice(0, 80)+"..." : name) : (screenWidth <= 1100 ? (name.length>90? name.slice(0, 110)+"..." : name) : (name.length>=130? name.slice(0, 130)+"..." : name) ) ) ) ) }</span>)
+  }
+  
   //this method call the delete model
   loadDeleteLabel = () => {
     return (<Modal isOpen={this.state.danger} toggle={this.toggleDanger} style={{paddingTop: "20%"}} backdrop={true}>
@@ -229,7 +248,7 @@ class Lables extends Component {
  loadDropDown=(labels,ukey,styles)=>{
    return (<Dropdown isOpen={this.state.dropdownOpen[ukey]} style={{marginTop: 7, float: "right" }} toggle={() => { this.toggleDropDown(ukey); }} size="sm">
        <DropdownToggle tag="span" onClick={() => { this.toggleDropDown(ukey); }} data-toggle="dropdown" aria-expanded={this.state.dropdownOpen[ukey]}>
-         <FaEllipsisV style={{styles}}/>
+         <FaEllipsisV style={styles}/>
        </DropdownToggle>
        <DropdownMenu>
          <DropdownItem onClick={() => { this.updateLabel(labels) }}> Update </DropdownItem>

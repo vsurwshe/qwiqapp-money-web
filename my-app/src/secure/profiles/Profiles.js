@@ -61,7 +61,6 @@ class Profiles extends Component {
   }
 
   toggleDanger = () => {
-
     this.setState({
       danger: !this.state.danger,
     });
