@@ -105,6 +105,15 @@ const Store = {
     clearLocalStroge: function(){
         db.removeItem("CATEGORIES");
         db.removeItem("LABELS");
+    },
+    
+    saveProfileId: function(profile_id){
+        db.setItem("PROFILE_ID",JSON.stringify(profile_id))
+    },
+
+    getProfileId: function(){
+        const profile_id = db.getItem("PROFILE_ID")
+        return JSON.parse(profile_id)
     }
 
 }

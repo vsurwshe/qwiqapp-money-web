@@ -28,8 +28,8 @@ async function process(success, failure, Uurl, Umethod, data) {
   let HTTP = httpCall(Uurl, Umethod);
   let promise;
     try{
-         data===null? promise=await HTTP.request(): promise=await HTTP.request({ data });
-         validResponse(promise, success,Umethod)
+      data===null? promise=await HTTP.request(): promise=await HTTP.request({ data });
+      validResponse(promise, success)
     }catch(err){ 
       console.log(err);
       AccessTokenError(err,failure,Uurl, Umethod, data,success);

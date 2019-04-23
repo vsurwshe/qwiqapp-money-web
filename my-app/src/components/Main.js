@@ -1,8 +1,7 @@
 import React, { Component, Suspense } from "react";
-import { Route, Redirect, Switch } from "react-router-dom";
-import { withRouter } from "react-router";
+import { Route, Redirect, Switch, withRouter } from "react-router-dom";
 import { Container } from "reactstrap";
-import { AppFooter, AppHeader, AppSidebar, AppSidebarFooter, AppSidebarForm, AppSidebarHeader, AppSidebarNav} from "@coreui/react";
+import { AppFooter,  AppHeader,  AppSidebar, AppSidebarNav} from "@coreui/react";
 import Dashboard from "../secure/Dashboard";
 import Signup from "./Signup";
 import Home from "./Home";
@@ -15,8 +14,7 @@ import CreateLable from "../secure/labels/Createlabel";
 import Lables from "../secure/labels/Label";
 // import UpdateProfile from "../secure/UpdateProfile";
 import Categories from "../secure/Categories/Categories";
-// import Categories from "../secure/Categories/Categories";
-import CreateProfiles from "../secure/profiles/CreateProfile";
+import CreateProfile from "../secure/profiles/CreateProfile";
 
 const DefaultFooter = React.lazy(() =>import("../secure/Sidebar/DefaultFooter"));
 const DefaultHeader = React.lazy(() =>  import("../secure/Sidebar/DefaultHeader"));
@@ -54,10 +52,10 @@ class Main extends Component {
         <Route path="/signup" component={Signup} />
         <Route path="/register/:id/verify" component={SignupVerify} />
         <PrivateRoute exact path="/profiles" component={Profiles} />
-        <PrivateRoute exact path="/profiles/createProfile" component={CreateProfiles} />
+        <PrivateRoute exact path="/profiles/createProfile" component={CreateProfile} />
         <PrivateRoute path="/label/labels" component={Lables} />
         <PrivateRoute path="/label/createLabel" component={CreateLable} />
-        <PrivateRoute path="/listCategories" component={Categories} />
+        <PrivateRoute path="/listCategories" component={Categories} /> */}
         <Route exact path="/" component={Login} />
         <Route path="/home" component={Home} />        
       </Switch>

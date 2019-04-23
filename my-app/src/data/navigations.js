@@ -12,14 +12,9 @@ export default {
       icon : "cui-align-center"
     },
     {
-      name: "Labels",
-      url: "/label/labels",
-      icon: "cui-align-center"
-    },
-    {
-      name: "Categories",
-      url: "/listCategories",
-      icon: "cui-layers"
+      name : "Categories",
+      url : "/listCategories",
+      icon : "cui-layers"
     }
   ]
 };
