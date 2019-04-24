@@ -113,7 +113,7 @@ const Store = {
     },
 
     getCategories: function(){
-        const categories = db.getItem("CATEGORIES")
+        const categories = db.getItem("CONTACTS")
         return JSON.parse(categories)
     },
 
@@ -137,6 +137,14 @@ const Store = {
     getProfile: function () {
         return JSON.parse(db.getItem("PROFILE"));
     },
+    
+    saveContacts: function(data) {
+        db.setItem("CONTACTS",JSON.stringify(data))},
+  
+    getContacts: function(){
+        const categories = db.getItem("CONTACTS")
+        return JSON.parse(categories)
+    },
 
     // Clears the Local Storage
     clearLocalStorage: function(){
@@ -144,8 +152,9 @@ const Store = {
         db.removeItem("LABELS");
         db.removeItem("PROFILES");
         db.removeItem("PROFILE");
-
-    }, 
+        db.removeItem("CONTACTS");
+    },
+    
    
 }
 export default Store;

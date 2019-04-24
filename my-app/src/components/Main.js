@@ -13,7 +13,8 @@ import navigation, {item} from "../data/navigations";
 import CreateLable from "../secure/labels/Createlabel";
 import Lables from "../secure/labels/Label";
 import Categories from "../secure/Categories/Categories";
-import CreateProfile from "../secure/profiles/CreateProfile";
+import Contacts from "../secure/contact/Contact";
+import CreateContact from "../secure/contact/CreateContact";
 
 const DefaultFooter = React.lazy(() =>import("../secure/Sidebar/DefaultFooter"));
 const DefaultHeader = React.lazy(() =>  import("../secure/Sidebar/DefaultHeader"));
@@ -47,14 +48,15 @@ class Main extends Component {
     return (
       <Switch>
         <PrivateRoute path="/dashboard" component={Dashboard} />
+        <PrivateRoute path="/profiles" component={Profiles} />
+        <PrivateRoute path="/label/labels" component={Lables} />
+        <PrivateRoute path="/label/createLabel" component={CreateLable} />
+        <PrivateRoute path="/listCategories" component={Categories} />
+        <PrivateRoute exact path="/contact/createContact" component={CreateContact} />
+        <PrivateRoute exact path="/contact/manageContact" component={Contacts} />
         <Route path="/login" component={Login} />
         <Route path="/signup" component={Signup} />
         <Route path="/register/:id/verify" component={SignupVerify} />
-        <PrivateRoute exact path="/profiles" component={Profiles} />
-        <PrivateRoute exact path="/profiles/createProfile" component={CreateProfile} />
-        <PrivateRoute path="/label/labels" component={Lables} />
-        <PrivateRoute path="/label/createLabel" component={CreateLable} />
-        <PrivateRoute path="/listCategories" component={Categories} /> */}
         <Route exact path="/" component={Login} />
         <Route path="/home" component={Home} />        
       </Switch>
