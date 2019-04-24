@@ -113,7 +113,7 @@ const Store = {
     },
 
     getCategories: function(){
-        const categories = db.getItem("CATEGORIES")
+        const categories = db.getItem("CONTACTS")
         return JSON.parse(categories)
     },
 
