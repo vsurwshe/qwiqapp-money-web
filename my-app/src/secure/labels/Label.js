@@ -178,7 +178,7 @@ class Lables extends Component {
   loadShowLabel = (visible, labels) => {
      return (<div className="animated fadeIn">
       <Card>
-        <CardHeader><strong>Labels</strong><Button color="success" className="float-right" onClick={this.callCreateLabel}> + ADD LABEL</Button></CardHeader>
+        <CardHeader><strong>Labels</strong><Button color="primary" className="float-right" onClick={this.callCreateLabel}> + ADD LABEL</Button></CardHeader>
         <div style={{margin:30, paddingLeft:100}}>
           <h6><Alert isOpen={visible} color="danger">Internal Server Error</Alert></h6>
           {this.state.labels.map((label, key) => {return this.loadSingleLable(this.state.labels[key], key); })}</div>
@@ -200,30 +200,49 @@ class Lables extends Component {
       marginTop: "15px",
       color: 'red'
     }
+    const ellipsisText1 = {
+      flex: 1,
+      display: 'flex',
+      alignItems: 'center',
+      marginTop: '10px',
+      marginLeft: '-10'
+    }
+    const ellipsisText2 = {
+      flex: 1,
+      width: '100px',
+      textOverflow: 'ellipsis',
+      overflow: 'hidden',
+      whiteSpace:'nowrap',
+      paddingLeft:10
+    }
     return (
+    
       <ListGroup flush key={ukey} className="animated fadeIn" onPointerEnter={(e) => this.onHover(e, ukey)} onPointerLeave={(e) => this.onHoverOff(e, ukey)}>
-      <ListGroupItem action>
-        <Row><Col sm={10}>
-            <Avatar name={labels.name.charAt(0)} color={labels.color === "" ? "#000000" : labels.color} size="40" square={true} key={labels.id} /> &nbsp;&nbsp;{this.displayName(labels.name, styles)} 
-        </Col><Col>
-        {Array.isArray(labels.subLabels) ? <span style={{ paddingLeft: 10 }}><FaAngleDown style={{marginTop:12}} onClick={() => this.toggleAccordion(ukey)} /></span> : ''}
-        {this.state.onHover && this.state.hoverAccord[ukey] ? this.loadDropDown(labels, ukey, styles) : ''}</Col></Row>
-        <Collapse isOpen={this.state.accordion[ukey]}>
-          {Array.isArray(labels.subLabels) ? labels.subLabels.map(ulable => {
-            return (<ListGroupItem tag="a" style={{ paddingLeft: 55 }} className="justify-content-between" key={ulable.id}>
-              <Row>
-                <Col sm={{size: 9}}>
-                    <Avatar name={ulable.name.charAt(0)} color={ulable.color} size="40" square={true} />&nbsp;&nbsp;{this.displayName(ulable.name, styles)}
+        <ListGroupItem action>
+          <Row>
+           <Avatar name={labels.name.charAt(0)} color={labels.color === "" ? "#000000" : labels.color} size="40" square={true} key={labels.id} /> 
+           <div style={ellipsisText1}><div style={ellipsisText2}>&nbsp;&nbsp;{labels.name}</div></div>
+          {Array.isArray(labels.subLabels) ? <span style={{ paddingLeft: 10 }}><FaAngleDown style={{marginTop:12}} onClick={() => this.toggleAccordion(ukey)} /></span> : ''}
+          {this.state.onHover && this.state.hoverAccord[ukey] ? this.loadDropDown(labels, ukey, styles) : ''}
+          </Row>
+          <Collapse isOpen={this.state.accordion[ukey]}>
+            {Array.isArray(labels.subLabels) ? labels.subLabels.map(ulable => {
+              return (<ListGroupItem tag="a" style={{ paddingLeft: 55 }} className="justify-content-between" key={ulable.id}>
+                <Row>
+                  <Col sm={{ size: 9 }}>
+                    <div style={ellipsisText1}>
+                      <Avatar name={ulable.name.charAt(0)} color={ulable.color} size="40" square={true} />
+                      <div style={ellipsisText2}>{ulable.name}</div>
+                      <FaPen className="float-right" size={12} style={Object.assign({}, styles, penColor)} onClick={() => { this.updateLabel(ulable) }} />
+                      <FaTrashAlt className="float-right" onClick={() => { this.setState({ id: ulable.id }); this.toggleDanger(); }} style={Object.assign({}, styles, trashColor)} />
+                    </div>
                   </Col>
-                <Col>
-                  <FaTrashAlt className="float-right" onClick={() => { this.setState({ id: ulable.id }); this.toggleDanger(); }} style={Object.assign({}, styles, trashColor)} />
-                  <FaPen className="float-right" size={12} style={Object.assign({}, styles, penColor)} onClick={() => { this.updateLabel(ulable) }} /></Col>
-              </Row>
-            </ListGroupItem>)
-          }) : ""}
-        </Collapse>
-      </ListGroupItem>
-    </ListGroup>)
+                </Row>
+              </ListGroupItem>)
+            }) : ""}
+          </Collapse>
+        </ListGroupItem>
+      </ListGroup>)
   }
   //this method display name after avtar for large string
   displayName=(name,styles)=>{
@@ -245,8 +264,9 @@ class Lables extends Component {
      </Modal>)
    }
  //this Method load Browser DropDown
- loadDropDown=(labels,ukey,styles)=>{
-   return (<Dropdown isOpen={this.state.dropdownOpen[ukey]} style={{marginTop: 7, float: "right" }} toggle={() => { this.toggleDropDown(ukey); }} size="sm">
+  loadDropDown = (labels, ukey, styles) =>{
+    return (
+      <Dropdown isOpen={this.state.dropdownOpen[ukey]} style={{marginTop: 7}} toggle={() => { this.toggleDropDown(ukey); }} size="sm">
        <DropdownToggle tag="span" onClick={() => { this.toggleDropDown(ukey); }} data-toggle="dropdown" aria-expanded={this.state.dropdownOpen[ukey]}>
          <FaEllipsisV style={styles}/>
        </DropdownToggle>

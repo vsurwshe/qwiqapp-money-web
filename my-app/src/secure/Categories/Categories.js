@@ -180,8 +180,9 @@ class Categories extends Component {
            <Row >
             <Col sm={{size: 10}}> 
                 <Avatar name={category.name.charAt(0)} color = {category.color===null || category.color === "" ?'#000000':category.color} size="40" square={true} />&nbsp;&nbsp; {this.displayNames(category.name)}
+                {Array.isArray(category.subCategories)?<FaAngleDown onClick={()=>{this.toggleAccordion(uKey)}}/>:''} {this.state.onHover && this.state.hoverAccord[uKey]?this.showDropdown(category,uKey,styles):''}
               </Col>
-            <Col> {Array.isArray(category.subCategories)?<FaAngleDown style={{marginTop:16}} onClick={()=>{this.toggleAccordion(uKey)}}/>:''} {this.state.onHover && this.state.hoverAccord[uKey]?this.showDropdown(category,uKey,styles):''} </Col>
+       
           </Row>
           <div style={{padding:5}} />
           <Collapse isOpen={this.state.accordion[uKey]}> {category.subCategories != null ? category.subCategories.map(subCategory=>{return (
@@ -189,11 +190,9 @@ class Categories extends Component {
               <Row>
                 <Col sm={{size: 9}}>
                     <Avatar name={subCategory.name.charAt(0)} color={subCategory.color===null || subCategory.color === ""?'#000000':subCategory.color} size="40" square={true}/>&nbsp;&nbsp; {this.displayNames(subCategory.name)} 
+                    <FaTrashAlt className="float-right" style={Object.assign({},trashColor, styles)} onClick={() => { this.setState({ categoryId: subCategory.id }); this.toggleDanger() }}/>
+                  <FaPen size={12} className="float-right" style={Object.assign({},penColor, styles)} onClick={()=>this.updateCategory(subCategory)} />
                 </Col> 
-                <Col>
-                  <FaTrashAlt className="float-right" style={Object.assign({},trashColor, styles)} onClick={() => { this.setState({ categoryId: subCategory.id }); this.toggleDanger() }}/>
-                  <FaPen size={16} className="float-right" style={Object.assign({},penColor, styles)} onClick={()=>this.updateCategory(subCategory)} />
-                </Col>
               </Row><br />
             </ListGroupItem>)}) : ''} 
           </Collapse> 
