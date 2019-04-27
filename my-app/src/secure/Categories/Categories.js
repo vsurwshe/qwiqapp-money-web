@@ -1,10 +1,15 @@
 import React, { Component } from "react";
-import { Card,CardHeader,  Button, Col, Row, Modal, ModalHeader, ModalBody, ModalFooter, Collapse,ListGroup,ListGroupItem,Alert,Dropdown,DropdownItem,DropdownToggle,DropdownMenu} from 'reactstrap';
+import { Card,CardHeader,  Button, Col, Row, Modal, ModalHeader, ModalBody, ModalFooter, Collapse, 
+  ListGroup, ListGroupItem, Alert, Dropdown, DropdownItem, DropdownToggle, DropdownMenu,CardBody } from 'reactstrap';
+import Loader from 'react-loader-spinner';
 import Avatar from 'react-avatar';
 import { FaPen, FaTrashAlt, FaAngleDown, FaEllipsisV } from 'react-icons/fa';
 import CategoryApi from "../../services/CategoryApi";
-import ProfileApi from "../../services/ProfileApi";
+import AddCategory from './AddCategory';
+import EditCategory from './EditCategory';
+import DeleteCategory from './DeleteCategory';
 import "default-passive-events";
+import Store from "../../data/Store";
 
 const AddCategory = React.lazy(() =>  import("./AddCategory"));
 const EditCategory = React.lazy(() =>  import("./EditCategory"));
@@ -31,27 +36,21 @@ class Categories extends Component {
       danger : false,
       alertColor : this.props.color,
       content : this.props.content,
-      onHover:false,
-      screenWidth:"",
-    };
+      onHover: false,
+      spinner: false,
+        };
     this.componentDidMount = this.componentDidMount.bind(this);
   }
 
   componentDidMount() {
-    this.isUnmount = true;
-    new ProfileApi().getProfiles( this.successProfileId, this.errorCall );
-    window.addEventListener("resize", this.resize.bind(this)); //, this.passiveError
-      this.resize();
+    this.setProfielId();
   }
-  resize() {
-    if(this.isUnmount){
-    this.setState({ screenWidth: window.innerWidth });
-    }
+  //Method to set Profile Id 
+  setProfielId = async (id) => {
+    await this.setState({ profileId: Store.getProfileId() });
+    new CategoryApi().getCategories(this.successCall, this.errorCall, this.state.profileId);
   }
-    
-  // To handle warnings
-  componentWillUnmount = () => { this.isUnmount=false; }
-   
+
   //This Method is called for Api's Success Call
   successCall = json => { 
     this.setState({ categories : json })
@@ -67,21 +66,6 @@ class Categories extends Component {
       }))
     })
   }  
-
-  //Method showing Initialising Profiles values got from API
-  successProfileId = json => {
-    if(json === []){ this.setState({ profileId : '' }) }
-    else{
-      const iter=json.values();
-      for(const value of iter){this.setProfielId(value.id)}
-    }
-  }
-
-  //Method to set Profile Id 
-  setProfielId = (id) => {
-    this.setState({ profileId : id });
-    new CategoryApi().getCategories(this.successCall, this.errorCall, this.state.profileId );
-  }
 
   //Method that shows API's Error Call
   errorCall = error => {
@@ -174,22 +158,36 @@ class Categories extends Component {
     const styles={ marginLeft: 20, marginTop: 10 }// marginTop: 39 
     const penColor = { color: 'blue' }
     const trashColor = { color: 'red' }
+    const ellipsisText1 = {
+      flex: 1,
+      display: 'flex',
+      alignItems: 'center',
+      marginTop: '10px',
+      marginLeft: '-10'
+    }
+    const ellipsisText2 = {
+      flex: 1,
+      width: '100px',
+      textOverflow: 'ellipsis',
+      overflow: 'hidden',
+      whiteSpace:'nowrap',
+      paddingLeft:10
+    }
     return( 
       <ListGroup flush className="animated fadeIn" key={uKey} onPointerEnter={(e)=>this.onHover(e, uKey)} onPointerLeave={(e)=>this.onHoverOff(e,uKey)}>
         <ListGroupItem action >
            <Row >
-            <Col sm={{size: 10}}> 
-                <Avatar name={category.name.charAt(0)} color = {category.color===null || category.color === "" ?'#000000':category.color} size="40" square={true} />&nbsp;&nbsp; {this.displayNames(category.name)}
-                {Array.isArray(category.subCategories)?<FaAngleDown onClick={()=>{this.toggleAccordion(uKey)}}/>:''} {this.state.onHover && this.state.hoverAccord[uKey]?this.showDropdown(category,uKey,styles):''}
-              </Col>
-       
-          </Row>
+                <Avatar name={category.name.charAt(0)} color = {category.color===null || category.color === "" ?'#000000':category.color} size="40" square={true} />
+                <div style={ellipsisText1}><div style={ellipsisText2}>&nbsp;&nbsp;{category.name}</div></div>
+                {Array.isArray(category.subCategories)?<span style={{ paddingLeft: 10 }}><FaAngleDown style={{marginTop:12}} onClick={()=>{this.toggleAccordion(uKey)}}/></span>:''} {this.state.onHover && this.state.hoverAccord[uKey]?this.showDropdown(category,uKey,styles):''}
+         </Row>
           <div style={{padding:5}} />
           <Collapse isOpen={this.state.accordion[uKey]}> {category.subCategories != null ? category.subCategories.map(subCategory=>{return (
             <ListGroupItem tag="a" key={subCategory.id} style={{paddingBottom:1, paddingLeft:60}} >
               <Row>
                 <Col sm={{size: 9}}>
-                    <Avatar name={subCategory.name.charAt(0)} color={subCategory.color===null || subCategory.color === ""?'#000000':subCategory.color} size="40" square={true}/>&nbsp;&nbsp; {this.displayNames(subCategory.name)} 
+                    <Avatar name={subCategory.name.charAt(0)} color={subCategory.color===null || subCategory.color === ""?'#000000':subCategory.color} size="40" square={true}/>
+                    <div style={ellipsisText2}>{subCategory.name}</div> 
                     <FaTrashAlt className="float-right" style={Object.assign({},trashColor, styles)} onClick={() => { this.setState({ categoryId: subCategory.id }); this.toggleDanger() }}/>
                   <FaPen size={12} className="float-right" style={Object.assign({},penColor, styles)} onClick={()=>this.updateCategory(subCategory)} />
                 </Col> 
@@ -199,10 +197,6 @@ class Categories extends Component {
         </ListGroupItem>
       </ListGroup>
     )
-  }
-  displayNames = (name) => {
-    const {screenWidth} = this.state;
-    return (<span >{screenWidth<=390 ? (name.length>15? name.slice(0, 15)+"..." : name) : (screenWidth <= 550 ? (name.length>30? name.slice(0, 30)+"..." : name) : (screenWidth <= 700 ? (name.length>50? name.slice(0, 50)+"..." : name) : (screenWidth <= 900 ? (name.length>70? name.slice(0, 80)+"..." : name) : (screenWidth <= 1100 ? (name.length>90? name.slice(0, 110)+"..." : name) : (name.length>=120? name.slice(0, 140)+"..." : name) ) ) ) ) }</span>)
   }
   
   loadDeleteCategory = () => {

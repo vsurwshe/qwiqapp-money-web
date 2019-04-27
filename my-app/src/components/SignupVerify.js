@@ -22,7 +22,6 @@ class SignupVerify extends Component {
   successCall = json => {
     this.setState({ flag: true });
   };
-//
   errorCall = err => {
     this.setState({ content: <div><strong>Email already Verified, please Login......</strong><br/><br/><br/><Link to='/login'> Login Now</Link></div>});
   };

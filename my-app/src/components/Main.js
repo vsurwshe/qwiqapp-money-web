@@ -73,17 +73,14 @@ class Main extends Component {
         </AppHeader>
         <div className="app-body">
           <AppSidebar fixed display="sm">
-            {/* <AppSidebarHeader /> <AppSidebarForm /> */}
             <Suspense>
               {
                 !this.state.flag ?  <AppSidebarNav navConfig={navigation} {...this.props} />
                                  :  <AppSidebarNav navConfig={item} {...this.props} />
               }
             </Suspense>
-            {/* <AppSidebarFooter />  <AppSidebarMinimizer /> */}
           </AppSidebar>
-          <main className="main">
-            {/* <AppBreadcrumb /> */}
+          <main className="main" style={{backgroundColor:"#FFFFFF"}}>
             <br/>
             <Container fluid>
               <Suspense fallback={this.loading()}>{this.loadRoutes()}</Suspense>
@@ -100,7 +97,6 @@ class Main extends Component {
   }
 }
 export default withRouter(Main);
-
 //This is provide the Security to app Routing
 const PrivateRoute = ({ component: Component, ...rest }) => (
   <Route

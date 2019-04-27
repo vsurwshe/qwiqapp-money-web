@@ -6,10 +6,9 @@ class ProfileApi {
   createProfile(success, failure, data) {
     process(success, failure, "/profiles/", "POST", data);
   }
-  getProfiles(success, failure) {
-    process(success, failure, "/profiles/", "GET");
+  getProfiles(success, failure,value) {
+    Store.getUserProfiles()===null || value==="true" ? process(success, failure, "/profiles/", "GET"): success(Store.getUserProfiles());
   }
-
   getProfilesById(success, failure, uid) {
     process(success, failure, "/profiles/" + uid, "GET");
   }
@@ -29,6 +28,11 @@ async function process(success, failure, Uurl, Umethod, data) {
   let promise;
     try{
       data===null? promise=await HTTP.request(): promise=await HTTP.request({ data });
+      if (Umethod === "GET") {
+        Store.saveUserProfiles(promise.data);
+      } else {
+        new ProfileApi().getProfiles(success, failure, "True");
+      }
       validResponse(promise, success)
     }catch(err){ 
       console.log(err);

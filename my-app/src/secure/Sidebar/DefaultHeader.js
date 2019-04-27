@@ -3,9 +3,8 @@ import { DropdownItem, DropdownMenu, DropdownToggle, Nav} from "reactstrap";
 import PropTypes from "prop-types";
 import { AppHeaderDropdown, AppSidebarToggler,AppNavbarBrand } from "@coreui/react";
 import { AuthButton } from "../../App";
-import logo1 from '../Sidebar/img/Heart.jpg'
 import logo from '../Sidebar/img/user.png'
-import { FaCaretDown, FaCaretUp } from "react-icons/fa";
+import { FaCaretDown, FaCaretUp, FaUserTie } from "react-icons/fa";
 const propTypes = {
   children: PropTypes.node
 };
@@ -30,9 +29,10 @@ class DefaultHeader extends Component {
       <React.Fragment>
         <AppSidebarToggler className="d-lg-none" display="md" mobile />
         <AppNavbarBrand>
-          <span onClick = {this.toggle} style={{paddingLeft:25}}> 
-            <img src={logo1} style={{borderRadius:'50%'}} alt="Profile Pic" align='center' width="40" height="40"/> &nbsp;
-            <strong>MY PROFILE</strong>
+          {/* <img src={logo} style={{borderRadius:'50%', marginLeft:'40px'}} alt="Profile Pic" align='center' width="40" height="40"/> */}
+          <span onClick = {this.toggle} > 
+            <FaUserTie  size={25} style={{marginLeft:40}}/><br/>
+            <strong style={{ marginTop:10}}>MY PROFILE</strong> &nbsp;
             {this.state.flag ? <FaCaretUp style={{color:'#0e2f73'}}/> : <FaCaretDown/>}
           </span>
         </AppNavbarBrand>

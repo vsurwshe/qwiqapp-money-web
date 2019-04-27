@@ -125,7 +125,5 @@ class Login extends Component {
     }
   }
 }
-
 const browserHistory = createBrowserHistory();
-
 export default Login;

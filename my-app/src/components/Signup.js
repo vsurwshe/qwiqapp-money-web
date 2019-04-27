@@ -36,8 +36,7 @@ class Signup extends React.Component {
     };
     if (this.state.name === "") {
         this.callAlertTimer("danger", "Name should not be empty")
-        // this.setState({ password: "" });
-    } else if (this.state.password.length > 5) {
+      } else if (this.state.password.length > 5) {
          new SignupApi().registerUser(this.successCall, this.errorCall, data);
     }
   };

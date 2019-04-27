@@ -6,8 +6,8 @@ import { FaPen, FaTrashAlt ,FaAngleDown,FaEllipsisV} from 'react-icons/fa';
 import UpdateLabel from "./UpdateLabel";
 import DeleteLabel from "./DeleteLabel";
 import LabelApi from "../../services/LabelApi";
-import ProfileApi from "../../services/ProfileApi";
 import Loader from 'react-loader-spinner'
+import Store from "../../data/Store";
 class Lables extends Component {
   isUnmount = false;
   constructor(props) {
@@ -33,42 +33,27 @@ class Lables extends Component {
       onHover:false,
       hoverAccord : [],
       spinner:false,
-      screenWidth:""
+     
     };
   }
-  //this method get All Labels Realted That Profile
-  componentDidMount=()=> {
-    this.isUnmount = true;
-    new ProfileApi().getProfiles(this.successProfileid,this.errorCall);
-    window.addEventListener("resize", this.resize.bind(this));
-    this.resize();
+  //this method get All Labels Related to that Profile
+  componentDidMount = () =>{
+    this.setProfileId();
   }
-  //this mwthod get the dimessions of screen
-  resize(){
-    if(this.isUnmount){ this.setState({screenWidth:window.innerWidth}) }
-  }
-  componentWillUnmount = () => {
-    this.isUnmount = false;
-  }
-  //this method seting Profile id 
-  successProfileid=json=>{
-    if (json === []) { this.setState({ profileId:'',spinner:false })}
-    else {
-      const iterator = json.values();
-      for (const value of iterator) {this.setProfileId(value.id)}
-    }
-  }
+  
   //this method set Profile Id
-  setProfileId=(id)=>{
-    this.setState({profileId:id})
+  setProfileId = async (id) => {
+    console.log(Store.getProfileId());
+    await this.setState({ profileId: Store.getProfileId() })
     this.getLabels();
   }
-  //this method seting labels when api given successfull Response
-  successCall = json => {
-    if (json === "Deleted Successfully") {
-      this.setState({ labels: [0] })
+
+  //this method sets labels when api given successfull Response
+  successCall = lable => {
+    if (lable === []) {
+      this.setState({ labels : [0] })
     } else {
-      this.setState({ labels: json, spinner:true })
+      this.setState({ labels : lable, spinner : true })
       this.loadCollapse();
     }
   };
@@ -215,6 +200,21 @@ class Lables extends Component {
       whiteSpace:'nowrap',
       paddingLeft:10
     }
+    const ellipsisText1 = {
+      flex: 1,
+      display: 'flex',
+      alignItems: 'center',
+      marginTop: '10px',
+      marginLeft: '-10'
+    }
+    const ellipsisText2 = {
+      flex: 1,
+      width: '100px',
+      textOverflow: 'ellipsis',
+      overflow: 'hidden',
+      whiteSpace:'nowrap',
+      paddingLeft:10
+    }
     return (
     
       <ListGroup flush key={ukey} className="animated fadeIn" onPointerEnter={(e) => this.onHover(e, ukey)} onPointerLeave={(e) => this.onHoverOff(e, ukey)}>
@@ -244,12 +244,6 @@ class Lables extends Component {
         </ListGroupItem>
       </ListGroup>)
   }
-  //this method display name after avtar for large string
-  displayName=(name,styles)=>{
-    const {screenWidth}=this.state;
-    return(<span style={{styles}}>{screenWidth<=390 ? (name.length>15? name.slice(0, 15)+"..." : name) : (screenWidth <= 550 ? (name.length>35? name.slice(0, 35)+"..." : name) : (screenWidth <= 700 ? (name.length>55? name.slice(0, 55)+"..." : name) : (screenWidth <= 900 ? (name.length>70? name.slice(0, 80)+"..." : name) : (screenWidth <= 1100 ? (name.length>90? name.slice(0, 110)+"..." : name) : (name.length>=130? name.slice(0, 130)+"..." : name) ) ) ) ) }</span>)
-  }
-  
   //this method call the delete model
   loadDeleteLabel = () => {
     return (<Modal isOpen={this.state.danger} toggle={this.toggleDanger} style={{paddingTop: "20%"}} backdrop={true}>

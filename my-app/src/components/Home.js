@@ -20,7 +20,6 @@ class Home extends Component {
                 <li>Manage bills</li>
               </ui>
             </CardBody>
-            {/* <Link to='/singup'> Register Now</Link> <Link to='/login'> (login) </Link> */}
           </Card>
           <Card>
             <CardTitle>In order to use the app please,</CardTitle>

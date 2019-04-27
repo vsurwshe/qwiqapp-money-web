@@ -1,9 +1,9 @@
 import React from "react";
-
 import { Link } from "react-router-dom";
 import Store from "../data/Store";
 import { AuthButton } from "../App";
 
+//Currently we dont use this Component.
 class Header extends React.Component {
   constructor() {
     super();
@@ -51,10 +51,7 @@ class Header extends React.Component {
               <nav className="sidebar-nav ps">
                 <ul className="nav">
                   <li class="nav-item ">
-                    {/* <a className="nav-link ">
-                      <i class="nav-icon cui-dashboard" /> DashBoard
-                    </a> */}
-                    <ul className="nav-dropdown-items" />
+                     <ul className="nav-dropdown-items" />
                   </li>
                   <li className="nav-item  nav-dropdown  ">
                     <a className="nav-link " href="/dashboard">
@@ -90,14 +87,7 @@ class Header extends React.Component {
     );
   };
   nonSecureNavBar = () => {
-    return (
-      <div />
-      //   <div>
-      //     <Container style={{ padding: 20 }} className="App">
-      //  </Container>
-      //   </div>
-      // <SideMenu />
-    );
+    return (<div />);
   };
 }
 export default Header;

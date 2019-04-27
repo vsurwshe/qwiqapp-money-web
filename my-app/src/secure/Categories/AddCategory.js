@@ -62,7 +62,6 @@ class AddCategory extends Component {
   }
 
   loadAddingCategory=()=>{
-    // const align = { textAlign: "left" }
     const {name,color,alertColor,content}=this.state
     return(
           <Card >

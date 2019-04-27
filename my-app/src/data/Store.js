@@ -102,20 +102,32 @@ const Store = {
         return JSON.parse(categories)
     },
 
+    //this is save profiles in local storege
+    saveUserProfiles: function (data) {
+        db.setItem("PROFILES", JSON.stringify(data))
+    },
+    //this is get profiles form local storege
+    getUserProfiles: function () {
+        const categories = db.getItem("PROFILES")
+        return JSON.parse(categories)
+    },
+    //this is save profile id in local storege
+    saveProfileId: function (id) {
+        db.setItem("PORFILEID", JSON.stringify(id))
+    },
+    //this is get profile id form local storege
+    getProfileId: function () {
+        return JSON.parse(db.getItem("PORFILEID"));
+    },
+
     clearLocalStroge: function(){
         db.removeItem("CATEGORIES");
         db.removeItem("LABELS");
+        db.removeItem("PROFILES");
+        db.removeItem("PORFILEID");
     },
     
-    saveProfileId: function(profile_id){
-        db.setItem("PROFILE_ID",JSON.stringify(profile_id))
-    },
-
-    getProfileId: function(){
-        const profile_id = db.getItem("PROFILE_ID")
-        return JSON.parse(profile_id)
-    }
-
+   
 }
 export default Store;
 
