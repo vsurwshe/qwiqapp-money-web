@@ -16,6 +16,8 @@ import Categories from "../secure/Categories/Categories";
 import Contacts from "../secure/contact/Contacts";
 import CreateContact from "../secure/contact/CreateContact";
 import EditCategory from "../secure/Categories/EditCategory";
+import CreateProfile from "../secure/profiles/CreateProfile";
+import Bills from "../secure/Bills/Bill";
 
 const DefaultFooter = React.lazy(() =>import("../secure/Sidebar/DefaultFooter"));
 const DefaultHeader = React.lazy(() =>  import("../secure/Sidebar/DefaultHeader"));

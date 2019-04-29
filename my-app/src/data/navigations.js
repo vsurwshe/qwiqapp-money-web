@@ -19,7 +19,11 @@ export default {
     {
       name: "Contacts",
       url:"/contact/viewContacts",
-      icon: "cui-phone",
+      icon: "cui-phone"},
+    {
+      name: "Bill",
+      url: "/listBills",
+      icon: "cui-note"
     }
   ]
 };

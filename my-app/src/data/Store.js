@@ -107,14 +107,40 @@ const Store = {
     clearDummyAccessToken: function() {
         db.removeItem(DUMMY_KEY);       
     },
-
+    //this is save categories in local storege
     saveCategories: function(data) {
       db.setItem("CATEGORIES",JSON.stringify(data))
     },
-
+     //this is get categories form local storege
     getCategories: function(){
         const categories = db.getItem("CATEGORIES")
         return JSON.parse(categories)
+    },
+    //this is save bills in local storege
+    saveBills: function (data) {
+        db.setItem("BILL", JSON.stringify(data))
+    },
+     //this is get bills form local storege
+    getBills: function () {
+        const categories = db.getItem("BILL")
+        return JSON.parse(categories)
+    },
+    //this is save profiles in local storege
+    saveUserProfiles: function (data) {
+        db.setItem("PROFILES", JSON.stringify(data))
+    },
+     //this is get profiles form local storege
+    getUserProfiles: function () {
+        const categories = db.getItem("PROFILES")
+        return JSON.parse(categories)
+    },
+     //this is save profile id in local storege
+    saveProfileId:function (id){
+        db.setItem("PORFILEID",  JSON.stringify(id))
+    },
+    //this is get profile id form local storege
+    getProfileId:function (){
+       return  JSON.parse(db.getItem("PORFILEID"));
     },
 
     //this saves profiles in local storage

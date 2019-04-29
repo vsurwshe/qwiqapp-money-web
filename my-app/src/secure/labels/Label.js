@@ -24,7 +24,7 @@ class Lables extends Component {
       visible: false,
       updateLabel: false,
       deleteLabel: false,
-      profileId: 0,
+      profileId:"",
       accordion: [],
       danger: false,
       show: true,
@@ -59,7 +59,8 @@ class Lables extends Component {
       await this.setState({ labels: lable, spinner: true })
       this.loadCollapse();
     }
-  }
+  };
+  errorCall = err =>  { console.log(err); this.setState({ visible: true }) }
 
 
   loadCollapse = () => {
