@@ -12,7 +12,6 @@ class AttachmentApi {
   getAttachments(success, failure, pid, cid) {
      process(success, failure,  pid +"/contacts/" + cid + "/attachments" ,'GET', pid) 
   }
-
   getAttachmentsById(success,failure,pid,cid,aid){
     process(success, failure,  pid + "/contacts/" + cid + "/attachments/" +aid, "GET");
   }
