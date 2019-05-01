@@ -1,8 +1,7 @@
 import React, { Component } from "react";
-import { Button,Row, Col, Card, CardBody, Alert, CardHeader,Collapse,Modal, ModalHeader, ModalBody, ModalFooter,Dropdown,DropdownToggle,DropdownMenu,DropdownItem,ListGroupItem,ListGroup} from "reactstrap";
-import CreateLabel from "./CreateBill";
-import Avatar from 'react-avatar';
-import { FaAngleDown,FaEllipsisV} from 'react-icons/fa';
+import { Button,Row, Col, Card, CardBody, Alert, CardHeader,Modal, ModalHeader, ModalBody, ModalFooter,Dropdown,DropdownToggle,DropdownMenu,DropdownItem,ListGroupItem,ListGroup} from "reactstrap";
+import CreateBill from "./CreateBill";
+import { FaEllipsisV} from 'react-icons/fa';
 import UpdateBill from "./UpdateBill";
 import BillApi from "../../services/BillApi";
 import Loader from 'react-loader-spinner'
@@ -21,18 +20,17 @@ class Bills extends Component {
       collapse: [],
       rebill:[],
       createBill: false,
-      visible: false,
       updateBill: false,
-      deleteLabel: false,
-      profileId:0,
-      accordion: [],
-      danger: false,
-      show:true,
+      deleteBill: false,
+      visible: false,
       dropdownOpen:[],
-      onHover:false,
       hoverAccord : [],
+      accordion: [],
+      profileId:0,
+      danger: false,
+      onHover:false,
       spinner:false,
-      screenWidth:""
+      
     };
   }
   //this method get All bills Realted That Profile
@@ -94,20 +92,16 @@ class Bills extends Component {
    this.setState({ updateBill: true, rebill:ubill })
   };
   //this method for the load delete Components
-  deleteLabel = () => {
-   this.setState({ deleteLabel: true })
+  deleteBill = () => {
+   this.setState({ deleteBill: true })
   };
-  //this method toggel Lables tab
+  //this method toggel Bills tab
   toggleAccordion=(tab)=> {
     const prevState = this.state.accordion;
     const state = prevState.map((x, index) => tab === index ? !x : false);
     this.setState({accordion: state});
   }
-  //this method use for showing sub-lables when swtich is yes
-  toggleSublabel=()=>{
-    this.setState({show:!this.state.show});
-    this.getBills();
-  }
+
   toggleDropDown=(tab)=> {
     const prevState = this.state.dropdownOpen;
     const state = prevState.map((x, index) => tab === index ? !x : false);
@@ -130,14 +124,14 @@ class Bills extends Component {
   }
 
   render() {
-    const { bills, createBill,updateBill,id,deleteLabel, visible,profileId,rebill,spinner,labels,catagoery} = this.state
+    const { bills, createBill,updateBill,id,deleteBill, visible,profileId,rebill,spinner,labels,catagoery} = this.state
     if (bills.length === 0 && !createBill ) {
       return <div>{bills.length === 0 && !createBill && !spinner ? this.loadLoader() :this.loadNotBill()}</div>
     } else if (createBill) {
-      return ( <CreateLabel pid={profileId} label={labels} catagoery={catagoery} />)
+      return ( <CreateBill pid={profileId} label={labels} catagoery={catagoery} />)
     }else if (updateBill) {
-      return(<UpdateBill pid={profileId} bill={rebill} lables={bills} catagoery={catagoery} />)
-    }else if(deleteLabel) {
+      return(<UpdateBill pid={profileId} bill={rebill} lables={labels} catagoery={catagoery} />)
+    }else if(deleteBill) {
       return ( <DeleteBill id={id}  pid={profileId}/> )
     }else{
       return <div>{this.loadShowBill(visible, bills)}{this.loadDeleteBill()}</div>
@@ -184,7 +178,7 @@ class Bills extends Component {
      return (<div className="animated fadeIn">
       <Card>
         {this.loadHeader()}
-        <div style={{margin:30, paddingLeft:100}}>
+        <div style={{margin:30, paddingLeft:50}}>
           <h6><Alert isOpen={visible} color="danger"></Alert></h6>
           {this.state.bills.map((label, key) => {return this.loadSingleBill(this.state.bills[key], key); })}</div>
       </Card>
@@ -199,20 +193,38 @@ class Bills extends Component {
     return (
       <ListGroup flush key={ukey} className="animated fadeIn" onPointerEnter={(e) => this.onHover(e, ukey)} onPointerLeave={(e) => this.onHoverOff(e, ukey)}>
       <ListGroupItem action>
-        <Row><Col sm={10}>
-         <Avatar name={bill.type} color={"#000000"} size="40" square={true}>{}</Avatar> &nbsp;&nbsp;{bill.billDate +" "+ bill.notes} <FaAngleDown onClick={() => this.toggleAccordion(ukey)} />
-        </Col><Col>
-        {this.state.onHover && this.state.hoverAccord[ukey] ? this.loadDropDown(bill, ukey, styles) : ''}</Col></Row>
-        <Collapse isOpen={this.state.accordion[ukey]}>
-          <div style={{paddingLeft:50,paddingTop:10}}>
-            Amount : {bill.amount}<br/>
-            Date :{bill.billDate}<br/>
-            Catagoery :{bill.categoryId}<br />
-            Notes : {bill.notes}<br/>
-          </div>
-        </Collapse>
+          <Row>
+            <Col sm={{ size: 'auto', offset: 0 }} lg={1} style={{ backgroundColor: "#054FF8", color: "#FFFFFF", paddingTop: 10 }}>
+              <strong style={{ paddingTop: 5 }}>{this.dateFormat(bill.billDate)}</strong>
+            </Col>
+            <Col sm={8}>
+              <Row style={{ paddingLeft: 10 }}>{bill.notes}</Row>
+              <Row style={{ paddingLeft: 10, fontStyle: "oblique" }}>{this.displayCategoriesName(bill.categoryId)}</Row>
+            </Col>
+            <Col style={{ marginTop: 10 }} className="float-right">
+              <b style={{ color: "#F80505" }}>{new Intl.NumberFormat('en-IN', { style: 'currency', currency: bill.currency}).format( bill.amount)}</b>
+            </Col>
+            <Col>{this.state.onHover && this.state.hoverAccord[ukey] ? this.loadDropDown(bill, ukey, styles) : ''}</Col>
+          </Row>
       </ListGroupItem>
     </ListGroup>)
+  }
+ 
+  dateFormat=(userDate)=>{
+    var parts =userDate.split('-');
+    var date = new Date(parts[0], parts[1]-1, parts[2]);
+    const finalDate=new Intl.DateTimeFormat('en-gb', {
+                  month: 'short',
+                  weekday: 'short',
+                  day: '2-digit',
+                }).format(date);
+    return finalDate;
+  }
+
+  displayCategoriesName=(cid)=>{
+    const data=this.state.catagoery.filter(item=>{return item.id===cid});
+    for (const value of data)
+    return value.name;
   }
   
   //this method call the delete model
@@ -223,7 +235,7 @@ class Bills extends Component {
          Are you Sure want to Delete This Label ?
          </ModalBody>
        <ModalFooter>
-         <Button color="danger" onClick={this.deleteLabel}>Delete</Button>
+         <Button color="danger" onClick={this.deleteBill}>Delete</Button>
          <Button color="secondary" onClick={this.toggleDanger}>Cancel</Button>
        </ModalFooter>
      </Modal>)

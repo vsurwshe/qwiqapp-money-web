@@ -51,7 +51,7 @@ let AccessTokenError =function(profileId,err,failure,Uurl, Umethod, data,success
   if(err.request.status=== 0)
   { new BillApi().getBills(success,failure,profileId,"True");
   }else if (err.response.status===403 || err.response.status===401)
-  {new LoginApi().refresh(()=>{process(success,failure,Uurl,Umethod,data)},errorResponse(err, failure))
+  {new LoginApi().refresh(()=>{process(success,failure,Uurl,Umethod,profileId,data)},errorResponse(err, failure))
   }else{errorResponse(err, failure)}
 }
 
