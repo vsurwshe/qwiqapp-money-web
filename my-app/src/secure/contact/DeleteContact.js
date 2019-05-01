@@ -18,7 +18,7 @@ class DeleteLabel extends Component {
    };
  
   successCall = () => {
-    this.callAlertTimer("success","Profile Deleted Successfully....");
+    this.callAlertTimer("success","Contact Deleted Successfully....");
   };
  
   errorCall = () => {

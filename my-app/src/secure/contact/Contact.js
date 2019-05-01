@@ -1,8 +1,7 @@
 import React, { Component } from "react";
-import {Button,Row,Col,Card,CardBody,Alert,CardHeader,Popover,PopoverHeader,PopoverBody,NavLink,Modal,ModalHeader,ModalBody,ModalFooter,Dropdown,DropdownToggle,DropdownMenu,DropdownItem,ListGroupItem,ListGroup} from "reactstrap";
-
-import Avatar from 'react-avatar';
-import {FaAngleDown,FaEllipsisV} from 'react-icons/fa';
+import { Button,Row,Col,Card,CardBody,Alert,CardHeader,Modal,ModalHeader,ModalBody,ModalFooter,
+         Dropdown, DropdownToggle, DropdownMenu, DropdownItem, ListGroupItem, ListGroup, Collapse} from "reactstrap";
+import {FaEllipsisV, FaPaperclip} from 'react-icons/fa';
 import UpdateContact from "./UpdateContact";
 import DeleteContact from "./DeleteContact";
 import ProfileApi from "../../services/ProfileApi";
@@ -10,13 +9,16 @@ import Loader from 'react-loader-spinner'
 import ContactApi from "../../services/ContactApi";
 import CreateContact from "./CreateContact";
 import LabelApi from "../../services/LabelApi";
-
+import CountAttachments from './Attachments/Count_Attachments';
+import Attachments from "./Attachments/Attachments";
+import AttachmentApi from "../../services/AttachmentApi";
+import AddAttachment from "./Attachments/AddAttachment";
 class Contacts extends Component {
   isUnmount = false;
   constructor(props) {
     super(props);
     this.state = {
-      contact: [],
+      contacts: [],
       collapse: [],
       recontact:[],
       labels: [0],
@@ -33,16 +35,21 @@ class Contacts extends Component {
       accordion: [],
       danger: false,
       show:true,
+      isOpen: false,
+      addAttachRequest: false,
       dropdownOpen:[],
+      attachDropdown:[],
       onHover:false,
       hoverAccord : [],
       spinner:false,
-      screenWidth:""
+      screenWidth:"",
+      count: 0,
+      l:'',
     };
   }
   
   componentDidMount=()=> {
-     new ProfileApi().getProfiles(this.successProfileid,this.errorCall);
+    new ProfileApi().getProfiles(this.successProfileid,this.errorCall);
   }
  
   successProfileid=json=>{
@@ -62,11 +69,12 @@ class Contacts extends Component {
     new ContactApi().getContacts(this.successCall, this.errorCall,this.state.profileId);
  }
 
- successCall = json => {
-    if (json === []) {
-      this.setState({ contact: [0] })
+ successCall = contactJson => {
+    if (contactJson === []) {
+      this.setState({ contacts: [0] })
     } else {
-      this.setState({ contact: json, spinner:true })
+      this.setState({ contacts: contactJson, spinner:true })
+      // console.log("JSON = ",contactJson)
       this.loadCollapse();
     }
   };
@@ -77,17 +85,19 @@ class Contacts extends Component {
   callCreateContact = () => { this.setState({ createContact: true })}
 
   loadCollapse=()=>{
-     this.state.contact.map(lables=>{return this.setState(prevState => ({accordion: [...prevState.accordion, false],
-      hoverAccord : [...prevState.hoverAccord,false],
-      dropdownOpen: [...prevState.dropdownOpen, false]}))});
-      new LabelApi().getlabels(this.successCallLabel, this.errorCall,this.state.profileId);
+    this.state.contacts.map(lables=>{return this.setState(prevState => ({
+    accordion: [...prevState.accordion, false],
+    hoverAccord : [...prevState.hoverAccord,false],
+    dropdownOpen: [...prevState.dropdownOpen, false],
+    attachDropdown: [...prevState.attachDropdown, false]
+  }))});
+    new LabelApi().getlabels(this.successCallLabel, this.errorCall,this.state.profileId);
   }
   successCallLabel = json => {
     if (json === []) {
       this.setState({ labels: [0] })
     } else {
       this.setState({ labels: json, spinner:true })
-     
     }
   };
 
@@ -114,7 +124,11 @@ class Contacts extends Component {
     const state = prevState.map((x, index) => tab === index ? !x : false);
     this.setState({dropdownOpen: state});
   }
- 
+  attachDropDown = (hKey, cId) =>{ 
+      const prevState = this.state.attachDropdown;
+    const state = prevState.map((x,index)=> hKey===index? !x : false );
+    this.setState({ attachDropdown : state, id: cId });
+  }
  
   hoverAccordion = (hKey) => {
     const prevState = this.state.hoverAccord;
@@ -130,31 +144,48 @@ class Contacts extends Component {
     this.setState({ onHover : false });
     this.hoverAccordion(hKey)
   }
-
+  addAttach =async (contactId, key) => {
+    console.log(contactId);
+    await this.setState({ contactId: contactId,  addAttachRequest: true 
+    });
+  } 
   render() {
-   const { contact,viewLabelRequest, createContact,updateContact,id,deleteContact, visible,profileId,recontact,spinner,labels} = this.state
-    if (contact.length === 0 && !createContact ) {
-      return <div>{contact.length === 0 && !createContact && !spinner ? this.loadLoader() :this.loadNotContact()}</div>
+   const { contacts,l,viewLabelRequest,attachDropdown, createContact,updateContact,id,deleteContact,addAttachRequest,contactId,visible,profileId,recontact,spinner,labels} = this.state
+    if (contacts.length === 0 && !createContact ) {
+      return <div>{contacts.length === 0 && !createContact && !spinner ? this.loadLoader() :this.loadNotContact()}</div>
     } else if (createContact) {
       return ( <CreateContact pid={profileId} lables={labels}/>)
-    }else if (updateContact) {
+    } else if (updateContact) {
       return(<UpdateContact pid={profileId} contact={recontact} lables={labels} />)
-    }else if(deleteContact) {
+    } else if(deleteContact) {
       return ( <DeleteContact id={id}  pid={profileId}/> )
-    }else{
-      return <div>{this.loadShowContact(viewLabelRequest, visible, contact)}{this.loadDeleteContact()}</div>
+    } else if(addAttachRequest) {
+      return ( <AddAttachment contacId={contactId}  pid={profileId}/> )
+    } else{
+      return <div>{this.loadShowContact(viewLabelRequest, visible, attachDropdown,contacts,l)}{this.loadDeleteContact()}</div>
     }
   }
  
   loadHeader=()=>{
-    return(
+    return (
       <CardHeader>
-       <strong>Total Contacts: {this.state.contact.length}</strong>
-       <Button className="float-right" color="success" onClick={this.callCreateContact} >+ Create Contact</Button>
+       <strong>Total Contacts: {this.state.contacts.length}</strong>
+       <Button className="float-right" color="success" onClick={this.callCreateContact} > + Create Contact</Button>
      </CardHeader>
     )
   }
 
+  attchmentCount = (contactId) =>{
+    // this.state.profileId
+  new AttachmentApi().getAttachments (this.successAttach, this.errorFail, this.state.profileId, contactId);
+  }
+  successAttach =(json)=> {
+    console.log(json.length);
+    this.setState({ count : json.length }); 
+  }
+  errorFail =(error)=> {
+    console.log("something went wrong ")
+  }
 
   loadLoader=()=>{
    return( <div className="animated fadeIn">
@@ -182,52 +213,53 @@ class Contacts extends Component {
     </div>)
   }
   
-  loadShowContact = (visible, contact) => {
+  loadShowContact = (visible, attachDropdown,contacts,l) => {
      return (<div className="animated fadeIn">
-      <Card>
+      <Card >
       {this.loadHeader()}
         <div style={{margin:30}}>
           <h6><Alert isOpen={visible} color="danger">Internal Server Error</Alert></h6>
-          {this.state.contact.map((label, key) => {return this.loadSingleContact(this.state.contact[key], key); })}</div>
+            {this.state.contacts.map((contact, key) => { return this.loadSingleContact(this.state.contacts[key],key, l)})} 
+          </div>
       </Card>
     </div>)
     
   }
-  
-  loadSingleContact=(contact,ukey)=>{
+  loadSingleContact=(contact,ukey,l)=>{ 
     const styles={
-      margin: "6px"
+      marginTop: "4px"
     }
     return (
       <ListGroup flush key={ukey} className="animated fadeIn" onPointerEnter={(e) => this.onHover(e, ukey)} onPointerLeave={(e) => this.onHoverOff(e, ukey)}>
       <ListGroupItem action>
         <Row>
         <Col>
-          <Avatar name={contact.address1.charAt(0)}  color={"#000000"} size="40" square={true} key={contact.id} /> &nbsp;&nbsp;{this.displayName(contact.address1, styles)} 
-          {<span style={{ paddingLeft: 10 }}><FaAngleDown id={'Popover-' + ukey}  onClick={() => this.toggleAccordion(ukey)} /></span>}
-        {this.state.onHover && this.state.hoverAccord[ukey] ? this.loadDropDown(contact, ukey, styles) : ''}</Col></Row>
-          {/* <Collapse isOpen={this.state.accordion[ukey]}> */}
-          <Popover trigger="focus" placement="right" isOpen={this.state.accordion[ukey]}  target={'Popover-' + ukey}>
-            <PopoverHeader>{contact.address1}</PopoverHeader>
-            <PopoverBody className="card-text">
-              {contact.address2}<br/>
-              {contact.state},&nbsp;{contact.country}-{contact.postcode}<br/>
-              <Row><NavLink onClick={() => { this.updateContact(contact) }} href="#">Edit </NavLink>  <NavLink onClick={() => { this.setState({ id: contact.id }); this.toggleDanger(); }} href="#">Delete</NavLink></Row>
-            </PopoverBody>
-          </Popover>
+          {/* <Avatar name={contact.address1.charAt(0)} color={"#000000"} size="40" square={true} key={contact.id} /> &nbsp;&nbsp; */}
+          {/* <Row> <Col> */}
+          {this.displayName(contact.firstName+ " " +contact.lastName,contact.id, styles,l)}
+          <FaPaperclip color="#87CEFA" style={{marginTop:5, marginLeft: 10}} size={17} onClick={()=>this.attachDropDown(ukey, contact.id)} /> 
+           {/* </Col></Row> */}
+          </Col>
+          <Col lg={1} sm={1} md={1} xl={1} >{this.state.onHover && this.state.hoverAccord[ukey] ? this.loadDropDown(contact, ukey, styles) : ''}</Col>
+          </Row>
+           <Collapse isOpen={this.state.attachDropdown[ukey]} > <br></br>
+              {this.showAttachments(contact.id)} 
+           </Collapse>
       </ListGroupItem>
     </ListGroup>)
   }
   
-  displayName=(name,styles)=>{
-    return(<span style={{styles}}>{ name.length>20? name.slice(0, 15)+"..." : name }</span>)
+  displayName=(name,contactId,styles,l)=>{
+     return(<span style={{styles}} >{ name.length>20 ? name.slice(0, 20)+"..." : name }&nbsp;
+        <CountAttachments profileId={this.state.profileId} contactId ={contactId}/>
+      </span>)
   }
-  
+ 
   loadDeleteContact = () => {
     return (<Modal isOpen={this.state.danger} toggle={this.toggleDanger} style={{paddingTop: "20%"}} backdrop={true}>
-       <ModalHeader toggle={this.toggleDanger}>Delete Label</ModalHeader>
+       <ModalHeader toggle={this.toggleDanger}>Delete Contact</ModalHeader>
        <ModalBody>
-         Are you Sure want to Delete This Label ?
+         Are you Sure want to Delete This Contact ?
          </ModalBody>
        <ModalFooter>
          <Button color="danger" onClick={this.deleteContact}>Delete</Button>
@@ -246,6 +278,11 @@ class Contacts extends Component {
          <DropdownItem onClick={() => { this.setState({ id: contact.id }); this.toggleDanger(); }}> Delete</DropdownItem>
        </DropdownMenu>
      </Dropdown>);
- }
+  }
+
+ showAttachments(contactId){
+  // console.log("cId : ", contactId, "   pro Id : ", this.state.profileId);
+   return <Attachments contactId={contactId} profileId={this.state.profileId}/>
+  }
 }
 export default Contacts;

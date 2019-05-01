@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Button,Col, Input, Alert ,FormGroup,Card,CardHeader,Label,Collapse,FormText} from "reactstrap";
-import Lables from "./Contact";
+import Contacts from "./Contact";
 import ContactApi from "../../services/ContactApi";
 
 class UpdateLabel extends Component {
@@ -14,6 +14,8 @@ class UpdateLabel extends Component {
       collapse: false,
       labels: this.props.lables,
       id:  this.props.contact.id,
+      firstName: this.props.contact.firstName,
+      lastName: this.props.contact.lastName,
       userAddress1: this.props.contact.address1,
       userAddress2: this.props.contact.address2,
       userCountry: this.props.contact.country,
@@ -29,6 +31,8 @@ class UpdateLabel extends Component {
 
   handleUpdate = () => {
     const data = {
+      firstName: this.state.firstName,
+      lastName: this.state.lastName,
       address1 : this.state.userAddress1,
       address2 : this.state.userAddress2,
       country  : this.state.userCountry,
@@ -45,7 +49,7 @@ class UpdateLabel extends Component {
   };
   
   SuccessCall = json => {
-     this.callAlertTimer( "success", "Label Updated Successfully... ");
+     this.callAlertTimer( "success", "Contact Updated Successfully... ");
   };
  
   errorCall = err => {
@@ -74,7 +78,7 @@ class UpdateLabel extends Component {
 
   render() {
     const {alertColor, content, updateSuccess} = this.state;
-    return <div>{updateSuccess ?<Lables />:this.loadUpdatingLable(alertColor,content)}</div>
+    return <div>{updateSuccess ?<Contacts />:this.loadUpdatingLable(alertColor,content)}</div>
   }
 
   loadHeader=()=>{
@@ -95,6 +99,16 @@ class UpdateLabel extends Component {
              <Alert color={alertColor}>{content}</Alert>
              <h5 className="text-center"><b>EDIT CONTACT</b></h5>
              <FormGroup>
+             <FormGroup row>
+              <Col>
+                <Input type="text" value={this.state.firstName} name="firstName" placeholder="First_Name" onChange={e => this.handleInput(e)} />
+                <FormText color="muted">Please enter Address 1 Line</FormText>
+              </Col>
+              <Col>
+                <Input type="text" name="lastName" placeholder="Last_Name" value={this.state.lastName} onChange={e => this.handleInput(e)} />
+                <FormText color="muted">Please enter Address 2 Line</FormText>
+              </Col>
+            </FormGroup>
             <FormGroup row>
               <Col>
                 <Input type="text" value={this.state.userAddress1} name="userAddress1" placeholder="Address 1" onChange={e => this.handleInput(e)} />
@@ -157,7 +171,7 @@ class UpdateLabel extends Component {
             </FormGroup>
             <FormGroup row>
               <Col>
-                <Button color="info" disabled={!this.state.userAddress1} onClick={e => this.handleUpdate(e)} > Update Contact </Button>
+                <Button color="info" disabled={!this.state.firstName} onClick={e => this.handleUpdate(e)} > Update Contact </Button>
                 <a href="/contact/manageContact" style={{ textDecoration: 'none' }}> <Button active color="light" aria-pressed="true">Cancel</Button></a>
               </Col>
             </FormGroup>

@@ -40,7 +40,7 @@ async function process(success, failure, Uurl, Umethod,profileId, data) {
         validResponse(promise, success)
       }
     } catch (err) {
-      console.log(err.request.status)      
+      // console.log(err.request.status)      
       console.table(err);
       AccessTokenError(profileId,err, failure, Uurl, Umethod, data, success);
     }
