@@ -4,24 +4,24 @@ import Store from "../data/Store";
 import LoginApi from "./LoginApi";
 class ContactApi {
  
-  createContact(success, failure, pid,data) {
-    process(success, failure, pid+"/contacts", "POST",pid, data);
+  createContact(success, failure, profileId,data) {
+    process(success, failure, profileId+"/contacts", "POST",profileId, data);
   }
  
-  getContacts(success, failure,pid,value) {
-    Store.getContacts()===null||value==="true" ? process(success, failure, pid+"/contacts", "GET"): success(Store.getContacts());
+  getContacts(success, failure,profileId,value) {
+    Store.getContacts()===null||value==="true" ? process(success, failure, profileId+"/contacts", "GET"): success(Store.getContacts());
   }
  
-  getContactById(success, failure,pid,lid) {
-    process(success, failure, pid+"/contacts/"+lid, "GET");
+  getContactById(success, failure,profileId,contactId) {
+    process(success, failure, profileId+"/contacts/"+contactId, "GET");
   }
  
-  updateContact(success, failure, data, pid,cid) {
-    process(success, failure,pid+"/contacts/"+cid, "PUT",pid, data);
+  updateContact(success, failure, data, profileId,contactId) {
+    process(success, failure,profileId+"/contacts/"+contactId, "PUT",profileId, data);
   }
  
-  deleteContact(success, failure, pid,lid) {
-    process(success, failure, pid+"/contacts/"+lid, "DELETE",pid);
+  deleteContact(success, failure, profileId,contactId) {
+    process(success, failure, profileId+"/contacts/"+contactId, "DELETE",profileId);
   }
 }
 

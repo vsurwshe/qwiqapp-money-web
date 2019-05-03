@@ -1,12 +1,13 @@
 import React,  { Component } from 'react';
 import { Card, CardHeader, CardBody, FormGroup, Button } from 'reactstrap';
 import AttachmentApi from '../../../services/AttachmentApi';
+import Attachments from './Attachments';
 
 class AddAttachment extends Component{
   state = {
     file : '',
-    pid : this.props.profileId,
-    cid : this.props.contactId,
+    pprofileId : this.props.profileId,
+    contactId : this.props.contactId,
     addSuccess:false,
     addFail: false,
     content: ''
@@ -18,17 +19,22 @@ class AddAttachment extends Component{
 
   handleSubmit = (e) =>{
     e.preventDefault()
+    const {profileId, contactId, file} = this.state;
     let reader = new FormData()
-    reader.append('file', this.state.file);
-    // console.log("File data=",this.state.file, "   reader : ", reader, "  contact id : ", this.state.cid);
-    new AttachmentApi().createAttachment( this.successCall, this.errorCall, this.state.pid, this.state.cid, reader )
+    reader.append('file', file);
+    if (profileId === undefined || contactId === undefined) {
+      new AttachmentApi().createAttachment( this.successCall, this.errorCall, profileId, contactId, reader )  
+    }
+    
   }
   successCall = (json) => {
     console.log(json)
     this.setState({ addSuccess: true, content: "Successfully added ", });
+    this.props.addFile();
   } 
   errorCall = (err) => {
     this.setState({ content: "Something went wrong", addFail: true });
+    this.props.addFile();
   }
 
    render(){
@@ -53,24 +59,21 @@ class AddAttachment extends Component{
    }
    loadSuccess = () =>{
     return (<Card>
-      {this.loadHeader()}
-       <CardBody>
+      <Attachments />
+      {/* {this.loadHeader()} */}
+       {/* <CardBody>
           <center>{this.state.content} <br /> <br />
           <a href="/contact/manageContact" ><Button color="success" > Goto Contacts </Button></a></center>
-       </CardBody>
+       </CardBody> */}
     </Card>)
    }
    loadAddAttachment = () => {
     return(
         <Card>
           {this.loadHeader() }
-          <FormGroup>
-            <br></br>
+          <FormGroup> <br></br>
             <center>
-              <input type="file" onChange={e=>this.handleInput(e)}/>
-            </center>
-            <br />
-            <center>
+              <input type="file" onChange={e=>this.handleInput(e)}/> <br />
               <Button color="info" onClick={e=>this.handleSubmit(e)}> Add </Button>&nbsp;&nbsp;
               <a href="/contact/manageContact/" style={{textDecoration:'none'}} > <Button active  color="light" aria-pressed="true">Cancel</Button></a><br/><br/>
             </center>

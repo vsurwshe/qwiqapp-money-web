@@ -1,23 +1,25 @@
 import React, { Component } from "react";
 import { Card, CardHeader,CardBody,Alert,Col } from "reactstrap";
-import Lables from "./Contact";
+import Contacts from "./Contacts";
 import ContactApi from "../../services/ContactApi";
-class DeleteLabel extends Component {
+class DeleteContact extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      id: this.props.id,
+      contactId: props.contactId,
       labelDeleted: false,
       color: "warning",
       content: "Deleting Label.....",
-      profileId:this.props.pid
+      profileId: props.profileId
     };
   }
   componentDidMount = () => {
-    new ContactApi().deleteContact(this.successCall,this.errorCall,this.state.profileId,this.state.id);
+    console.log("Delete didMount");
+    new ContactApi().deleteContact(this.successCall, this.errorCall ,this.state.profileId, this.state.contactId);
    };
  
   successCall = () => {
+    this.setState({ labelDeleted: true  });
     this.callAlertTimer("success","Contact Deleted Successfully....");
   };
  
@@ -26,33 +28,29 @@ class DeleteLabel extends Component {
   };
 
   callAlertTimer = (color, content) => {
-    this.setState({color: color,content: content});
-    setTimeout(() => {this.setState({ color: "",content:"",labelDeleted: true });}, 2000);
+    this.setState({ color : color, content : content});
   };
 
   render() {
-    const { labelDeleted, content,color } = this.state;
-    return <div>{labelDeleted?<Lables />:this.loadDeleteing(color,content)}</div>
-  }
+    const { labelDeleted, content, color } = this.state;
+    return <div>{labelDeleted ? <Contacts color={color} content={content}/> : this.loadDeleting(color,content)}</div>
+  } 
 
   loadHeader=()=>{
-    return(<CardHeader>
-      <strong>Delete Contact</strong>
-    </CardHeader>);
+    return <CardHeader><strong>Delete Contact</strong></CardHeader>;
   }
 
-  loadDeleteing=(color,content)=>{
-    return(<div className="animated fadeIn">
+  loadDeleting = (color,content)=>{
+    return(
+      <div className="animated fadeIn">
         <Card>
           {this.loadHeader()}
-         <CardBody>
-          <Col sm="12" md={{ size: 5, offset: 4 }}>
-            <Alert color={color}>{content}</Alert>
-          </Col>
-        </CardBody>
+          <CardBody>
+           <Col sm="12" md={{ size: 5, offset: 4 }}>Deleting</Col>
+          </CardBody>
         </Card>
       </div>)
   }
 }
 
-export default DeleteLabel;
+export default DeleteContact;

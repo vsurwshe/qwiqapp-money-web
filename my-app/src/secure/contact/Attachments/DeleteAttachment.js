@@ -15,22 +15,24 @@ class DeleteAttachment extends Component {
     }
     componentDidMount = () => {
         const {proId, contId, attachId} = this.state
-        new AttachmentApi().deleteAttachment(this.successCall, this.errorCall, proId, contId, attachId);
+        console.log(proId, contId, attachId)
+        if (proId !== undefined | contId !== undefined | attachId !== undefined ) {
+            new AttachmentApi().deleteAttachment(this.successCall, this.errorCall, proId, contId, attachId);    
+        }
     }
     successCall =(successData) =>{
         this.setState({ successDelete: true});
     }
     errorCall = (err) =>{
-        console.log(err)
         this.setState({ content: "somthing went wrong in delete, try Again" });
     }
     render() { 
         const {successDelete, content} = this.state;
-        return <div>{successDelete ? this.loadSuccessDelelte() : this.deleteProcess(content)}</div>
+        return <div>{successDelete ? this.loadSuccessDelete() : this.deleteProcess(content)}</div>
     }
-    loadSuccessDelelte = ()=>{
+    loadSuccessDelete = ()=>{
         return ( 
-            <div> Deleted Successfully 
+            <div style={{color: "green"}}> Deleted Successfully !
                 {window.location.reload()}
             </div>
          );
@@ -41,7 +43,8 @@ class DeleteAttachment extends Component {
                 <CardHeader>Delete Attachment </CardHeader>
                 <CardBody>
                     <center>
-                        {content === '' ? <p>Deleting...</p> : <p>{content} <br/><br/><a href="/attachments"><Button color="info">Goto Attachments</Button></a></p>}
+                        {content === '' ? <p>Deleting...</p> : <p>{content} <br/><br/>
+                        <a href="/attachments"><Button color="info">Goto Attachments</Button></a></p>}
                     </center>
                 </CardBody>
             </Card>
