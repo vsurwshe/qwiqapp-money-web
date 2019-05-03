@@ -17,9 +17,9 @@ export default {
       icon: "cui-layers"
     },
     {
-      name: "Contact",
-      url:"/contact/manageContact",
-      icon: "cui-layers",
+      name: "Contacts",
+      url:"/contact/viewContacts",
+      icon: "cui-phone",
     }
   ]
 };

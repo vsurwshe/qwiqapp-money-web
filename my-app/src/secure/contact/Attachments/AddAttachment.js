@@ -1,11 +1,16 @@
 import React,  { Component } from 'react';
 import { Card, CardBody, FormGroup, Button } from 'reactstrap';
 import AttachmentApi from '../../../services/AttachmentApi';
+import Attachments from './Attachments';
 
 class AddAttachment extends Component{
   state = {
     file : '',
+<<<<<<< HEAD
     profileId : this.props.profileId,
+=======
+    pprofileId : this.props.profileId,
+>>>>>>> Removed Unwanted Code and implemented better UI
     contactId : this.props.contactId,
     addSuccess:false,
     addFail: false,
@@ -48,6 +53,7 @@ class AddAttachment extends Component{
     return (
         <div style={{padding:10}}><center><strong>Add Attachment</strong></center></div>
       )
+<<<<<<< HEAD
   }
 
   loadFailure = () => {
@@ -79,6 +85,39 @@ class AddAttachment extends Component{
       </Card>
    )
   }
+=======
+   }
+   loadFailure = () => {
+    return  <Card>
+         {this.loadHeader()}
+          <CardBody><center>{this.state.content}</center></CardBody>
+       </Card>
+   }
+   loadSuccess = () =>{
+    return (<Card>
+      <Attachments />
+      {/* {this.loadHeader()} */}
+       {/* <CardBody>
+          <center>{this.state.content} <br /> <br />
+          <a href="/contact/manageContact" ><Button color="success" > Goto Contacts </Button></a></center>
+       </CardBody> */}
+    </Card>)
+   }
+   loadAddAttachment = () => {
+    return(
+        <Card>
+          {this.loadHeader() }
+          <FormGroup> <br></br>
+            <center>
+              <input type="file" onChange={e=>this.handleInput(e)}/> <br />
+              <Button color="info" onClick={e=>this.handleSubmit(e)}> Add </Button>&nbsp;&nbsp;
+              <a href="/contact/manageContact/" style={{textDecoration:'none'}} > <Button active  color="light" aria-pressed="true">Cancel</Button></a><br/><br/>
+            </center>
+          </FormGroup>
+        </Card>
+    )
+   }
+>>>>>>> Removed Unwanted Code and implemented better UI
 }
 
 export default AddAttachment;

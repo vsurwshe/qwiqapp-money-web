@@ -11,7 +11,6 @@ import CreateContact from "./CreateContact";
 import LabelApi from "../../services/LabelApi";
 import Attachments from "./Attachments/Attachments";
 import AddAttachment from "./Attachments/AddAttachment";
-
 class Contacts extends Component {
   constructor(props) {
     super(props);
@@ -84,7 +83,6 @@ class Contacts extends Component {
   }))});
     new LabelApi().getlabels(this.successCallLabel, this.errorCall,this.state.profileId);
   }
-
   successCallLabel = (json) => {
     if (json === []) {
       this.setState({ labels : [0] })

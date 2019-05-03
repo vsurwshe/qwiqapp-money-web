@@ -13,7 +13,7 @@ import navigation, {item} from "../data/navigations";
 import CreateLable from "../secure/labels/Createlabel";
 import Lables from "../secure/labels/Label";
 import Categories from "../secure/Categories/Categories";
-import Contacts from "../secure/contact/Contact";
+import Contacts from "../secure/contact/Contacts";
 import CreateContact from "../secure/contact/CreateContact";
 
 const DefaultFooter = React.lazy(() =>import("../secure/Sidebar/DefaultFooter"));
@@ -53,7 +53,7 @@ class Main extends Component {
         <PrivateRoute path="/label/createLabel" component={CreateLable} />
         <PrivateRoute path="/listCategories" component={Categories} />
         <PrivateRoute exact path="/contact/createContact" component={CreateContact} />
-        <PrivateRoute exact path="/contact/manageContact" component={Contacts} />
+        <PrivateRoute exact path="/contact/viewContacts" component={Contacts} />
         <Route path="/login" component={Login} />
         <Route path="/signup" component={Signup} />
         <Route path="/register/:id/verify" component={SignupVerify} />
