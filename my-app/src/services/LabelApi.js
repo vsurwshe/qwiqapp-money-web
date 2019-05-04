@@ -17,7 +17,7 @@ class LabelApi {
   }
   //This Method Get All Sub-labels
   getSublabels(success, failure,pid,value) {
-    Store.getLabels()===null ||value==="True" ? process(success, failure, pid+"/labels?sublabels=true", "GET"): success(Store.getLabels());
+    Store.getLabels()===null || value==="True" ? process(success, failure, pid+"/labels?sublabels=true", "GET"): success(Store.getLabels());
    }
   
   //This Method Update labels 

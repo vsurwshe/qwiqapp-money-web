@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Card,CardHeader,  Button, Col, Row, Modal, ModalHeader, ModalBody, ModalFooter, Collapse, 
-  ListGroup, ListGroupItem, Alert, Dropdown, DropdownItem, DropdownToggle, DropdownMenu,CardBody } from 'reactstrap';
+         Alert, Dropdown, DropdownItem, DropdownToggle, DropdownMenu,CardBody } from 'reactstrap';
 import Loader from 'react-loader-spinner';
 import Avatar from 'react-avatar';
 import { FaPen, FaTrashAlt, FaAngleDown, FaEllipsisV } from 'react-icons/fa';
@@ -91,9 +91,8 @@ class Categories extends Component {
 
   callAlertTimer = () => {
     setTimeout(() => {
-      if(this.isUnmount){
-      this.setState({ alertColor : '', content : '' });}
-    }, 2000);
+        this.setState({ alertColor : '', content : '' });
+    },1800);
   };
 
   //Method handle accoding tab variable
@@ -156,13 +155,10 @@ class Categories extends Component {
   
   loadCategory = (category,uKey) => {
     const styles={ marginLeft: 20, marginTop: 10 }// marginTop: 39 
-    const penColor = { color: 'blue' }
-    const trashColor = { color: 'red' }
     const ellipsisText1 = {
       flex: 1,
       display: 'flex',
       alignItems: 'center',
-      marginTop: '10px',
       marginLeft: '-10'
     }
     const ellipsisText2 = {
@@ -173,29 +169,34 @@ class Categories extends Component {
       whiteSpace:'nowrap',
       paddingLeft:10
     }
+    const listSubCategory = {marginLeft:50, paddingTop:1, paddingBottom:0, paddingLeft:5, height:50};
     return( 
-      <ListGroup flush className="animated fadeIn" key={uKey} onPointerEnter={(e)=>this.onHover(e, uKey)} onPointerLeave={(e)=>this.onHoverOff(e,uKey)}>
-        <ListGroupItem action >
+      <div className="list-group" key={uKey}>
+        <div className="list-group-item" style= {{ paddingTop:1,padding:7}}>
            <Row >
+           <Col>
+            <span style={ellipsisText1}>
                 <Avatar name={category.name.charAt(0)} color = {category.color===null || category.color === "" ?'#000000':category.color} size="40" square={true} />
-                <div style={ellipsisText1}><div style={ellipsisText2}>&nbsp;&nbsp;{category.name}</div></div>
-                {Array.isArray(category.subCategories)?<span style={{ paddingLeft: 10 }}><FaAngleDown style={{marginTop:12}} onClick={()=>{this.toggleAccordion(uKey)}}/></span>:''} {this.state.onHover && this.state.hoverAccord[uKey]?this.showDropdown(category,uKey,styles):''}
-         </Row>
-          <div style={{padding:5}} />
-          <Collapse isOpen={this.state.accordion[uKey]}> {category.subCategories != null ? category.subCategories.map(subCategory=>{return (
-            <ListGroupItem tag="a" key={subCategory.id} style={{paddingBottom:1, paddingLeft:60}} >
+                <div style={ellipsisText2}>&nbsp;&nbsp;{category.name}
+                {Array.isArray(category.subCategories)?<span><FaAngleDown onClick={()=>{this.toggleAccordion(uKey)}}/></span>:''}</div></span></Col> 
+                <Col sm={1} md={1} lg={1} xl={1} >{this.showDropdown(category,uKey,styles)}</Col>
+         </Row></div>
+          <div style={{marginBottom:1.5}}/>
+          <Collapse isOpen={this.state.accordion[uKey]}> {category.subCategories != null ? category.subCategories.map((subCategory,key)=>{return (
+            <span className="list-group-item" style={listSubCategory} key={key}>
               <Row>
-                <Col sm={{size: 9}}>
+              <Col><span style={ellipsisText1}>
                     <Avatar name={subCategory.name.charAt(0)} color={subCategory.color===null || subCategory.color === ""?'#000000':subCategory.color} size="40" square={true}/>
-                    <div style={ellipsisText2}>{subCategory.name}</div> 
-                    <FaTrashAlt className="float-right" style={Object.assign({},trashColor, styles)} onClick={() => { this.setState({ categoryId: subCategory.id }); this.toggleDanger() }}/>
-                  <FaPen size={12} className="float-right" style={Object.assign({},penColor, styles)} onClick={()=>this.updateCategory(subCategory)} />
+                    <span style={ellipsisText2}>{subCategory.name}</span> </span>
+                   </Col> 
+                    <Col>  <FaTrashAlt className="float-right" color="red" style={{marginTop:20, marginLeft:10}} onClick={() => { this.setState({ categoryId: subCategory.id }); this.toggleDanger() }}/>
+                  <FaPen size={12} className="float-right" color="blue" style={{marginTop:20}} onClick={()=>this.updateCategory(subCategory)} />
                 </Col> 
               </Row><br />
-            </ListGroupItem>)}) : ''} 
+              </span>)}) : ''} 
           </Collapse> 
-        </ListGroupItem>
-      </ListGroup>
+          <div style={{marginTop:1}}/>
+          </div>
     )
   }
   
@@ -215,12 +216,12 @@ class Categories extends Component {
     return(
       <Dropdown isOpen={this.state.dropDownAccord[uKey]} style={{marginLeft: 7, float: "right" }} className= "float-right"  toggle={() => { this.dropDownAccordion(uKey); }} size="sm" >
        <DropdownToggle tag="span" onClick={() => { this.dropDownAccordion(uKey); }} data-toggle="dropdown" >
-        <FaEllipsisV style={styles}/></DropdownToggle>
-      <DropdownMenu style={{marginTop:9,marginLeft:10}}>
-        <DropdownItem onClick={()=>this.updateCategory(category)}>Edit </DropdownItem>
-        <DropdownItem onClick={()=>{ this.setState({ categoryId: category.id }); this.toggleDanger() }}>Delete</DropdownItem>
-      </DropdownMenu>
-    </Dropdown>
+        <FaEllipsisV style={{ marginTop: 15}}/></DropdownToggle>
+        <DropdownMenu style={{marginTop:9,marginLeft:10}}>
+          <DropdownItem onClick={()=>this.updateCategory(category)}>Edit </DropdownItem>
+          <DropdownItem onClick={()=>{ this.setState({ categoryId: category.id }); this.toggleDanger() }}>Delete</DropdownItem>
+        </DropdownMenu>
+      </Dropdown>
     )
   }
 }

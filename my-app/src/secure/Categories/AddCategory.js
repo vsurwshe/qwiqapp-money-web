@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 import { Label, Button, Input, Card, CardHeader, FormGroup, Collapse,Col, Alert } from "reactstrap";
+import { Link } from 'react-router-dom'
+
 import Store from "../../data/Store";
 import CategoryApi from "../../services/CategoryApi";
 import Categories from "./Categories";
@@ -30,8 +32,9 @@ class AddCategory extends Component {
     this.setState({ userToken: Store.getAppUserAccessToken() });
   }
 
-  handleSubmit = e => {
+  handleSubmit = async e => {
     e.preventDefault();
+    await this.generateCode()
     const data = { name: this.state.name, color: this.state.color,code: this.state.code, parentId: this.state.parentId };
     new CategoryApi().createCategory(this.successCall, this.errorCall, this.state.profileId, data);
   };
@@ -54,6 +57,18 @@ class AddCategory extends Component {
       this.setState({ categoryCreated: true});
     }, 2000);
   };
+
+  generateCode = () =>{
+    let characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxys0123456789"
+    var length = characters.length
+    var i=0;
+    var code = '';
+    for (i;i<3;i++){
+      code = code +  characters.charAt(Math.floor(Math.random() * length));
+    }
+    this.setState({code})
+    console.log("Code = ",code)
+  } 
  
   render() {
     return(
@@ -83,6 +98,7 @@ class AddCategory extends Component {
                 </FormGroup>
               <center>
                 <Button color="info" disabled={!this.state.name} onClick={this.handleSubmit}> Add </Button>&nbsp;&nbsp;&nbsp;
+                <Link to="/profiles" > Cancel </Link>
                 <a href="/listCategories" style={{textDecoration:'none'}}> <Button active  color="light" aria-pressed="true">Cancel</Button></a><br/><br/>
               </center>
             </center>

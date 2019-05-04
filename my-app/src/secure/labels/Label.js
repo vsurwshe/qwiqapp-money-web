@@ -1,5 +1,6 @@
 import React, { Component } from "react";
-import { Button,Row, Col, Card, CardBody, Alert, CardHeader,Collapse,Modal, ModalHeader, ModalBody, ModalFooter,Dropdown,DropdownToggle,DropdownMenu,DropdownItem,ListGroupItem,ListGroup} from "reactstrap";
+import { Button, Row, Col, Card, CardBody, Alert, CardHeader, Collapse, Modal, ModalHeader, ModalBody, ModalFooter, 
+         Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from "reactstrap";
 import CreateLabel from "./Createlabel";
 import Avatar from 'react-avatar';
 import { FaPen, FaTrashAlt ,FaAngleDown,FaEllipsisV} from 'react-icons/fa';
@@ -164,7 +165,7 @@ class Lables extends Component {
      return (<div className="animated fadeIn">
       <Card>
         <CardHeader><strong>Labels</strong><Button color="primary" className="float-right" onClick={this.callCreateLabel}> + ADD LABEL</Button></CardHeader>
-        <div style={{margin:30, paddingLeft:100}}>
+        <div style={{margin:30, paddingLeft:10}}>
           <h6><Alert isOpen={visible} color="danger">Internal Server Error</Alert></h6>
           {this.state.labels.map((label, key) => {return this.loadSingleLable(this.state.labels[key], key); })}</div>
       </Card>
@@ -174,7 +175,7 @@ class Lables extends Component {
   //Show the Single Label 
   loadSingleLable=(labels,ukey)=>{
     const styles={
-      margin: "6px"
+      marginRight : 6
     }
     const penColor = {
       marginTop: "15px",
@@ -204,7 +205,6 @@ class Lables extends Component {
       flex: 1,
       display: 'flex',
       alignItems: 'center',
-      marginTop: '10px',
       marginLeft: '-10'
     }
     const ellipsisText2 = {
@@ -215,34 +215,40 @@ class Lables extends Component {
       whiteSpace:'nowrap',
       paddingLeft:10
     }
+    const subLabelList = {marginLeft:50, paddingTop:1, paddingBottom:0, paddingLeft:5, height:50};
     return (
-    
-      <ListGroup flush key={ukey} className="animated fadeIn" onPointerEnter={(e) => this.onHover(e, ukey)} onPointerLeave={(e) => this.onHoverOff(e, ukey)}>
-        <ListGroupItem action>
+      <div className="list-group" >
+        <div className="list-group-item" style= {{ padding:7}}>
           <Row>
-           <Avatar name={labels.name.charAt(0)} color={labels.color === "" ? "#000000" : labels.color} size="40" square={true} key={labels.id} /> 
-           <div style={ellipsisText1}><div style={ellipsisText2}>&nbsp;&nbsp;{labels.name}</div></div>
-          {Array.isArray(labels.subLabels) ? <span style={{ paddingLeft: 10 }}><FaAngleDown style={{marginTop:12}} onClick={() => this.toggleAccordion(ukey)} /></span> : ''}
-          {this.state.onHover && this.state.hoverAccord[ukey] ? this.loadDropDown(labels, ukey, styles) : ''}
+          <Col>
+            <div style={ellipsisText1}>
+              <Avatar name={labels.name.charAt(0)} color={labels.color === "" ? "#000000" : labels.color} size="40" square={true} key={labels.id} /> 
+              <div style={ellipsisText2}>&nbsp;&nbsp;{labels.name}
+                {Array.isArray(labels.subLabels) ? <span style={{ paddingLeft: 10 }}>
+                  <FaAngleDown onClick={() => this.toggleAccordion(ukey)} /></span> : ''}
+             </div></div>
+          </Col>
+          <Col sm={2} md={2.5 } lg={1} xl={1} >{this.loadDropDown(labels, ukey, styles)}</Col>
           </Row>
           <Collapse isOpen={this.state.accordion[ukey]}>
             {Array.isArray(labels.subLabels) ? labels.subLabels.map(ulable => {
-              return (<ListGroupItem tag="a" style={{ paddingLeft: 55 }} className="justify-content-between" key={ulable.id}>
+              return (
+              <span className="list-group-item" style={subLabelList}>
                 <Row>
                   <Col sm={{ size: 9 }}>
-                    <div style={ellipsisText1}>
-                      <Avatar name={ulable.name.charAt(0)} color={ulable.color} size="40" square={true} />
-                      <div style={ellipsisText2}>{ulable.name}</div>
+                    <span style={Object.assign(ellipsisText1,{paddingBotttom:0})}>
+                      <Avatar name={ulable.name.charAt(0)} color={ulable.color} size="40" square={true} /> <div style={ellipsisText2}>{ulable.name}</div>
+                      </span> </Col>
+                      <Col >
                       <FaPen className="float-right" size={12} style={Object.assign({}, styles, penColor)} onClick={() => { this.updateLabel(ulable) }} />
                       <FaTrashAlt className="float-right" onClick={() => { this.setState({ id: ulable.id }); this.toggleDanger(); }} style={Object.assign({}, styles, trashColor)} />
-                    </div>
                   </Col>
                 </Row>
-              </ListGroupItem>)
+              </span>)
             }) : ""}
           </Collapse>
-        </ListGroupItem>
-      </ListGroup>)
+        </div>
+        </div>)
   }
   //this method call the delete model
   loadDeleteLabel = () => {
@@ -265,7 +271,7 @@ class Lables extends Component {
          <FaEllipsisV style={styles}/>
        </DropdownToggle>
        <DropdownMenu>
-         <DropdownItem onClick={() => { this.updateLabel(labels) }}> Update </DropdownItem>
+         <DropdownItem onClick={() => { this.updateLabel(labels) }} > Update </DropdownItem>
          <DropdownItem onClick={() => { this.setState({ id: labels.id }); this.toggleDanger(); }}> Delete</DropdownItem>
        </DropdownMenu>
      </Dropdown>);
