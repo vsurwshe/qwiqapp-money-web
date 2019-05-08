@@ -83,6 +83,7 @@ class Contacts extends Component {
   }))});
     new LabelApi().getlabels(this.successCallLabel, this.errorCall,this.state.profileId);
   }
+
   successCallLabel = (json) => {
     if (json === []) {
       this.setState({ labels : [0] })

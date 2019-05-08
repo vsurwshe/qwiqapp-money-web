@@ -55,7 +55,6 @@ class CreateContact extends Component {
       profileId: props.profileId,
       labels: props.lables,
       contactCreated: false,
-      failContactCreate: false,
       collapse: false,
       alertColor:'',
       message:'',
