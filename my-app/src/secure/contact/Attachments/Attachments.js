@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { Card, CardHeader, CardBody, Button, Row, Col, Modal, ModalHeader, ModalFooter, ModalBody } from 'reactstrap';
-import { FaTrashAlt, FaDownload, FaEye, FaCloudUploadAlt } from 'react-icons/fa';
+import { Card, CardBody, Button, Row, Col, Modal, ModalHeader, ModalFooter, ModalBody } from 'reactstrap';
+import { FaTrashAlt, FaCloudUploadAlt } from 'react-icons/fa';
 import DeleteAttachment from './DeleteAttachment';
 import AttachmentApi from '../../../services/AttachmentApi';
 import AddAttachment from './AddAttachment';
@@ -27,7 +27,6 @@ class Attachments extends Component{
   }
 
   successCall = (attachments) =>{
-    console.log("Data Type : ", typeof attachments);
     this.setState({ attachments : attachments, count : attachments.length });
   }
  
@@ -75,9 +74,9 @@ class Attachments extends Component{
   loadAttachments(attachments){
     return(
       <Card>
-        <CardHeader><strong>Attachments</strong> 
+        <div style={{padding:10}}><strong>ATTACHMENTS</strong> 
           <FaCloudUploadAlt color="#0000FF" size={20} className="float-right" onClick={this.handleAddFile} />
-        </CardHeader>
+        </div>
         <CardBody >
           {attachments.map((attach, key)=>{return (<div key={key}>{this.loadAttachment(attachments[key], key)}</div>)})}
         </CardBody>
@@ -90,9 +89,8 @@ class Attachments extends Component{
       <div className="list">
         <div className="list-item" key= {key}>
           <Row>
-            <Col>{attachment.filename} &nbsp;({this.sizeOf(attachment.sizeBytes)})</Col>
-            <FaDownload color="#008000" className="float-right" style={styles} onClick={e=>this.download(attachment.downloadLink)} /><span ></span>
-            <FaEye  color="#1E90FF" size={20} className="float-right" style={{marginTop:-4, marginRight:10}} onClick={e=>this.view()} />{"    "}<span className="float-right">{"  "}</span>
+            <Col><a href={attachment.downloadLink} rel="noopener noreferrer" target="_blank">{attachment.filename}</a> &nbsp;({this.sizeOf(attachment.sizeBytes)})</Col>
+            {/* <FaEye  color="#1E90FF" size={20} className="float-right" style={{marginTop:-4, marginRight:10}} onClick={e=>this.view()} />{"    "}<span className="float-right">{"  "}</span> */}
             <FaTrashAlt color="#ff0000" className="float-right" style={styles} onClick={()=>{this.toggleDanger(attachment.id, key)}} /><span className="float-right">{"  "}</span>
           </Row>
         </div>

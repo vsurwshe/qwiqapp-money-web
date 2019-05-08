@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Card, CardHeader,CardBody,Alert,Col } from "reactstrap";
+import { Card, CardHeader, CardBody, Col } from "reactstrap";
 import Contacts from "./Contacts";
 import ContactApi from "../../services/ContactApi";
 class DeleteContact extends Component {
@@ -28,19 +28,19 @@ class DeleteContact extends Component {
   };
 
   callAlertTimer = (color, content) => {
-    this.setState({ color : color, content : content});
+    this.setState({ color , content});
   };
 
   render() {
     const { labelDeleted, content, color } = this.state;
-    return <div>{labelDeleted ? <Contacts color={color} content={content}/> : this.loadDeleting(color,content)}</div>
+    return <div>{labelDeleted ? <Contacts color={color} content={content}/> : this.loadDeleting( )}</div>
   } 
 
   loadHeader=()=>{
     return <CardHeader><strong>Delete Contact</strong></CardHeader>;
   }
 
-  loadDeleting = (color,content)=>{
+  loadDeleting = ( )=>{
     return(
       <div className="animated fadeIn">
         <Card>

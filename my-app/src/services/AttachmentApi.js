@@ -12,6 +12,7 @@ class AttachmentApi {
   getAttachments(success, failure, pid, cid) {
      process(success, failure,  pid +"/contacts/" + cid + "/attachments" ,'GET', pid) 
   }
+
   getAttachmentsById(success,failure,pid,cid,aid){
     process(success, failure,  pid + "/contacts/" + cid + "/attachments/" +aid, "GET");
   }
@@ -19,16 +20,9 @@ class AttachmentApi {
   deleteAttachment(success, failure, pid, cid, aId) {
     process(success, failure,  pid + "/contacts/" + cid + "/attachments/" +aId, "DELETE",pid);
   }
-  // download(success, failure, url, pid){
-  //   downloadProcess(success, failure, url, "GET", pid);
-  // }
 }
 
 export default AttachmentApi;
-
-// async function downloadProcess(success, failure, url, mtd, pid){
- 
-// }
 
 async function process(success, failure, Uurl, Umethod, data) {
   let HTTP = httpCall(Uurl, Umethod);
@@ -52,8 +46,6 @@ let AccessTokenError=(err,failure, Uurl, Umethod, data,success)=>{
 }
 let validResponse = function(resp, successMethod) {
   if (successMethod != null) {
-    // const contentType = resp.headers["content-type"]
-    // console.log(resp.headers["content-type"]);
     successMethod(resp.data);
   }
 };

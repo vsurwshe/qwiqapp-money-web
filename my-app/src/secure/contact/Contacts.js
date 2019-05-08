@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Button,Row,Col,Card,CardBody,Alert,CardHeader,Modal,ModalHeader,ModalBody,ModalFooter,
+import { Button, Row, Col, Card, CardBody, Alert, Modal, ModalHeader, ModalBody, ModalFooter,
          Dropdown, DropdownToggle, DropdownMenu, DropdownItem, ListGroupItem, ListGroup, Collapse} from "reactstrap";
 import { FaEllipsisV, FaPaperclip, FaUserCircle } from 'react-icons/fa';
 import UpdateContact from "./UpdateContact";
@@ -24,7 +24,6 @@ class Contacts extends Component {
       version: "",
       addContainer: false,
       createContact: false,
-      viewLabelRequest: false,
       visible: false,
       updateContact: false,
       deleteContact: false,
@@ -40,7 +39,9 @@ class Contacts extends Component {
       hoverAccord : [],
       spinner: false,
       count: 0,
+      searchContact:''
     };
+    this.searchHandler = this.searchHandler.bind(this)
   }
   
   componentDidMount = () =>{
@@ -62,9 +63,9 @@ class Contacts extends Component {
  
   getContact = () =>{
     new ContactApi().getContacts(this.successCall, this.errorCall, this.state.profileId);
- }
+  }
 
- successCall = (contactJson) => {
+  successCall = (contactJson) => {
     if (contactJson === []) {
       this.setState({ contacts : [0] })
     } else {
@@ -87,6 +88,7 @@ class Contacts extends Component {
   }))});
     new LabelApi().getlabels(this.successCallLabel, this.errorCall,this.state.profileId);
   }
+
   successCallLabel = (json) => {
     if (json === []) {
       this.setState({ labels : [0] })
@@ -146,7 +148,7 @@ class Contacts extends Component {
   } 
 
   render() {
-   const { contacts,viewLabelRequest,attachDropdown,createContact,updateContact,deleteContact,addAttachRequest,contactId,visible,profileId,requiredContact,spinner,labels} = this.state
+   const { contacts,createContact,updateContact,deleteContact,addAttachRequest,contactId,visible,profileId,requiredContact,spinner,labels} = this.state
     if (contacts.length === 0 && !createContact ) {
       return <div>{contacts.length === 0 && !createContact && !spinner ? this.loadLoader() :this.loadNotContact()}</div>
     } else if (createContact) {
@@ -162,12 +164,25 @@ class Contacts extends Component {
     }
   }
  
+  searchHandler = (event) =>{
+    this.setState({ searchContact : event.target.value })
+  }
+  
+  searchingFor(term){
+    return function(x){
+      return (x.firstName.toLowerCase()+x.lastName.toLowerCase()).includes(term.toLowerCase()) || !term
+    }
+  }
+
   loadHeader = () =>{
     return (
-      <CardHeader>
-        <strong>Total Contacts: {this.state.contacts.length}</strong>
-        <Button className="float-right" color="success" onClick={this.callCreateContact} > + Create Contact</Button>
-     </CardHeader>
+      <div>
+        <div style={{paddingTop:20,paddingRight:10}} >
+        <strong style={{fontSize:30,marginLeft:20}}>Contacts</strong>
+        <Button className="float-right" color="success" onClick={this.callCreateContact} style={{marginLeft:10}}> + Add</Button>
+        <input type="search"  className="float-right" style={{marginTop:7}} placeholder="Search...." onChange={this.searchHandler} value={this.state.searchContact} />
+        </div>
+      </div>
     )
   }
 
@@ -194,15 +209,20 @@ class Contacts extends Component {
         </Card>
       </div>)
   }
+
+  callAlertTimer(){
+    setTimeout(()=>this.setState({show:false}),1800)
+  }
   
   loadShowContact = (visible, contacts) => {
+    this.callAlertTimer()
     return (
       <div className="animated fadeIn">
         <Card>
           {this.loadHeader()}
           <div style={{margin:30}}>
-            <h6><Alert color={this.props.color===undefined?'':this.props.color}>{this.props.content}</Alert></h6>
-            {contacts.map((contact, key) => { return this.loadSingleContact(contacts[key],key)})} 
+            <h6><Alert isOpen={this.state.show} color={this.props.color===undefined?'':this.props.color}>{this.props.content}</Alert></h6>
+            {contacts.filter(this.searchingFor(this.state.searchContact)).map((contact, key) => { return this.loadSingleContact(contact,key)})} 
           </div>
         </Card>
       </div>)
