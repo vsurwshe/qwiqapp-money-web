@@ -1,9 +1,13 @@
 import React, { Component } from "react";
 import CategoryApi from "../../services/CategoryApi";
 import Categories from "./Categories";
+<<<<<<< HEAD
 import { Card, CardBody } from "reactstrap";
 import Loader from 'react-loader-spinner';
 
+=======
+// import "default-passive-events";
+>>>>>>> 0.4: Labels color applied on selected label, sublabel showing, searchable dropdown added
 class DeleteCategory extends Component {
   constructor(props) {
     super(props);

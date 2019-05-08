@@ -3,7 +3,11 @@ import { Alert, Button, Input, Card, CardHeader, FormGroup, Col, Collapse, Label
 import { AvForm, AvField } from 'availity-reactstrap-validation';
 import LabelApi from "../../services/LabelApi";
 import Lables from './Label';
+<<<<<<< HEAD
 
+=======
+// import "default-passive-events";
+>>>>>>> 0.4: Labels color applied on selected label, sublabel showing, searchable dropdown added
 class CreateLable extends Component {
   constructor(props){
     super(props);

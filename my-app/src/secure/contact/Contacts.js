@@ -170,6 +170,7 @@ class Contacts extends Component {
   
   searchingFor(term){
     return function(x){
+      
       return (x.firstName.toLowerCase()+x.lastName.toLowerCase()).includes(term.toLowerCase()) || !term
     }
   }

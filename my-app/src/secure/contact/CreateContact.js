@@ -1,10 +1,53 @@
 import React, { Component } from "react";
-import { CardBody, Button, Input, Card, Row, CardHeader, FormGroup, Col, Collapse,Alert, Label} from "reactstrap";
+import { CardBody, Button, Card, Row, CardHeader, FormGroup, Col, Alert} from "reactstrap";
 import { AvForm, AvField} from 'availity-reactstrap-validation';
 import Contacts from './Contacts';
-import "default-passive-events";
+import chroma from 'chroma-js';
+import Select from "react-select";
 import ContactApi from "../../services/ContactApi";
 
+const colourStyles = {
+  control: styles => ({ ...styles, backgroundColor: 'white' }),
+  option: (styles, { data, isDisabled, isFocused, isSelected }) => {
+    const color = chroma(data.color);
+    return {
+      ...styles,
+      backgroundColor: isDisabled
+        ? null
+        : isSelected ? data.color : isFocused ? color.alpha(0.1).css() : null,
+      color: isDisabled
+        ? '#ccc'
+        : isSelected
+          ? chroma.contrast(color, 'white') > 2 ? 'white' : 'black'
+          : data.color,
+      cursor: isDisabled ? 'not-allowed' : 'default',
+
+      ':active': {
+        ...styles[':active'],
+        backgroundColor: !isDisabled && (isSelected ? data.color : color.alpha(0.3).css()),
+      },
+    };
+  },
+  multiValue: (styles, { data }) => {
+    const color = chroma(data.color);
+    return {
+      ...styles,
+      backgroundColor: color.alpha(0.1).css(),
+    };
+  },
+  multiValueLabel: (styles, { data }) => ({
+    ...styles,
+    color: data.color,
+  }),
+  multiValueRemove: (styles, { data }) => ({
+    ...styles,
+    color: data.color,
+    ':hover': {
+      backgroundColor: data.color,
+      color: 'white',
+    },
+  }),
+};
 class CreateContact extends Component {
   constructor(props){
     super(props);
@@ -14,10 +57,11 @@ class CreateContact extends Component {
       contactCreated: false,
       collapse: false,
       alertColor:'',
-      message:''
+      message:'',
+      selectedOption: "",
+      formTouched: true
     };
   }
- 
   handleInput = e => {
     this.setState({ [e.target.name] : e.target.value });
   };
@@ -25,7 +69,8 @@ class CreateContact extends Component {
   handleSubmit = async (event, errors, values) => {
     event.persist();
     if (errors.length===0) {
-      console.log(values);
+      var newData={...values,"labelIds":this.state.selectedOption.map((opt)=>{return opt.value})}
+      console.log("selected option : ",newData );
       await new ContactApi().createContact(this.successCall, this.errorCall, this.state.profileId, values);
     } 
   }
@@ -51,21 +96,19 @@ class CreateContact extends Component {
 
   render() {
     const { contactCreated, alertColor, message } = this.state;
-    return <div>{contactCreated?<Contacts />:this.loadAvCreateLable(alertColor,message)}</div>
+    return <div>{contactCreated?<Contacts />:this.loadAvCreateContact(alertColor,message)}</div>
     }
   
   loadHeader = () =>{
     return <CardHeader><strong>Contacts</strong></CardHeader>
   }
 
-  loadAvCreateLable = (alertColor,message) =>{
+  loadAvCreateContact = (alertColor,message) =>{
     return (
       <div>
         <Card>
-          {/* {this.loadHeader()}  */}
           <CardBody>
-            {console.log("ALert Color = ", alertColor)}
-          <Alert color={alertColor}>{message}</Alert>
+           <Alert color={alertColor}>{message}</Alert>
           <center><h5>Create Contact</h5></center><br/>
             <AvForm onSubmit = { this.handleSubmit}>
               <Row>
@@ -94,19 +137,13 @@ class CreateContact extends Component {
                 <Col><AvField name="address1" placeholder="Address 1" /></Col>
                 <Col><AvField name="address2" placeholder="Address 2" /></Col>
               </Row>
-              <FormGroup check className="checkbox" row>
-                <Col>
-                  <Input className="form-check-input" type="checkbox" onClick={this.toggle} value=" " />
-                  <Label check className="form-check-label" htmlFor="checkbox1"> &nbsp; Labels </Label>
-                </Col>
-                <Col style={{ paddingTop: 10, paddingBottom: 10 }}>
-                  {this.loadAvCollapse()}
-                </Col>
-              </FormGroup>
+              
+             
               <Row>
                 <Col><AvField name="organization" placeholder="Enter Your Organization"  /></Col>
                 <Col><AvField name="website" placeholder="Enter Your Website" /></Col>
               </Row>
+              <Row><Col>{this.loadAvCollapse()}</Col></Row> <br />
               <center><FormGroup row>
                 <Col>
                   <Button color="info" > Save Contact </Button>
@@ -130,15 +167,36 @@ class CreateContact extends Component {
         </Card>
       </div>)
   }
+  handleSelect = selectedOption => {
+    this.setState({ selectedOption });
+  };
 
   loadAvCollapse = () =>{
-    return (
-      <Collapse isOpen={this.state.collapse}>
-        <AvField type="select" name="labelIds" label="Option" helpMessage="Select Label" multiple>
-          {this.state.labels.map((label,key) => {return(
-              <option key={key} value={label.id}>{label.name} </option> )})}
-        </AvField>
-      </Collapse>);
+    const labelQ = [];
+    this.state.labels.map( (slabel, key)=>{
+      if(Array.isArray(slabel.subLabels))
+      { this.pushArray(labelQ,slabel);
+        slabel.subLabels.map(sul=>{return(this.pushArray(labelQ,sul,slabel))})
+      } else{
+        this.pushArray(labelQ,slabel);
+      }
+      return 0;
+    });
+    return (<div >
+         <Select onChange={this.handleSelect} isMulti options={labelQ} placeholder="Select the Label" styles={colourStyles}/>
+      </div>);
+  }
+
+  pushArray=(array,label,slabel)=>{
+    slabel=== undefined ? array.push ({
+      value: label.id,
+      label: label.name,
+      color: label.color === null ? "#000000" : label.color,
+     }) : array.push ({
+      value: label.id,
+      label: slabel.name+"/" +label.name,
+      color: label.color === null ? "#000000" : label.color,
+     })
   }
 }
 

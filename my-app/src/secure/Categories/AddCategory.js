@@ -4,7 +4,6 @@ import { AvForm, AvField } from 'availity-reactstrap-validation';
 import Store from "../../data/Store";
 import CategoryApi from "../../services/CategoryApi";
 import Categories from "./Categories";
-
 class AddCategory extends Component {
   constructor(props){
     super(props)

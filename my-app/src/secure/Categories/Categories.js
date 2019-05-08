@@ -5,7 +5,12 @@ import Loader from 'react-loader-spinner';
 import Avatar from 'react-avatar';
 import { FaPen, FaTrashAlt, FaAngleDown, FaSearch, FaEllipsisV } from 'react-icons/fa';
 import CategoryApi from "../../services/CategoryApi";
+<<<<<<< HEAD
 import Store from "../../data/Store";
+=======
+import ProfileApi from "../../services/ProfileApi";
+// import "default-passive-events";
+>>>>>>> 0.4: Labels color applied on selected label, sublabel showing, searchable dropdown added
 
 const AddCategory = React.lazy(() =>  import("./AddCategory"));
 const EditCategory = React.lazy(() =>  import("./EditCategory"));
