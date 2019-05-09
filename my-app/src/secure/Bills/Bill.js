@@ -16,7 +16,7 @@ class Bills extends Component {
     this.state = {
       bills: [],
       labels:[],
-      catagoery:[],
+      categories:[],
       collapse: [],
       rebill:[],
       createBill: false,
@@ -66,11 +66,11 @@ class Bills extends Component {
     new CategoryApi().getCategories(this.successCallCatagoery,this.errorCall,this.state.profileId); 
   }
   //this method seting Categories when api given successfull Response
-   successCallCatagoery = async(catagoery) => {
-    if (catagoery === []) {
-      this.setState({ catagoery: [0] })
+   successCallCatagoery = async(categories) => {
+    if (categories === []) {
+      this.setState({ categories: [0] })
     } else {
-      await this.setState({ catagoery: catagoery})
+      await this.setState({ categories: categories})
       new LabelApi().getSublabels(this.successCallLabel,this.errorCall,this.state.profileId);
     }
   };
@@ -124,13 +124,13 @@ class Bills extends Component {
   }
 
   render() {
-    const { bills, createBill,updateBill,id,deleteBill, visible,profileId,rebill,spinner,labels,catagoery} = this.state
+    const { bills, createBill,updateBill,id,deleteBill, visible,profileId,rebill,spinner,labels,categories} = this.state
     if (bills.length === 0 && !createBill ) {
       return <div>{bills.length === 0 && !createBill && !spinner ? this.loadLoader() :this.loadNotBill()}</div>
     } else if (createBill) {
-      return ( <CreateBill pid={profileId} label={labels} catagoery={catagoery} />)
+      return ( <CreateBill pid={profileId} label={labels} categories={categories} />)
     }else if (updateBill) {
-      return(<UpdateBill pid={profileId} bill={rebill} lables={labels} catagoery={catagoery} />)
+      return(<UpdateBill pid={profileId} bill={rebill} lables={labels} categories={categories} />)
     }else if(deleteBill) {
       return ( <DeleteBill id={id}  pid={profileId}/> )
     }else{
@@ -221,10 +221,25 @@ class Bills extends Component {
     return finalDate;
   }
 
-  displayCategoriesName=(cid)=>{
-    const data=this.state.catagoery.filter(item=>{return item.id===cid});
-    for (const value of data)
-    return value.name;
+  displayCategoriesName = (cid) => {
+    var data = this.state.categories.filter(item => { return item.id === cid });
+    if (data.length === 0) {
+      this.state.categories.map(category => {
+        if (Array.isArray(category.subCategories)) {
+          category.subCategories.forEach(element => {
+            if (element.id === cid) {
+              data = element.name;
+              return data;
+            }
+          });
+        }
+        return 0
+      })
+      return data;
+    } else {
+      for (const value of data)
+        return value.name;
+    }
   }
   
   //this method call the delete model

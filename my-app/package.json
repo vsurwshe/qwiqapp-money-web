@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@availity/reactstrap-validation-select": "^3.0.3",
     "@coreui/coreui": "^2.1.7",
     "@coreui/icons": "^0.3.0",
     "@coreui/react": "^2.1.4",
@@ -16,7 +17,10 @@
     "babel-preset-react": "^6.24.1",
     "bootstrap": "^4.3.1",
     "chroma-js": "^2.0.3",
+<<<<<<< HEAD
     "file-uri-to-path": "^1.0.0",
+=======
+>>>>>>> 0.5: Added Select dropdown for labels and categories
     "flag-icon-css": "^3.3.0",
     "font-awesome": "^4.7.0",
     "image-downloader": "^3.4.2",
@@ -27,7 +31,7 @@
     "popper.js": "^1.14.7",
     "prop-types": "^15.7.2",
     "query-string": "^6.2.0",
-    "react": "^16.8.3",
+    "react": "^16.8.6",
     "react-avatar": "^3.5.0",
     "react-bootstrap": "^1.0.0-beta.5",
     "react-center": "^1.1.1",

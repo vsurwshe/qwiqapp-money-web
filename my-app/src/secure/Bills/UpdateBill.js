@@ -1,8 +1,56 @@
 import React, { Component } from "react";
 import { AvForm, AvField } from 'availity-reactstrap-validation';
-import { Button,Col, Input, Alert ,FormGroup,Card,CardHeader,Label,Collapse,FormText} from "reactstrap";
+import { Button,Col, Row, Alert ,FormGroup,Card,CardHeader,Label,Collapse,FormText} from "reactstrap";
 import Lables from "./Bill";
 import BillApi from "../../services/BillApi";
+import Select from 'react-select';
+import chroma from 'chroma-js';
+
+const colourStyles = {
+  control: styles => ({ ...styles, backgroundColor: 'white' }),
+  option: (styles, { data, isDisabled, isFocused, isSelected }) => {
+    const color = chroma(data.color);
+    return {
+      ...styles,
+      backgroundColor: isDisabled
+        ? null
+        : isSelected ? data.color : isFocused ? color.alpha(0.1).css() : null,
+      color: isDisabled
+        ? '#ccc'
+        : isSelected
+          ? chroma.contrast(color, 'white') > 2 ? 'white' : 'black'
+          : data.color,
+      cursor: isDisabled ? 'not-allowed' : 'default',
+
+      ':active': {
+        ...styles[':active'],
+        backgroundColor: !isDisabled && (isSelected ? data.color : color.alpha(0.3).css()),
+      },
+    };
+  },
+  multiValue: (styles, { data }) => {
+    const color = chroma(data.color );
+    if(color===null || color!==null){
+      return {
+      ...styles,
+      backgroundColor: color.alpha(0.1).css(),
+    };
+  }
+  },
+  multiValueLabel: (styles, { data }) => ({
+    ...styles,
+    color: data.color,
+  }),
+  multiValueRemove: (styles, { data }) => ({
+    ...styles,
+    color: data.color,
+    ':hover': {
+      backgroundColor: data.color,
+      color: 'white',
+    },
+  }),
+};
+
 class UpdateBill extends Component {
   constructor(props) {
     super(props);
@@ -13,10 +61,25 @@ class UpdateBill extends Component {
       profileId :this.props.pid,
       collapse : false,
       labels : this.props.lables,
-      catagoery : this.props.catagoery,
-      id : this.props.bill.id,
+      categories : this.props.categories,
+      bill : this.props.bill,
+      labelOption:this.props.bill.labelIds,
+      categoriesUpdateOptionsUdpdate:false,
+      labelOptionUpdate: false,
+      categoryOption:this.props.bill.categoryId
      };
   }
+
+  labelSelected=(labelOption)=>{
+    this.setState({labelOption, labelOptionUpdate:true})
+    console.log(labelOption)
+   }
+
+   categorySelected=(categoryOption)=>{
+    this.setState({categoryOption, categoriesUpdateOptionsUdpdate:true})
+    console.log(categoryOption)
+   }
+
   
   //this method handle input from user given
   handleInput = e => {
@@ -34,14 +97,20 @@ class UpdateBill extends Component {
 
   //this method handle form submitons values and errors
   handleSubmitValue = (event, errors, values) => {
-    console.log(values)
-    if (errors.length === 0) { this.handleUpdate(event, values); }
+    const {labelOption,categoryOption, categoriesUpdateOptionsUdpdate,labelOptionUpdate}=this.state 
+    
+    if(categoryOption===null)
+    {alert('Plese Select Catgory')}
+    else{
+      console.log("Lablel",labelOption)
+      const  newData = {...values,"categoryId":categoriesUpdateOptionsUdpdate ?categoryOption.value : categoryOption,"labelIds":labelOption===null?[]:( labelOptionUpdate ? labelOption.map(opt=>{return opt.value}): labelOption ),"version": this.props.bill.version}
+      console.log(newData)
+      if (errors.length === 0) { this.handleUpdate(event, newData); }
+    } 
   }
 
   handleUpdate = (e, data) => {
-    let newData = {...data,version: this.props.bill.version};
-    console.log(newData);
-    new BillApi().updateBill(this.SuccessCall, this.errorCall, newData, this.state.profileId, this.state.id)
+     new BillApi().updateBill(this.SuccessCall, this.errorCall, data, this.state.profileId, this.props.bill.id)
   };
   //this called When Componets Calling SucessFully
   SuccessCall = json => {
@@ -53,22 +122,17 @@ class UpdateBill extends Component {
   };
 
   //this  method show the on page alert
-  callAlertTimer = (alertColor, content) => {
-    this.setState({ alertColor, content });
+  callAlertTimer = (alertColor, content) =>  {
+    this.setState({ alertColor, content }); 
     setTimeout(() => {
       this.setState({ name: '', alertColor: '', updateSuccess: true });
     }, 2000);
   };
 
   render() {
-    const {alertColor, content, updateSuccess} = this.state;
-    const labelData=this.state.labels.map((label, key) => {
-      return (<option key={key} value={label.id}>{label.name}</option>)
-    });
-    const catagoeryData=this.state.catagoery.map((catagoery, key) => {
-      return (<option key={key} value={catagoery.id}>{catagoery.name}</option>)
-    });
-    return <div>{updateSuccess ?<Lables />:this.loadUpdatingLable(alertColor,content,labelData,catagoeryData)}</div>
+    const {alertColor, content, updateSuccess,labels,categories,bill } = this.state;
+  
+    return <div>{updateSuccess ?<Lables />:this.loadUpdatingLable(alertColor,content,labels,categories,bill)}</div>
   }
   loadHeader = () => {
     return (
@@ -79,7 +143,7 @@ class UpdateBill extends Component {
   }
 
   //this method call when updating profile
-  loadUpdatingLable=(alertColor,content,labels,catagoerys)=>{
+  loadUpdatingLable=(alertColor,content,labels,categories,bill)=>{
      return( 
        <div className="animated fadeIn" >
          <Card>
@@ -89,42 +153,34 @@ class UpdateBill extends Component {
              <Alert color={alertColor}>{content}</Alert>
              <h5><b>EDIT BILL</b></h5>
              <AvForm onSubmit={this.handleSubmitValue}>
-               <AvField name="amount" value={this.props.bill.amount} placeholder="Enter Your Amount" type="text" errorMessage="Invalid name" autoFocus={true} validate={{ required: { value: true }, pattern: { value: '^[0-9]+$' } }} required />
-               <AvField type="select" name="currency" id="userCurrency" value={this.props.bill.currency} errorMessage="Select Any One Catagoery" validate={{ required: { value: true } }} bsSize="lg">
-                 <option value="null">Please select Currency</option>
-                 <option value="USD">$</option>
+             <Row>
+             <Col sm={1.6}>
+               <AvField type="select" name="currency" value={bill.currency} errorMessage="Select Any One Category" required>
                  <option value="EUR">€</option>
-                 <option value="CRC">₡</option>
-                 <option value="GBP">£</option>
-                 <option value="ILS">₪</option>
+                 <option value="USD">$</option>
                  <option value="INR">₹</option>
-                 <option value="JPY">¥</option>
-                 <option value="KRW">₩</option>
-                 <option value="NGN">₦</option>
-                 <option value="PHP">₱</option>
-                 <option value="PLN">z</option>
-                 <option value="PYG">₲</option>
-                 <option value="THB">฿</option>
-                 <option value="UAH">₴</option>
-                 <option value="VND">₫</option>
-               </AvField><br />
-               <AvField name="billDate" value={this.props.bill.billDate} placeholder="Choose Bill Date" type="date" errorMessage="Invalid Date" validate={{ date: { format: 'MM/DD/YYYY' }, required: { value: true } }} />
-               <FormText color="muted">Choose Bill Date</FormText><br />
-               <AvField type="select" name="categoryId" id="categoryId" autoFocus={true} value={this.props.bill.categoryId} errorMessage="Select Any One Catagoery" validate={{ required: { value: true } }} bsSize="lg">
-               <option value="null">Please select Catagoery</option>{catagoerys}
-               </AvField><br />
-               <AvField name="dueDate" value={this.props.bill.dueDate} type="date" placeholder="Choose Bill Due Date" errorMessage="Invalid Date" validate={{ date: { format: 'DD/MM/YYYY' }, required: { value: true } }} />
-               <FormText color="muted">Choose Bill Due Date</FormText><br />
-               <AvField name="notes" value={this.props.bill.notes} type="text" list="colors" placeholder="Enter Notes Releated Bill" required /><br />
-               <FormGroup check className="checkbox">
-                 <Input className="form-check-input" type="checkbox" onClick={this.toggle} value=" " />
-                 <Label check className="form-check-label" htmlFor="checkbox1"> &nbsp;Nest label under </Label>
-               </FormGroup><br />
-               {this.loadCollapse(labels)}
-               <br />
+               </AvField>
+               </Col>
+             <Col>
+               <AvField name="amount" value={bill.amount} placeholder="Amount" type="text" errorMessage="Invalid amount" validate={{ required: { value: true }, pattern: { value: '^[0-9]+$' } }} required />
+             </Col>
+             </Row>
+             <Row>
+             <Col> {this.categoryOptions(categories,bill)}</Col>
+              </Row><br/>  
+               <Row>
+               <Col><AvField name="billDate" label="Bill Date" value={bill.billDate} type="date" errorMessage="Invalid Date" validate={{ date: { format: 'DD/MM/YYYY' }, required: { value: true } }} /></Col>
+               <Col><AvField name="dueDate" label="Due Date" value={bill.dueDate} type="date" errorMessage="Invalid Date" validate={{ date: { format: 'DD/MM/YYYY' }, required: { value: true } }} /></Col>
+               </Row>
+               <Row>
+                <Col> <AvField name="notes" type="text" value={bill.notes} list="colors" errorMessage="Invalid Notes" placeholder="Enter Notes " required /></Col>
+               </Row>
+               <Row>
+               <Col> {this.lablesOptions(labels,bill)}</Col>
+               </Row><br/>
                <FormGroup>
                  <Button color="info"> Save Bill </Button> &nbsp;&nbsp;
-            {this.loadCancleButton()}
+                 <a href='/listBills'><Button type="button">Cancel</Button></a>
                </FormGroup>
              </AvForm>
 
@@ -133,20 +189,37 @@ class UpdateBill extends Component {
        </div>)
   }
 
-  loadCancleButton = () => {
-    return (<a href='/listBills'>
-        <Button type="button">Cancle</Button>
-      </a>)
-  }
-  //This Method Called When Sublables Makes Enable true.
-  loadCollapse = (label) => {
-    return (
-    <Collapse isOpen={this.state.collapse}>
-      <AvField type="select" name="labelIds" id="labelIds"  bsSize="lg" multiple>
-          <option value="null">Please select Parent Lables</option>{label}
-        </AvField><br />
-      <AvField name="tax" value={this.props.bill.tax} type="text" placeholder="Enter User Tax" /><br />
-    </Collapse>);
+  categoryOptions = (categories,bill) =>{
+    const options = [];
+    categories.map(category=>{
+           if(category.subCategories !== null){
+             options.push({label:<b>{category.name}</b>, color:category.color ===null ?"#000000": category.color,value:category.id})
+             category.subCategories.map(subCategory=>{
+               return options.push({label:<span style={{paddingLeft:15}}>{subCategory.name}</span> , color:subCategory.color ===null ?"#000000": subCategory.color,value:subCategory.id})
+             })
+           }else{
+             return options.push({value: category.id, label: category.name, color: category.color ===null ?"#000000" :category.color })
+           }
+           return 0;
+       })
+       return <Select options={options}  defaultValue={options.filter(item=>{return item.value===bill.categoryId})} styles={colourStyles}  placeholder="Select Categories " onChange={this.categorySelected} required/> ;
+ }
+  
+  lablesOptions = (labels,bill) =>{
+     const options = [];
+      labels.map(label=>{
+            if(label.subLabels !== null){
+              options.push({label:label.name, color:label.color ===null ?"#000000": label.color,value:label.id})
+              label.subLabels.map(subLabel=>{
+                return options.push({label:label.name+"/"+subLabel.name, color:subLabel.color ===null ?"#000000": subLabel.color,value:subLabel.id})
+              })
+            }else{
+              return options.push({value: label.id, label: label.name, color:label.color ===null ?"#000000" :label.color })
+            }
+            return 0;
+        })
+        const data=  bill.labelIds===null ?'': bill.labelIds.map(id=>{return options.filter(item =>{return item.value===id})}).flat();
+        return <Select isMulti options={options}  defaultValue={data} styles={colourStyles} placeholder="Select Lables " autoFocus={true} onChange={this.labelSelected}/> ;
   }
 }
 export default UpdateBill;
