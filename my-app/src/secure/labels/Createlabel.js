@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Alert, Button, Input, Card, CardHeader,FormGroup,Col,Collapse,Label  } from "reactstrap";
 import LabelApi from "../../services/LabelApi";
 import Lables from './Label';
-import "default-passive-events";
+
 class CreateLable extends Component {
   constructor(props){
     super(props);

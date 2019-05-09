@@ -1,11 +1,9 @@
 import React, { Component } from "react";
 import { Label, Button, Input, Card, CardHeader, FormGroup, Collapse,Col, Alert } from "reactstrap";
-import { Link } from 'react-router-dom'
-
 import Store from "../../data/Store";
 import CategoryApi from "../../services/CategoryApi";
 import Categories from "./Categories";
-import "default-passive-events";
+
 class AddCategory extends Component {
   constructor(props){
     super(props)
@@ -71,12 +69,10 @@ class AddCategory extends Component {
   } 
  
   render() {
-    return(
-    <div>{this.state.categoryCreated ? <Categories/> :this.loadAddingCategory()}</div>
-    )
+    return <div>{this.state.categoryCreated ? <Categories/> :this.loadAddingCategory()}</div>
   }
 
-  loadAddingCategory=()=>{
+  loadAddingCategory = () =>{
     const {name,color,alertColor,content}=this.state
     return(
           <Card >
@@ -98,7 +94,6 @@ class AddCategory extends Component {
                 </FormGroup>
               <center>
                 <Button color="info" disabled={!this.state.name} onClick={this.handleSubmit}> Add </Button>&nbsp;&nbsp;&nbsp;
-                <Link to="/profiles" > Cancel </Link>
                 <a href="/listCategories" style={{textDecoration:'none'}}> <Button active  color="light" aria-pressed="true">Cancel</Button></a><br/><br/>
               </center>
             </center>

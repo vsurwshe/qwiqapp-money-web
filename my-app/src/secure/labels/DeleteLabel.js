@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Card, CardHeader,CardBody,Alert,Col } from "reactstrap";
 import LabelApi from "../../services/LabelApi";
 import Lables from "./Label";
+
 class DeleteLabel extends Component {
   constructor(props) {
     super(props);

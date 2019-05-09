@@ -9,8 +9,8 @@ import DeleteLabel from "./DeleteLabel";
 import LabelApi from "../../services/LabelApi";
 import Loader from 'react-loader-spinner'
 import Store from "../../data/Store";
+
 class Lables extends Component {
-  isUnmount = false;
   constructor(props) {
     super(props);
     this.state = {
@@ -26,7 +26,7 @@ class Lables extends Component {
       visible: false,
       updateLabel: false,
       deleteLabel: false,
-      profileId:0,
+      profileId: Store.getProfile().id,
       accordion: [],
       danger: false,
       show:true,
@@ -39,22 +39,15 @@ class Lables extends Component {
   }
   //this method get All Labels Related to that Profile
   componentDidMount = () =>{
-    this.setProfileId();
-  }
-  
-  //this method set Profile Id
-  setProfileId = async (id) => {
-    console.log(Store.getProfileId());
-    await this.setState({ profileId: Store.getProfileId() })
-    this.getLabels();
+    new LabelApi().getSublabels(this.successCall, this.errorCall,this.state.profileId);
   }
 
   //this method sets labels when api given successfull Response
-  successCall = lable => {
+  successCall =async lable => {
     if (lable === []) {
       this.setState({ labels : [0] })
     } else {
-      this.setState({ labels : lable, spinner : true })
+      await this.setState({ labels : lable, spinner : true })
       this.loadCollapse();
     }
   };
@@ -94,10 +87,6 @@ class Lables extends Component {
     const prevState = this.state.dropdownOpen;
     const state = prevState.map((x, index) => tab === index ? !x : false);
     this.setState({dropdownOpen: state});
-  }
-  //this is geting labels
-  getLabels=()=>{
-    new LabelApi().getSublabels(this.successCall, this.errorCall,this.state.profileId);
   }
 
   hoverAccordion = (hKey) => {
@@ -231,9 +220,9 @@ class Lables extends Component {
           <Col sm={2} md={2.5 } lg={1} xl={1} >{this.loadDropDown(labels, ukey, styles)}</Col>
           </Row>
           <Collapse isOpen={this.state.accordion[ukey]}>
-            {Array.isArray(labels.subLabels) ? labels.subLabels.map(ulable => {
+            {Array.isArray(labels.subLabels) ? labels.subLabels.map((ulable,key) => {
               return (
-              <span className="list-group-item" style={subLabelList}>
+              <span className="list-group-item" style={subLabelList} key={key}>
                 <Row>
                   <Col sm={{ size: 9 }}>
                     <span style={Object.assign(ellipsisText1,{paddingBotttom:0})}>

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import CategoryApi from "../../services/CategoryApi";
 import Categories from "./Categories";
-import "default-passive-events";
+
 class DeleteCategory extends Component {
   constructor(props) {
     super(props);
@@ -35,7 +35,7 @@ class DeleteCategory extends Component {
 
   render() {
      const { categoryDeleted, color,content } = this.state;
-     return  categoryDeleted?<Categories color={color} content={content}/>:<p> Deleting .......</p>
+     return  categoryDeleted ? <Categories color={color} content={content} visible={true}/> : <p> Deleting .......</p>
   }
 }
 

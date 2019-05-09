@@ -8,21 +8,17 @@ import CategoryApi from "../../services/CategoryApi";
 import AddCategory from './AddCategory';
 import EditCategory from './EditCategory';
 import DeleteCategory from './DeleteCategory';
-import "default-passive-events";
 import Store from "../../data/Store";
 
 const AddCategory = React.lazy(() =>  import("./AddCategory"));
 const EditCategory = React.lazy(() =>  import("./EditCategory"));
 const DeleteCategory = React.lazy(() =>  import("./DeleteCategory"));
 class Categories extends Component {
-
-  isUnmount= false;
-  // supportPassive = false;
   constructor(props) {
     super(props);
     this.state = {
       categories : [],
-      profileId : 0,
+      profileId : Store.getProfile().id,
       categoryId : 0,
       requiredCategory : [],
       createCategory : false,
@@ -34,26 +30,19 @@ class Categories extends Component {
       hoverAccord : [],
       dropDownAccord : [],
       danger : false,
-      alertColor : this.props.color,
-      content : this.props.content,
       onHover: false,
+      visible: props.visible,
       spinner: false,
-        };
-    this.componentDidMount = this.componentDidMount.bind(this);
+    };
   }
 
-  componentDidMount() {
-    this.setProfielId();
-  }
-  //Method to set Profile Id 
-  setProfielId = async (id) => {
-    await this.setState({ profileId: Store.getProfileId() });
+  componentDidMount = () => {
     new CategoryApi().getCategories(this.successCall, this.errorCall, this.state.profileId);
   }
 
   //This Method is called for Api's Success Call
-  successCall = json => { 
-    this.setState({ categories : json })
+  successCall = async json => { 
+    await this.setState({ categories : json, spinner : true })
     this.loadCollapse();
   }
 
@@ -91,7 +80,7 @@ class Categories extends Component {
 
   callAlertTimer = () => {
     setTimeout(() => {
-        this.setState({ alertColor : '', content : '' });
+        this.setState({ visible : false });
     },1800);
   };
 
@@ -125,20 +114,25 @@ class Categories extends Component {
   }
   
   render() {
-    const { categories,requiredCategory,createCategory,updateCategory,deleteCategory,profileId,categoryId,alertColor,content } = this.state;
-    if(createCategory){
+    const { categories,requiredCategory,createCategory,updateCategory,deleteCategory,profileId,categoryId, visible, spinner } = this.state;
+    if(categories.length === 0 && !spinner){
+      return this.loadLoader()
+    }else if(createCategory){
       return <AddCategory category = {categories} id= {profileId} />
     }else if(updateCategory){
       return <EditCategory categories = {categories} category = {requiredCategory} id = {profileId}/>
     }else if(deleteCategory){
       return <DeleteCategory cid = {categoryId} pid = {profileId} />
     }else{
-      return<div>{this.loadCategories(categories,alertColor,content)}{this.loadDeleteCategory()}</div>
+      return<div>{this.loadCategories(categories, visible)}{this.loadDeleteCategory()}</div>
     }
   }
 
-  loadCategories = (categories,alertColor,content) => {
-    this.callAlertTimer(alertColor,content)
+  loadCategories = (categories, visible) => {
+    const color = this.props.color;
+    if(color !== '' || color !== undefined){
+      this.callAlertTimer()
+    }
     return(
       <div className="animated fadeIn">
         <Card>
@@ -147,7 +141,7 @@ class Categories extends Component {
             <Button color="success" className="float-right" onClick={this.callAddCategory}> + ADD CATEGORY</Button>
           </CardHeader>
           <div style={{margin:10, paddingLeft:50}}>
-            <Alert color={alertColor===undefined? '' : alertColor}>{content}</Alert>
+            <Alert isOpen={visible} color={color===undefined ? '' : color}>{this.props.content}</Alert>
             {categories.map((category, key) => {return this.loadCategory(categories[key],key);})} </div>
         </Card>
       </div>)

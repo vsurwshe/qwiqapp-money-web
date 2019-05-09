@@ -19,7 +19,7 @@ class Dashboard extends Component {
     if (json === []) { console.log("there is no profile id") }
     else {
       const iterator = json.values();
-      for (const value of iterator) { Store.saveProfileId(value.id) }
+      for (const value of iterator) { Store.saveProfile(value) }
     }
   }
 
