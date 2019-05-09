@@ -1,8 +1,6 @@
-import React from 'react';
 import chroma from 'chroma-js';
-import { colourOptions } from './BillsSelectStore';
-import Select from 'react-select';
-const colourStyles = {
+
+export const   colourStyles = {
   control: styles => ({ ...styles, backgroundColor: 'white' }),
   option: (styles, { data, isDisabled, isFocused, isSelected }) => {
     const color = chroma(data.color);
@@ -24,17 +22,21 @@ const colourStyles = {
       },
     };
   },
+
   multiValue: (styles, { data }) => {
-    const color = chroma(data.color);
-    return {
+    const color = chroma(data.color );
+    if(color===null || color!==null){  
+      return {
       ...styles,
       backgroundColor: color.alpha(0.1).css(),
-    };
+    };}
   },
+
   multiValueLabel: (styles, { data }) => ({
     ...styles,
     color: data.color,
   }),
+  
   multiValueRemove: (styles, { data }) => ({
     ...styles,
     color: data.color,
@@ -44,13 +46,3 @@ const colourStyles = {
     },
   }),
 };
-
-export default () => (
-  <Select
-    closeMenuOnSelect={false}
-    defaultValue={[colourOptions[0], colourOptions[1]]}
-    isMulti
-    options={colourOptions}
-    styles={colourStyles}
-  />
-);
