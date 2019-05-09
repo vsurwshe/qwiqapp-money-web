@@ -5,6 +5,9 @@ import { AppHeaderDropdown, AppSidebarToggler,AppNavbarBrand } from "@coreui/rea
 import { AuthButton } from "../../App";
 import logo from '../Sidebar/img/user.png'
 import { FaCaretDown, FaCaretUp, FaUserTie } from "react-icons/fa";
+import Store from "../../data/Store";
+import ProfileApi from "../../services/ProfileApi";
+
 const propTypes = {
   children: PropTypes.node
 };
@@ -15,8 +18,17 @@ class DefaultHeader extends Component {
   constructor(props){
     super(props)
     this.state = {
-      flag:false
+      flag:false,
+      profileName:''
     }
+  }
+
+  componentDidMount=()=>{
+    new ProfileApi().getProfiles(this.successCall,this.errorCall)
+  }
+  
+  successCall = async (json) =>{
+     await this.setState({ profileName : json.map(profile=>profile.name) })
   }
 
   toggle = () =>{
@@ -32,7 +44,7 @@ class DefaultHeader extends Component {
           {/* <img src={logo} style={{borderRadius:'50%', marginLeft:'40px'}} alt="Profile Pic" align='center' width="40" height="40"/> */}
           <span onClick = {this.toggle} > 
             <FaUserTie  size={25} style={{marginLeft:40}}/><br/>
-            <strong style={{ marginTop:10}}>MY PROFILE</strong> &nbsp;
+            <strong style={{ marginTop:10}}>{this.state.profileName}</strong> &nbsp;
             {this.state.flag ? <FaCaretUp style={{color:'#0e2f73'}}/> : <FaCaretDown/>}
           </span>
         </AppNavbarBrand>
