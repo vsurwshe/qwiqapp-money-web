@@ -58,7 +58,7 @@ class CreateContact extends Component {
       collapse: false,
       alertColor:'',
       message:'',
-      selectedOption: "",
+      selectedOption: [],
       formTouched: true
     };
   }
@@ -70,15 +70,19 @@ class CreateContact extends Component {
     event.persist();
     if (errors.length===0) {
       var newData={...values,"labelIds":this.state.selectedOption.map((opt)=>{return opt.value})}
-      console.log("selected option : ",newData );
-      await new ContactApi().createContact(this.successCall, this.errorCall, this.state.profileId, values);
+      console.log(newData)
+      await new ContactApi().createContact(this.successCall, this.errorCall, this.state.profileId, newData);
     } 
   }
-  
+
   successCall = (response) =>{
     this.callAlertTimer("success","Contact Created Successfully !" );
   }
-  
+  handleSelect = selectedOption => {
+    console.log("Selected Id = ",selectedOption)
+    this.setState({ selectedOption });
+  };
+
   errorCall = (err) => { 
     this.callAlertTimer("danger","Unable to Process the request, Please Try Again" );
     this.setState({ failContactCreate : true, alertColor:"danger", message : "" })};
@@ -112,11 +116,16 @@ class CreateContact extends Component {
           <center><h5>Create Contact</h5></center><br/>
             <AvForm onSubmit = { this.handleSubmit}>
               <Row>
-                <Col><AvField name="firstName" placeholder="Enter First Name" validate={{pattern: {value: '^[A-Za-z]+$'}}} required /></Col>
-                <Col><AvField name="lastName" placeholder="Enter Last Name" required /></Col></Row>
+                <Col><AvField name="firstName" placeholder="First Name" validate={{pattern: {value: '^[A-Za-z]+$'}}} required /></Col>
+                <Col><AvField name="lastName" placeholder="Last Name" required /></Col>
+                </Row>
+                <Row>
+                <Col><AvField name="organization" placeholder="Organization" validate={{pattern: {value: '^[a-zA-Z0-9_.-]*$'}}} required /></Col>
+                <Col><AvField name="website" placeholder="Website"  required /></Col>
+              </Row>
               <Row>
-                <Col><AvField name="phone" placeholder="Enter Phone Number" required /></Col>
-                <Col><AvField name="email" placeholder="Enter Your Email" type="text" validate={{email: true}} required /></Col></Row>
+                <Col><AvField name="phone" placeholder="Phone Number" required /></Col>
+                <Col><AvField name="email" placeholder="Your Email" type="text" validate={{email: true}} required /></Col></Row>
               <Row>
               <Col>
                 <AvField type="select" name="country" placeholder="Country" helpMessage="Select Country">
@@ -131,18 +140,13 @@ class CreateContact extends Component {
                   <option value="Romania">ROMANIA</option>
                 </AvField>
               </Col>
-              <Col><AvField name="state" placeholder="Enter Your State" /></Col>
-              <Col><AvField name="postcode" placeholder="Enter Your Postal Code" errorMessage="Enter Valid Postal Code" validate={{pattern: {value: '^[0-9]+$'}}}/></Col></Row>
+              <Col><AvField name="state" placeholder="Your State" /></Col>
+              <Col><AvField name="postcode" placeholder="Your Postal Code" errorMessage="Enter Valid Postal Code" validate={{pattern: {value: '^[0-9]+$'}}}/></Col></Row>
               <Row>
                 <Col><AvField name="address1" placeholder="Address 1" /></Col>
                 <Col><AvField name="address2" placeholder="Address 2" /></Col>
               </Row>
               
-             
-              <Row>
-                <Col><AvField name="organization" placeholder="Enter Your Organization"  /></Col>
-                <Col><AvField name="website" placeholder="Enter Your Website" /></Col>
-              </Row>
               <Row><Col>{this.loadAvCollapse()}</Col></Row> <br />
               <center><FormGroup row>
                 <Col>
@@ -167,10 +171,7 @@ class CreateContact extends Component {
         </Card>
       </div>)
   }
-  handleSelect = selectedOption => {
-    this.setState({ selectedOption });
-  };
-
+  
   loadAvCollapse = () =>{
     const labelQ = [];
     this.state.labels.map( (slabel, key)=>{

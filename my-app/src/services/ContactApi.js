@@ -4,55 +4,58 @@ import Store from "../data/Store";
 import LoginApi from "./LoginApi";
 class ContactApi {
  
-  createContact(success, failure, profileId,data) {
-    process(success, failure, profileId+"/contacts", "POST",profileId, data);
+  createContact(success, failure, profileId, data) {
+    process(success, failure, profileId + "/contacts", "POST", profileId, data);
   }
  
-  getContacts(success, failure,profileId,value) {
-    Store.getContacts()===null||value==="true" ? process(success, failure, profileId+"/contacts", "GET"): success(Store.getContacts());
+  getContacts(success, failure, profileId, value) {
+    Store.getContacts()===null||value==="true" ? process(success, failure, profileId + "/contacts", "GET"): success(Store.getContacts());
   }
  
-  getContactById(success, failure,profileId,contactId) {
-    process(success, failure, profileId+"/contacts/"+contactId, "GET");
+  getContactById(success, failure, profileId, contactId) {
+    const store = true;
+    process(success, failure, profileId + "/contacts/" + contactId, "GET", profileId, store);
   }
  
-  updateContact(success, failure, data, profileId,contactId) {
-    process(success, failure,profileId+"/contacts/"+contactId, "PUT",profileId, data);
+  updateContact(success, failure, data, profileId, contactId) {
+    process(success, failure, profileId + "/contacts/" + contactId, "PUT", profileId, data);
   }
  
   deleteContact(success, failure, profileId,contactId) {
-    process(success, failure, profileId+"/contacts/"+contactId, "DELETE",profileId);
+    process(success, failure, profileId + "/contacts/" + contactId, "DELETE", profileId);
   }
 }
 
 export default ContactApi;
 
-async function process(success, failure, Uurl, Umethod,profileId, data) {
+async function process(success, failure, Uurl, Umethod, profileId, data) {
+  console.log("Data = ", data)
   let HTTP = httpCall(Uurl, Umethod);
   let promise;
     try {
       data === null ? promise = await HTTP.request() : promise = await HTTP.request({ data });
-      if (Umethod === "GET") {
+      if (Umethod === "GET" && data === undefined) {
         Store.saveContacts(promise.data);
         validResponse(promise, success)
-      } else {
+      } else if(Umethod === "GET" && data === true){
+        validResponse(promise,success)
+      } else{
         new ContactApi().getContacts(success,failure,profileId,"true");
         validResponse(promise, success)
       }
-    } catch (err) {
-      // console.log(err.request.status)      
+    } catch (err) {   
       console.table(err);
       AccessTokenError(profileId,err, failure, Uurl, Umethod, data, success);
     }
 }
 
 //this method slove the Exprie Token Problem.
-let AccessTokenError =function(profileId,err,failure,Uurl, Umethod, data,success){
-  if(err.request.status=== 0)
-  { new ContactApi().getSublabels(success,failure,profileId,"True");
-  }else if (err.response.status===403 || err.response.status===401)
-  {new LoginApi().refresh(()=>{process(success,failure,Uurl,Umethod,data)},errorResponse(err, failure))
-  }else{errorResponse(err, failure)}
+let AccessTokenError = function(profileId, err, failure, Uurl, Umethod, data, success){
+  if(err.request.status=== 0){
+     new ContactApi().getSublabels(success, failure, profileId, "True");
+  } else if (err.response.status===403 || err.response.status===401){
+    new LoginApi().refresh(()=>{process(success,failure,Uurl,Umethod,data)},errorResponse(err, failure))
+  } else {errorResponse(err, failure)}
 }
 
 let validResponse = function(resp, successMethod) {

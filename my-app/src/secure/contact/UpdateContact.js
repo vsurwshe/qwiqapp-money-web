@@ -1,33 +1,112 @@
 import React, { Component } from "react";
-import { Button,Col, Input, Row ,FormGroup, CardHeader, Label, Collapse, Card, CardBody, Alert } from "reactstrap";
+import { Button, Col, Row, CardHeader, Card, CardBody, Alert } from "reactstrap";
 import Contacts from "./Contacts";
+import Select from "react-select";
+import chroma from 'chroma-js';
 import { AvForm, AvField } from 'availity-reactstrap-validation';
 import ContactApi from "../../services/ContactApi";
+import { Loader } from 'react-loader-spinner'
+
+const colourStyles = {
+  control: styles => ({ ...styles, backgroundColor: 'white' }),
+  option: (styles, { data, isDisabled, isFocused, isSelected }) => {
+    const color = chroma(data.color);
+    return {
+      ...styles,
+      backgroundColor: isDisabled
+        ? null
+        : isSelected ? data.color : isFocused ? color.alpha(0.1).css() : null,
+      color: isDisabled
+        ? '#ccc'
+        : isSelected
+          ? chroma.contrast(color, 'white') > 2 ? 'white' : 'black'
+          : data.color,
+      cursor: isDisabled ? 'not-allowed' : 'default',
+
+      ':active': {
+        ...styles[':active'],
+        backgroundColor: !isDisabled && (isSelected ? data.color : color.alpha(0.3).css()),
+      },
+    };
+  },
+  multiValue: (styles, { data }) => {
+    const color = chroma(data.color);
+    return {
+      ...styles,
+      backgroundColor: color.alpha(0.1).css(),
+    };
+  },
+  multiValueLabel: (styles, { data }) => ({
+    ...styles,
+    color: data.color,
+  }),
+  multiValueRemove: (styles, { data }) => ({
+    ...styles,
+    color: data.color,
+    ':hover': {
+      backgroundColor: data.color,
+      color: 'white',
+    },
+  }),
+};
 
 class UpdateContact extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      contact: [],
       alertColor: "#000000",
       message: "",
       updateSuccess: false,
       profileId: this.props.profileId,
       collapse: false,
       labels: this.props.lables,
-      contactId:  this.props.contact.id,
+      contactId:  this.props.contactId,
+      selectedOption: [],
+      labelUpdate: '',
+      spinner: false
     };
   }
 
+  componentDidMount =  () => {
+    new ContactApi().getContactById(this.successContact,this.errorCall,this.state.profileId,this.state.contactId)
+  }
+
+  successContact = async (json) =>{
+    console.log("json= ",json)
+    await this.setState({contact:json, spinner : !this.state.spinner});  
+  }
+
   handleUpdate = (event, errors, values) => {
-    const { profileId, contactId } = this.state
+    const { profileId, contactId, selectedOption, labelUpdate } = this.state
     if (errors.length === 0) {
-      var new_Values= {...values, "version": this.props.contact.version}
+      var new_Values= {...values,  "labelIds":selectedOption===[]?[]:( labelUpdate ? selectedOption.map(opt=>{return opt.value}): selectedOption ),"version": this.state.contact.version}
       if (profileId !== undefined | contactId !== undefined) {
         new ContactApi().updateContact(this.successCall, this.errorCall, new_Values, this.state.profileId, this.state.contactId)
       }
+      // "labelIds":labelOption===null?[]:( labelOptionUpdate ? labelOption.map(opt=>{return opt.value}): labelOption ),
     }
   };
-  
+
+  loadSpinner = () =>{
+      return( <div className="animated fadeIn">
+      <Card>
+        <CardHeader>
+          <strong>Total Labels: {this.state.labels.length}</strong>
+        </CardHeader>
+        <center style={{paddingTop:'20px'}}>
+          <CardBody>
+          <Loader type="Ball-Triangle" color="#2E86C1" height={80} width={80}/>
+          </CardBody>
+        </center>
+      </Card>
+    </div>
+      )
+  }
+
+  handleSelect = selectedOption => {
+    this.setState({ selectedOption, labelUpdate : true });
+    };
   successCall = json => {
      this.callAlertTimer( "success", "Contact Updated Successfully... ");
   };
@@ -51,12 +130,18 @@ class UpdateContact extends Component {
   }
 
   render() {
-    const { updateSuccess,alertColor, message } = this.state;
-    return <div>{updateSuccess ? <Contacts /> : this.loadUpdateContact(alertColor,message)}</div>
-  }
+    console.log("Specific Contact = ",this.state.contact)
+      if( this.state.spinner ){
+      const { contact, updateSuccess,alertColor, message } = this.state;
+      return <div>{updateSuccess ? <Contacts /> : this.loadUpdateContact(contact,alertColor,message)}</div>
+    } else{
+      return this.loadSpinner
+    }
+    }
+
   loadHeader = () =>  <CardHeader><strong>EDIT CONTACT</strong></CardHeader>
 
-  loadUpdateContact = (alertColor,message) =>{
+  loadUpdateContact = (contact,alertColor,message) =>{
     return (
      <Card>
         {this.loadHeader()}
@@ -64,16 +149,17 @@ class UpdateContact extends Component {
           <Alert color={alertColor}>{message}</Alert>
         <AvForm onSubmit={this.handleUpdate}>
           <Row>
-            <Col><AvField name="firstName" placeholder="Enter First name" value={this.props.contact.firstName} /></Col>
-            <Col><AvField name="lastName" placeholder="Enter Last name" value={this.props.contact.lastName} /></Col>
+            <Col>            
+            <AvField name="firstName" placeholder="First name" value={contact.firstName} /></Col>
+            <Col><AvField name="lastName" placeholder="Last name" value={contact.lastName} /></Col>
           </Row>
           <Row>
-            <Col><AvField name="phone" placeholder="Enter Phone Number" value={this.props.contact.phone} /></Col>
-            <Col><AvField name="email" type="text" placeholder="Enter Your Email" validate={{ email: true }}  value={this.props.contact.email} /></Col>
+            <Col><AvField name="phone" placeholder="Phone Number" value={contact.phone} /></Col>
+            <Col><AvField name="email" type="text" placeholder="Your Email" validate={{ email: true }}  value={contact.email} /></Col>
           </Row>
           <Row>
             <Col>
-              <AvField type="select" name="country" value={this.props.contact.country} helpMessage="Select Country">
+              <AvField type="select" name="country" value={contact.country} helpMessage="Select Country">
                 <option value="">select</option>
                 <option value="India">INDIA</option>
                 <option value="UnitedKingdom">UK</option>
@@ -85,27 +171,22 @@ class UpdateContact extends Component {
                 <option value="Romania">ROMANIA</option>
               </AvField>
             </Col>
-            <Col><AvField name="state" placeholder="Enter Your State" value={this.props.contact.state} /></Col>
-            <Col><AvField name="postcode" placeholder="Enter Your Postal Code" value={this.props.contact.postcode} /></Col>
+            <Col><AvField name="state" placeholder="Your State" value={contact.state} /></Col>
+            <Col><AvField name="postcode" placeholder="Your Postal Code" value={contact.postcode} /></Col>
           </Row>
           <Row>
-             <Col><AvField name="address1" placeholder="Address 1" value={this.props.contact.address1} /></Col>
-             <Col><AvField name="address2" placeholder="Address 2" value={this.props.contact.address2} /></Col>
+             <Col><AvField name="address1" placeholder="Address 1" value={contact.address1} /></Col>
+             <Col><AvField name="address2" placeholder="Address 2" value={contact.address2} /></Col>
           </Row>
-          <FormGroup check className="checkbox" row>
-          <Col>
-            <Input className="form-check-input" type="checkbox" onClick={this.toggle} value=" " />
-            <Label check className="form-check-label" htmlFor="checkbox1"> &nbsp;labels </Label>
-          </Col>
-           <Col style={{ paddingTop: 10, paddingBottom: 10 }}>
-               {this.loadAvCollapse()}
+          <Row>
+            <Col>
+               {this.loadAvCollapse(contact)}
            </Col>
-          </FormGroup>
+           </Row><br/>
           <Row>
-             <Col><AvField name="organization"  placeholder="Enter Organization Name" value={this.props.contact.organization} /></Col>
-             <Col><AvField name="website" placeholder="Enter Your Website" value={this.props.contact.website} /></Col>
+             <Col><AvField name="organization"  placeholder="Organization Name" value={contact.organization} /></Col>
+             <Col><AvField name="website" placeholder="Your Website" value={contact.website} /></Col>
           </Row>
-        
           <center>     
              <Button color="info" > Update Contact </Button> &nbsp;&nbsp;
              <a href="/contact/viewContacts" style={{textDecoration:'none'}}> <Button active color="light" type="button">Cancel</Button></a>
@@ -114,14 +195,35 @@ class UpdateContact extends Component {
       </CardBody>
     </Card >)
  }
- DeleteContact
-  loadAvCollapse = () => {
-    return (
-      <Collapse isOpen={this.state.collapse}>
-        <AvField type="select" name="labelIds" label="Option" value={this.props.contact.labelIds} helpMessage="Select Label" multiple>
-          {this.state.labels.map((label,key) => {return( <option key={key} value={label.id}>{label.name} </option> )})}
-        </AvField>
-      </Collapse>);
+
+  loadAvCollapse = (contact) => {
+    console.log("contact = ",contact)
+    const labelOption = [];
+    this.state.labels.map((label, key)=>{
+      if(Array.isArray(label.subLabels))
+      { this.pushArray(labelOption,label);
+        label.subLabels.map(sul=>{return(this.pushArray(labelOption,sul,label))})
+      } else{
+        this.pushArray(labelOption,label);
+      }
+      return 0;
+    })
+    console.log("show all lables: ", this.state.contact.labelIds);
+
+   const data =  contact.labelIds===null ?'': contact.labelIds.map(id=>{return labelOption.filter(item =>{return item.value===id})}).flat();
+    console.log("upidated contact is: ", data);
+    return <Select isMulti options={labelOption} defaultValue={data} styles={colourStyles} placeholder="Select Lables " autoFocus={true} onChange={this.handleSelect}/> ;
+  }
+  pushArray=(array,label,slabel)=>{
+    slabel=== undefined ? array.push ({
+      value: label.id,
+      label: label.name,
+      color: label.color === null ? "#000000" : label.color,
+     }) : array.push ({
+      value: label.id,
+      label: slabel.name+"/" +label.name,
+      color: label.color === null ? "#000000" : label.color,
+     })
   }
 }
 
