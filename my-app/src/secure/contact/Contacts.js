@@ -11,6 +11,7 @@ import CreateContact from "./CreateContact";
 import LabelApi from "../../services/LabelApi";
 import Attachments from "./Attachments/Attachments";
 import AddAttachment from "./Attachments/AddAttachment";
+
 class Contacts extends Component {
   constructor(props) {
     super(props);
@@ -166,7 +167,6 @@ class Contacts extends Component {
   
   searchingFor(term){
     return function(x){
-      
       return (x.firstName.toLowerCase()+x.lastName.toLowerCase()).includes(term.toLowerCase()) || !term
     }
   }

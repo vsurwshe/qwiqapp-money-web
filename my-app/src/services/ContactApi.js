@@ -55,7 +55,6 @@ let AccessTokenError = function(profileId, err, failure, Uurl, Umethod, data, su
   } else if (err.response.status===403 || err.response.status===401){
     new LoginApi().refresh(()=>{process(success,failure,Uurl,Umethod,data)},errorResponse(err, failure))
   } else {errorResponse(err, failure)}
-
 }
 
 let validResponse = function(resp, successMethod) {
