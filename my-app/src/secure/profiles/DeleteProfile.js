@@ -1,14 +1,16 @@
 import React, { Component } from "react";
-import { Card, CardHeader,CardBody } from "reactstrap";
+import { Card, CardHeader, CardBody, Col, Alert } from "reactstrap";
 import ProfileApi from "../../services/ProfileApi";
+import Profiles from "./Profiles";
+
 class DeleteProfile extends Component {
   constructor(props) {
     super(props);
     this.state = {
       id: this.props.id,
       profileDeleted: false,
-      color: "",
-      content: ""
+      color: "warning",
+      content: "profile Deleting......"
     };
   }
   componentDidMount = () => {
@@ -19,18 +21,10 @@ class DeleteProfile extends Component {
     );
   };
   successCall = () => {
-    this.setState({
-      profileDeleted: true,
-      content: "Profile Deleted Successfully !!"
-    });
-    
+    this.callAlertTimer( "success", "Profile Deleted Successfully!  " );
   };
   errorCall = () => {
-    this.setState({ profileDeleted: true });
-    this.callAlertTimer(
-      "danger",
-      "Something went wrong, Please Try Again...  "
-    );
+    this.callAlertTimer( "danger", "Unable to Process Request, Please Try Again!! " );
   };
   callAlertTimer = (color, content) => {
     this.setState({
@@ -38,44 +32,26 @@ class DeleteProfile extends Component {
       content: content
     });
     setTimeout(() => {
-      this.setState({ color: "" });
-    }, 5500);
+      this.setState({ color: "" ,content:"",profileDeleted : true});
+      window.location.reload();
+    }, 2000);
   };
 
   render() {
-    const { profileDeleted, content } = this.state;
-    if (profileDeleted) {
-      return <div>{this.loadDeleteMessage(content)}</div>
-    } else {
-      return <div>{this.loadDeleteing()}</div>
-    }
-  }
-  //This Method called After Deleted Profile
-  loadDeleteMessage=(content)=>{
-    return(
-    <div className="animated fadeIn">
-    <Card>
-      <CardHeader>
-        <strong>Profile</strong>
-      </CardHeader>
-      <center style={{paddingTop:'20px'}}>
-        <h5><b>{content}</b><br /> <br />
-          <a href="/profiles">View Profiles </a></h5>
-      </center>
-    </Card>
-  </div>)
+    const { profileDeleted, content, color } = this.state;
+    return <div>{ profileDeleted ? <Profiles /> : this.loadDeleting(color,content) }</div>
   }
 
-  //this Method Call Between Deleteing Process.
-  loadDeleteing=()=>{
+  //this Method Call Between Deleting Process.
+  loadDeleting = (color, content) =>{
     return(
       <div className="animated fadeIn">
-      <Card>
-        <CardHeader>
-          <strong>Profile</strong>
-        </CardHeader>
-          <CardBody>  
-          <h5><b>Deleting Profile.....</b></h5>
+        <Card>
+          <CardHeader><strong>Label</strong></CardHeader>
+          <CardBody>
+            <Col sm="12" md={{ size: 5, offset: 4 }}>
+              <Alert color={color}>{content}</Alert>
+            </Col>
           </CardBody>
         </Card>
         </div>

@@ -6,8 +6,8 @@ class DeleteCategory extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      profileId: this.props.pid,
-      categoryId: this.props.cid,
+      profileId: props.pid,
+      categoryId: props.cid,
       categoryDeleted: false,
       color: '',
       content: ''
@@ -23,7 +23,7 @@ class DeleteCategory extends Component {
   };
 
   errorCall = () => {
-    this.callAlertTimer("warning","Delete Failed !")
+    this.callAlertTimer('danger','Unable to Process Request, Please Try Again')
   };
 
   callAlertTimer = (color,content) => {
@@ -34,8 +34,8 @@ class DeleteCategory extends Component {
   };
 
   render() {
-     const { categoryDeleted, color,content } = this.state;
-     return  categoryDeleted ? <Categories color={color} content={content} visible={true}/> : <p> Deleting .......</p>
+    const { categoryDeleted, color,content } = this.state;
+    return  categoryDeleted ? <Categories color={color} content={content} visible={true}/> : <p> Deleting .......</p>
   }
 }
 

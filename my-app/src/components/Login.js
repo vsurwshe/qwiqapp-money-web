@@ -70,9 +70,9 @@ class Login extends Component {
   validateEmail = e => {
     const emailRex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     const { validate } = this.state
-      if (emailRex.test(e.target.value)) { validate.emailState = 'success' }
-      else { validate.emailState = 'danger'; }
-      this.setState({ validate })
+    if (emailRex.test(e.target.value)) { validate.emailState = 'success' }
+    else { validate.emailState = 'danger'; }
+    this.setState({ validate })
   }
 
   render() {
@@ -82,7 +82,7 @@ class Login extends Component {
         <div>
           <Container style={{ padding: 20 }} classmail="App">
             <h3>
-              Already loggedin. Go to
+              Already Loggedin. Go to
               <Link to="/dashboard"> Dashboard </Link>
             </h3>
             <br />
@@ -97,24 +97,20 @@ class Login extends Component {
               <Alert color={this.state.color}>{this.state.content}</Alert>
               <Card style={{ width: 300, borderRadius: 8 }}>
                 <CardBody>
-                  <CardTitle>Login to Web-Money !</CardTitle>
-                  <br />
+                  <CardTitle>Login to Web-Money !</CardTitle><br />
                   <FormGroup>
-                  <Input name="email" type="email" placeholder="Your Email" value={this.state.email} valid={ emailState === 'success' }
-                      invalid={ emailState === 'danger'} onChange={ (e) => { this.validateEmail(e);this.handleEvent(e) }} />
-                  <FormFeedback> Uh oh! Incorrect email. </FormFeedback>  
+                    <Input name="email" type="email" placeholder="Your Email" value={this.state.email} valid={ emailState === 'success' }
+                        invalid={ emailState === 'danger'} onChange={ (e) => { this.validateEmail(e);this.handleEvent(e) }} />
+                    <FormFeedback> Uh oh! Incorrect email. </FormFeedback>  
                   </FormGroup>
                   <FormGroup>
-                   <Input type="password"  name="password" onChange={(e) => { this.handleEvent(e)}}
-                   onKeyPress={this.handleEnter} placeholder="Your Password" value={this.state.password} /> 
+                    <Input type="password"  name="password" onChange={(e) => { this.handleEvent(e)}}
+                      onKeyPress={this.handleEnter} placeholder="Your Password" value={this.state.password} /> 
                   </FormGroup>
-                  <Button color="info" onClick={this.handleButton}>
-                    Login
-                  </Button>
+                  <Button color="info" onClick={this.handleButton}>Login</Button>
                 </CardBody>
                 <CardBody>
-                  <span>Don't have an Account yet? </span>&nbsp;
-                  <br />
+                  <span>Don't have an Account yet? </span>&nbsp; <br />
                   <Link to="/signup">Signup Now</Link>
                 </CardBody>
               </Card>

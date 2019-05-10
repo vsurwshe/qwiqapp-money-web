@@ -2,16 +2,20 @@ import Axios from "axios";
 import Config from "../data/Config";
 import Store from "../data/Store";
 import LoginApi from "./LoginApi";
+
 class ProfileApi {
   createProfile(success, failure, data) {
-    process(success, failure, "/profiles/", "POST", data);
+     process(success, failure, "/profiles/", "POST", data);
   }
-  getProfiles(success, failure,value) {
-    Store.getUserProfiles()===null || value==="true" ? process(success, failure, "/profiles/", "GET"): success(Store.getUserProfiles());
+
+  getProfiles(success, failure, value) {
+     Store.getUserProfiles()===null || value==="True" ? process(success, failure, "/profiles/", "GET"): success(Store.getUserProfiles());
   }
+
   getProfilesById(success, failure, uid) {
     process(success, failure, "/profiles/" + uid, "GET");
   }
+
   updateProfile(success, failure, data, uid) {
     process(success, failure, "/profiles/" + uid, "PUT", data);
   }
@@ -26,40 +30,38 @@ export default ProfileApi;
 async function process(success, failure, Uurl, Umethod, data) {
   let HTTP = httpCall(Uurl, Umethod);
   let promise;
-    try{
+    try {
       data===null? promise=await HTTP.request(): promise=await HTTP.request({ data });
       if (Umethod === "GET") {
         Store.saveUserProfiles(promise.data);
       } else {
-        new ProfileApi().getProfiles(success, failure, "True");
+          await new ProfileApi().getProfiles(success, failure, "True");
       }
       validResponse(promise, success)
-    }catch(err){ 
-      console.log(err);
+    } catch(err){ 
       AccessTokenError(err,failure,Uurl, Umethod, data,success);
     }
 }
 
-//this method slove the Exprie Token Problem.
+//this method solve the Expire Token Problem.
 let AccessTokenError = function(err,failure,Uurl, Umethod, data,success){
   if(err.request.status === 0){
     errorResponse(err, failure)
-  }else if (err.response.status===403 || err.response.status===401){
+  } else if (err.response.status===403 || err.response.status===401){
     new LoginApi().refresh(()=>{process(success,failure,Uurl,Umethod,data)},errorResponse(err, failure))
-  }else{errorResponse(err, failure)}
+  } else{errorResponse(err, failure)}
 }
 
 let validResponse = function(resp, successMethod,Umethod) {
- if (successMethod != null) {
+  if (successMethod != null) {
     if(Umethod==="DELETE" ){
-      Store.clearLocalStroge() ;
+      Store.clearLocalStorage() ;
     }
     successMethod(resp.data);
   }
 };
 
 let errorResponse = function(error, failure) {
-  console.log("Error: ", error);
   if (failure != null) {
     failure(error);
   }

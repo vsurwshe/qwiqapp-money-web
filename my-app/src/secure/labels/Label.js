@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Button, Row, Col, Card, CardBody, Alert, CardHeader, Collapse, Modal, ModalHeader, ModalBody, ModalFooter, 
-         Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from "reactstrap";
+         Input, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from "reactstrap";
 import CreateLabel from "./Createlabel";
 import Avatar from 'react-avatar';
 import { FaPen, FaTrashAlt ,FaAngleDown,FaEllipsisV} from 'react-icons/fa';
@@ -15,58 +15,71 @@ class Lables extends Component {
     super(props);
     this.state = {
       labels: [],
-      collapse: [],
-      relable:[],
+      requiredLabel: [],
       id: 0,
       name: "",
       version:"",
       addContainer: false,
       createLabel: false,
-      viewLabelRequest: false,
       visible: false,
       updateLabel: false,
       deleteLabel: false,
-      profileId: Store.getProfile().id,
+      profileId: 0,
       accordion: [],
       danger: false,
-      show:true,
-      dropdownOpen:[],
-      onHover:false,
+      show: true,
+      dropdownOpen: [],
+      onHover: false,
       hoverAccord : [],
-      spinner:false,
-     
+      spinner: false,
+      search:''
     };
   }
+
   //this method get All Labels Related to that Profile
   componentDidMount = () =>{
+    this.setProfileId();
+  }
+
+  setProfileId = async () =>{
+    if (Store.getProfile().length !== 0) {
+      var iterator = Store.getProfile().values()
+      await this.setState({profileId:iterator.next().value.id});
+      this.getLabels();
+    }
+  }
+
+  getLabels = () =>{
     new LabelApi().getSublabels(this.successCall, this.errorCall,this.state.profileId);
   }
 
   //this method sets labels when api given successfull Response
-  successCall =async lable => {
+  successCall = async lable => {
     if (lable === []) {
-      this.setState({ labels : [0] })
+      this.setState({ labels : [] })
     } else {
       await this.setState({ labels : lable, spinner : true })
       this.loadCollapse();
     }
-  };
-  errorCall = err => { this.setState({ visible: true }) }
+  }
 
   callCreateLabel = () => { this.setState({ createLabel: true })}
 
-  loadCollapse=()=>{
-    this.state.labels.map(lables=>{return this.setState(prevState => ({accordion: [...prevState.accordion, false],
-    hoverAccord : [...prevState.hoverAccord,false],
-    dropdownOpen: [...prevState.dropdownOpen, false]}))});
+  callCreateLabel = () => { this.setState({ createLabel : true })}
+
+  loadCollapse = () =>{
+    this.state.labels.map(lables=>{return this.setState(prevState => ({
+      accordion: [...prevState.accordion, false],
+      hoverAccord : [...prevState.hoverAccord,false],
+      dropdownOpen: [...prevState.dropdownOpen, false]}))});
   }  
   //this toggle for Delete Model
   toggleDanger = () => {
-    this.setState({danger: !this.state.danger});
+    this.setState({ danger : !this.state.danger });
   }
   //this method for the load Update Compoents
   updateLabel = (ulable) => {
-    this.setState({ updateLabel: true,relable:ulable })
+    this.setState({ updateLabel : true, requiredLabel : ulable })
   };
   //this method for the load delete Components
   deleteLabel = () => {
@@ -105,139 +118,131 @@ class Lables extends Component {
   }
 
   render() {
-   const { labels,viewLabelRequest, createLabel,updateLabel,id,deleteLabel, visible,profileId,relable,spinner} = this.state
-    if (labels.length === 0 && !createLabel ) {
-      return <div>{labels.length === 0 && !createLabel && !spinner ? this.loadLoader() :this.loadNotLabel()}</div>
+   const { labels, createLabel, updateLabel, id, deleteLabel, visible, profileId, requiredLabel, spinner, search} = this.state
+    if (Store.getProfile().length===0) {
+      return this.loadProfileNull()
+    } else if (labels.length === 0 && !createLabel) {
+      return <div>{labels.length === 0 && !createLabel && !spinner ? this.loadLoader() : this.loadNotLabel()}</div>
     } else if (createLabel) {
-      return ( <CreateLabel pid={profileId} />)
-    }else if (updateLabel) {
-      return(<UpdateLabel pid={profileId} label={relable} lables={labels} />)
-    }else if(deleteLabel) {
-      return ( <DeleteLabel id={id}  pid={profileId}/> )
-    }else{
-      return <div>{this.loadShowLabel(viewLabelRequest, visible, labels)}{this.loadDeleteLabel()}</div>
+      return (<CreateLabel pid={profileId} label={labels} />)
+    } else if (updateLabel) {
+      return (<UpdateLabel pid={profileId} label={requiredLabel} lables={labels} />)
+    } else if (deleteLabel) {
+      return (<DeleteLabel id={id} pid={profileId} />)
+    } else {
+      return <div>{this.loadShowLabel( visible, labels, search)}{this.loadDeleteLabel()}</div>
     }
   }
+
+  loadHeader = () => {
+    return(
+      <CardHeader>
+        <strong>Label</strong>
+        <Button color="success" className="float-right" onClick={this.callCreateLabel}> + Create Label </Button>
+      </CardHeader>);
+  }
+
+  loadProfileNull = () =>{
+    return(
+      <div className="animated fadeIn">
+        <Card>
+          <center style={{paddingTop:'20px'}}>
+            <CardBody><h5><b>You haven't created any Profile yet. So Please Create Profile. </b></h5><br/> </CardBody>
+          </center>
+        </Card>
+      </div>)
+  }
+
   //this method load the spinner
-  loadLoader=()=>{
-   return( <div className="animated fadeIn">
-   <Card>
-     <CardHeader>
-       <strong>Total Labels: {this.state.labels.length}</strong>
-     </CardHeader>
-     <center style={{paddingTop:'20px'}}>
-       <CardBody>
-       <Loader type="TailSpin" color="#2E86C1" height={60} width={60}/>
-       </CardBody>
-     </center>
-   </Card>
- </div>)
+  loadLoader = () => {
+    return( 
+      <div className="animated fadeIn">
+        <Card>
+          {this.loadHeader()}
+          <center style={{paddingTop:'20px'}}>
+            <CardBody><Loader type="TailSpin" color="#2E86C1" height={60} width={60}/></CardBody>
+          </center>
+        </Card>
+      </div>)
   }
   //this method call when if any profile not created.
   loadNotLabel = () => {
-    return (<div className="animated fadeIn">
-      <Card>
-        <CardHeader>
-          <strong>Label</strong>
-        </CardHeader>
-        <center style={{paddingTop:'20px'}}>
-          <CardBody>
-              <h5><b>You haven't created any Lables yet... </b></h5><br/>
-            <Button color="info" onClick={this.callCreateLabel}> Create Label </Button>
-          </CardBody>
-        </center>
-      </Card>
-    </div>)
+    return (
+      <div className="animated fadeIn">
+        <Card>
+          {this.loadHeader()}
+          <center style={{paddingTop:'20px'}}>
+            <CardBody> <h5><b>You haven't created any Lables yet... </b></h5><br/> </CardBody>
+          </center>
+        </Card>
+      </div>)
   }
-  //if one or more profile is there then this method Call
-  loadShowLabel = (visible, labels) => {
-     return (<div className="animated fadeIn">
-      <Card>
-        <CardHeader><strong>Labels</strong><Button color="primary" className="float-right" onClick={this.callCreateLabel}> + ADD LABEL</Button></CardHeader>
-        <div style={{margin:30, paddingLeft:10}}>
-          <h6><Alert isOpen={visible} color="danger">Internal Server Error</Alert></h6>
-          {this.state.labels.map((label, key) => {return this.loadSingleLable(this.state.labels[key], key); })}</div>
-      </Card>
-    </div>)
-    
+
+  searchingFor = (term) =>{
+    return function(x){
+      return x.name.toLowerCase().includes(term.toLowerCase()) || !term
+    }
   }
-  //Show the Single Label 
-  loadSingleLable=(labels,ukey)=>{
-    const styles={
-      marginRight : 6
-    }
-    const penColor = {
-      marginTop: "15px",
-      color: 'blue'
-    }
-    const trashColor = {
-      marginLeft: "10px",
-      marginTop: "15px",
-      color: 'red'
-    }
-    const ellipsisText1 = {
-      flex: 1,
-      display: 'flex',
-      alignItems: 'center',
-      marginTop: '10px',
-      marginLeft: '-10'
-    }
-    const ellipsisText2 = {
-      flex: 1,
-      width: '100px',
-      textOverflow: 'ellipsis',
-      overflow: 'hidden',
-      whiteSpace:'nowrap',
-      paddingLeft:10
-    }
-    const ellipsisText1 = {
-      flex: 1,
-      display: 'flex',
-      alignItems: 'center',
-      marginLeft: '-10'
-    }
-    const ellipsisText2 = {
-      flex: 1,
-      width: '100px',
-      textOverflow: 'ellipsis',
-      overflow: 'hidden',
-      whiteSpace:'nowrap',
-      paddingLeft:10
-    }
+
+  //This Method Displays All the Labels of Corresponding Profile 
+  loadShowLabel = (visible, labels, search) => {
+    return (
+      <div className="animated fadeIn">
+        <Card>
+          <CardHeader>
+            <strong>Labels</strong>
+            <Button color="primary" className="float-right" onClick={this.callCreateLabel}> + ADD LABEL</Button>
+            <Input type="search" className="float-right" style={{width:'40%', marginRight:10}} onChange={e => this.setState({ search : e.target.value })} placeholder="Search Labels..." />            
+          </CardHeader>
+          <div style={{margin:30, paddingLeft:10}}>
+            <h6><Alert isOpen={visible} color="danger">Unable to Process Request, Please Try again</Alert></h6>
+            {labels.filter(this.searchingFor(search)).map((label, key) => {return this.loadSingleLable(label, key); })}
+          </div>
+        </Card>
+      </div>)
+  }
+
+  //Shows the Single Label 
+  loadSingleLable = (labels,ukey) =>{
+    const styles = { marginRight : 6 }
+    const penColor = { marginTop : 15, color : 'blue' }
+    const trashColor = {  marginLeft : 10,  marginTop : 15,  color : 'red' }
+    const ellipsisText1 = {  flex: 1,  display: 'flex',  alignItems: 'center',  marginLeft: '-10' }
+    const ellipsisText2 = {  flex: 1,  width: '100px',  textOverflow: 'ellipsis',  overflow: 'hidden',  whiteSpace:'nowrap',  paddingLeft:10 }
     const subLabelList = {marginLeft:50, paddingTop:1, paddingBottom:0, paddingLeft:5, height:50};
     return (
-      <div className="list-group" >
-        <div className="list-group-item" style= {{ padding:7}}>
+      <div className="list-group" key={ukey}>
+        <div className="list-group-item" style={{ padding: 7 }}>
           <Row>
-          <Col>
-            <div style={ellipsisText1}>
-              <Avatar name={labels.name.charAt(0)} color={labels.color === "" ? "#000000" : labels.color} size="40" square={true} key={labels.id} /> 
-              <div style={ellipsisText2}>&nbsp;&nbsp;{labels.name}
-                {Array.isArray(labels.subLabels) ? <span style={{ paddingLeft: 10 }}>
-                  <FaAngleDown onClick={() => this.toggleAccordion(ukey)} /></span> : ''}
-             </div></div>
-          </Col>
-          <Col sm={2} md={2.5 } lg={1} xl={1} >{this.loadDropDown(labels, ukey, styles)}</Col>
+            <Col>
+              <div style={ellipsisText1}>
+                <Avatar name={labels.name.charAt(0)} color={labels.color === "" ? "#000000" : labels.color} size="40" square={true} key={labels.id} />
+                <div style={ellipsisText2}>&nbsp;&nbsp;{labels.name}
+                  {Array.isArray(labels.subLabels) ? <span style={{ paddingLeft: 10 }}>
+                    <FaAngleDown style={{ marginLeft: 1 }} onClick={() => this.toggleAccordion(ukey)} /></span> : ''}
+                </div></div>
+            </Col>
+            <Col sm={2} md={2.5} lg={1} xl={1} >{this.loadDropDown(labels, ukey)}</Col>
           </Row>
           <Collapse isOpen={this.state.accordion[ukey]}>
-            {Array.isArray(labels.subLabels) ? labels.subLabels.map((ulable,key) => {
+            {Array.isArray(labels.subLabels) ? labels.subLabels.map((ulable, key) => {
               return (
-              <span className="list-group-item" style={subLabelList} key={key}>
-                <Row>
-                  <Col sm={{ size: 9 }}>
-                    <span style={Object.assign(ellipsisText1,{paddingBotttom:0})}>
-                      <Avatar name={ulable.name.charAt(0)} color={ulable.color} size="40" square={true} /> <div style={ellipsisText2}>{ulable.name}</div>
+                <span className="list-group-item" style={subLabelList} key={key}>
+                  <Row>
+                    <Col sm={{ size: 9 }}>
+                      <span style={Object.assign(ellipsisText1, { paddingBotttom: 0 })}>
+                        <Avatar name={ulable.name.charAt(0)} color={ulable.color} size="40" square={true} /> <div style={ellipsisText2}>{ulable.name}</div>
                       </span> </Col>
-                      <Col >
-                      <FaPen className="float-right" size={12} style={Object.assign({}, styles, penColor)} onClick={() => { this.updateLabel(ulable) }} />
+                    <Col >
                       <FaTrashAlt className="float-right" onClick={() => { this.setState({ id: ulable.id }); this.toggleDanger(); }} style={Object.assign({}, styles, trashColor)} />
-                  </Col>
-                </Row>
-              </span>)
+                      <FaPen className="float-right" size={12} style={Object.assign({}, styles, penColor)} onClick={() => { this.updateLabel(ulable) }} />
+                    </Col>
+                  </Row>
+                </span>)
             }) : ""}
           </Collapse>
         </div>
-        </div>)
+      </div>)
   }
   //this method call the delete model
   loadDeleteLabel = () => {
@@ -253,11 +258,11 @@ class Lables extends Component {
      </Modal>)
    }
  //this Method load Browser DropDown
-  loadDropDown = (labels, ukey, styles) =>{
+  loadDropDown = (labels, ukey) =>{
     return (
       <Dropdown isOpen={this.state.dropdownOpen[ukey]} style={{marginTop: 7}} toggle={() => { this.toggleDropDown(ukey); }} size="sm">
        <DropdownToggle tag="span" onClick={() => { this.toggleDropDown(ukey); }} data-toggle="dropdown" aria-expanded={this.state.dropdownOpen[ukey]}>
-         <FaEllipsisV style={styles}/>
+         <FaEllipsisV style={{marginLeft:10, marginRight:10}}/>
        </DropdownToggle>
        <DropdownMenu>
          <DropdownItem onClick={() => { this.updateLabel(labels) }} > Update </DropdownItem>

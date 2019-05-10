@@ -14,17 +14,18 @@ class DeleteLabel extends Component {
       profileId:this.props.pid
     };
   }
+
   componentDidMount = () => {
     new LabelApi().deleteLabel(this.successCall,this.errorCall,this.state.profileId,this.state.id);
    };
   //this method call when the delete api called and successfully Executed.
   successCall = () => {
-    this.callAlertTimer("success","Profile Deleted Successfully....");
+    this.callAlertTimer("success","Label Deleted Successfully....");
   };
   
   //when any api goto the api executions failed then called this method 
   errorCall = () => {
-    this.callAlertTimer("danger","Something went wrong, Please Try Again...  ");
+    this.callAlertTimer("danger","Unable to Process Request, Please Try Again...  ");
   };
 
   //this  method show the on page alert
@@ -34,37 +35,33 @@ class DeleteLabel extends Component {
   };
 
   render() {
-    const { labelDeleted, content,color } = this.state;
-    return <div>{labelDeleted?<Lables />:this.loadDeleteing(color,content)}</div>
+    const { labelDeleted, content, color } = this.state;
+    return <div>{ labelDeleted ? <Lables /> : this.loadDeleting(color,content) }</div>
   }
 
-  //This Method called After Deleted Label
-  loadDeleteMessage=(content)=>{
-    return(<div className="animated fadeIn">
-      <Card>
-        <CardHeader>
-          <strong>Label</strong>
-        </CardHeader>
-        <center style={{paddingTop:'20px'}}>
-          <h5><b>{content}</b><br /> <br />
+  //This Method called After Label is successfully deleted
+  loadDeleteMessage = (content) =>{
+    return(
+      <div className="animated fadeIn">
+        <Card>
+          <CardHeader><strong>Label</strong></CardHeader>
+          <center style={{paddingTop:'20px'}}>
+            <h5><b>{content}</b><br /> <br />
             <a href="/label/labels">View Labels </a></h5>
         </center>
       </Card>
     </div>)
   }
 
-  //this Method Call Between Deleteing Label Process.
-  loadDeleteing=(color,content)=>{
-    return(<div className="animated fadeIn">
+  //This Method shows the status of Deletion process through Alert
+  loadDeleting = (color, content) =>{
+    return(
+      <div className="animated fadeIn">
         <Card>
-          <CardHeader>
-            <strong>Label</strong>
-          </CardHeader>
-        <CardBody>
-          <Col sm="12" md={{ size: 5, offset: 4 }}>
-            <Alert color={color}>{content}</Alert>
-          </Col>
-        </CardBody>
+          <CardHeader><strong>Label</strong></CardHeader>
+          <CardBody>
+            <Col sm="12" md={{ size: 5, offset: 4 }}><Alert color={color}>{content}</Alert></Col>
+          </CardBody>
         </Card>
       </div>)
   }

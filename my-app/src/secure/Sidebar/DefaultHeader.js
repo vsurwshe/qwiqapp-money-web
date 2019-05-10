@@ -1,12 +1,15 @@
 import React, { Component } from "react";
-import { DropdownItem, DropdownMenu, DropdownToggle, Nav} from "reactstrap";
+import { Nav } from "reactstrap";
 import PropTypes from "prop-types";
-import { AppHeaderDropdown, AppSidebarToggler,AppNavbarBrand } from "@coreui/react";
+import { AppSidebarToggler, AppNavbarBrand } from "@coreui/react";
 import { AuthButton } from "../../App";
-import logo from '../Sidebar/img/user.png'
-import { FaCaretDown, FaCaretUp, FaUserTie } from "react-icons/fa";
+import { createBrowserHistory } from "history";
+import { FaCaretDown, FaCaretUp, FaUserTie, } from "react-icons/fa";
+import { IoIosRepeat } from "react-icons/io";
 import Store from "../../data/Store";
 import ProfileApi from "../../services/ProfileApi";
+
+const browserHistory = createBrowserHistory();
 
 const propTypes = {
   children: PropTypes.node
@@ -18,22 +21,33 @@ class DefaultHeader extends Component {
   constructor(props){
     super(props)
     this.state = {
-      flag:false,
-      profileName:''
+      flag : false,
+      profileName : ''
     }
   }
 
-  componentDidMount=()=>{
-    new ProfileApi().getProfiles(this.successCall,this.errorCall)
+  componentDidMount = () =>{
+    new ProfileApi().getProfiles(this.successCall, this.errorCall)
   }
   
   successCall = async (json) =>{
-     await this.setState({ profileName : json.map(profile=>profile.name) })
+    if(json.length === 0 || json === null ){ 
+      this.setState({ profileName : "Web Money" })
+    }else{
+      await Store.saveProfile(json)
+      this.setState({ profileName : json.map(profile=>profile.name) })
+    }
   }
 
   toggle = () =>{
     this.setState({flag:!this.state.flag})
     this.props.onFlagChange()
+  }
+
+  refreshButton = async () =>{
+    await Store.clearLocalStorage();
+    browserHistory.push("/dashboard");
+    window.location.reload();
   }
 
   render() {
@@ -49,15 +63,9 @@ class DefaultHeader extends Component {
           </span>
         </AppNavbarBrand>
         <Nav className="d-md-down-none" navbar />
-          <Nav className="ml-auto" navbar>
-            <h5 style={{paddingTop:'10px'}}><strong>WEB MONEY</strong></h5>
-              <AppHeaderDropdown direction="down">
-                <DropdownToggle nav><img src={logo} className="img-avatar" alt="Menu" /></DropdownToggle>
-                <DropdownMenu right style={{ right: "auto" }}>
-                  <DropdownItem header tag="div" className="text-center"><strong>Settings</strong></DropdownItem>
-                  <DropdownItem><AuthButton /></DropdownItem>
-                </DropdownMenu>
-              </AppHeaderDropdown>
+        <Nav className="ml-auto" navbar>
+          <IoIosRepeat style={{paddingTop:'10px', marginRight:10, marginBottom:10, color:"#6699ff"}} size={40} onClick={this.refreshButton} />
+          <AuthButton />
         </Nav>
       </React.Fragment>
     );

@@ -1,16 +1,18 @@
 import Axios from "axios";
 import Config from "../data/Config";
 import Store from "../data/Store";
-import LoginApi from './LoginApi'
+import LoginApi from './LoginApi';
+
 class CategoryApi {
   createCategory(success, failure, pid,data) {
     process(success, failure,  pid +"/categories", "POST",pid, data);
   }
+
   getCategories(success, failure ,pid,value) {
     Store.getCategories() === null || value === 'true'
       ? process(success, failure,  pid +"/categories?subcategories=true" ,'GET', pid) 
       : success(Store.getCategories())
-       }
+  }
 
   getCategoriesById(success, failure, pid,cid) {
     process(success, failure,  pid + "/categories/" + cid, "GET",pid);
@@ -38,8 +40,8 @@ async function process(success, failure, Uurl, Umethod, pid, data) {
         new CategoryApi().getCategories(success,failure,pid,'true')
      }
      validResponse(promise, success);
-  }catch(error){
-     AccessTokenError(error,failure, Uurl, Umethod, data,success)
+  } catch(error){
+      AccessTokenError(error,failure, Uurl, Umethod, data,success)
   }
 }
 
@@ -52,6 +54,7 @@ let AccessTokenError=(err,failure, Uurl, Umethod, data,success)=>{
     errorResponse(err, failure)
   }
 }
+
 let validResponse = function(resp, successMethod) {
   if (successMethod != null) {
     successMethod(resp.data);

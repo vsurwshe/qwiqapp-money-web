@@ -2,16 +2,19 @@ import Axios from "axios";
 import Config from "../data/Config";
 import Store from "../data/Store";
 import LoginApi from "./LoginApi";
+
 class SignupApi {
   //This is Step to Register The User
   getToken = () => {
     new LoginApi().login("dummy@email.com","dummyPwd",() => {
       console.log("Your Token is", Store.getAppUserAccessToken());}, () => {console.log("Cantnot Fetch the Admin Token");});
   };
+
   //Registers User
   registerUser(success, failure, data) {
     process(success, failure, Config.cloudBaseURL + "/register/","POST", data);
   }
+
   //Checks Whether user already exists or not
   async existsUser(success, failure, data) {
     this.getToken();
@@ -21,9 +24,9 @@ class SignupApi {
           validResponse(resp,success) 
       } })
       .catch(err => { if (err.response.status === "404") console.log("Internal Error")});
-    },2000);
-    
+    },2000); 
   }
+
   //Verify the User Credentials
   async verifySignup(success, failure, uid, code) {
     this.getToken()
@@ -43,9 +46,10 @@ let process = function(success, failure, Uurl, Umethod, data) {
     HTTP.request().then(resp => validResponse(resp, success)).catch(err => errorResponse(err, failure));
   }
 };
+
 let validResponse = function(resp, successMethod) { if (successMethod != null) {successMethod(resp.data);}};
 let errorResponse = function(error, failure) {
- if(error.response.status === 404 && failure != null){failure(error)}
+    if(error.response.status === 404 && failure != null){failure(error)}
 };
 
 function httpCall(Uurl, Umethod) {

@@ -97,7 +97,8 @@ class Main extends Component {
   }
 }
 export default withRouter(Main);
-//This is provide the Security to app Routing
+
+//This provides the Security to app Routing
 const PrivateRoute = ({ component: Component, ...rest }) => (
   <Route
     {...rest}
