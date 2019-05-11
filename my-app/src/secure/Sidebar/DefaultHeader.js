@@ -64,7 +64,7 @@ class DefaultHeader extends Component {
         </AppNavbarBrand>
         <Nav className="d-md-down-none" navbar />
         <Nav className="ml-auto" navbar>
-          <FaSync style={styles}  tabindex="0" data-toggle="tooltip" boundary="scrollParent" data-placement="bottom" title="Refresh" size={25} onClick={this.refreshButton} />
+          <FaSync style={styles} data-toggle="tooltip" boundary="scrollParent" data-placement="bottom" title="Refresh" size={25} onClick={this.refreshButton} />
           <AuthButton />
         </Nav>
       </React.Fragment>

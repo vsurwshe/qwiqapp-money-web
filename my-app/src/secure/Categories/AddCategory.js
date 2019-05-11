@@ -37,7 +37,6 @@ class AddCategory extends Component {
    }
 
   handlePostData = async (e, data) => {
-    e.preventDefault();
     await this.generateCode()
     const newData = { ...data, parentId: this.state.parentId,code:this.state.code };
     new CategoryApi().createCategory(this.successCall, this.errorCall, this.state.profileId, newData);
@@ -100,7 +99,7 @@ class AddCategory extends Component {
                 </Input>
               </Collapse><br />
               <FormGroup>
-                <Button color="info" > Save Category </Button>
+                <Button color="info" > Save Category </Button> &nbsp;&nbsp;
                 <a href="/listCategories" style={{ textDecoration: 'none' }}> <Button active color="light" type="button" aria-pressed="true">Cancel</Button></a>
               </FormGroup>
             </AvForm>

@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import CategoryApi from "../../services/CategoryApi";
 import Categories from "./Categories";
+import { Card, CardBody } from "reactstrap";
+import Loader from 'react-loader-spinner';
 
 class DeleteCategory extends Component {
   constructor(props) {
@@ -9,6 +11,7 @@ class DeleteCategory extends Component {
       profileId: props.pid,
       categoryId: props.cid,
       categoryDeleted: false,
+      loader: true,
       color: '',
       content: ''
     };
@@ -35,8 +38,18 @@ class DeleteCategory extends Component {
 
   render() {
     const { categoryDeleted, color,content } = this.state;
-    return  categoryDeleted ? <Categories color={color} content={content} visible={true}/> : <p> Deleting .......</p>
+    return  categoryDeleted ? <Categories color={color} content={content} visible={true}/> : this.loadLoader()
   }
+  loadLoader = () =>{
+    return( 
+      <div className="animated fadeIn">
+        <Card>
+          <center style={{paddingTop:'20px'}}>
+            <CardBody><Loader type="TailSpin" color="#2E86C1" height={60} width={60}/></CardBody>
+          </center>
+        </Card>
+      </div>)
+    }
 }
 
 export default DeleteCategory;

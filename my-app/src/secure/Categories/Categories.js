@@ -5,9 +5,6 @@ import Loader from 'react-loader-spinner';
 import Avatar from 'react-avatar';
 import { FaPen, FaTrashAlt, FaAngleDown, FaSearch, FaEllipsisV } from 'react-icons/fa';
 import CategoryApi from "../../services/CategoryApi";
-import AddCategory from './AddCategory';
-import EditCategory from './EditCategory';
-import DeleteCategory from './DeleteCategory';
 import Store from "../../data/Store";
 
 const AddCategory = React.lazy(() =>  import("./AddCategory"));
@@ -42,7 +39,7 @@ class Categories extends Component {
   }
 
   setProfileId = async () =>{
-    if (Store.getProfile().length !== 0) {
+    if (Store.getProfile() !== null && Store.getProfile().length !== 0) {
       var iterator = Store.getProfile().values()
       await this.setState({ profileId : iterator.next().value.id});
       this.getCategory();
@@ -141,9 +138,8 @@ class Categories extends Component {
   }
   
   render() {
-    console.log(Store.getProfile().length)
     const { categories,requiredCategory,createCategory,updateCategory,deleteCategory,profileId,categoryId, visible, spinner,search } = this.state;
-    if (Store.getProfile().length===0) {
+    if (Store.getProfile() === null || Store.getProfile().length===0) {
       return this.loadProfileNull()
     } else if(categories.length === 0 && !spinner){
       return this.loadLoader()
@@ -185,7 +181,7 @@ class Categories extends Component {
         <Card>
           <CardHeader> 
           <Row form>
-          <Col md={4}>
+          <Col md={3}>
             <strong>CATEGORIES : {categories.length}</strong> 
             </Col>
             <Col md={7} className="shadow p-0 mb-3 bg-white rounded">
@@ -196,7 +192,7 @@ class Categories extends Component {
           </InputGroupAddon>
           </InputGroup>
           </Col>
-          <Col md={1}>
+          <Col md={2}>
             <Button color="success" className="float-right" onClick={this.callAddCategory}> + ADD </Button>
             </Col>
             </Row>

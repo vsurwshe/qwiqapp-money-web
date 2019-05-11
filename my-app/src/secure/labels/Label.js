@@ -42,9 +42,8 @@ class Lables extends Component {
   }
 
   setProfileId = async () =>{
-    if (Store.getProfile().length !== 0) {
+    if (Store.getProfile() !== null && Store.getProfile().length !== 0) {
       var iterator = Store.getProfile().values()
-      console.log(iterator)
       await this.setState({profileId:iterator.next().value.id});
       this.getLabels();
     }
@@ -120,7 +119,7 @@ class Lables extends Component {
 
   render() {
    const { labels, createLabel, updateLabel, id, deleteLabel, visible, profileId, requiredLabel, spinner, search} = this.state
-    if (Store.getProfile().length===0) {
+    if ( Store.getProfile()=== null || Store.getProfile().length===0 ) {
       return this.loadProfileNull()
     } else if (labels.length === 0 && !createLabel) {
       return <div>{labels.length === 0 && !createLabel && !spinner ? this.loadLoader() : this.loadNotLabel()}</div>
@@ -192,18 +191,18 @@ class Lables extends Component {
         <Card>
           <CardHeader> 
           <Row form>
-          <Col md={4}>
+          <Col md={3}>
             <strong>Labels: {labels.length}</strong>
             </Col>
             <Col md={7} className="shadow p-0 mb-2 bg-white rounded">
-            <InputGroup style={{}}>
+            <InputGroup>
             <Input type="search" className="float-right" style={{width:'20%'}} onChange={e => this.setState({ search : e.target.value })} placeholder="Search Labels..." /> 
             <InputGroupAddon addonType="append">
               <InputGroupText className="dark"><FaSearch /></InputGroupText>
             </InputGroupAddon>
           </InputGroup>
           </Col>
-          <Col md={1}>
+          <Col md={2}>
           <Button color="primary" className="float-right" onClick={this.callCreateLabel}> + Add </Button>
           </Col>
           </Row>

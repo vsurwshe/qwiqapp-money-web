@@ -18,9 +18,7 @@ class UpdateProfile extends Component {
   }
   handleUpdate = () => {
     let data = { name: this.state.name };
-    new ProfileApi().updateProfile( () => {
-        this.setState({ updateSuccess: true });
-      }, this.errorCall, data, this.state.id );
+    new ProfileApi().updateProfile( this.successCall, this.errorCall, data, this.state.id );
   };
 
   successCall = () =>{

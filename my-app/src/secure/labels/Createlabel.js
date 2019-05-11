@@ -34,7 +34,6 @@ class CreateLable extends Component {
   //this method handle the submission from user
   handlePostData = async (e,data) => {
     e.preventDefault();
-    console.log(data)
     const newData={...data,"parentId":this.state.parentId}
     await new LabelApi().createLabel( this.successCreate, this.errorCall, this.state.profileId, newData);
   };
