@@ -30,6 +30,7 @@ let process = function(params, success, failure) {
   let promise = HTTP.request({ params: params })
     .then(resp => validResponse(resp, success,params))
     .catch(error => {errorResponse(error, failure);});
+    console.log(promise)
 };
 
 let validResponse = function(resp, successMethod,params) {

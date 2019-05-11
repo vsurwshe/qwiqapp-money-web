@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import { Button, Row, Col, Card, CardBody, Alert, CardHeader, Collapse, Modal, ModalHeader, ModalBody, ModalFooter, 
-         Input, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from "reactstrap";
+         Input, Dropdown, DropdownToggle, DropdownMenu, DropdownItem,InputGroupAddon,InputGroup,InputGroupText } from "reactstrap";
 import CreateLabel from "./Createlabel";
 import Avatar from 'react-avatar';
-import { FaPen, FaTrashAlt ,FaAngleDown,FaEllipsisV} from 'react-icons/fa';
+import { FaPen, FaTrashAlt, FaAngleDown,FaSearch, FaEllipsisV} from 'react-icons/fa';
 import UpdateLabel from "./UpdateLabel";
 import DeleteLabel from "./DeleteLabel";
 import LabelApi from "../../services/LabelApi";
@@ -44,6 +44,7 @@ class Lables extends Component {
   setProfileId = async () =>{
     if (Store.getProfile().length !== 0) {
       var iterator = Store.getProfile().values()
+      console.log(iterator)
       await this.setState({profileId:iterator.next().value.id});
       this.getLabels();
     }
@@ -189,10 +190,23 @@ class Lables extends Component {
     return (
       <div className="animated fadeIn">
         <Card>
-          <CardHeader>
-            <strong>Labels</strong>
-            <Button color="primary" className="float-right" onClick={this.callCreateLabel}> + ADD LABEL</Button>
-            <Input type="search" className="float-right" style={{width:'40%', marginRight:10}} onChange={e => this.setState({ search : e.target.value })} placeholder="Search Labels..." />            
+          <CardHeader> 
+          <Row form>
+          <Col md={4}>
+            <strong>Labels: {labels.length}</strong>
+            </Col>
+            <Col md={7} className="shadow p-0 mb-2 bg-white rounded">
+            <InputGroup style={{}}>
+            <Input type="search" className="float-right" style={{width:'20%'}} onChange={e => this.setState({ search : e.target.value })} placeholder="Search Labels..." /> 
+            <InputGroupAddon addonType="append">
+              <InputGroupText className="dark"><FaSearch /></InputGroupText>
+            </InputGroupAddon>
+          </InputGroup>
+          </Col>
+          <Col md={1}>
+          <Button color="primary" className="float-right" onClick={this.callCreateLabel}> + Add </Button>
+          </Col>
+          </Row>
           </CardHeader>
           <div style={{margin:30, paddingLeft:10}}>
             <h6><Alert isOpen={visible} color="danger">Unable to Process Request, Please Try again</Alert></h6>

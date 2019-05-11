@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import { Card,CardHeader,  Button, Col, Row, Modal, ModalHeader, ModalBody, ModalFooter, Collapse, Input,
-         Alert, Dropdown, DropdownItem, DropdownToggle, DropdownMenu,CardBody } from 'reactstrap';
+         Alert, Dropdown, DropdownItem, DropdownToggle, DropdownMenu,CardBody,InputGroupAddon,InputGroup,InputGroupText } from 'reactstrap';
 import Loader from 'react-loader-spinner';
 import Avatar from 'react-avatar';
-import { FaPen, FaTrashAlt, FaAngleDown, FaEllipsisV } from 'react-icons/fa';
+import { FaPen, FaTrashAlt, FaAngleDown, FaSearch, FaEllipsisV } from 'react-icons/fa';
 import CategoryApi from "../../services/CategoryApi";
 import AddCategory from './AddCategory';
 import EditCategory from './EditCategory';
@@ -184,9 +184,22 @@ class Categories extends Component {
       <div className="animated fadeIn">
         <Card>
           <CardHeader> 
+          <Row form>
+          <Col md={4}>
             <strong>CATEGORIES : {categories.length}</strong> 
-            <Button color="success" className="float-right" onClick={this.callAddCategory}> + ADD CATEGORY</Button>
-            <Input type="search" className="float-right" style={{width:'40%', marginRight:10}} onChange={e => this.setState({ search : e.target.value })} placeholder="Search Categories..." />
+            </Col>
+            <Col md={7} className="shadow p-0 mb-3 bg-white rounded">
+            <InputGroup>
+            <Input type="search" className="float-right" style={{width:'20%'}} onChange={e => this.setState({ search : e.target.value })} placeholder="Search Categories..." />
+            <InputGroupAddon addonType="append">
+            <InputGroupText className="dark"><FaSearch /></InputGroupText>
+          </InputGroupAddon>
+          </InputGroup>
+          </Col>
+          <Col md={1}>
+            <Button color="success" className="float-right" onClick={this.callAddCategory}> + ADD </Button>
+            </Col>
+            </Row>
           </CardHeader>
           <div style={{margin:10, paddingLeft:50}}>
             <Alert isOpen={visible} color={color===undefined ? '' : color}>{this.props.content}</Alert>

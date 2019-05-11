@@ -4,10 +4,9 @@ import PropTypes from "prop-types";
 import { AppSidebarToggler, AppNavbarBrand } from "@coreui/react";
 import { AuthButton } from "../../App";
 import { createBrowserHistory } from "history";
-import { FaCaretDown, FaCaretUp, FaUserTie, } from "react-icons/fa";
-import { IoIosRepeat } from "react-icons/io";
-import Store from "../../data/Store";
+import { FaCaretDown, FaSync, FaCaretUp, FaUserTie, } from "react-icons/fa";
 import ProfileApi from "../../services/ProfileApi";
+import Store from "../../data/Store";
 
 const browserHistory = createBrowserHistory();
 
@@ -51,6 +50,7 @@ class DefaultHeader extends Component {
   }
 
   render() {
+    const styles= {paddingTop:'10px', marginRight:10, marginBottom:10, color:"#228B22"}
     return (
       <React.Fragment>
         <AppSidebarToggler className="d-lg-none" display="md" mobile />
@@ -64,7 +64,7 @@ class DefaultHeader extends Component {
         </AppNavbarBrand>
         <Nav className="d-md-down-none" navbar />
         <Nav className="ml-auto" navbar>
-          <IoIosRepeat style={{paddingTop:'10px', marginRight:10, marginBottom:10, color:"#6699ff"}} size={40} onClick={this.refreshButton} />
+          <FaSync style={styles}  tabindex="0" data-toggle="tooltip" boundary="scrollParent" data-placement="bottom" title="Refresh" size={25} onClick={this.refreshButton} />
           <AuthButton />
         </Nav>
       </React.Fragment>

@@ -12,12 +12,13 @@ const App = () => {
 
 export default App;
 
+const style={ paddingTop:'10px', marginRight:10, marginBottom: 10, color:"#ff3333" }
 const AuthButton = withRouter(({ history }) =>
   Store.isAppUserLoggedIn() ? (
-      <FaPowerOff style={{paddingTop:'10px', marginRight:10, marginBottom: 10, color:"#ff3333"}} size={25} onClick={() => {Store.logoutAppUser(() => history.push("/"));}} />
+      <FaPowerOff style={style} data-toggle="tooltip" data-placement="bottom" title="Signout" id="toolTip" size={25} onClick={() => {Store.logoutAppUser(() => history.push("/"));}} />
       ): (
             <span onClick={() => { history.push("/login");}}>Login</span>
-    )
+      )
 );
 
 export { AuthButton };
