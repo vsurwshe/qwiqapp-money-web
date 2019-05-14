@@ -4,7 +4,7 @@ import { Alert, Button, Card, FormGroup, Col, Row } from "reactstrap";
 import Select from 'react-select';
 import BillApi from "../../services/BillApi";
 import Bills from "./Bill";
-import {colourStyles} from '../../data/colourStyles'
+import Data from '../../data/SelectData'
 
 class CreateBill extends Component {
   constructor(props) {
@@ -35,7 +35,6 @@ class CreateBill extends Component {
   //this method handle the Post method from user
   handlePostData = async (e, data) => {
     e.persist();
-    console.log("data = ", data)
     await new BillApi().createBill(this.successCreate, this.errorCall, this.state.profileId, data);
   };
 
@@ -66,7 +65,7 @@ class CreateBill extends Component {
   }
   
   //this Method Call when Label Creation in porceess.
-  loadCreatingBill = (alertColor, lables, content, categories) => {
+  loadCreatingBill = (alertColor, labels, content, categories) => {
     return (
       <div className="animated fadeIn" >
         <Card>
@@ -77,6 +76,7 @@ class CreateBill extends Component {
                 <Row>
                   <Col sm={2}>
                     <AvField type="select" name="currency" errorMessage="Select Currency" required>
+                      <option value="null">Currency</option>
                       <option value="EUR">€</option>
                       <option value="USD">$</option>
                       <option value="INR">₹</option>
@@ -87,7 +87,7 @@ class CreateBill extends Component {
                   </Col>
                 </Row>
                 <Row>
-                  <Col> {this.categoryOptions(categories)}</Col>
+                  <Col> <Select options={Data.categories(categories)} styles={Data.singleStyles}  placeholder="Select Categories " onChange={this.categorySelected} required/></Col>
                 </Row><br/>  
                 <Row>
                   <Col><AvField name="billDate" label="Bill Date" value={this.state.userBillDate} type="date" errorMessage="Invalid Date" validate={{ date: { format: 'DD/MM/YYYY' }, required: { value: true } }} /></Col>
@@ -97,7 +97,7 @@ class CreateBill extends Component {
                   <Col> <AvField name="notes" type="text" list="colors" errorMessage="Invalid Notes" placeholder="Enter Notes " required /></Col>
                 </Row>
                 <Row>
-                  <Col> {this.lablesOptions(lables)}</Col>
+                  <Col><Select isMulti options={Data.labels(labels)} styles={Data.colourStyles} placeholder="Select Lables " onChange={this.labelSelected}/></Col>
                 </Row><br/>
                 <FormGroup >
                   <Button color="info"> Save Bill </Button> &nbsp;&nbsp;
@@ -115,38 +115,6 @@ class CreateBill extends Component {
 
   categorySelected = (categoryOption) =>{
     this.setState({ categoryOption, alertColor : '', content : ''})
-  }
-
-  categoryOptions = (categories) =>{
-    const options = [];
-    categories.map(category => {
-           if (category.subCategories !== null){
-             options.push({label:<b>{category.name}</b>, color:category.color ===null ?"#000000": category.color,value:category.id})
-             category.subCategories.map(subCategory=>{
-               return options.push({label:<span style={{paddingLeft:15}}>{subCategory.name}</span> , color:subCategory.color ===null ?"#000000": subCategory.color,value:subCategory.id})
-             })
-           } else{
-             return options.push({value: category.id, label: category.name, color: category.color ===null ?"#000000" :category.color })
-           }
-           return 0;
-       })
-   return <Select options={options} styles={colourStyles}  placeholder="Select Categories " onChange={this.categorySelected} required/> ;
- }
-  
-  lablesOptions = (labels) =>{
-    const options = [];
-    labels.map(label => {
-          if(label.subLabels !== null){
-            options.push({label:label.name, color:label.color ===null ?"#000000": label.color,value:label.id})
-            label.subLabels.map(subLabel=>{
-              return options.push({label:label.name+"/"+subLabel.name, color:subLabel.color ===null ?"#000000": subLabel.color,value:subLabel.id})
-            })
-          } else{
-            return options.push({value: label.id, label: label.name, color:label.color ===null ?"#000000" :label.color })
-          }
-          return 0;
-      })
-    return <Select isMulti options={options} styles={colourStyles} placeholder="Select Lables " onChange={this.labelSelected}/> ;
   }
 }
 export default CreateBill;

@@ -4,7 +4,7 @@ import { Button, Col, Row, Alert, FormGroup, Card, CardHeader } from "reactstrap
 import Lables from "./Bill";
 import BillApi from "../../services/BillApi";
 import Select from 'react-select';
-import {colourStyles} from '../../data/colourStyles';
+import Data from '../../data/SelectData';
 
 class UpdateBill extends Component {
   constructor(props) {
@@ -43,7 +43,7 @@ class UpdateBill extends Component {
 
   //This method shows the Api Error messages if any 
   errorCall = err => {
-    this.callAlertTimer("danger", "Something went wrong, Please Try Again... ");
+    this.callAlertTimer("danger", "Unable to process request, Please Try Again... ");
   };
 
   //this method shows the response messages for user
@@ -70,7 +70,7 @@ class UpdateBill extends Component {
   loadHeader = () => <CardHeader><strong>Update Bill</strong></CardHeader>
 
   //this method call when updating profile
-  loadUpdatingLabel=(alertColor,content,labels,categories,bill)=>{
+  loadUpdatingLabel = (alertColor, content, labels, categories, bill) =>{
     return( 
       <div className="animated fadeIn" >
         <Card>
@@ -93,7 +93,7 @@ class UpdateBill extends Component {
                   </Col>
                 </Row>
                 <Row>
-                  <Col> {this.categoryOptions(categories, bill)}</Col>
+                  <Col> <Select options={Data.categories(categories)}  defaultValue={Data.categories(categories).filter(item=>{return item.value===bill.categoryId})} styles={Data.singleStyles}  placeholder="Select Categories " onChange={this.categorySelected} required/></Col>
                 </Row><br />
                 <Row>
                   <Col><AvField name="billDate" label="Bill Date" value={bill.billDate} type="date" errorMessage="Invalid Date" validate={{ date: { format: 'DD/MM/YYYY' }, required: { value: true } }} /></Col>
@@ -115,37 +115,10 @@ class UpdateBill extends Component {
         </div>)
   }
 
-  categoryOptions = (categories,bill) =>{
-    const options = [];
-    categories.map(category=>{
-           if(category.subCategories !== null){
-             options.push({label:<b>{category.name}</b>, color:category.color ===null ?"#000000": category.color,value:category.id})
-             category.subCategories.map(subCategory=>{
-               return options.push({label:<span style={{paddingLeft:15}}>{subCategory.name}</span> , color:subCategory.color ===null ?"#000000": subCategory.color,value:subCategory.id})
-             })
-           }else{
-             return options.push({value: category.id, label: category.name, color: category.color ===null ?"#000000" :category.color })
-           }
-           return 0;
-       })
-    return <Select options={options}  defaultValue={options.filter(item=>{return item.value===bill.categoryId})} styles={colourStyles}  placeholder="Select Categories " onChange={this.categorySelected} required/> ;
- }
-  
   lablesOptions = (labels, bill) =>{
-    const options = [];
-    labels.map(label=>{
-            if(label.subLabels !== null){
-              options.push({label:label.name, color:label.color ===null ?"#000000": label.color,value:label.id})
-              label.subLabels.map(subLabel=>{
-                return options.push({label:label.name+"/"+subLabel.name, color:subLabel.color ===null ?"#000000": subLabel.color,value:subLabel.id})
-              })
-            }else{
-              return options.push({value: label.id, label: label.name, color:label.color ===null ?"#000000" :label.color })
-            }
-            return 0;
-        })
+    const options=Data.labels(labels)
     const data =  bill.labelIds===null ?'': bill.labelIds.map(id=>{return options.filter(item =>{return item.value===id})}).flat();
-    return <Select isMulti options={options}  defaultValue={data} styles={colourStyles} placeholder="Select Lables " autoFocus={true} onChange={this.labelSelected}/> ;
+    return <Select isMulti options={options}  defaultValue={data} styles={Data.colourStyles} placeholder="Select Lables " autoFocus={true} onChange={this.labelSelected}/> ;
   }
 }
 

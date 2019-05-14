@@ -1,8 +1,8 @@
 import React, { Component } from "react";
-import { Button,Row, Col, Card, CardBody, Alert, Modal, ModalHeader, ModalBody, ModalFooter, Dropdown, DropdownToggle, 
-         DropdownMenu, DropdownItem, ListGroupItem, ListGroup } from "reactstrap";
+import { Button,Row, Col, Card, CardBody, Alert, Modal, ModalHeader, ModalBody, ModalFooter, Dropdown, DropdownToggle, Input,
+         DropdownMenu, DropdownItem, ListGroupItem, ListGroup, InputGroup, InputGroupAddon, InputGroupText  } from "reactstrap";
 import CreateBill from "./CreateBill";
-import { FaEllipsisV } from 'react-icons/fa';
+import { FaEllipsisV, FaSearch } from 'react-icons/fa';
 import UpdateBill from "./UpdateBill";
 import BillApi from "../../services/BillApi";
 import Loader from 'react-loader-spinner'
@@ -36,15 +36,25 @@ class Bills extends Component {
   }
 
   componentDidMount = () =>{
-    new BillApi().getBills(this.successCallBill, this.errorCall,this.state.profileId);
+    new CategoryApi().getCategories(this.successCallCategory, this.errorCall, this.state.profileId); 
   }
+
+   //this method seting Categories when api given successfull Response
+   successCallCategory = async categories => {
+    if (categories === []) {
+      this.setState({ categories : [0] })
+    } else {
+      await this.setState({ categories : categories})
+      await new BillApi().getBills(this.successCallBill, this.errorCall,this.state.profileId);  
+    }
+  };
 
   //this method sets bills when api given successfull Response
   successCallBill = async bill => {
     if (bill === []) {
       this.setState({ bills: [0] })
     } else {
-      await this.setState({ bills: bill, spinner:true })
+      await this.bills(bill);
       this.loadCollapse();
     }
   };
@@ -52,32 +62,30 @@ class Bills extends Component {
   callCreateBill = () => {this.setState({ createBill : true })}
 
   loadCollapse = async () =>{
-    await this.state.bills.map(lables => {return this.setState(prevState => ({
+    await this.state.bills.map(labels => {return this.setState(prevState => ({
       accordion : [...prevState.accordion, false],
       hoverAccord : [...prevState.hoverAccord,false],
       dropdownOpen : [...prevState.dropdownOpen, false]
     }))});
-    new CategoryApi().getCategories(this.successCallCategory, this.errorCall, this.state.profileId); 
+    new LabelApi().getSublabels(this.successCallLabel, this.errorCall, this.state.profileId);
   }
 
-  //this method seting Categories when api given successfull Response
-   successCallCategory = async categories => {
-    if (categories === []) {
-      this.setState({ categories : [0] })
-    } else {
-      await this.setState({ categories : categories})
-      new LabelApi().getSublabels(this.successCallLabel, this.errorCall, this.state.profileId);
-    }
-  };
-
   //this method seting label when api given successfull Response
-  successCallLabel = label => {
+  successCallLabel = async label => {
     if (label === []) {
       this.setState({ labels : [0] })
     } else {
-      this.setState({ labels : label})
+      await this.setState({ labels : label});
     }
   };
+  
+  bills = (bills) =>{
+    const prevState = bills;
+    const state = prevState.map((x, index) => {
+        return {...x, categoryName: this.displayCategoryName(x.categoryId)}
+    });
+    this.setState({bills : state});
+  }
 
   errorCall = err => { this.setState({ visible : true }) }
 
@@ -145,17 +153,24 @@ class Bills extends Component {
   
   searchingFor = (term) =>{
     return function(x){
-        return (x.notes.toLowerCase()+x.amount).includes(term.toLowerCase()) || !term
+      return (x.notes.toLowerCase()+x.amount+x.categoryName.name.toLowerCase()).includes(term.toLowerCase()) || !term
     }
   }
 
   loadHeader = () => {
     return (
-        <div style={{ paddingTop: 20, paddingRight: 10 }} >
-          <strong style={{ fontSize: 30, marginLeft: 80 }}>BILLS</strong>
-          <Button color="success" className="float-right" onClick={this.callCreateBill} style={{ marginLeft: 10 }}> + Add </Button>
-          <input type="search" className="float-right" style={{ marginTop: 7 }} placeholder="Search....." onChange={this.searchSelected} />
-        </div>
+      <div style={{ paddingTop: 20, paddingRight: 10 }} >
+        <Row>
+          <Col sm={3}><strong style={{ fontSize: 20, marginLeft: 20 }}>BILLS</strong></Col>
+          <Col>
+            <InputGroup>
+              <Input  placeholder="Search Bills....." onChange={this.searchSelected} />
+              <InputGroupAddon addonType="append"> <InputGroupText><FaSearch /></InputGroupText></InputGroupAddon>
+            </InputGroup>
+          </Col>
+          <Col sm={3}> <Button color="success" className="float-right" onClick={this.callCreateBill} style={{ marginRight: 20 }}> + Add </Button></Col>
+        </Row>  
+      </div>
     )
   }
 
@@ -206,11 +221,11 @@ class Bills extends Component {
         <ListGroupItem action>
           <Row>
             <Col sm={{ size: 'auto', offset: 0 }} lg={1} style={{ backgroundColor: "#054FF8", color: "#FFFFFF", paddingTop: 10 }}>
-              <strong style={{ paddingTop: 5 }}>{this.dateFormat(bill.billDate)}</strong>
+              <strong style={{ paddingTop: 5 }}><center>{this.dateFormat(bill.billDate)}</center></strong>
             </Col>
             <Col sm={8}>
               <Row style={{ paddingLeft: 10 }}>{bill.notes}</Row>
-              <Row style={{ paddingLeft: 10, fontStyle: "oblique" }}>{this.displayCategoryName(bill.categoryId)}</Row>
+              <Row style={{ paddingLeft: 10, fontStyle: "oblique", color: bill.categoryName.color}}>{bill.categoryName.name}</Row>
             </Col>
             <Col style={{ marginTop: 10 }} className="float-right">
               <b style={{ color: "#F80505" }}>{new Intl.NumberFormat('en-IN', { style: 'currency', currency: bill.currency}).format( bill.amount)}</b>
@@ -228,6 +243,12 @@ class Bills extends Component {
     return finalDate;
   }
 
+  searchingCat = (term) =>{
+    return function(x){
+      return x.name.includes(term)|| !term
+    }
+  }
+
   displayCategoryName = (cid) => {
     var data = this.state.categories.filter(item => { return item.id === cid });
     if (data.length === 0) {
@@ -235,7 +256,7 @@ class Bills extends Component {
         if (Array.isArray(category.subCategories)) {
           category.subCategories.forEach(element => {
             if (element.id === cid) {
-              data = element.name;
+              data = {name : element.name, color: element.color === "" || element.color === null ?'#000000':element.color};
               return data;
             }});}
         return 0
@@ -243,12 +264,12 @@ class Bills extends Component {
       return data;
     } else {
       for (const value of data)
-        return value.name;
+        return {name:value.name,color:value.color===''|| value.color===null?'#000000':value.color};
     }
   }
   
  //this Method loads Browser DropDown
- loadDropDown = (bill,ukey,styles) =>{
+ loadDropDown = (bill, ukey, styles) =>{
     return (
       <Dropdown isOpen={this.state.dropdownOpen[ukey]} style={{marginTop: 7, float: "right" }} toggle={() => { this.toggleDropDown(ukey); }} size="sm">
         <DropdownToggle tag="span" onClick={() => { this.toggleDropDown(ukey); }} data-toggle="dropdown" aria-expanded={this.state.dropdownOpen[ukey]}>
