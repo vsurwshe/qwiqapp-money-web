@@ -1,18 +1,16 @@
 import React, { Component } from "react";
-import { Card,CardHeader,  Button, Col, Row, Modal, ModalHeader, ModalBody, ModalFooter, Collapse,ListGroup,ListGroupItem,Alert,Dropdown,DropdownItem,DropdownToggle,DropdownMenu} from 'reactstrap';
+import { Card,CardHeader,  Button, Col, Row, Modal, ModalHeader, ModalBody, ModalFooter, Collapse, Input,
+         Alert, Dropdown, DropdownItem, DropdownToggle, DropdownMenu,CardBody,InputGroupAddon,InputGroup,InputGroupText } from 'reactstrap';
+import Loader from 'react-loader-spinner';
 import Avatar from 'react-avatar';
-import { FaPen, FaTrashAlt, FaAngleDown, FaEllipsisV } from 'react-icons/fa';
+import { FaPen, FaTrashAlt, FaAngleDown, FaSearch, FaEllipsisV } from 'react-icons/fa';
 import CategoryApi from "../../services/CategoryApi";
-import ProfileApi from "../../services/ProfileApi";
-import "default-passive-events";
+import Store from "../../data/Store";
 
 const AddCategory = React.lazy(() =>  import("./AddCategory"));
 const EditCategory = React.lazy(() =>  import("./EditCategory"));
 const DeleteCategory = React.lazy(() =>  import("./DeleteCategory"));
 class Categories extends Component {
-
-  isUnmount= false;
-  // supportPassive = false;
   constructor(props) {
     super(props);
     this.state = {
@@ -29,32 +27,32 @@ class Categories extends Component {
       hoverAccord : [],
       dropDownAccord : [],
       danger : false,
-      alertColor : this.props.color,
-      content : this.props.content,
-      onHover:false,
-      screenWidth:"",
+      onHover: false,
+      visible: props.visible,
+      spinner: false,
+      search:''
     };
-    this.componentDidMount = this.componentDidMount.bind(this);
   }
 
-  componentDidMount() {
-    this.isUnmount = true;
-    new ProfileApi().getProfiles( this.successProfileId, this.errorCall );
-    window.addEventListener("resize", this.resize.bind(this)); //, this.passiveError
-      this.resize();
+  componentDidMount = () => {
+    this.setProfileId()
   }
-  resize() {
-    if(this.isUnmount){
-    this.setState({ screenWidth: window.innerWidth });
+
+  setProfileId = async () =>{
+    if (Store.getProfile() !== null && Store.getProfile().length !== 0) {
+      var iterator = Store.getProfile().values()
+      await this.setState({ profileId : iterator.next().value.id});
+      this.getCategory();
     }
   }
-    
-  // To handle warnings
-  componentWillUnmount = () => { this.isUnmount=false; }
-   
+
+  getCategory = ()=> {
+    new CategoryApi().getCategories(this.successCall, this.errorCall, this.state.profileId);
+  }
+
   //This Method is called for Api's Success Call
-  successCall = json => { 
-    this.setState({ categories : json })
+  successCall = async json => { 
+    await this.setState({ categories : json, spinner : true })
     this.loadCollapse();
   }
 
@@ -68,25 +66,22 @@ class Categories extends Component {
     })
   }  
 
-  //Method showing Initialising Profiles values got from API
-  successProfileId = json => {
-    if(json === []){ this.setState({ profileId : '' }) }
-    else{
-      const iter=json.values();
-      for(const value of iter){this.setProfielId(value.id)}
-    }
-  }
-
-  //Method to set Profile Id 
-  setProfielId = (id) => {
-    this.setState({ profileId : id });
-    new CategoryApi().getCategories(this.successCall, this.errorCall, this.state.profileId );
-  }
-
   //Method that shows API's Error Call
   errorCall = error => {
-    console.log(error);
+    this.callAlertTimer('danger','Unable to Process Request, Please Try Again')
   }
+
+  loadLoader = () =>{
+    return( 
+      <div className="animated fadeIn">
+        <Card>
+          <CardHeader><strong>Categories: {this.state.categories.length}</strong></CardHeader>
+          <center style={{paddingTop:'20px'}}>
+            <CardBody><Loader type="TailSpin" color="#2E86C1" height={60} width={60}/></CardBody>
+          </center>
+        </Card>
+      </div>)
+    }
 
   //Method calls the create category
   callAddCategory = () => {
@@ -106,10 +101,11 @@ class Categories extends Component {
   }
 
   callAlertTimer = () => {
-    setTimeout(() => {
-      if(this.isUnmount){
-      this.setState({ alertColor : '', content : '' });}
-    }, 2000);
+    if (this.state.visible) {
+      setTimeout(() => {
+        this.setState({ visible : false });
+      },1800);
+    }
   };
 
   //Method handle accoding tab variable
@@ -142,68 +138,106 @@ class Categories extends Component {
   }
   
   render() {
-    const { categories,requiredCategory,createCategory,updateCategory,deleteCategory,profileId,categoryId,alertColor,content } = this.state;
-    if(createCategory){
+    const { categories,requiredCategory,createCategory,updateCategory,deleteCategory,profileId,categoryId, visible, spinner,search } = this.state;
+    if (Store.getProfile() === null || Store.getProfile().length===0) {
+      return this.loadProfileNull()
+    } else if(categories.length === 0 && !spinner){
+      return this.loadLoader()
+    }else if(createCategory){
       return <AddCategory category = {categories} id= {profileId} />
     }else if(updateCategory){
       return <EditCategory categories = {categories} category = {requiredCategory} id = {profileId}/>
     }else if(deleteCategory){
       return <DeleteCategory cid = {categoryId} pid = {profileId} />
     }else{
-      return<div>{this.loadCategories(categories,alertColor,content)}{this.loadDeleteCategory()}</div>
+      return<div>{this.loadCategories(categories, visible, search)}{this.loadDeleteCategory()}</div>
     }
   }
 
-  loadCategories = (categories,alertColor,content) => {
-    this.callAlertTimer(alertColor,content)
+  loadProfileNull = () => {
+    return (
+      <div className="animated fadeIn">
+        <Card>
+          <center style={{paddingTop:'20px'}}>
+           <CardBody><h5><b>You haven't created any Profile yet. So Please Create Profile. </b></h5><br/> </CardBody>
+          </center>
+        </Card>
+      </div>);
+  }
+
+  searchingFor = (term) =>{
+    return function(x){
+      return x.name.toLowerCase().includes(term.toLowerCase()) || !term
+    }
+  }
+
+  loadCategories = (categories, visible, search) => {
+    const color = this.props.color;
+    if(color !== '' || color !== undefined){
+      this.callAlertTimer()
+    }
     return(
       <div className="animated fadeIn">
         <Card>
-          <CardHeader> 
+          <CardHeader style={{padding: "10px 10px 0px 10px"}} > 
+          <Row form>
+          <Col md={3} style={{marginTop:"10px"}}>
             <strong>CATEGORIES : {categories.length}</strong> 
-            <Button color="success" className="float-right" onClick={this.callAddCategory}> + ADD CATEGORY</Button>
+            </Col>
+            <Col md={7} className="shadow p-0 mb-3 bg-white rounded">
+            <InputGroup>
+            <Input type="search" className="float-right" style={{width:'20%'}} onChange={e => this.setState({ search : e.target.value })} placeholder="Search Categories..." />
+            <InputGroupAddon addonType="append">
+            <InputGroupText className="dark"><FaSearch /></InputGroupText>
+          </InputGroupAddon>
+          </InputGroup>
+          </Col>
+          <Col md={2}>
+            <Button color="success" className="float-right" onClick={this.callAddCategory}> + ADD </Button>
+            </Col>
+            </Row>
           </CardHeader>
           <div style={{margin:10, paddingLeft:50}}>
-            <Alert color={alertColor===undefined? '' : alertColor}>{content}</Alert>
-            {categories.map((category, key) => {return this.loadCategory(categories[key],key);})} </div>
+            <Alert isOpen={visible} color={color===undefined ? '' : color}>{this.props.content}</Alert>
+            {categories.filter(this.searchingFor(search)).map((category, key) => {return this.loadCategory(category,key);})} </div>
         </Card>
       </div>)
   }
   
   loadCategory = (category,uKey) => {
-    const styles={ marginLeft: 20, marginTop: 10 }// marginTop: 39 
-    const penColor = { color: 'blue' }
-    const trashColor = { color: 'red' }
+    const ellipsisText1 = { flex: 1, display: 'flex', alignItems: 'center', marginLeft: '-10' }
+    const ellipsisText2 = {  flex: 1,  width: '100px',  textOverflow: 'ellipsis',  overflow: 'hidden',  whiteSpace:'nowrap',  paddingLeft:10 }
+    const listSubCategory = { marginLeft:50, paddingTop:4, paddingBottom:0, paddingLeft:5, height:50 };
     return( 
-      <ListGroup flush className="animated fadeIn" key={uKey} onPointerEnter={(e)=>this.onHover(e, uKey)} onPointerLeave={(e)=>this.onHoverOff(e,uKey)}>
-        <ListGroupItem action >
-           <Row >
-            <Col sm={{size: 10}}> 
-                <Avatar name={category.name.charAt(0)} color = {category.color===null || category.color === "" ?'#000000':category.color} size="40" square={true} />&nbsp;&nbsp; {this.displayNames(category.name)}
-              </Col>
-            <Col> {Array.isArray(category.subCategories)?<FaAngleDown style={{marginTop:16}} onClick={()=>{this.toggleAccordion(uKey)}}/>:''} {this.state.onHover && this.state.hoverAccord[uKey]?this.showDropdown(category,uKey,styles):''} </Col>
-          </Row>
-          <div style={{padding:5}} />
-          <Collapse isOpen={this.state.accordion[uKey]}> {category.subCategories != null ? category.subCategories.map(subCategory=>{return (
-            <ListGroupItem tag="a" key={subCategory.id} style={{paddingBottom:1, paddingLeft:60}} >
+      <div className="list-group" key={uKey}>
+        <div className="list-group-item" style={{ paddingTop: 1, padding: 7 }}>
+          <Row >
+            <Col>
+              <span style={ellipsisText1}>
+              
+              <Avatar name={category.name.charAt(0)} color={category.color === null || category.color === "" ? '#000000' : category.color} size="40" square={true} />
+                <div style={ellipsisText2}>&nbsp;&nbsp;{category.name}
+                  {Array.isArray(category.subCategories) ? <span><FaAngleDown style={{ marginLeft: 8 }} onClick={() => { this.toggleAccordion(uKey) }} /></span> : ''}</div></span></Col>
+            <Col sm={1} md={1} lg={1} xl={1} >{this.showDropdown(category, uKey)}</Col>
+          </Row></div>
+        <div style={{ marginBottom: 1.5 }} />
+        <Collapse isOpen={this.state.accordion[uKey]}> {category.subCategories != null ? category.subCategories.map((subCategory, key) => {
+          return (
+            <span className="list-group-item" style={listSubCategory} key={key}>
               <Row>
-                <Col sm={{size: 9}}>
-                    <Avatar name={subCategory.name.charAt(0)} color={subCategory.color===null || subCategory.color === ""?'#000000':subCategory.color} size="40" square={true}/>&nbsp;&nbsp; {this.displayNames(subCategory.name)} 
-                </Col> 
-                <Col>
-                  <FaTrashAlt className="float-right" style={Object.assign({},trashColor, styles)} onClick={() => { this.setState({ categoryId: subCategory.id }); this.toggleDanger() }}/>
-                  <FaPen size={16} className="float-right" style={Object.assign({},penColor, styles)} onClick={()=>this.updateCategory(subCategory)} />
+                <Col><span style={ellipsisText1}>
+                  <Avatar name={subCategory.name.charAt(0)} color={subCategory.color === null || subCategory.color === "" ? '#000000' : subCategory.color} size="40" square={true} />
+                  <span style={ellipsisText2}>{subCategory.name}</span> </span>
+                </Col>
+                <Col> <FaTrashAlt className="float-right" color="red" style={{ marginTop: 20, marginLeft: 10,marginRight:20 }} onClick={() => { this.setState({ categoryId: subCategory.id }); this.toggleDanger() }} />
+                  <FaPen size={12} className="float-right" color="blue" style={{ marginTop: 20 }} onClick={() => this.updateCategory(subCategory)} />
                 </Col>
               </Row><br />
-            </ListGroupItem>)}) : ''} 
-          </Collapse> 
-        </ListGroupItem>
-      </ListGroup>
-    )
-  }
-  displayNames = (name) => {
-    const {screenWidth} = this.state;
-    return (<span >{screenWidth<=390 ? (name.length>15? name.slice(0, 15)+"..." : name) : (screenWidth <= 550 ? (name.length>30? name.slice(0, 30)+"..." : name) : (screenWidth <= 700 ? (name.length>50? name.slice(0, 50)+"..." : name) : (screenWidth <= 900 ? (name.length>70? name.slice(0, 80)+"..." : name) : (screenWidth <= 1100 ? (name.length>90? name.slice(0, 110)+"..." : name) : (name.length>=120? name.slice(0, 140)+"..." : name) ) ) ) ) }</span>)
+            </span>)
+        }) : ''}
+        </Collapse>
+        <div style={{ marginTop: 1 }} />
+      </div>)
   }
   
   loadDeleteCategory = () => {
@@ -218,16 +252,16 @@ class Categories extends Component {
       </Modal>)
   }
 
-  showDropdown = (category,uKey,styles) =>{
+  showDropdown = (category, uKey) =>{
     return(
       <Dropdown isOpen={this.state.dropDownAccord[uKey]} style={{marginLeft: 7, float: "right" }} className= "float-right"  toggle={() => { this.dropDownAccordion(uKey); }} size="sm" >
        <DropdownToggle tag="span" onClick={() => { this.dropDownAccordion(uKey); }} data-toggle="dropdown" >
-        <FaEllipsisV style={styles}/></DropdownToggle>
-      <DropdownMenu style={{marginTop:9,marginLeft:10}}>
-        <DropdownItem onClick={()=>this.updateCategory(category)}>Edit </DropdownItem>
-        <DropdownItem onClick={()=>{ this.setState({ categoryId: category.id }); this.toggleDanger() }}>Delete</DropdownItem>
-      </DropdownMenu>
-    </Dropdown>
+        <FaEllipsisV style={{ marginTop: 15, marginRight:20}}/></DropdownToggle>
+        <DropdownMenu style={{marginTop:9,marginLeft:10}}>
+          <DropdownItem onClick={()=>this.updateCategory(category)}>Edit </DropdownItem>
+          <DropdownItem onClick={()=>{ this.setState({ categoryId: category.id }); this.toggleDanger() }}>Delete</DropdownItem>
+        </DropdownMenu>
+      </Dropdown>
     )
   }
 }

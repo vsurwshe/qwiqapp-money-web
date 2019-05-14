@@ -1,14 +1,17 @@
 import React, { Component } from "react";
 import CategoryApi from "../../services/CategoryApi";
 import Categories from "./Categories";
-import "default-passive-events";
+import { Card, CardBody } from "reactstrap";
+import Loader from 'react-loader-spinner';
+
 class DeleteCategory extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      profileId: this.props.pid,
-      categoryId: this.props.cid,
+      profileId: props.pid,
+      categoryId: props.cid,
       categoryDeleted: false,
+      loader: true,
       color: '',
       content: ''
     };
@@ -23,20 +26,30 @@ class DeleteCategory extends Component {
   };
 
   errorCall = () => {
-    this.callAlertTimer("warning","Delete Failed !")
+    this.callAlertTimer('danger','Unable to Process Request, Please Try Again')
   };
 
   callAlertTimer = (color,content) => {
     this.setState({ color,content });
     setTimeout(() => {
       this.setState({ categoryDeleted: true});
-    }, 2000);
+    }, 100);
   };
 
   render() {
-     const { categoryDeleted, color,content } = this.state;
-     return  categoryDeleted?<Categories color={color} content={content}/>:<p> Deleting .......</p>
+    const { categoryDeleted, color,content } = this.state;
+    return  categoryDeleted ? <Categories color={color} content={content} visible={true}/> : this.loadLoader()
   }
+  loadLoader = () =>{
+    return( 
+      <div className="animated fadeIn">
+        <Card>
+          <center style={{paddingTop:'20px'}}>
+            <CardBody><Loader type="TailSpin" color="#2E86C1" height={60} width={60}/></CardBody>
+          </center>
+        </Card>
+      </div>)
+    }
 }
 
 export default DeleteCategory;

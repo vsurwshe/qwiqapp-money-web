@@ -6,18 +6,18 @@ class UpdateLabel extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      id: this.props.label.id,
-      name: this.props.label.name,
-      notes:this.props.label.notes,
-      version:this.props.label.version,
-      userColor:this.props.label.color,
-      parentId:this.props.label.parentId,
+      id: props.label.id,
+      name: props.label.name,
+      notes: props.label.notes,
+      version: props.label.version,
+      userColor: props.label.color,
+      parentId: props.label.parentId,
+      profileId: props.pid,
+      labels: props.lables,
       alertColor: "#000000",
       content: "",
       updateSuccess: false,
-      profileId:this.props.pid,
       collapse: false,
-      labels:this.props.lables
     };
   }
   handleUpdate = () => {
@@ -34,7 +34,7 @@ class UpdateLabel extends Component {
   };
  //when any api goto the api executions failed then called this method 
   errorCall = err => {
-    this.callAlertTimer( "danger", "Something went wrong, Please Try Again... ");
+    this.callAlertTimer( "danger", "Unable to Process Your Request, Please Try Again... ");
   };
 //this  method show the on page alert
   callAlertTimer = (alertColor, content) => {
@@ -52,8 +52,8 @@ class UpdateLabel extends Component {
   }
 
   render() {
-    const { name,notes, alertColor, content, updateSuccess,userColor } = this.state;
-    return <div>{updateSuccess ?<Lables />:this.loadUpdatingLable(name,notes,alertColor,content,userColor)}</div>
+    const { name, notes, alertColor, content, updateSuccess, userColor } = this.state;
+    return <div>{ updateSuccess ? <Lables /> : this.loadUpdatingLable(name,notes,alertColor,content,userColor) }</div>
   }
 
   //this method call after successfully updtaed profile
@@ -70,32 +70,30 @@ class UpdateLabel extends Component {
         </Card>
       </div>)
   }
-  //this method call when updating profile
-  loadUpdatingLable=(name,notes,alertColor,content,userColor)=>{
-     return( 
-       <div className="animated fadeIn" >
-         <Card>
-           <CardHeader>
-             <strong>Label</strong>
-           </CardHeader>
-           <Col sm="12" md={{ size: 5, offset: 4 }}>
-           <br/>
-             <Alert color={alertColor}>{content}</Alert>
-             <FormGroup>
-               <h5><b>EDIT LABEL</b></h5>
-                 <Input type="text" name="Label name" value={name} style={{ fontWeight: 'bold', color: '#000000' }} autoFocus={true} onChange={e => { this.setState({ name: e.target.value }) }} /><br />
-                 <Input type="text" name="Label Notes" value={notes} style={{ fontWeight: 'bold', color: '#000000' }} onChange={e => { this.setState({ notes: e.target.value }) }} /><br/>
-                 <Input type="color" name="Label Color" list="Colors" value={userColor} style={{ fontWeight: 'bold', color: '#000000' }} onChange={e => { this.setState({ userColor: e.target.value }) }} /><br/>
-                 {this.state.parentId !== null ?this.loadSublabelMakeParentLabel() : this.loadParentLableMakeSubLable()}
-                 {this.loadCollapse()}
-                <br />
-               <Button color="success" disabled={!name} onClick={this.handleUpdate} >Update  </Button>&nbsp;&nbsp;&nbsp;
-                <a href="/label/labels" style={{ textDecoration: 'none' }}> <Button active color="light" aria-pressed="true">Cancel</Button></a>
-             </FormGroup>
-           
-           </Col>
-         </Card>
-       </div>)
+
+  //This method shows the fields to update a Lable
+  loadUpdatingLable = (name, notes, alertColor, content, userColor) =>{
+    return( 
+      <div className="animated fadeIn" >
+        <Card>
+          <CardHeader><strong>Label</strong> </CardHeader>
+          <Col sm="12" md={{ size: 5, offset: 4 }}>
+            <br/>
+            <Alert color={alertColor}>{content}</Alert>
+            <FormGroup>
+              <h5><b>EDIT LABEL</b></h5>
+              <Input type="text" name="Label name" value={name} style={{ fontWeight: 'bold', color: '#000000' }} autoFocus={true} onChange={e => { this.setState({ name: e.target.value }) }} /><br />
+              <Input type="text" name="Label Notes" placeholder="Label notes" value={notes} style={{ fontWeight: 'bold', color: '#000000' }} onChange={e => { this.setState({ notes: e.target.value }) }} /><br/>
+              <Input type="color" name="Label Color" list="Colors" value={userColor} style={{ fontWeight: 'bold', color: '#000000' }} onChange={e => { this.setState({ userColor: e.target.value }) }} /><br/>
+              {this.state.parentId !== null ?this.loadSublabelMakeParentLabel() : this.loadParentLableMakeSubLable()}
+              {this.loadCollapse()}
+              <br />
+              <Button color="success" disabled={!name} onClick={this.handleUpdate} >Update  </Button>&nbsp;&nbsp;&nbsp;
+              <a href="/label/labels" style={{ textDecoration: 'none' }}> <Button active color="light" aria-pressed="true">Cancel</Button></a>
+            </FormGroup>
+          </Col>
+        </Card>
+      </div>)
   }
   loadSublabelMakeParentLabel=()=>{
     return(<FormGroup check className="checkbox">
@@ -115,8 +113,8 @@ class UpdateLabel extends Component {
     return (<Collapse isOpen={this.state.collapse}>
         <Input type="select" name="selectLg" id="selectLg" onChange={(event)=>this.setState({parentId:event.target.value})} bsSize="lg">
           <option value="null">Please select Parent Lables</option>
-          {this.state.labels.map((labels) => {return( this.state.id===labels.id ? '': <option key={labels.id} value={labels.id}>{labels.name}</option>)})}
-         </Input>
+          {this.state.labels.map((label) => {return( this.state.id===label.id ? '': <option key={label.id} value={label.id}>{label.name}</option>)})}
+        </Input>
       </Collapse>);
   }
 

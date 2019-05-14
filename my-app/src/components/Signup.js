@@ -2,6 +2,7 @@ import React from "react";
 import { Container, Alert, Label, Button, Input, Card, CardBody, CardTitle, FormGroup, FormFeedback } from "reactstrap";
 import { Link } from "react-router-dom";
 import SignupApi from "../services/SignupApi";
+
 class Signup extends React.Component {
   state = {
     name: "",
@@ -17,11 +18,13 @@ class Signup extends React.Component {
       passwordState: ""
     }
   };
-  //this is use for the store whatever input given in input fileds set into state variable
+
+  //This method sets the input fields value into state variable
   handleInput = e => {
     this.setState({ [e.target.name]: e.target.value });
   };
-  //when enter key press that time this method call
+
+  //when pressed 'enter' key, this method will be called
   handleEnter = (event) =>{
     if (event.key === 'Enter' ) { this.handleSubmit(); }
   }
@@ -30,44 +33,48 @@ class Signup extends React.Component {
     e.preventDefault();
     console.log(this.state.email + " " + this.state.password);
     const data = {
-        name: this.state.name,
-        email: this.state.email,
-        password: this.state.password
+      name: this.state.name,
+      email: this.state.email,
+      password: this.state.password
     };
     if (this.state.name === "") {
-        this.callAlertTimer("danger", "Name should not be empty")
-        // this.setState({ password: "" });
+      this.callAlertTimer("danger", "Name should not be empty")
     } else if (this.state.password.length > 5) {
-         new SignupApi().registerUser(this.successCall, this.errorCall, data);
+        new SignupApi().registerUser(this.successCall, this.errorCall, data);
     }
   };
-  //when user singup the successfully that time this method call
+
+  //when user signup successfull, this method is called
   successCall = () => {
     this.callAlertTimer("success", "Succesfull! Please Check your Email for Activation Link")
   };
-  //When Call the Email Already Exits
+
+  //When Email Already Exists
   successCallCheck = () => {
     const { validate } = this.state;
-    validate.emailState = 'danger'; this.setState({ emailAlert: true });
+    validate.emailState = 'danger'; this.setState({ emailAlert : true });
   };
 
- // when any internal Error is coming
+ // when any internal Error occur
   errorCall = err => {
     this.callAlertTimer("danger", "Internal Error");
   };
-  //if Email Already not exits
+
+  //if Email not exists
   errorCallCheck = err => {
     const { validate } = this.state;
     validate.emailState = 'danger'
   };
-  //this print onscreen alert
+
+  //this prints onscreen alert
   callAlertTimer = (color, content) => {
     this.setState({color: color,content: content});
     if ( this.state.color === "success"  && this.state.content === "Succesfull! Please Check your Email for Activation Link") {
       setTimeout(() => { this.setState({ color: '', content: '', flag: false }) }, 4000)
     }else {setTimeout(() => { this.setState({ color: '', content: '', email: '' }) }, 4000)}
   };
-  //this method check user enter vaild email format or not
+
+  //this method checks user entered email is in valid format or not
   validateEmail = e => {
     const emailRex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     const { validate } = this.state;
@@ -83,7 +90,8 @@ class Signup extends React.Component {
     }
     this.setState({ validate });
   };
-  //validate the user enter password 
+
+  //validate the user entered password 
   validatePassword = e => {
     const { validate } = this.state
     if (e.target.value.length > 5){
@@ -98,7 +106,7 @@ class Signup extends React.Component {
     const requiredLabel = { color: 'red' }
     const align = { textAlign: "left" }
     const {emailState, passwordState} = this.state.validate
-    const {name,email,password,content,color,flag,emailAlert}=this.state
+    const {name,email,password,content,color,flag,emailAlert} = this.state
     if (flag) {
       return <div>{this.loadSignupComponent(requiredLabel,align,emailState,passwordState,name,email,password,content,color,emailAlert)}</div>
     } else {

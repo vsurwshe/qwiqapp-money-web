@@ -1,6 +1,7 @@
 import axios from "axios";
 import Config from "../data/Config";
 import Store from "../data/Store";
+
 class LoginApi {
   login(username, password, success, failure) {
     let params = {
@@ -29,7 +30,7 @@ let process = function(params, success, failure) {
   let promise = HTTP.request({ params: params })
     .then(resp => validResponse(resp, success,params))
     .catch(error => {errorResponse(error, failure);});
-    console.log(promise);
+    console.log(promise)
 };
 
 let validResponse = function(resp, successMethod,params) {

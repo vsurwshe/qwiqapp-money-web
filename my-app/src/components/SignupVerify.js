@@ -9,7 +9,7 @@ class SignupVerify extends Component {
     super(props);
     this.state = {
       flag: false,
-      content:'User Verification in Progress, Please wait ..........'
+      content: 'User Verification in Progress, Please wait ..........'
     };
   }
 
@@ -19,10 +19,11 @@ class SignupVerify extends Component {
     let id = this.props.match.params.id;
     new SignupApi().verifySignup(this.successCall, this.errorCall, id, code);
   };
+
   successCall = json => {
     this.setState({ flag: true });
   };
-//
+
   errorCall = err => {
     this.setState({ content: <div><strong>Email already Verified, please Login......</strong><br/><br/><br/><Link to='/login'> Login Now</Link></div>});
   };
@@ -32,7 +33,7 @@ class SignupVerify extends Component {
       return (
         <div>
           <Container style={{paddingTop: "20%"}} className="App" >
-          <Card style={{ padding: 40, border: 0, textAlign: "center"}}> 
+            <Card style={{ padding: 40, border: 0, textAlign: "center"}}> 
               <CardBody>
                 <center>
                   <CardTitle>
@@ -49,7 +50,7 @@ class SignupVerify extends Component {
     return (
       <div>
         <Container style={{paddingTop: "20%"}} className="App" >
-        <Card style={{ padding: 40, border: 0, textAlign: "center"}}> 
+          <Card style={{ padding: 40, border: 0, textAlign: "center"}}> 
             <CardBody>
               <center>
                 <CardTitle><b>{this.state.content}</b></CardTitle>
