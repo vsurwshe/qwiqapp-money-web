@@ -179,9 +179,9 @@ class Categories extends Component {
     return(
       <div className="animated fadeIn">
         <Card>
-          <CardHeader> 
+          <CardHeader style={{padding: "10px 10px 0px 10px"}} > 
           <Row form>
-          <Col md={3}>
+          <Col md={3} style={{marginTop:"10px"}}>
             <strong>CATEGORIES : {categories.length}</strong> 
             </Col>
             <Col md={7} className="shadow p-0 mb-3 bg-white rounded">
@@ -207,14 +207,15 @@ class Categories extends Component {
   loadCategory = (category,uKey) => {
     const ellipsisText1 = { flex: 1, display: 'flex', alignItems: 'center', marginLeft: '-10' }
     const ellipsisText2 = {  flex: 1,  width: '100px',  textOverflow: 'ellipsis',  overflow: 'hidden',  whiteSpace:'nowrap',  paddingLeft:10 }
-    const listSubCategory = { marginLeft:50, paddingTop:1, paddingBottom:0, paddingLeft:5, height:50 };
+    const listSubCategory = { marginLeft:50, paddingTop:4, paddingBottom:0, paddingLeft:5, height:50 };
     return( 
       <div className="list-group" key={uKey}>
         <div className="list-group-item" style={{ paddingTop: 1, padding: 7 }}>
           <Row >
             <Col>
               <span style={ellipsisText1}>
-                <Avatar name={category.name.charAt(0)} color={category.color === null || category.color === "" ? '#000000' : category.color} size="40" square={true} />
+              
+              <Avatar name={category.name.charAt(0)} color={category.color === null || category.color === "" ? '#000000' : category.color} size="40" square={true} />
                 <div style={ellipsisText2}>&nbsp;&nbsp;{category.name}
                   {Array.isArray(category.subCategories) ? <span><FaAngleDown style={{ marginLeft: 8 }} onClick={() => { this.toggleAccordion(uKey) }} /></span> : ''}</div></span></Col>
             <Col sm={1} md={1} lg={1} xl={1} >{this.showDropdown(category, uKey)}</Col>
@@ -228,7 +229,7 @@ class Categories extends Component {
                   <Avatar name={subCategory.name.charAt(0)} color={subCategory.color === null || subCategory.color === "" ? '#000000' : subCategory.color} size="40" square={true} />
                   <span style={ellipsisText2}>{subCategory.name}</span> </span>
                 </Col>
-                <Col> <FaTrashAlt className="float-right" color="red" style={{ marginTop: 20, marginLeft: 10 }} onClick={() => { this.setState({ categoryId: subCategory.id }); this.toggleDanger() }} />
+                <Col> <FaTrashAlt className="float-right" color="red" style={{ marginTop: 20, marginLeft: 10,marginRight:20 }} onClick={() => { this.setState({ categoryId: subCategory.id }); this.toggleDanger() }} />
                   <FaPen size={12} className="float-right" color="blue" style={{ marginTop: 20 }} onClick={() => this.updateCategory(subCategory)} />
                 </Col>
               </Row><br />
@@ -238,6 +239,7 @@ class Categories extends Component {
         <div style={{ marginTop: 1 }} />
       </div>)
   }
+  
   loadDeleteCategory = () => {
     return(
       <Modal isOpen = {this.state.danger} toggle = {this.toggleDanger} className = {'modal-danger'}>

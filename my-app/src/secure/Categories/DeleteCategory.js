@@ -33,7 +33,7 @@ class DeleteCategory extends Component {
     this.setState({ color,content });
     setTimeout(() => {
       this.setState({ categoryDeleted: true});
-    }, 2000);
+    }, 100);
   };
 
   render() {

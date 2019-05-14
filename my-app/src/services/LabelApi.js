@@ -1,5 +1,4 @@
 import Axios from "axios";
-import Config from "../data/Config";
 import Store from "../data/Store";
 import LoginApi from "./LoginApi";
 
@@ -74,8 +73,9 @@ let errorResponse = function(error, failure) {
 };
 
 function httpCall(Uurl, Umethod) {
+  let baseURL = Store.getProfile();
   let instance = Axios.create({
-    baseURL: Config.labelBaseURL,
+    baseURL: baseURL[0].url+"/profile/",
     method: Umethod,
     url: Uurl,
     headers: {

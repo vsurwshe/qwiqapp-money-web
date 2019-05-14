@@ -12,7 +12,6 @@ import Profiles from "../secure/profiles/Profiles";
 import navigation, {item} from "../data/navigations";
 import CreateLable from "../secure/labels/Createlabel";
 import Lables from "../secure/labels/Label";
-// import UpdateProfile from "../secure/UpdateProfile";
 import Categories from "../secure/Categories/Categories";
 import CreateProfile from "../secure/profiles/CreateProfile";
 
@@ -74,8 +73,7 @@ class Main extends Component {
         <div className="app-body">
           <AppSidebar fixed display="sm">
             <Suspense>
-              {
-                !this.state.flag ?  <AppSidebarNav navConfig={navigation} {...this.props} />
+              { !this.state.flag ?  <AppSidebarNav navConfig={navigation} {...this.props} />
                                  :  <AppSidebarNav navConfig={item} {...this.props} />
               }
             </Suspense>

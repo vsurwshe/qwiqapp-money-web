@@ -27,34 +27,34 @@ class ProfileApi {
 
 export default ProfileApi;
 
-async function process(success, failure, Uurl, Umethod, data) {
-  let HTTP = httpCall(Uurl, Umethod);
+async function process(success, failure, requestUrl, requestMethod, data) {
+  let HTTP = httpCall(requestUrl, requestMethod);
   let promise;
     try {
       data===null? promise=await HTTP.request(): promise=await HTTP.request({ data });
-      if (Umethod === "GET") {
+      if (requestMethod === "GET") {
         Store.saveUserProfiles(promise.data);
       } else {
           await new ProfileApi().getProfiles(success, failure, "True");
       }
-      validResponse(promise, success)
+      validResponse(promise, success,requestMethod)
     } catch(err){ 
-      AccessTokenError(err,failure,Uurl, Umethod, data,success);
+      AccessTokenError(err,failure,requestUrl, requestMethod, data,success);
     }
 }
 
 //this method solve the Expire Token Problem.
-let AccessTokenError = function(err,failure,Uurl, Umethod, data,success){
+let AccessTokenError = function(err,failure,requestUrl, requestMethod, data,success){
   if(err.request.status === 0){
     errorResponse(err, failure)
   } else if (err.response.status===403 || err.response.status===401){
-    new LoginApi().refresh(()=>{process(success,failure,Uurl,Umethod,data)},errorResponse(err, failure))
+    new LoginApi().refresh(()=>{process(success,failure,requestUrl,requestMethod,data)},errorResponse(err, failure))
   } else{errorResponse(err, failure)}
 }
 
-let validResponse = function(resp, successMethod,Umethod) {
+let validResponse = function(resp, successMethod,requestMethod) {
   if (successMethod != null) {
-    if(Umethod==="DELETE" ){
+    if(requestMethod==="DELETE" ){
       Store.clearLocalStorage() ;
     }
     successMethod(resp.data);
@@ -67,11 +67,11 @@ let errorResponse = function(error, failure) {
   }
 };
 
-function httpCall(Uurl, Umethod) {
+function httpCall(requestUrl, requestMethod) {
   let instance = Axios.create({
     baseURL: Config.cloudBaseURL,
-    method: Umethod,
-    url: Uurl,
+    method: requestMethod,
+    url: requestUrl,
     headers: {
       "content-type": "application/json",
       Authorization: "Bearer " + Store.getAppUserAccessToken()
