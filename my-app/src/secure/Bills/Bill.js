@@ -27,7 +27,7 @@ class Bills extends Component {
       dropdownOpen: [],
       hoverAccord : [],
       accordion: [],
-      profileId: Store.getProfileId(),
+      profileId: "",
       danger: false,
       onHover: false,
       spinner: false,
@@ -35,10 +35,22 @@ class Bills extends Component {
     };
   }
 
-  componentDidMount = () =>{
-    new CategoryApi().getCategories(this.successCallCategory, this.errorCall, this.state.profileId); 
+  componentDidMount = () => {
+    this.setProfileId();
   }
 
+  setProfileId = async () => {
+    if (Store.getProfile() !== null && Store.getProfile().length !== 0) {
+      var iterator = Store.getProfile().values()
+      await this.setState({ profileId: iterator.next().value.id });
+      this.getCategory();
+    }
+  }
+
+  getCategory = () => {
+   new CategoryApi().getCategories(this.successCallCategory, this.errorCall, this.state.profileId); 
+  }
+  
    //this method seting Categories when api given successfull Response
    successCallCategory = async categories => {
     if (categories === []) {
@@ -72,7 +84,7 @@ class Bills extends Component {
 
   //this method seting label when api given successfull Response
   successCallLabel = async label => {
-    if (label === []) {
+     if (label === []) {
       this.setState({ labels : [0] })
     } else {
       await this.setState({ labels : label});

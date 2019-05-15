@@ -50,7 +50,8 @@ class Lables extends Component {
 
   getLabels = () => {
     new LabelApi().getSublabels(this.successCall, this.errorCall, this.state.profileId);
-  }
+   }
+
 
   successCall = async lable => {
     if (lable === []) {
@@ -60,7 +61,7 @@ class Lables extends Component {
       this.loadCollapse();
     }
   };
-  errorCall = err =>  { console.log(err); this.setState({ visible: true }) }
+  errorCall = err =>  { this.setState({ visible: true }) }
 
 
   loadCollapse = () => {

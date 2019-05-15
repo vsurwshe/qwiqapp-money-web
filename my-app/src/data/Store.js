@@ -134,26 +134,6 @@ const Store = {
         const categories = db.getItem("PROFILES")
         return JSON.parse(categories)
     },
-     //this is save profile id in local storege
-    saveProfileId:function (id){
-        db.setItem("PORFILEID",  JSON.stringify(id))
-    },
-    //this is get profile id form local storege
-    getProfileId:function (){
-       return  JSON.parse(db.getItem("PORFILEID"));
-    },
-
-    //this saves profiles in local storage
-    saveUserProfiles: function (data) {
-      db.setItem("PROFILES", JSON.stringify(data))
-    },
-
-    //get profiles from local storage
-    getUserProfiles: function () {
-      const categories = db.getItem("PROFILES")
-      return JSON.parse(categories)
-    },
-
     //this saves selected profile in local storage
     saveProfile: function (data) {
         db.setItem("PROFILE", JSON.stringify(data))

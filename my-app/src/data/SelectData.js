@@ -80,12 +80,12 @@ const Data={
     const options = [];
     labels.map(label => {
           if(label.subLabels !== null){
-            options.push({label:label.name, color:label.color ===null ?"#000000": label.color,value:label.id})
+            options.push({label:label.name, color:label.color ===null || label.color ==="" ?"#000000": label.color,value:label.id})
             label.subLabels.map(subLabel=>{
-              return options.push({label:<b>{label.name+"/"+subLabel.name}</b>, color:subLabel.color ===null ?"#000000": subLabel.color,value:subLabel.id})
+              return options.push({label:<b>{label.name+"/"+subLabel.name}</b>, color:subLabel.color ===null || subLabel.color ==="" ?"#000000": subLabel.color,value:subLabel.id})
             })
           } else{
-            return options.push({value: label.id, label: <b>{label.name}</b>, color:label.color ===null ?"#000000" :label.color })
+            return options.push({value: label.id, label: <b>{label.name}</b>, color:label.color ===null || label.color ===""  ?"#000000" :label.color })
           }
           return 0;
       })
