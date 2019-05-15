@@ -65,8 +65,9 @@ let errorResponse = function(error, failure) {
 };
 
 function httpCall(Uurl, Umethod) {
+  let baseURL=Store.getProfile();
   let instance = Axios.create({
-    baseURL: Config.profileURL,
+    baseURL: baseURL[0].url +"/profile",
     method: Umethod,
     url: Uurl,
     headers: {

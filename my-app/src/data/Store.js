@@ -148,7 +148,7 @@ const Store = {
 
     // Clears the Local Storage
     clearLocalStorage: function(){
-         db.removeItem("CATEGORIES");
+        db.removeItem("CATEGORIES");
         db.removeItem("LABELS");
         db.removeItem("PROFILES");
         db.removeItem("PROFILE");

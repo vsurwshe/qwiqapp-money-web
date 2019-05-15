@@ -11,6 +11,7 @@ import CreateContact from "./CreateContact";
 import LabelApi from "../../services/LabelApi";
 import Attachments from "./Attachments/Attachments";
 import AddAttachment from "./Attachments/AddAttachment";
+import Store from "../../data/Store";
 
 class Contacts extends Component {
   constructor(props) {
@@ -41,21 +42,17 @@ class Contacts extends Component {
   }
   
   componentDidMount = () =>{
-    new ProfileApi().getProfiles(this.successProfileid,this.errorCall);
+    this.setProfileId();
   }
- 
-  successProfileid = (json) =>{
-    if (json === []) { this.setState({ profileId:'',spinner:false })}
-    else {
-      const iterator = json.values();
-      for (const value of iterator) {this.setProfileId(value.id)}
+  setProfileId=async()=>{
+    if(Store.getProfile()!=null && Store.getProfile().length!==0){
+      var iterator=Store.getProfile().values()
+      await this.setState({profileId:iterator.next().value.id});
+      this.getContacts();
     }
   }
-  setProfileId = (id) =>{
-    this.setState({ profileId : id })
-    this.getContact();
-  }
-  getContact = () =>{
+  getContacts = () =>{
+    console.log(this.state.profileId)
     new ContactApi().getContacts(this.successCall, this.errorCall, this.state.profileId);
   }
 
