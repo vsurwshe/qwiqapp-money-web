@@ -29,7 +29,6 @@ class ContactApi {
 export default ContactApi;
 
 async function process(success, failure, Uurl, Umethod, profileId, data) {
-  console.log("Data = ", data)
   let HTTP = httpCall(Uurl, Umethod);
   let promise;
     try {

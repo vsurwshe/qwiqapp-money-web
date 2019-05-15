@@ -70,7 +70,7 @@ class CreateContact extends Component {
     event.persist();
     if (errors.length===0) {
       var newData={...values,"labelIds":this.state.selectedOption.map((opt)=>{return opt.value})}
-      console.log(newData)
+    
       await new ContactApi().createContact(this.successCall, this.errorCall, this.state.profileId, newData);
     } 
   }
@@ -79,7 +79,6 @@ class CreateContact extends Component {
     this.callAlertTimer("success","Contact Created Successfully !" );
   }
   handleSelect = selectedOption => {
-    console.log("Selected Id = ",selectedOption)
     this.setState({ selectedOption });
   };
 
@@ -134,7 +133,6 @@ class CreateContact extends Component {
                   <option value="UnitedKingdom">UK</option>
                   <option value="Afghanistan">AFGHANISTAN</option>
                   <option value="Australia">AUSTRALIA</option>
-                  <option value="Russia">RUSSIA</option>
                   <option value="France">FRANCE</option>
                   <option value="Germany">GERMANY</option>
                   <option value="Romania">ROMANIA</option>
@@ -174,7 +172,18 @@ class CreateContact extends Component {
   
   loadAvCollapse = () =>{
     const labelQ = [];
-    this.state.labels.map( (slabel, key)=>{
+  
+    if(this.state.labels.length===0){
+      labelQ.push({
+        value: null,
+        label: "You don't have any lables now.",
+      })
+   
+      return (<div >
+        <Select options={labelQ} placeholder="Select the Label" />
+     </div>);
+    }else{
+       this.state.labels.map( (slabel, key)=>{
       if(Array.isArray(slabel.subLabels))
       { this.pushArray(labelQ,slabel);
         slabel.subLabels.map(sul=>{return(this.pushArray(labelQ,sul,slabel))})
@@ -182,18 +191,21 @@ class CreateContact extends Component {
         this.pushArray(labelQ,slabel);
       }
       return 0;
+      
     });
+ 
     return (<div >
          <Select onChange={this.handleSelect} isMulti options={labelQ} placeholder="Select the Label" styles={colourStyles}/>
       </div>);
+    }
   }
 
   pushArray=(array,label,slabel)=>{
-    slabel=== undefined ? array.push ({
-      value: label.id,
-      label: label.name,
-      color: label.color === null ? "#000000" : label.color,
-     }) : array.push ({
+    slabel === undefined ? array.push({
+        value: label.id,
+        label: label.name,
+        color: label.color === null ? "#000000" : label.color,
+      }) : array.push({
       value: label.id,
       label: slabel.name+"/" +label.name,
       color: label.color === null ? "#000000" : label.color,

@@ -5,15 +5,7 @@ import AttachmentApi from '../../../services/AttachmentApi';
 class AddAttachment extends Component{
   state = {
     file : '',
-<<<<<<< HEAD
-<<<<<<< HEAD
     profileId : this.props.profileId,
-=======
-    pprofileId : this.props.profileId,
->>>>>>> Removed Unwanted Code and implemented better UI
-=======
-    profileId : this.props.profileId,
->>>>>>> 0.4 : Added Search Field, Attachment Add Download Link on name, added hint message to input fields
     contactId : this.props.contactId,
     addSuccess:false,
     addFail: false,
@@ -56,10 +48,6 @@ class AddAttachment extends Component{
     return (
         <div style={{padding:10}}><center><strong>Add Attachment</strong></center></div>
       )
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 0.4 : Added Search Field, Attachment Add Download Link on name, added hint message to input fields
   }
 
   loadFailure = () => {
@@ -78,7 +66,6 @@ class AddAttachment extends Component{
   }
 
   loadAddAttachment = () => {
-<<<<<<< HEAD
     return(
       <Card>
         {this.loadHeader() }
@@ -92,54 +79,6 @@ class AddAttachment extends Component{
       </Card>
    )
   }
-=======
-   }
-   loadFailure = () => {
-    return  <Card>
-         {this.loadHeader()}
-          <CardBody><center>{this.state.content}</center></CardBody>
-       </Card>
-   }
-   loadSuccess = () =>{
-    return (<Card>
-      <Attachments />
-      {/* {this.loadHeader()} */}
-       {/* <CardBody>
-          <center>{this.state.content} <br /> <br />
-          <a href="/contact/manageContact" ><Button color="success" > Goto Contacts </Button></a></center>
-       </CardBody> */}
-    </Card>)
-   }
-   loadAddAttachment = () => {
-    return(
-        <Card>
-          {this.loadHeader() }
-          <FormGroup> <br></br>
-            <center>
-              <input type="file" onChange={e=>this.handleInput(e)}/> <br />
-              <Button color="info" onClick={e=>this.handleSubmit(e)}> Add </Button>&nbsp;&nbsp;
-              <a href="/contact/manageContact/" style={{textDecoration:'none'}} > <Button active  color="light" aria-pressed="true">Cancel</Button></a><br/><br/>
-            </center>
-          </FormGroup>
-        </Card>
-    )
-   }
->>>>>>> Removed Unwanted Code and implemented better UI
-=======
-    return(
-      <Card>
-        {this.loadHeader() }
-        <FormGroup> <br></br>
-          <center>
-            <input type="file" onChange={e=>this.handleInput(e)}/> <br /><br/>
-            <Button color="info" onClick={e=>this.handleSubmit(e)}> Add </Button>&nbsp;&nbsp;
-            <a href="/contact/manageContact/" style={{textDecoration:'none'}} > <Button active  color="light" aria-pressed="true">Cancel</Button></a><br/><br/>
-          </center>
-        </FormGroup>
-      </Card>
-   )
-  }
->>>>>>> 0.4 : Added Search Field, Attachment Add Download Link on name, added hint message to input fields
 }
 
 export default AddAttachment;

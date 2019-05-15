@@ -1,7 +1,7 @@
 import React, { Component } from "react";
-import { Button, Row, Col, Card, CardBody, Alert, Modal, ModalHeader, ModalBody, ModalFooter, Input,
+import { Button, Row, Col, Card, CardBody, Alert, Modal, ModalHeader, ModalBody, ModalFooter, Input, InputGroup, InputGroupAddon, InputGroupText,
          Dropdown, DropdownToggle, DropdownMenu, DropdownItem, ListGroupItem, ListGroup, Collapse} from "reactstrap";
-import { FaEllipsisV, FaPaperclip, FaUserCircle } from 'react-icons/fa';
+import { FaEllipsisV, FaPaperclip, FaUserCircle, FaSearch } from 'react-icons/fa';
 import UpdateContact from "./UpdateContact";
 import DeleteContact from "./DeleteContact";
 import ProfileApi from "../../services/ProfileApi";
@@ -17,7 +17,7 @@ class Contacts extends Component {
     super(props);
     this.state = {
       contacts: [],
-      labels: [0],
+      labels: [],
       contactId: 0,
       name: "",
       createContact: false,
@@ -87,7 +87,7 @@ class Contacts extends Component {
 
   successCallLabel = (json) => {
     if (json === []) {
-      this.setState({ labels : [0] })
+      this.setState({ labels : [] })
     } else {
       this.setState({ labels : json, spinner : true })
     }
@@ -173,14 +173,26 @@ class Contacts extends Component {
 
   loadHeader = () =>{
     return (
-      <div>
-        <div style={{paddingTop:20,paddingRight:10}} >
-        <strong style={{fontSize:30,marginLeft:20}}>Contacts</strong>
-        <Button className="float-right" color="success" onClick={this.callCreateContact} style={{marginLeft:10}}> + Add</Button>
-        <Input type="search" className="float-right" style={{width:'45%'}} placeholder="Search Contacts...." onChange={this.searchHandler} value={this.state.searchContact}>
-        </Input>
-        </div>
-      </div>
+        <Row style={{padding:"20px 20px 0px 20px"}}>
+          <Col sm={3}>
+            <strong style={{fontSize:24}}>Contacts </strong> 
+            </Col>
+            <Col className="shadow p-0 mb-3 bg-white rounded">
+            <InputGroup >
+            <Input type="search" className="float-right"  
+            onChange={this.searchHandler} value={this.state.searchContact}
+            placeholder="Search Contacts..." />
+            <InputGroupAddon addonType="append">
+            <InputGroupText className="dark"><FaSearch /></InputGroupText>
+          </InputGroupAddon>
+          </InputGroup>
+          </Col>
+          <Col sm={2}>
+            <Button color="success" className="float-right" onClick={this.callCreateContact}> + ADD </Button>
+            </Col>
+            </Row>
+           
+       
     )
   }
 
@@ -215,12 +227,13 @@ class Contacts extends Component {
   }
   
   loadShowContact = (visible, contacts) => {
+
     this.callAlertTimer()
     return (
       <div className="animated fadeIn">
         <Card>
           {this.loadHeader()}
-          <div style={{margin:30}}>
+          <div style={{marginBottom:20}}>
             <h6><Alert isOpen={this.state.show} color={this.props.color===undefined?'':this.props.color}>{this.props.content}</Alert></h6>
             {contacts.filter(this.searchingFor(this.state.searchContact)).map((contact, key) => { return this.loadSingleContact(contact,key)})} 
           </div>
@@ -228,27 +241,27 @@ class Contacts extends Component {
       </div>)
   }
   
-  loadSingleContact = (contact,contactKey) =>{ 
-    const styles = { marginTop : "4px" }
+  loadSingleContact = (contact, contactKey) =>{ 
+    const styles = { marginTop : 4 }
     return (
       <ListGroup flush key={contactKey} className="animated fadeIn" onPointerEnter={(e) => this.onHover(e, contactKey)} onPointerLeave={(e) => this.onHoverOff(e, contactKey)}>
         <ListGroupItem action>
           <Row>
             <Col>
               {this.displayName(contact, styles)}
-              <FaPaperclip color="#87CEFA" style={{marginTop:5, marginLeft: 10}} size={17} onClick={()=>this.attachDropDown(contactKey, contact.id)} /> 
+              <FaPaperclip color="#34aec1" style={{marginTop : 5, marginLeft : 10}} size={17} onClick={()=>this.attachDropDown(contactKey, contact.id)} /> 
             </Col>
             <Col lg={1} sm={1} md={1} xl={1} >{this.state.onHover && this.state.hoverAccord[contactKey] ? this.loadDropDown(contact, contactKey, styles) : ''}</Col>
           </Row>
-          <Collapse isOpen={this.state.attachDropdown[contactKey]}> <br></br> {this.showAttachments(contact.id, contact)}</Collapse>
+          <Collapse isOpen={this.state.attachDropdown[contactKey]}>{this.showAttachments(contact.id, contact)}</Collapse>
         </ListGroupItem>
       </ListGroup>)
   }
   
-  displayName= (contact,styles,colorChange)=>{
+  displayName = (contact, styles) =>{
     return( 
-      <span style={{styles}} ><FaUserCircle size={20} style={{color:'green'}}  />{" "}
-      { contact.firstName.length>20 ? contact.firstName.slice(0, 20)+"..." : contact.firstName+" "+contact.lastName }
+      <span style={{styles}} ><FaUserCircle size={20} style={{color:'#020e57'}}  />{" "}&nbsp;
+        <b style={{color:'#000000'}}>{ contact.firstName.length>20 ? contact.firstName.slice(0, 20)+"..." : contact.firstName+" "+contact.lastName }</b>
         <Attachments profileId={this.state.profileId} contactId ={contact.id} getCount={true}/>
       </span>)
   }
@@ -277,11 +290,15 @@ class Contacts extends Component {
      </Dropdown>);
   }
 
- showAttachments(contactId, contact){
-   return (<div>
-     <b>Email: </b> {contact.email}&nbsp;&nbsp;<b>Phone: </b>{contact.phone}<br/>{contact.address1}
-     <Attachments contactId={contactId} profileId={this.state.profileId}/>
-   </div>)
+  showAttachments(contactId, contact){
+    return (
+      <div style={{paddingLeft:29,paddingTop:10}}>
+        <span style={{color:'#000000'}}>
+          <b>Email: </b>{contact.email}<br/>
+          <b>Phone: </b>{contact.phone}<br/>
+        </span>
+        <Attachments contactId={contactId} profileId={this.state.profileId}/>
+      </div>)
   }
 }
 export default Contacts;

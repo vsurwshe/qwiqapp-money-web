@@ -14,7 +14,7 @@ class DeleteContact extends Component {
     };
   }
   componentDidMount = () => {
-    console.log("Delete didMount");
+   
     new ContactApi().deleteContact(this.successCall, this.errorCall ,this.state.profileId, this.state.contactId);
    };
  

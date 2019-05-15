@@ -15,7 +15,6 @@ class DeleteAttachment extends Component {
     }
     componentDidMount = () => {
         const {proId, contId, attachId} = this.state
-        console.log(proId, contId, attachId)
         if (proId !== undefined | contId !== undefined | attachId !== undefined ) {
             new AttachmentApi().deleteAttachment(this.successCall, this.errorCall, proId, contId, attachId);    
         }

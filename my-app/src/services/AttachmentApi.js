@@ -17,6 +17,13 @@ class AttachmentApi {
     process(success, failure,  pid + "/contacts/" + cid + "/attachments/" +aid, "GET");
   }
 
+  viewAttachments(success,failure,pid,cid,aid){
+    process(success, failure,  pid + "/contacts/" + cid + "/attachments/" +aid+"/view", "GET");
+  }
+
+  downloadAttachments(success,failure,pid,cid,aid){
+    process(success, failure,  pid + "/contacts/" + cid + "/attachments/" +aid+"/download", "GET");
+  }
   deleteAttachment(success, failure, pid, cid, aId) {
     process(success, failure,  pid + "/contacts/" + cid + "/attachments/" +aId, "DELETE",pid);
   }
@@ -31,6 +38,7 @@ async function process(success, failure, Uurl, Umethod, data) {
      data === null? promise = await HTTP.request() : promise = await HTTP.request({data})
      validResponse(promise, success);
   }catch(error){
+    console.log(error)
      AccessTokenError(error, failure, Uurl, Umethod, data, success)
   }
 }
