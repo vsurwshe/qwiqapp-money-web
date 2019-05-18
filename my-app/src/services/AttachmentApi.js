@@ -1,5 +1,4 @@
 import Axios from "axios";
-import Config from "../data/Config";
 import Store from "../data/Store";
 import LoginApi from './LoginApi';
 

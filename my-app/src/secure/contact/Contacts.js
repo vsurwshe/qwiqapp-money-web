@@ -4,7 +4,6 @@ import { Button, Row, Col, Card, CardBody, Alert, Modal, ModalHeader, ModalBody,
 import { FaEllipsisV, FaPaperclip, FaUserCircle, FaSearch } from 'react-icons/fa';
 import UpdateContact from "./UpdateContact";
 import DeleteContact from "./DeleteContact";
-import ProfileApi from "../../services/ProfileApi";
 import Loader from 'react-loader-spinner'
 import ContactApi from "../../services/ContactApi";
 import CreateContact from "./CreateContact";
@@ -22,13 +21,12 @@ class Contacts extends Component {
       contactId: 0,
       name: "",
       createContact: false,
-      visible: false,
+      visible: props.visible,
       updateContact: false,
       deleteContact: false,
       profileId:0,
       accordion: [],
       danger: false,
-      show: true,
       isOpen: false,
       addAttachRequest: false,
       dropdownOpen: [],
@@ -218,9 +216,7 @@ class Contacts extends Component {
   }
 
   callAlertTimer(){
-    if (this.state.show) {
-      setTimeout(()=>this.setState({show:false}),1800)
-    }
+      setTimeout(()=>this.setState({visible:false}),1800)
   }
   
   loadShowContact = (visible, contacts) => {
@@ -231,7 +227,7 @@ class Contacts extends Component {
         <Card>
           {this.loadHeader()}
           <div style={{marginBottom:20}}>
-            <h6><Alert isOpen={this.state.show} color={this.props.color===undefined?'':this.props.color}>{this.props.content}</Alert></h6>
+            <h6><Alert isOpen={visible} color={this.props.color===undefined?'':this.props.color}>{this.props.content}</Alert></h6>
             {contacts.filter(this.searchingFor(this.state.searchContact)).map((contact, key) => { return this.loadSingleContact(contact,key)})} 
           </div>
         </Card>
