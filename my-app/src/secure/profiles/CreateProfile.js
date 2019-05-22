@@ -10,13 +10,16 @@ class CreateProfile extends Component {
     userToken : "",
     color : "",
     content : "",
-    profileCreated : false
+    profileCreated : false,
+    cancelCreateProfile:false,
   };
 
   handleInput = e => {
     this.setState({ [e.target.name]: e.target.value });
   };
-
+cancelCreateProfile=()=>{
+  this.setState({ cancelCreateProfile:true  });
+}
   componentDidMount() {
     this.setState({ userToken: Store.getAppUserAccessToken() });
   }
@@ -40,15 +43,19 @@ class CreateProfile extends Component {
     setTimeout(() => {
       window.location.reload();
       this.setState({ name : "", content : "", color : "", profileCreated: true });
-    }, 2000);
+    }, 1500);
   };
 
   render() {
-    const {color,content}=this.state
+    const {color,content,cancelCreateProfile}=this.state
+    if (cancelCreateProfile) {
+      return <Profiles />
+    } else {
     return <div>{this.state.profileCreated?<Profiles />:this.loadCreateProfile(color,content)}</div>
   }
+}
 
-  //this Method Call when Profile Creation in process.
+  // when Profile Creation in process.
   loadCreateProfile = (color,content) =>{
     return(
       <div className="animated fadeIn">
@@ -63,7 +70,7 @@ class CreateProfile extends Component {
                   <Input name="name" value={this.state.name} type="text" placeholder="Enter Profile name" autoFocus={true} onChange={e => this.handleInput(e)}  />
                 </Col><br />
                 <Button color="info" disabled={!this.state.name} onClick={e => this.handleSubmit(e)} >  Save </Button>
-                <a href="/profiles" style={{textDecoration:'none'}}> <Button active  color="light" aria-pressed="true">Cancel</Button></a>
+                <Button active  color="light" aria-pressed="true" onClick={this.cancelCreateProfile}>Cancel</Button>
               </Col>
             </center>
           </CardBody>

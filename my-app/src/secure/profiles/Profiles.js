@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Container, Button, Card, CardBody, Col, Row, CardHeader, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
+import { Container, Button, Card, CardBody, Col, Row, CardHeader } from "reactstrap";
 import ProfileApi from "../../services/ProfileApi";
 import UpdateProfile from "./UpdateProfile";
 import CreateProfile from "./CreateProfile";
@@ -8,6 +8,7 @@ import Avatar from 'react-avatar';
 import ViewProfile from "./ViewProfile";
 import Loader from 'react-loader-spinner'
 import { FaPen, FaTrashAlt } from 'react-icons/fa';
+import { DeleteModel } from "../uitility/deleteModel";
 
 class Profiles extends Component {
   constructor(props) {
@@ -144,14 +145,7 @@ class Profiles extends Component {
   //this method call the delete model
   loadDeleteProfile = () => {
     return (
-      <Modal isOpen={this.state.danger} toggle={this.toggleDanger} backdrop={false}>
-        <ModalHeader toggle={this.toggleDanger}>Delete</ModalHeader>
-        <ModalBody>Are you Sure want to Delete This Profile ?</ModalBody>
-        <ModalFooter>
-          <Button color="danger" onClick={this.deleteProfile}>Delete</Button>
-          <Button color="secondary" onClick={this.toggleDanger}>Cancel</Button>
-        </ModalFooter>
-      </Modal>)
+      <DeleteModel danger={this.state.danger} headerMessage="Delete Profile" bodyMessage="Are You Sure Want to Delete Profile?" toggleDanger={this.toggleDanger} onClick1={this.deleteProfile} onClick2={this.toggleDanger} />)
   }
 }
 export default Profiles

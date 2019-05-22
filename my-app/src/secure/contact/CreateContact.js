@@ -59,7 +59,9 @@ class CreateContact extends Component {
       alertColor:'',
       message:'',
       selectedOption: [],
-      formTouched: true
+      formTouched: true,
+          formInput:'',
+          cancelAddContact:false,
     };
   }
   handleInput = e => {
@@ -68,13 +70,20 @@ class CreateContact extends Component {
   
   handleSubmit = async (event, errors, values) => {
     event.persist();
+  
     if (errors.length===0) {
-      var newData={...values,"labelIds":this.state.selectedOption.map((opt)=>{return opt.value})}
-    
-      await new ContactApi().createContact(this.successCall, this.errorCall, this.state.profileId, newData);
+      this.setState({formInput:values})
+      if (values.firstName !== "" || values.lastName !== "" ) {
+        var newData={...values,"labelIds":this.state.selectedOption.map((opt)=>{return opt.value})}
+        await new ContactApi().createContact(this.successCall, this.errorCall, this.state.profileId, newData);  
+      } else{
+        this.callAlertTimer("danger", "Firstname or Last name is needed ")
+      }
     } 
   }
-
+  cancelAddContact=()=>{
+    this.setState({cancelAddContact:true})
+  }
   successCall = (response) =>{
     this.callAlertTimer("success","Contact Created Successfully !" );
   }
@@ -84,7 +93,7 @@ class CreateContact extends Component {
 
   errorCall = (err) => { 
     this.callAlertTimer("danger","Unable to Process the request, Please Try Again" );
-    this.setState({ failContactCreate : true, alertColor:"danger", message : "" })};
+    this.setState({ failContactCreate : true, alertColor:"danger" })};
   
   toggle = () => {
     this.setState({ collapse : !this.state.collapse });
@@ -92,15 +101,21 @@ class CreateContact extends Component {
  
   callAlertTimer = (alertColor, message) => {
     this.setState({ alertColor, message });
-    setTimeout(() => {
-      this.setState({ contactCreated: true});
-    }, 2000);
+    if(message !== "Firstname or Last name is needed "){
+      setTimeout(() => {
+        this.setState({ contactCreated: true});
+      }, 1500);
+    } 
   };
 
   render() {
-    const { contactCreated, alertColor, message } = this.state;
-    return <div>{contactCreated?<Contacts />:this.loadAvCreateContact(alertColor,message)}</div>
+    const { contactCreated, alertColor, message,cancelAddContact } = this.state;
+    if(cancelAddContact){
+      return <Contacts />
+    }else{
+       return <div>{contactCreated?<Contacts />:this.loadAvCreateContact(alertColor,message)}</div>
     }
+  }
   
   loadHeader = () =>{
     return <CardHeader><strong>Contacts</strong></CardHeader>
@@ -115,19 +130,19 @@ class CreateContact extends Component {
           <center><h5>Create Contact</h5></center><br/>
             <AvForm onSubmit = { this.handleSubmit}>
               <Row>
-                <Col><AvField name="firstName" placeholder="First Name" validate={{pattern: {value: '^[A-Za-z]+$'}}} required /></Col>
-                <Col><AvField name="lastName" placeholder="Last Name" required /></Col>
+                <Col><AvField name="firstName" placeholder="First Name" validate={{pattern: {value: '^[A-Za-z_]+$'}}} /></Col>
+                <Col><AvField name="lastName" placeholder="Last Name" /></Col>
                 </Row>
                 <Row>
-                <Col><AvField name="organization" placeholder="Organization" validate={{pattern: {value: '^[a-zA-Z0-9_.-]*$'}}} required /></Col>
-                <Col><AvField name="website" placeholder="Website"  required /></Col>
+                <Col><AvField name="organization" placeholder="Organization" validate={{pattern: {value: '^[a-zA-Z0-9_.-]*'}}} required /></Col>
+                <Col><AvField name="website" placeholder="Website"  /></Col>
               </Row>
               <Row>
                 <Col><AvField name="phone" placeholder="Phone Number" required /></Col>
                 <Col><AvField name="email" placeholder="Your Email" type="text" validate={{email: true}} required /></Col></Row>
               <Row>
               <Col>
-                <AvField type="select" name="country" placeholder="Country" helpMessage="Select Country">
+                <AvField type="select" name="country" placeholder="Country" helpMessage="Select Country" required >
                   <option value="">Select</option>
                   <option value="India">INDIA</option>
                   <option value="UnitedKingdom">UK</option>
@@ -139,7 +154,7 @@ class CreateContact extends Component {
                 </AvField>
               </Col>
               <Col><AvField name="state" placeholder="Your State" /></Col>
-              <Col><AvField name="postcode" placeholder="Your Postal Code" errorMessage="Enter Valid Postal Code" validate={{pattern: {value: '^[0-9]+$'}}}/></Col></Row>
+              <Col><AvField name="postcode" placeholder="Your Postal Code" errorMessage="Enter Valid Postal Code" validate={{pattern: {value: '^[0-9]{6}'}}}/></Col></Row>
               <Row>
                 <Col><AvField name="address1" placeholder="Address 1" /></Col>
                 <Col><AvField name="address2" placeholder="Address 2" /></Col>
@@ -149,23 +164,11 @@ class CreateContact extends Component {
               <center><FormGroup row>
                 <Col>
                   <Button color="info" > Save Contact </Button>
-                  <a href="/contact/viewContacts" style={{textDecoration:'none'}}> <Button active color="light" type="button">Cancel</Button></a>
+                  <Button active color="light" type="button" onClick={this.cancelAddContact}>Cancel</Button>
                 </Col>
               </FormGroup></center>
             </AvForm>
           </CardBody>
-        </Card>
-      </div>)
-  }
-  
-  loadCreatedMessage = () =>{
-    return (
-      <div className="animated fadeIn">
-        <Card>
-          <CardHeader><strong>Label</strong></CardHeader>
-          <center style={{ paddingTop: '20px' }}>
-            <h5><b>Label Created Successfully !!</b> <br /> <br /><b><a href="/label/labels">View Lables</a></b></h5>
-          </center>
         </Card>
       </div>)
   }

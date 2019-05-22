@@ -1,7 +1,6 @@
 import React, { Component } from "react";
-import { Button, Row, Col, Card, CardBody, Alert, Modal, ModalHeader, ModalBody, ModalFooter, Input, InputGroup, InputGroupAddon, InputGroupText,
-         Dropdown, DropdownToggle, DropdownMenu, DropdownItem, ListGroupItem, ListGroup, Collapse} from "reactstrap";
-import { FaEllipsisV, FaPaperclip, FaUserCircle, FaSearch } from 'react-icons/fa';
+import { Button, Row, Col, Card, CardBody, Alert, Input, InputGroup, InputGroupAddon, InputGroupText, ListGroupItem, ListGroup, Collapse } from "reactstrap";
+import { FaPaperclip, FaUserCircle, FaSearch } from 'react-icons/fa';
 import UpdateContact from "./UpdateContact";
 import DeleteContact from "./DeleteContact";
 import Loader from 'react-loader-spinner'
@@ -11,12 +10,16 @@ import LabelApi from "../../services/LabelApi";
 import Attachments from "./Attachments/Attachments";
 import AddAttachment from "./Attachments/AddAttachment";
 import Store from "../../data/Store";
+import { DeleteModel } from "../uitility/deleteModel";
+import { ProfileEmpty } from "../uitility/ProfileEmpty";
+import { ReUseComponents } from "../uitility/ReUseComponents";
 
 class Contacts extends Component {
   constructor(props) {
     super(props);
     this.state = {
       contacts: [],
+      singleContact: [],
       labels: [],
       contactId: 0,
       name: "",
@@ -87,8 +90,9 @@ class Contacts extends Component {
       this.setState({ labels : json, spinner : true })
     }
   };
-  updateContact = (contactId) => {
-   this.setState({ updateContact : true, contactId })
+
+  updateContact = (contact) => {
+   this.setState({ updateContact : true, contactId: contact.id, singleContact: contact })
   };
   
   deleteContact = () => {
@@ -140,19 +144,23 @@ class Contacts extends Component {
     document.body.style.backgroundColor = color;
   }
   render() {
-   const { contacts,createContact,updateContact,deleteContact,addAttachRequest,contactId,visible,profileId,spinner,labels} = this.state
-    if (contacts.length === 0 && !createContact ) {
-      return <div>{contacts.length === 0 && !createContact && !spinner ? this.loadLoader() :this.loadNotContact()}</div>
-    } else if (createContact) {
-      return ( <CreateContact profileId={profileId} lables={labels}/>)
-    } else if (updateContact) {
-      return(<UpdateContact profileId={profileId} contactId={contactId} lables={labels} />)
-    } else if(deleteContact) {
-      return ( <DeleteContact contactId={contactId}  profileId={profileId}/> )
-    } else if(addAttachRequest) {
-      return ( <AddAttachment contacId={contactId}  profileId={profileId}/> )
-    } else{
-      return <div>{this.loadShowContact(visible, contacts)}{this.loadDeleteContact()}</div>
+    const { contacts,singleContact, createContact,updateContact,deleteContact,addAttachRequest,contactId,visible,profileId,spinner,labels} = this.state
+    if (Store.getProfile()!==null && Store.getProfile().length!==0) {
+      if (contacts.length === 0 && !createContact ) {
+        return <div>{contacts.length === 0 && !createContact && !spinner ? this.loadLoader() :this.loadNotContact()}</div>
+      } else if (createContact) {
+        return ( <CreateContact profileId={profileId} lables={labels}/>)
+      } else if (updateContact) {
+        return(<UpdateContact profileId={profileId} contact={singleContact} contactId={contactId} lables={labels} />)
+      } else if(deleteContact) {
+        return ( <DeleteContact contactId={contactId}  profileId={profileId}/> )
+      } else if(addAttachRequest) {
+        return ( <AddAttachment contacId={contactId}  profileId={profileId}/> )
+      } else{
+        return <div>{this.loadShowContact(visible, contacts)}{this.loadDeleteContact()}</div>
+      }
+    } else {
+      return (<ProfileEmpty />)
     }
   }
  
@@ -168,26 +176,24 @@ class Contacts extends Component {
 
   loadHeader = () =>{
     return (
-        <Row style={{padding:"20px 20px 0px 20px"}}>
-          <Col sm={3}>
-            <strong style={{fontSize:24}}>Contacts </strong> 
-            </Col>
-            <Col className="shadow p-0 mb-3 bg-white rounded">
-            <InputGroup >
-            <Input type="search" className="float-right"  
-            onChange={this.searchHandler} value={this.state.searchContact}
-            placeholder="Search Contacts..." />
+      <Row style={{ padding: "20px 20px 0px 20px" }}>
+        <Col sm={3}>
+          <strong style={{ fontSize: 24 }}>Contacts </strong>
+        </Col>
+        <Col className="shadow p-0 mb-3 bg-white rounded">
+          <InputGroup >
+            <Input type="search" className="float-right"
+              onChange={this.searchHandler} value={this.state.searchContact}
+              placeholder="Search Contacts..." />
             <InputGroupAddon addonType="append">
-            <InputGroupText className="dark"><FaSearch /></InputGroupText>
-          </InputGroupAddon>
+              <InputGroupText className="dark"><FaSearch /></InputGroupText>
+            </InputGroupAddon>
           </InputGroup>
-          </Col>
-          <Col sm={2}>
-            <Button color="success" className="float-right" onClick={this.callCreateContact}> + ADD </Button>
-            </Col>
-            </Row>
-           
-       
+        </Col>
+        <Col sm={2}>
+          <Button color="success" className="float-right" onClick={this.callCreateContact}> + ADD </Button>
+        </Col>
+      </Row>
     )
   }
 
@@ -216,7 +222,10 @@ class Contacts extends Component {
   }
 
   callAlertTimer(){
+    if (this.state.visible) {
       setTimeout(()=>this.setState({visible:false}),1800)
+    }
+     
   }
   
   loadShowContact = (visible, contacts) => {
@@ -260,29 +269,16 @@ class Contacts extends Component {
   }
  
   loadDeleteContact = () => {
-    return (
-      <Modal isOpen={this.state.danger} toggle={this.toggleDanger} style={{paddingTop: "20%"}} backdrop={true}>
-        <ModalHeader toggle={this.toggleDanger}>Delete Contact</ModalHeader>
-        <ModalBody>Are you Sure want to Delete This Contact ?</ModalBody>
-        <ModalFooter>
-          <Button color="danger" onClick={this.deleteContact}>Delete</Button>
-          <Button color="secondary" onClick={this.toggleDanger}>Cancel</Button>
-        </ModalFooter>
-      </Modal>)
+    return (<DeleteModel danger={this.state.danger}  headerMessage="Delete Contact" bodyMessage="Are You Sure Want to Delete Contact?" 
+        toggleDanger={this.toggleDanger} onClick1={this.deleteContact} onClick2={this.toggleDanger} /> )
    }
 
   loadDropDown = (contact,contactKey) =>{
-   return (<Dropdown isOpen={this.state.dropdownOpen[contactKey]} style={{marginTop: 7, float: "right" }} toggle={() => { this.toggleDropDown(contactKey); }} size="sm">
-       <DropdownToggle tag="span" onClick={() => { this.toggleDropDown(contactKey); }} data-toggle="dropdown" aria-expanded={this.state.dropdownOpen[contactKey]}>
-         <FaEllipsisV style={{marginTop:-10}}/>
-       </DropdownToggle>
-       <DropdownMenu>
-         <DropdownItem onClick={() => { this.updateContact(contact.id) }}> Update </DropdownItem>
-         <DropdownItem onClick={() => { this.setState({ contactId: contact.id }); this.toggleDanger(); }}> Delete</DropdownItem>
-       </DropdownMenu>
-     </Dropdown>);
+    return ReUseComponents.loadDropDown(contact, contactKey, this.state.dropdownOpen[contactKey], this.toggleDropDown, this.updateContact, this.setContactID, this.toggleDanger  )
+    }
+  setContactID = contact =>{
+    this.setState({ contactId: contact.id });
   }
-
   showAttachments(contactId, contact){
     return (
       <div style={{paddingLeft:29,paddingTop:10}}>

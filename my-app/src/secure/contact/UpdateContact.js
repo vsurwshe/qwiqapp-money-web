@@ -5,7 +5,7 @@ import Select from "react-select";
 import chroma from 'chroma-js';
 import { AvForm, AvField } from 'availity-reactstrap-validation';
 import ContactApi from "../../services/ContactApi";
-import { Loader } from 'react-loader-spinner'
+import { ReUseComponents } from "../uitility/ReUseComponents";
 
 const colourStyles = {
   control: styles => ({ ...styles, backgroundColor: 'white' }),
@@ -54,7 +54,7 @@ class UpdateContact extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      contact: [],
+      contact: props.contact,
       alertColor: "#000000",
       message: '',
       updateSuccess: false,
@@ -64,19 +64,13 @@ class UpdateContact extends Component {
       collapse: false,
       selectedOption: [],
       labelUpdate: '',
-      spinner: false
+      spinner: false,
+      cancelUpdateContact:false,
     };
   }
 
-  componentDidMount =  () => {
-    new ContactApi().getContactById(this.successContact, this.errorCall, this.state.profileId, this.state.contactId)
-  }
-
-  successContact = async (json) =>{
-    await this.setState({contact : json, spinner : !this.state.spinner});  
-  }
-
   handleUpdate = (event, errors, values) => {
+    
     const { profileId, contactId, selectedOption, labelUpdate } = this.state
     if (errors.length === 0) {
       var new_Values= {...values,  "labelIds":selectedOption===[]?[]:( labelUpdate ? selectedOption.map(opt=>{return opt.value}): selectedOption ),"version": this.state.contact.version}
@@ -86,20 +80,8 @@ class UpdateContact extends Component {
       // "labelIds":labelOption===null?[]:( labelOptionUpdate ? labelOption.map(opt=>{return opt.value}): labelOption ),
     }
   };
-
-  loadSpinner = () =>{
-    return( 
-      <div className="animated fadeIn">
-        <Card>
-          <CardHeader><strong>Total Labels: {this.state.labels.length}</strong></CardHeader>
-          <center style={{paddingTop:'20px'}}>
-            <CardBody>
-            <Loader type="Ball-Triangle" color="#2E86C1" height={80} width={80}/>
-            </CardBody>
-          </center>
-        </Card>
-      </div>
-      )
+  cancelUpdateContact=()=>{
+  this.setState({ cancelUpdateContact:true });
   }
 
   handleSelect = selectedOption => {
@@ -116,24 +98,26 @@ class UpdateContact extends Component {
 
   callAlertTimer = (alertColor, message) => {
     this.setState({ alertColor, message});
-    setTimeout(() => {this.setState({ name: '', alertColor: '', updateSuccess: true });
-    }, 2000);
+    setTimeout(() => {this.setState({ name: '', alertColor: '#000000', updateSuccess: true });
+    }, 1500);
   };
 
   handleInput = e => {
     this.setState({ [e.target.name] : e.target.value });
   };
-
+  
   toggle = () => {
     this.setState({ collapse : !this.state.collapse }); 
   }
 
   render() {
-    if( this.state.spinner ){
-      const { contact, updateSuccess,alertColor, message } = this.state;
+    const { contact, spinner, updateSuccess, alertColor, message,cancelUpdateContact} = this.state;
+    if(cancelUpdateContact){
+      return <Contacts />
+    } else if( !spinner ){
       return <div>{updateSuccess ? <Contacts /> : this.loadUpdateContact(contact,alertColor,message)}</div>
-    } else{
-      return this.loadSpinner
+    } else {
+      return ReUseComponents.loadLoader("Total Labels: "+this.state.labels.length) //this.loadSpinner()
     }
   }
 
@@ -142,9 +126,9 @@ class UpdateContact extends Component {
   loadUpdateContact = (contact, alertColor, message) =>{
     return (
       <Card>
-        {this.loadHeader()}
+        <span style={{paddingTop:30}}>{ReUseComponents.loadHeader("Edit Contact")}</span>
         <CardBody>
-          <Alert color={alertColor}>{message}</Alert>
+          {alertColor !== "#000000" ? <Alert color={alertColor}>{message}</Alert> : ""}
           <AvForm onSubmit={this.handleUpdate}>
             <Row>
               <Col>            
@@ -182,7 +166,7 @@ class UpdateContact extends Component {
             <Row><Col>{this.loadAvCollapse(contact)}</Col></Row><br/>
             <center>     
               <Button color="info">Update Contact</Button> &nbsp;&nbsp;
-              <a href="/contact/viewContacts" style={{textDecoration:'none'}}> <Button active color="light" type="button">Cancel</Button></a>
+              <Button active color="light" type="button" onClick={this.cancelUpdateContact}>Cancel</Button>
             </center>
           </AvForm>
         </CardBody>

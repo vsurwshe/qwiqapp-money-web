@@ -24,7 +24,7 @@ class SignupApi {
           validResponse(resp,success) 
       } })
       .catch(err => { if (err.response.status === "404") console.log("Internal Error")});
-    },2000); 
+    },1500); 
   }
 
   //Verify the User Credentials

@@ -1,16 +1,17 @@
 import React, { Component } from "react";
 import {
-  Button, Row, Col, Card, CardBody, Alert, CardHeader, Collapse, Modal, ModalHeader, ModalBody, ModalFooter,
-  Input, Dropdown, DropdownToggle, DropdownMenu, DropdownItem, InputGroupAddon, InputGroup, InputGroupText
-} from "reactstrap";
+  Button, Row, Col, Card, CardBody, Alert, CardHeader, Collapse,Input, InputGroupAddon, InputGroup, InputGroupText } from "reactstrap";
 import CreateLabel from "./Createlabel";
 import Avatar from 'react-avatar';
-import { FaPen, FaTrashAlt, FaAngleDown, FaSearch, FaEllipsisV } from 'react-icons/fa';
+import { FaPen, FaTrashAlt, FaAngleDown, FaSearch } from 'react-icons/fa';
 import UpdateLabel from "./UpdateLabel";
 import DeleteLabel from "./DeleteLabel";
 import LabelApi from "../../services/LabelApi";
 import Loader from 'react-loader-spinner'
 import Store from "../../data/Store";
+import { DeleteModel } from "../uitility/deleteModel";
+import { ProfileEmpty } from "../uitility/ProfileEmpty";
+import { ReUseComponents } from "../uitility/ReUseComponents";
 
 class Lables extends Component {
   constructor(props) {
@@ -125,7 +126,8 @@ class Lables extends Component {
   render() {
     const { labels, createLabel, updateLabel, id, deleteLabel, visible, profileId, requiredLabel, spinner, search } = this.state
     if (Store.getProfile() === null || Store.getProfile().length === 0) {
-      return this.loadProfileNull()
+      console.log("object null profile")
+      return (<ProfileEmpty />)
     } else if (labels.length === 0 && !createLabel) {
       return <div>{labels.length === 0 && !createLabel && !spinner ? this.loadLoader() : this.loadNotLabel()}</div>
     } else if (createLabel) {
@@ -147,17 +149,6 @@ class Lables extends Component {
       </CardHeader>);
   }
 
-  loadProfileNull = () => {
-    return (
-      <div className="animated fadeIn">
-        <Card>
-          <center style={{ paddingTop: '20px' }}>
-            <CardBody><h5><b>You haven't created any Profile yet. So Please Create Profile. </b></h5><br /> </CardBody>
-          </center>
-        </Card>
-      </div>)
-  }
-
   //this method load the spinner
   loadLoader = () => {
     return (
@@ -173,8 +164,7 @@ class Lables extends Component {
 
   //this method call when if any profile not created.
   loadNotLabel = () => {
-    return (
-      <div className="animated fadeIn">
+    return ( <div className="animated fadeIn">
         <Card>
           {this.loadHeader()}
           <center style={{ paddingTop: '20px' }}>
@@ -182,12 +172,6 @@ class Lables extends Component {
           </center>
         </Card>
       </div>)
-  }
-
-  searchingFor = (term) => {
-    return function (x) {
-      return x.name.toLowerCase().includes(term.toLowerCase()) || !term
-    }
   }
 
   //This Method Displays All the Labels of Corresponding Profile 
@@ -213,7 +197,7 @@ class Lables extends Component {
           </CardHeader>
           <div style={{ margin: 30, paddingLeft: 10 }}>
             <h6><Alert isOpen={visible} color="danger">Unable to Process Request, Please Try again</Alert></h6>
-            {labels.filter(this.searchingFor(search)).map((label, key) => { return this.loadSingleLable(label, key); })}
+            {labels.filter(ReUseComponents.searchingFor(search)).map((label, key) => { return this.loadSingleLable(label, key); })}
           </div>
         </Card>
       </div>)
@@ -263,28 +247,18 @@ class Lables extends Component {
   }
   //this method call the delete model
   loadDeleteLabel = () => {
-    return (
-      <Modal isOpen={this.state.danger} toggle={this.toggleDanger} style={{ paddingTop: "20%" }} backdrop={true}>
-        <ModalHeader toggle={this.toggleDanger}>Delete Label</ModalHeader>
-        <ModalBody>Are you Sure want to Delete This Label ?</ModalBody>
-        <ModalFooter>
-          <Button color="danger" onClick={this.deleteLabel}>Delete</Button>
-          <Button color="secondary" onClick={this.toggleDanger}>Cancel</Button>
-        </ModalFooter>
-    </Modal>)
+  return (
+    <DeleteModel danger={this.state.danger}  headerMessage="Delete Label" bodyMessage="Are You Sure Want to Delete Label?" toggleDanger={this.toggleDanger} onClick1={this.deleteLabel} onClick2={this.toggleDanger} />)
   }
   //this Method load Browser DropDown
   loadDropDown = (labels, ukey) => {
-    return (
-      <Dropdown isOpen={this.state.dropdownOpen[ukey]} style={{ marginTop: 7 }} toggle={() => { this.toggleDropDown(ukey); }} size="sm">
-        <DropdownToggle tag="span" onClick={() => { this.toggleDropDown(ukey); }} data-toggle="dropdown" aria-expanded={this.state.dropdownOpen[ukey]}>
-          <FaEllipsisV style={{ marginLeft: 10, marginRight: 10 }} />
-        </DropdownToggle>
-        <DropdownMenu>
-          <DropdownItem onClick={() => { this.updateLabel(labels) }} > Update </DropdownItem>
-          <DropdownItem onClick={() => { this.setState({ id: labels.id }); this.toggleDanger(); }}> Delete</DropdownItem>
-        </DropdownMenu>
-      </Dropdown>);
+    return ReUseComponents.loadDropDown(labels, ukey, this.state.dropdownOpen[ukey], this.toggleDropDown, this.updateLabel, this.setLabelId, this.toggleDanger  )
   }
+
+  setLabelId = (labels)=>{
+    this.setState({ id: labels.id });
+  }
+
 }
+
 export default Lables;

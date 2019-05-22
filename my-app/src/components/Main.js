@@ -15,6 +15,7 @@ import Lables from "../secure/labels/Label";
 import Categories from "../secure/Categories/Categories";
 import Contacts from "../secure/contact/Contacts";
 import CreateContact from "../secure/contact/CreateContact";
+import EditCategory from "../secure/Categories/EditCategory";
 
 const DefaultFooter = React.lazy(() =>import("../secure/Sidebar/DefaultFooter"));
 const DefaultHeader = React.lazy(() =>  import("../secure/Sidebar/DefaultHeader"));
@@ -52,6 +53,7 @@ class Main extends Component {
         <PrivateRoute path="/label/labels" component={Lables} />
         <PrivateRoute path="/label/createLabel" component={CreateLable} />
         <PrivateRoute path="/listCategories" component={Categories} />
+        <Route path="/categorie/update" component={EditCategory} />
         <PrivateRoute exact path="/contact/createContact" component={CreateContact} />
         <PrivateRoute exact path="/contact/viewContacts" component={Contacts} />
         <Route path="/login" component={Login} />

@@ -18,6 +18,7 @@ class UpdateLabel extends Component {
       content: "",
       updateSuccess: false,
       collapse: false,
+      cancelUpdateLabel:false,
     };
   }
   handleUpdate = () => {
@@ -28,6 +29,9 @@ class UpdateLabel extends Component {
       version:this.state.version };
     new LabelApi().updateLabel(this.SuccessCall, this.errorCall, data,this.state.profileId, this.state.id )
   };
+  cancelUpdateLabel=()=>{
+this.setState({ cancelUpdateLabel:true  });
+  }
   //this called When Componets Calling SucessFully
   SuccessCall = json => {
      this.callAlertTimer( "success", "Label Updated Successfully... ");
@@ -40,7 +44,7 @@ class UpdateLabel extends Component {
   callAlertTimer = (alertColor, content) => {
     this.setState({ alertColor, content});
     setTimeout(() => {this.setState({ name: '', alertColor: '',updateSuccess: true });
-    }, 2000);
+    }, 1500);
   };
   //this method make lable as main lable
   changeParentId=()=>{
@@ -52,25 +56,13 @@ class UpdateLabel extends Component {
   }
 
   render() {
-    const { name, notes, alertColor, content, updateSuccess, userColor } = this.state;
+    const { name, notes, alertColor, content, updateSuccess, userColor,cancelUpdateLabel } = this.state;
+    if(cancelUpdateLabel){
+      return <Lables/>
+    }else{
     return <div>{ updateSuccess ? <Lables /> : this.loadUpdatingLable(name,notes,alertColor,content,userColor) }</div>
-  }
-
-  //this method call after successfully updtaed profile
-  loadUpdateMessage=()=>{
-    return(<div className="animated fadeIn">
-        <Card>
-          <CardHeader>
-            <strong>Label</strong>
-          </CardHeader>
-          <center style={{ paddingTop: '20px' }}>
-            <h5><b>Your Label Updated Successfully !!</b><br /><br />
-              <a href="/label/labels">View Label</a></h5>
-          </center>
-        </Card>
-      </div>)
-  }
-
+   }
+}
   //This method shows the fields to update a Lable
   loadUpdatingLable = (name, notes, alertColor, content, userColor) =>{
     return( 
@@ -89,7 +81,7 @@ class UpdateLabel extends Component {
               {this.loadCollapse()}
               <br />
               <Button color="success" disabled={!name} onClick={this.handleUpdate} >Update  </Button>&nbsp;&nbsp;&nbsp;
-              <a href="/label/labels" style={{ textDecoration: 'none' }}> <Button active color="light" aria-pressed="true">Cancel</Button></a>
+             <Button active color="light" aria-pressed="true" onClick={this.cancelUpdateLabel}>Cancel</Button>
             </FormGroup>
           </Col>
         </Card>

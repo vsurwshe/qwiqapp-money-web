@@ -20,7 +20,7 @@ class ContactApi {
     process(success, failure, profileId + "/contacts/" + contactId, "PUT", profileId, data);
   }
  
-  deleteContact(success, failure, profileId,contactId) {
+  deleteContact(success, failure, profileId, contactId) {
     process(success, failure, profileId + "/contacts/" + contactId, "DELETE", profileId);
   }
 }
@@ -31,18 +31,20 @@ async function process(success, failure, Uurl, Umethod, profileId, data) {
   let HTTP = httpCall(Uurl, Umethod);
   let promise;
     try {
-      data === null ? promise = await HTTP.request() : promise = await HTTP.request({ data });
-      if (Umethod === "GET" && data === undefined) {
-        Store.saveContacts(promise.data);
-        validResponse(promise, success)
-      } else if(Umethod === "GET" && data === true){
-        validResponse(promise,success)
-      } else{
-        new ContactApi().getContacts(success,failure,profileId,"true");
-        validResponse(promise, success)
+      if (HTTP !== null) {
+        data === null ? promise = await HTTP.request() : promise = await HTTP.request({ data });
+        if (Umethod === "GET" && data === undefined) {
+          Store.saveContacts(promise.data);
+          validResponse(promise, success)
+        } else if(Umethod === "GET" && data === true){
+          validResponse(promise,success)
+        } else{
+          new ContactApi().getContacts(success,failure,profileId,"true");
+          validResponse(promise, success)
+        }
       }
     } catch (err) {  
-      AccessTokenError(profileId,err, failure, Uurl, Umethod, data, success);
+      AccessTokenError(profileId, err, failure, Uurl, Umethod, data, success);
     }
 }
 
@@ -69,14 +71,17 @@ let errorResponse = function(error, failure) {
 
 function httpCall(Uurl, Umethod) {
   let baseURL=Store.getProfile();
-  let instance = Axios.create({
-    baseURL: baseURL[0].url +"/profile",
-    method: Umethod,
-    url: Uurl,
-    headers: {
-      "content-type": "application/json",
-      Authorization: "Bearer " + Store.getAppUserAccessToken()
-    }
-  });
+  let instance = null
+  if (baseURL !== null ) {
+     instance = Axios.create({
+        baseURL: baseURL[0].url +"/profile/",
+        method: Umethod,
+        url: Uurl,
+        headers: {
+          "content-type": "application/json",
+          Authorization: "Bearer " + Store.getAppUserAccessToken()
+        }
+      });
+  }
   return instance;
 }

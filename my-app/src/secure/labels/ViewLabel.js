@@ -66,7 +66,8 @@ export class ViewLabel extends Component {
   }
   //this method call the delete model
   loadDeleteLabel = () => {
-   return (<Modal isOpen={this.state.danger} toggle={this.toggleDanger} backdrop={false}>
+   return (
+     <Modal isOpen={this.state.danger} toggle={this.toggleDanger} backdrop={false}>
       <ModalHeader toggle={this.toggleDanger}>Delete Label</ModalHeader>
       <ModalBody>
         Are you Sure want to Delete This Label ?

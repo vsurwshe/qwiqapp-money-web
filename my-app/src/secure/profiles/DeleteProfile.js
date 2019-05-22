@@ -1,7 +1,7 @@
 import React, { Component } from "react";
-import { Card, CardHeader, CardBody, Col, Alert } from "reactstrap";
 import ProfileApi from "../../services/ProfileApi";
 import Profiles from "./Profiles";
+import { ReUseComponents } from "../uitility/ReUseComponents";
 
 class DeleteProfile extends Component {
   constructor(props) {
@@ -34,29 +34,14 @@ class DeleteProfile extends Component {
     setTimeout(() => {
       this.setState({ color: "" ,content:"",profileDeleted : true});
       window.location.reload();
-    }, 2000);
+    }, 1500);
   };
 
   render() {
     const { profileDeleted, content, color } = this.state;
-    return <div>{ profileDeleted ? <Profiles /> : this.loadDeleting(color,content) }</div>
+    return <div>{ profileDeleted ? <Profiles /> : ReUseComponents.loadDeleting("Profile", "", color, content ) }</div>
   }
 
-  //this Method Call Between Deleting Process.
-  loadDeleting = (color, content) =>{
-    return(
-      <div className="animated fadeIn">
-        <Card>
-          <CardHeader><strong>Label</strong></CardHeader>
-          <CardBody>
-            <Col sm="12" md={{ size: 5, offset: 4 }}>
-              <Alert color={color}>{content}</Alert>
-            </Col>
-          </CardBody>
-        </Card>
-        </div>
-    )
-  }
 }
 
 export default DeleteProfile;

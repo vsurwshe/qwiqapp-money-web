@@ -37,8 +37,11 @@ async function process(success, failure, Uurl, Umethod, data) {
      data === null? promise = await HTTP.request() : promise = await HTTP.request({data})
      validResponse(promise, success);
   }catch(error){
-    console.log(error)
-     AccessTokenError(error, failure, Uurl, Umethod, data, success)
+    if (error.request.status === 0) {
+      errorResponse(error.response, failure)
+    } else {
+      AccessTokenError(error, failure, Uurl, Umethod, data, success)
+    }
   }
 }
 

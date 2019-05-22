@@ -19,6 +19,7 @@ class AddCategory extends Component {
       content: '',
       collapse: false,
       categoryCreated: false,
+      cancelAddCategory:false,
     }
   }
 
@@ -40,6 +41,9 @@ class AddCategory extends Component {
     const newData = { ...data, parentId: this.state.parentId,code:this.state.code };
     new CategoryApi().createCategory(this.successCall, this.errorCall, this.state.profileId, newData);
   };
+  cancelAddCategory=()=>{
+    this.setState({ cancelAddCategory:true  });
+  }
 
   successCall = () =>{
     this.callAlertTimer('success','Category Added !')
@@ -57,7 +61,7 @@ class AddCategory extends Component {
     this.setState({ alertColor, content });
     setTimeout(() => {
       this.setState({ categoryCreated: true});
-    }, 2000);
+    }, 1500);
   };
 
   generateCode = () =>{
@@ -73,8 +77,13 @@ class AddCategory extends Component {
   } 
 
   render() {
-    return <div>{this.state.categoryCreated ? <Categories/> :this.loadAddingCategory()}</div>
+    const {cancelAddCategory,categoryCreated}=this.state;
+    if(cancelAddCategory){
+      return <Categories/>
+    }else{
+    return <div>{categoryCreated ? <Categories/> :this.loadAddingCategory()}</div>
   }
+}
 
   loadAddingCategory = () =>{
     const {alertColor,content}=this.state
@@ -99,7 +108,7 @@ class AddCategory extends Component {
               </Collapse><br />
               <FormGroup>
                 <Button color="info" > Save Category </Button> &nbsp;&nbsp;
-                <a href="/listCategories" style={{ textDecoration: 'none' }}> <Button active color="light" type="button" aria-pressed="true">Cancel</Button></a>
+               <Button active color="light" type="button" aria-pressed="true" onClick={this.cancelAddCategory}  >Cancel</Button>
               </FormGroup>
             </AvForm>
           </Col>

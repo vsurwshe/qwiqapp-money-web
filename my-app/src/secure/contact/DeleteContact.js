@@ -1,7 +1,8 @@
 import React, { Component } from "react";
-import { Card, CardHeader, CardBody, Col } from "reactstrap";
 import Contacts from "./Contacts";
 import ContactApi from "../../services/ContactApi";
+import { ReUseComponents } from "../uitility/ReUseComponents";
+
 class DeleteContact extends Component {
   constructor(props) {
     super(props);
@@ -14,13 +15,13 @@ class DeleteContact extends Component {
     };
   }
   componentDidMount = () => {
-   
     new ContactApi().deleteContact(this.successCall, this.errorCall ,this.state.profileId, this.state.contactId);
    };
- 
-  successCall = () => {
+   
+  successCall = async () => {
     this.setState({ labelDeleted: true  });
     this.callAlertTimer("success","Contact Deleted Successfully....");
+     window.location.reload();
   };
  
   errorCall = () => {
@@ -33,24 +34,9 @@ class DeleteContact extends Component {
 
   render() {
     const { labelDeleted, content, color } = this.state;
-    return <div>{labelDeleted ? <Contacts color={color} content={content}/> : this.loadDeleting( )}</div>
-  } 
-
-  loadHeader=()=>{
-    return <CardHeader><strong>Delete Contact</strong></CardHeader>;
-  }
-
-  loadDeleting = ( )=>{
-    return(
-      <div className="animated fadeIn">
-        <Card>
-          {this.loadHeader()}
-          <CardBody>
-           <Col sm="12" md={{ size: 5, offset: 4 }}>Deleting</Col>
-          </CardBody>
-        </Card>
-      </div>)
-  }
+    return <div>{labelDeleted ? <Contacts color={color} content={content}/> 
+                               : ReUseComponents.loadDeleting("Delete Contact", "Contact Deleting")}</div>
+  }   
 }
 
 export default DeleteContact;

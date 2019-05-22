@@ -1,6 +1,8 @@
 import React,  { Component } from 'react';
 import { Card, CardBody, FormGroup, Button } from 'reactstrap';
 import AttachmentApi from '../../../services/AttachmentApi';
+import { ReUseComponents } from '../../uitility/ReUseComponents';
+import Contacts from '../Contacts';
 
 class AddAttachment extends Component{
   state = {
@@ -9,7 +11,8 @@ class AddAttachment extends Component{
     contactId : this.props.contactId,
     addSuccess:false,
     addFail: false,
-    content: ''
+    content: '',
+    cancelAddAttachment: false,
   }
 
   handleInput = (e) => {
@@ -26,6 +29,9 @@ class AddAttachment extends Component{
     }
     
   }
+  cancelAddAttachment=()=>{
+    this.setState({cancelAddAttachment:true})
+  }
   successCall = (json) => {
      this.setState({ addSuccess: true, content: "Successfully Added ", });
   } 
@@ -35,13 +41,17 @@ class AddAttachment extends Component{
   }
 
   render(){
-    if (this.state.addSuccess) {
+  const {addSuccess,addFail,cancelAddAttachment}=this.state;
+    if (addSuccess) {
      return this.loadSuccess();
-    } else if (this.state.addFail) {
+    } else if (addFail) {
       return this.loadFailure();
-    } else {
-     return this.loadAddAttachment();
+    } else if (cancelAddAttachment){
+      return <Contacts />
+    }else{
+      return this.loadAddAttachment();
     }
+
   }
 
   loadHeader = () => {
@@ -51,9 +61,10 @@ class AddAttachment extends Component{
   }
 
   loadFailure = () => {
+    // this.loadHeader()
     return(  
       <Card>
-        {this.loadHeader()}
+        {ReUseComponents.loadHeader("Add Attachment")}
         <CardBody><center>{this.state.content}</center></CardBody>
       </Card>)
   }
@@ -73,7 +84,7 @@ class AddAttachment extends Component{
           <center>
             <input type="file" onChange={e=>this.handleInput(e)}/> <br /><br/>
             <Button color="info" onClick={e=>this.handleSubmit(e)}> Add </Button>&nbsp;&nbsp;
-            <a href="/contact/manageContact/" style={{textDecoration:'none'}} > <Button active  color="light" aria-pressed="true">Cancel</Button></a><br/><br/>
+            <Button active  color="light" aria-pressed="true"  onClick={this.cancelAddAttachment}>Cancel</Button><br/><br/>
           </center>
         </FormGroup>
       </Card>

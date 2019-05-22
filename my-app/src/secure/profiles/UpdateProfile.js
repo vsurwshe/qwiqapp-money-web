@@ -12,7 +12,8 @@ class UpdateProfile extends Component {
       name: props.name,
       color: "",
       content: "",
-      updateSuccess: false
+      updateSuccess: false,
+      cancelUpdateProfile:false,
     };
     //this.handleUpdate = this.handleUpdate.bind(this);
   }
@@ -34,31 +35,23 @@ class UpdateProfile extends Component {
     setTimeout(() => {
       this.setState({ name : '', color : '', updateSuccess : true});
       window.location.reload();
-    }, 2000);
+    }, 1500);
   };
-
+  cancelUpdateProfile = () =>{
+    this.setState({ cancelUpdateProfile: true });
+  }
   render() {
-    const { name, color, content, updateSuccess } = this.state;
-    return <div>{updateSuccess ? <Profiles /> : this.loadUpdateProfile(name,color,content)}</div>
+    const { name, color, content, updateSuccess,cancelUpdateProfile } = this.state;
+    if (cancelUpdateProfile) {
+      return <Profiles />
+    } else {
+      return <div>{updateSuccess ? <Profiles /> : this.loadUpdateProfile(name,color,content)}</div>  
+    }
   }
 
   loadHeader = () => <CardHeader><strong>Profile</strong></CardHeader>
 
-  //this method called after successfully updating profile
-  loadUpdateMessage = () =>{
-    return(
-      <div className="animated fadeIn">
-        <Card>
-         {this.loadHeader()}
-          <center style={{paddingTop:'20px'}}>
-            <h5><b>Your Profile Updated Successfully !!</b><br /><br />
-            <a href="/profiles">View Profile</a></h5>
-          </center>
-        </Card>
-    </div>)
-  }
-
-  //this method called when updating profile
+  // when updating profile
   loadUpdateProfile = (name, color, content) =>{
     return( 
       <div className="animated fadeIn">
@@ -73,7 +66,7 @@ class UpdateProfile extends Component {
               </Col>
               <br />
               <Button color="success" disabled={!name} onClick={this.handleUpdate} >Update  </Button>&nbsp;&nbsp;&nbsp;
-              <a href="/profiles" style={{ textDecoration: 'none' }}> <Button active color="light" aria-pressed="true">Cancel</Button></a>
+              <Button active color="light" aria-pressed="true" onClick={this.cancelUpdateProfile}>Cancel</Button>
             </FormGroup>
           </center>
         </Card>

@@ -13,7 +13,8 @@ class CreateLable extends Component {
       content: "",
       labelCreated: false,
       collapse: false,
-      profileId: props.pid
+      profileId: props.pid,
+      cancelCreateLabel: false
     };
   }
 
@@ -29,7 +30,10 @@ class CreateLable extends Component {
    if(errors.length ===0)
    this.handlePostData(event,values);
   }
-
+  cancelCreateLabel=()=>{
+    console.log("object")
+    this.setState({ cancelCreateLabel: true });
+  }
   //this method handle the submission from user
   handlePostData = async (e,data) => {
     e.persist();
@@ -49,7 +53,7 @@ class CreateLable extends Component {
     this.setState({ alertColor, content });
     setTimeout(() => {
       this.setState({ name: "", content: "", alertColor: "",labelCreated: true });
-     }, 2000);
+     }, 1500);
   };
   //this method makes true or false for the collapse
   toggle = () => {
@@ -58,12 +62,23 @@ class CreateLable extends Component {
   }
   
   render() {
-    const { alertColor, content} = this.state;
-    return <div>{this.state.labelCreated?<Lables />:this.loadCreatingLable(alertColor,content)}</div>
+    const { alertColor, content, cancelCreateLabel} = this.state;
+    
+    console.log(cancelCreateLabel)
+    
+    if (cancelCreateLabel) {
+      console.log(cancelCreateLabel, "return Label")
+     // debugger;
+      return <Lables/>
+    } else {
+      return <div>{this.state.labelCreated?<Lables />:this.loadCreatingLable(alertColor,content)}</div>  
+    }
   }
 
   //this Method shows the input fields to Create a Label.
   loadCreatingLable = (alertColor, content) =>{
+    console.log("loadCreatingLable")
+    
     return (<div className="animated fadeIn" >
       <Card>
         <CardHeader>
@@ -71,7 +86,7 @@ class CreateLable extends Component {
         </CardHeader>
         <Col sm="12" md={{ size: 5, offset: 4 }}>
         <br/>
-          <Alert color={alertColor}>{content}</Alert>
+          {alertColor === "" ? "" : <Alert color={alertColor}>{content}</Alert>}
           <h5><b>CREATE LABEL</b></h5>
           <AvForm onSubmit={this.handleSubmitValue}>
           <AvField name="name" type="text" errorMessage="Label Name Required" placeholder="Enter Label name"  required />
@@ -84,25 +99,12 @@ class CreateLable extends Component {
             {this.loadCollapse()}<br/>
             <FormGroup>
             <Button color="info" > Save label </Button>
-            <a href="/label/labels" style={{ textDecoration: 'none' }}> <Button active color="light" type="button" aria-pressed="true">Cancel</Button></a>
+           <Button active color="light" type="button" aria-pressed="true" onClick={this.cancelCreateLabel}>Cancel</Button>
             </FormGroup>
           </AvForm>
         </Col>
       </Card>
     </div>);
-  }
-  //this method calls after Successful Creation Of Label
-  loadCreatedMessage = () =>{
-    return (
-      <div className="animated fadeIn">
-        <Card>
-          <CardHeader><strong>Label</strong></CardHeader>
-          <center style={{ paddingTop: '20px' }}>
-            <h5><b>Label Created Successfully !!</b> <br /> <br />
-            <b><a href="/label/labels">View Lables</a></b></h5>
-          </center>
-        </Card>
-      </div>)
   }
   //This Method Called When Sublables Makes Enable true.
   loadCollapse=()=>{

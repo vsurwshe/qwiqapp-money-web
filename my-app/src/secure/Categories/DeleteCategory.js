@@ -1,13 +1,8 @@
 import React, { Component } from "react";
 import CategoryApi from "../../services/CategoryApi";
 import Categories from "./Categories";
-<<<<<<< HEAD
-import { Card, CardBody } from "reactstrap";
-import Loader from 'react-loader-spinner';
+import { ReUseComponents } from "../uitility/ReUseComponents";
 
-=======
-// import "default-passive-events";
->>>>>>> 0.4: Labels color applied on selected label, sublabel showing, searchable dropdown added
 class DeleteCategory extends Component {
   constructor(props) {
     super(props);
@@ -25,8 +20,9 @@ class DeleteCategory extends Component {
     new CategoryApi().deleteCategory(this.successCall, this.errorCall,this.state.profileId, this.state.categoryId );
   };
 
-  successCall = () => {
-    this.callAlertTimer("info","Deleted Successfully !")
+  successCall = async () => {
+    await this.setState({categoryDeleted:true})
+    window.location.reload()
   };
 
   errorCall = () => {
@@ -37,23 +33,14 @@ class DeleteCategory extends Component {
     this.setState({ color,content });
     setTimeout(() => {
       this.setState({ categoryDeleted: true});
-    }, 100);
+    }, 1000);
   };
 
   render() {
-    const { categoryDeleted, color,content } = this.state;
-    return  categoryDeleted ? <Categories color={color} content={content} visible={true}/> : this.loadLoader()
+    const { categoryDeleted, color, content } = this.state;
+    return  categoryDeleted ? <Categories color={color} content={content} visible={true}/> 
+                            : ReUseComponents.loadLoader("Delete Category")//this.loadLoader()
   }
-  loadLoader = () =>{
-    return( 
-      <div className="animated fadeIn">
-        <Card>
-          <center style={{paddingTop:'20px'}}>
-            <CardBody><Loader type="TailSpin" color="#2E86C1" height={60} width={60}/></CardBody>
-          </center>
-        </Card>
-      </div>)
-    }
 }
 
 export default DeleteCategory;

@@ -1,16 +1,13 @@
 import React, { Component } from "react";
-import { Card,CardHeader,  Button, Col, Row, Modal, ModalHeader, ModalBody, ModalFooter, Collapse, Input,
-         Alert, Dropdown, DropdownItem, DropdownToggle, DropdownMenu,CardBody,InputGroupAddon,InputGroup,InputGroupText } from 'reactstrap';
-import Loader from 'react-loader-spinner';
+
+import { Card,CardHeader,  Button, Col, Row, Collapse, Input, Alert, InputGroupAddon,InputGroup,InputGroupText } from 'reactstrap';
 import Avatar from 'react-avatar';
-import { FaPen, FaTrashAlt, FaAngleDown, FaSearch, FaEllipsisV } from 'react-icons/fa';
+import { FaPen, FaTrashAlt, FaAngleDown, FaSearch } from 'react-icons/fa';
 import CategoryApi from "../../services/CategoryApi";
-<<<<<<< HEAD
 import Store from "../../data/Store";
-=======
-import ProfileApi from "../../services/ProfileApi";
-// import "default-passive-events";
->>>>>>> 0.4: Labels color applied on selected label, sublabel showing, searchable dropdown added
+import { DeleteModel } from "../uitility/deleteModel";
+import {ProfileEmpty} from '../uitility/ProfileEmpty';
+import { ReUseComponents } from "../uitility/ReUseComponents";
 
 const AddCategory = React.lazy(() =>  import("./AddCategory"));
 const EditCategory = React.lazy(() =>  import("./EditCategory"));
@@ -38,7 +35,6 @@ class Categories extends Component {
       search:''
     };
   }
-
   componentDidMount = () => {
     this.setProfileId()
   }
@@ -50,7 +46,6 @@ class Categories extends Component {
       this.getCategory();
     }
   }
-
   getCategory = ()=> {
     new CategoryApi().getCategories(this.successCall, this.errorCall, this.state.profileId);
   }
@@ -76,18 +71,6 @@ class Categories extends Component {
     this.callAlertTimer('danger','Unable to Process Request, Please Try Again')
   }
 
-  loadLoader = () =>{
-    return( 
-      <div className="animated fadeIn">
-        <Card>
-          <CardHeader><strong>Categories: {this.state.categories.length}</strong></CardHeader>
-          <center style={{paddingTop:'20px'}}>
-            <CardBody><Loader type="TailSpin" color="#2E86C1" height={60} width={60}/></CardBody>
-          </center>
-        </Card>
-      </div>)
-    }
-
   //Method calls the create category
   callAddCategory = () => {
     this.setState({ createCategory : true  });
@@ -112,7 +95,6 @@ class Categories extends Component {
       },1800);
     }
   };
-
   //Method handle accoding tab variable
   toggleAccordion = (tab) => {
     const prevState = this.state.accordion;
@@ -141,38 +123,22 @@ class Categories extends Component {
     this.setState({ onHover : false });
     this.hoverAccordion(hKey)
   }
-  
+
   render() {
     const { categories,requiredCategory,createCategory,updateCategory,deleteCategory,profileId,categoryId, visible, spinner,search } = this.state;
     if (Store.getProfile() === null || Store.getProfile().length===0) {
-      return this.loadProfileNull()
+      return (<ProfileEmpty />)
     } else if(categories.length === 0 && !spinner){
-      return this.loadLoader()
-    }else if(createCategory){
+      return ReUseComponents.loadLoader("Categories : "+this.state.categories.length) //this.loadLoader()
+    } else if(createCategory){
       return <AddCategory category = {categories} id= {profileId} />
-    }else if(updateCategory){
+    } else if(updateCategory){
       return <EditCategory categories = {categories} category = {requiredCategory} id = {profileId}/>
-    }else if(deleteCategory){
-      return <DeleteCategory cid = {categoryId} pid = {profileId} />
-    }else{
+      // <Link to="/categorie/update" Component={()=><EditCategory categories = {categories} category = {requiredCategory} id = {profileId}/> }/>
+    } else if(deleteCategory){
+      return <DeleteCategory cid = {categoryId} pid = {profileId} setCategories={this.setCategoriesAfterDelete} />
+    } else{
       return<div>{this.loadCategories(categories, visible, search)}{this.loadDeleteCategory()}</div>
-    }
-  }
-
-  loadProfileNull = () => {
-    return (
-      <div className="animated fadeIn">
-        <Card>
-          <center style={{paddingTop:'20px'}}>
-           <CardBody><h5><b>You haven't created any Profile yet. So Please Create Profile. </b></h5><br/> </CardBody>
-          </center>
-        </Card>
-      </div>);
-  }
-
-  searchingFor = (term) =>{
-    return function(x){
-      return x.name.toLowerCase().includes(term.toLowerCase()) || !term
     }
   }
 
@@ -204,7 +170,7 @@ class Categories extends Component {
           </CardHeader>
           <div style={{margin:10, paddingLeft:50}}>
             <Alert isOpen={visible} color={color===undefined ? '' : color}>{this.props.content}</Alert>
-            {categories.filter(this.searchingFor(search)).map((category, key) => {return this.loadCategory(category,key);})} </div>
+            {categories.filter(ReUseComponents.searchingFor(search)).map((category, key) => {return this.loadCategory(category,key);})} </div>
         </Card>
       </div>)
   }
@@ -219,7 +185,6 @@ class Categories extends Component {
           <Row >
             <Col>
               <span style={ellipsisText1}>
-              
               <Avatar name={category.name.charAt(0)} color={category.color === null || category.color === "" ? '#000000' : category.color} size="40" square={true} />
                 <div style={ellipsisText2}>&nbsp;&nbsp;{category.name}
                   {Array.isArray(category.subCategories) ? <span><FaAngleDown style={{ marginLeft: 8 }} onClick={() => { this.toggleAccordion(uKey) }} /></span> : ''}</div></span></Col>
@@ -247,27 +212,14 @@ class Categories extends Component {
   
   loadDeleteCategory = () => {
     return(
-      <Modal isOpen = {this.state.danger} toggle = {this.toggleDanger} className = {'modal-danger'}>
-        <ModalHeader toggle={this.toggleDanger}>Delete Category</ModalHeader>
-        <ModalBody>Are you Sure you want to Delete This Category ?</ModalBody>
-        <ModalFooter>
-          <Button color="danger" onClick={this.deleteCategory}>Delete</Button>
-          <Button color="secondary" onClick={this.toggleDanger}>Cancel</Button>
-        </ModalFooter>
-      </Modal>)
+      <DeleteModel danger={this.state.danger} headerMessage="Delete Category" bodyMessage="Are You Sure Want to Delete Category?" toggleDanger={this.toggleDanger} onClick1={this.deleteCategory} onClick2={this.toggleDanger} />);
   }
 
   showDropdown = (category, uKey) =>{
-    return(
-      <Dropdown isOpen={this.state.dropDownAccord[uKey]} style={{marginLeft: 7, float: "right" }} className= "float-right"  toggle={() => { this.dropDownAccordion(uKey); }} size="sm" >
-       <DropdownToggle tag="span" onClick={() => { this.dropDownAccordion(uKey); }} data-toggle="dropdown" >
-        <FaEllipsisV style={{ marginTop: 15, marginRight:20}}/></DropdownToggle>
-        <DropdownMenu style={{marginTop:9,marginLeft:10}}>
-          <DropdownItem onClick={()=>this.updateCategory(category)}>Edit </DropdownItem>
-          <DropdownItem onClick={()=>{ this.setState({ categoryId: category.id }); this.toggleDanger() }}>Delete</DropdownItem>
-        </DropdownMenu>
-      </Dropdown>
-    )
+    return ReUseComponents.loadDropDown(category, uKey, this.state.dropDownAccord[uKey], this.dropDownAccordion, this.updateCategory, this.setCategoryID, this.toggleDanger  )
+  }
+  setCategoryID = category =>{
+    this.setState({ categoryId: category.id  });
   }
 }
 
