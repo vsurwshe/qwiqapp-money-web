@@ -12,14 +12,14 @@ class SignupApi {
 
   //Registers User
   registerUser(success, failure, data) {
-    process(success, failure, Config.cloudBaseURL + "/register/","POST", data);
+    process(success, failure, Config.cloudBaseURL + "/users/register","POST", data);
   }
 
   //Checks Whether user already exists or not
   async existsUser(success, failure, data) {
     this.getToken();
     setTimeout(()=>{
-      let HTTP = httpCall(Config.cloudBaseURL + "/register/exists?email=" + data.email,"GET");
+      let HTTP = httpCall(Config.cloudBaseURL + "/users/exists?email=" + data.email,"GET");
       HTTP.request().then(resp => { if (resp.data) { 
           validResponse(resp,success) 
       } })
@@ -31,7 +31,7 @@ class SignupApi {
   async verifySignup(success, failure, uid, code) {
     this.getToken()
     setTimeout(()=>{
-      process( success, failure, Config.cloudBaseURL + "/register/" + uid + "/verify?code=" + code, "GET" );
+      process( success, failure, Config.cloudBaseURL + "/users/" + uid + "/verify?code=" + code, "GET" );
     },2000);
   }
 }

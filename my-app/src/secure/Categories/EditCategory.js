@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Button, Card, Col, Input, Alert, CardHeader, FormGroup, Label, Collapse} from "reactstrap";
 import CategoryApi from "../../services/CategoryApi";
 import Categories from "./Categories";
+import Config from "../../data/Config";
 
 class EditCategory extends Component {
   constructor(props) {
@@ -47,7 +48,7 @@ class EditCategory extends Component {
     this.setState({ color,content });
     setTimeout(() => {
       this.setState({ updateSuccess: true});
-    }, 2000);
+    }, Config.notificationMillis);
   };
 
   toggle = () =>{
