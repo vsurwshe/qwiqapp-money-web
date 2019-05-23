@@ -4,6 +4,7 @@ import { AvForm, AvField } from 'availity-reactstrap-validation';
 import Store from "../../data/Store";
 import CategoryApi from "../../services/CategoryApi";
 import Categories from "./Categories";
+import Config from "../../data/Config";
 class AddCategory extends Component {
   constructor(props){
     super(props)
@@ -61,7 +62,7 @@ class AddCategory extends Component {
     this.setState({ alertColor, content });
     setTimeout(() => {
       this.setState({ categoryCreated: true});
-    }, 1500);
+    }, Config.notificationMillis);
   };
 
   generateCode = () =>{
@@ -73,7 +74,6 @@ class AddCategory extends Component {
       code = code +  characters.charAt(Math.floor(Math.random() * length));
     }
     this.setState({code})
-    console.log("Code = ",code)
   } 
 
   render() {
@@ -107,7 +107,7 @@ class AddCategory extends Component {
                 </Input>
               </Collapse><br />
               <FormGroup>
-                <Button color="info" > Save Category </Button> &nbsp;&nbsp;
+                <Button color="info" > Save </Button> &nbsp;&nbsp;
                <Button active color="light" type="button" aria-pressed="true" onClick={this.cancelAddCategory}  >Cancel</Button>
               </FormGroup>
             </AvForm>

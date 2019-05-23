@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Button, Card,Col, Input, Alert ,CardHeader,FormGroup} from "reactstrap";
 import ProfileApi from "../../services/ProfileApi";
 import Profiles from "./Profiles";
+import Config from "../../data/Config";
 
 
 class UpdateProfile extends Component {
@@ -34,8 +35,8 @@ class UpdateProfile extends Component {
     this.setState({ color: color, content: content });
     setTimeout(() => {
       this.setState({ name : '', color : '', updateSuccess : true});
-      window.location.reload();
-    }, 1500);
+      window.location.href="/dashboard";
+    }, Config.notificationMillis);
   };
   cancelUpdateProfile = () =>{
     this.setState({ cancelUpdateProfile: true });

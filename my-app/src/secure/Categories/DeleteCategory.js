@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import CategoryApi from "../../services/CategoryApi";
 import Categories from "./Categories";
 import { ReUseComponents } from "../uitility/ReUseComponents";
+import Config from "../../data/Config";
 
 class DeleteCategory extends Component {
   constructor(props) {
@@ -22,7 +23,6 @@ class DeleteCategory extends Component {
 
   successCall = async () => {
     await this.setState({categoryDeleted:true})
-    window.location.reload()
   };
 
   errorCall = () => {
@@ -33,13 +33,13 @@ class DeleteCategory extends Component {
     this.setState({ color,content });
     setTimeout(() => {
       this.setState({ categoryDeleted: true});
-    }, 1000);
+    }, Config.notificationMillis);
   };
 
   render() {
     const { categoryDeleted, color, content } = this.state;
     return  categoryDeleted ? <Categories color={color} content={content} visible={true}/> 
-                            : ReUseComponents.loadLoader("Delete Category")//this.loadLoader()
+                            : ReUseComponents.loadLoader("Delete Category")
   }
 }
 

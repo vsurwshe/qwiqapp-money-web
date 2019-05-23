@@ -17,7 +17,9 @@ export const ReUseComponents = {
             </div>)
     },
     loadHeader : function(strongMessage){
-        return <div style={{padding:10}}><center><strong> {strongMessage} </strong></center></div>
+        return (<div style={{padding:10}}>
+          <center><strong> {strongMessage} </strong></center>
+        </div>)
     },
     loadLoader : function(headerMessage){
         return(
@@ -47,5 +49,5 @@ export const ReUseComponents = {
           <DropdownItem onClick={() => { stateFun(item); toggleDanger(); }}> Delete</DropdownItem>
         </DropdownMenu>
       </Dropdown>);
-    }
+    }, 
 }

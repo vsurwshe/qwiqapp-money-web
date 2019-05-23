@@ -145,7 +145,8 @@ class Profiles extends Component {
   //this method call the delete model
   loadDeleteProfile = () => {
     return (
-      <DeleteModel danger={this.state.danger} headerMessage="Delete Profile" bodyMessage="Are You Sure Want to Delete Profile?" toggleDanger={this.toggleDanger} onClick1={this.deleteProfile} onClick2={this.toggleDanger} />)
+      <DeleteModel danger={this.state.danger} headerMessage="Delete Profile" bodyMessage="Are You Sure Want to Delete Profile?" 
+      toggleDanger={this.toggleDanger} delete={this.deleteProfile} cancel={this.toggleDanger} />)
   }
 }
 export default Profiles

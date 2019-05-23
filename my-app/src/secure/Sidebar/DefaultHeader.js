@@ -21,7 +21,6 @@ const DefaultHeader=(props)=>{
   const refreshButton = async () => {
     await Store.clearLocalStorage();
     chnageProfleName(profileName ="Web Money")
-    console.log(profileName);
   }
 
   const toggleDanger = () => {

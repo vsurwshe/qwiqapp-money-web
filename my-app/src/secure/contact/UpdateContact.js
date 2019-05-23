@@ -6,6 +6,7 @@ import chroma from 'chroma-js';
 import { AvForm, AvField } from 'availity-reactstrap-validation';
 import ContactApi from "../../services/ContactApi";
 import { ReUseComponents } from "../uitility/ReUseComponents";
+import Config from "../../data/Config";
 
 const colourStyles = {
   control: styles => ({ ...styles, backgroundColor: 'white' }),
@@ -99,7 +100,7 @@ class UpdateContact extends Component {
   callAlertTimer = (alertColor, message) => {
     this.setState({ alertColor, message});
     setTimeout(() => {this.setState({ name: '', alertColor: '#000000', updateSuccess: true });
-    }, 1500);
+    }, Config.notificationMillis);
   };
 
   handleInput = e => {
@@ -145,7 +146,7 @@ class UpdateContact extends Component {
             </Row>
             <Row>
               <Col>
-                <AvField type="select" name="country" value={contact.country} helpMessage="Select Country">
+                <AvField type="select" name="country" value={contact.country} placeholder="Select Country">
                   <option value="">select</option>
                   <option value="India">INDIA</option>
                   <option value="UnitedKingdom">UK</option>
@@ -165,7 +166,7 @@ class UpdateContact extends Component {
             </Row>
             <Row><Col>{this.loadAvCollapse(contact)}</Col></Row><br/>
             <center>     
-              <Button color="info">Update Contact</Button> &nbsp;&nbsp;
+              <Button color="info">Update </Button> &nbsp;&nbsp;
               <Button active color="light" type="button" onClick={this.cancelUpdateContact}>Cancel</Button>
             </center>
           </AvForm>

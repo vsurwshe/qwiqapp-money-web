@@ -53,7 +53,6 @@ class Contacts extends Component {
     }
   }
   getContacts = () =>{
-    console.log(this.state.profileId)
     new ContactApi().getContacts(this.successCall, this.errorCall, this.state.profileId);
   }
 
@@ -270,7 +269,7 @@ class Contacts extends Component {
  
   loadDeleteContact = () => {
     return (<DeleteModel danger={this.state.danger}  headerMessage="Delete Contact" bodyMessage="Are You Sure Want to Delete Contact?" 
-        toggleDanger={this.toggleDanger} onClick1={this.deleteContact} onClick2={this.toggleDanger} /> )
+        toggleDanger={this.toggleDanger} delete={this.deleteContact} cancel={this.toggleDanger} /> )
    }
 
   loadDropDown = (contact,contactKey) =>{

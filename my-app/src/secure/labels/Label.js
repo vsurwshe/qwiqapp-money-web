@@ -126,10 +126,11 @@ class Lables extends Component {
   render() {
     const { labels, createLabel, updateLabel, id, deleteLabel, visible, profileId, requiredLabel, spinner, search } = this.state
     if (Store.getProfile() === null || Store.getProfile().length === 0) {
-      console.log("object null profile")
       return (<ProfileEmpty />)
     } else if (labels.length === 0 && !createLabel) {
-      return <div>{labels.length === 0 && !createLabel && !spinner ? this.loadLoader() : this.loadNotLabel()}</div>
+      return <div>{labels.length === 0 && !createLabel && !spinner 
+                                  ? this.loadLoader() 
+                                  : this.loadNotLabel()}</div>
     } else if (createLabel) {
       return (<CreateLabel pid={profileId} label={labels} />)
     } else if (updateLabel) {
@@ -248,7 +249,8 @@ class Lables extends Component {
   //this method call the delete model
   loadDeleteLabel = () => {
   return (
-    <DeleteModel danger={this.state.danger}  headerMessage="Delete Label" bodyMessage="Are You Sure Want to Delete Label?" toggleDanger={this.toggleDanger} onClick1={this.deleteLabel} onClick2={this.toggleDanger} />)
+    <DeleteModel danger={this.state.danger}  headerMessage="Delete Label" bodyMessage="Are You Sure Want to Delete Label?"
+     toggleDanger={this.toggleDanger} delete={this.deleteLabel} cancel={this.toggleDanger} />)
   }
   //this Method load Browser DropDown
   loadDropDown = (labels, ukey) => {

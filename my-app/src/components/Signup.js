@@ -26,12 +26,12 @@ class Signup extends React.Component {
 
   //when pressed 'enter' key, this method will be called
   handleEnter = (event) =>{
-    if (event.key === 'Enter' ) { this.handleSubmit(); }
+    if (event.key === 'Enter' ) { this.handleSubmit(event); }
   }
 
+      
   handleSubmit = e => {
     e.preventDefault();
-    console.log(this.state.email + " " + this.state.password);
     const data = {
       name: this.state.name,
       email: this.state.email,
@@ -148,7 +148,7 @@ class Signup extends React.Component {
                 <FormFeedback invalid tooltip> Password length must be more then 5 characters </FormFeedback>
               </FormGroup>
               <center>
-                <Button color="info" disabled={!password || (emailAlert &&  emailState === 'danger' ) } onClick={this.handleSubmit}> Signup </Button>
+                <Button color="info" disabled={!password || (emailAlert &&  emailState === 'danger' ) } onClick={e=>this.handleSubmit(e)}> Signup </Button>
                 <CardBody>
                   <span> I already have an Account. </span>
                   <Link to="/login"> Login Now </Link>

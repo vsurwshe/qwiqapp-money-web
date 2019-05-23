@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import ProfileApi from "../../services/ProfileApi";
 import Profiles from "./Profiles";
 import { ReUseComponents } from "../uitility/ReUseComponents";
+import Config from "../../data/Config";
 
 class DeleteProfile extends Component {
   constructor(props) {
@@ -34,7 +35,7 @@ class DeleteProfile extends Component {
     setTimeout(() => {
       this.setState({ color: "" ,content:"",profileDeleted : true});
       window.location.reload();
-    }, 1500);
+    }, Config.notificationMillis);
   };
 
   render() {

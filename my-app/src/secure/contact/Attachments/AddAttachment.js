@@ -61,11 +61,11 @@ class AddAttachment extends Component{
   }
 
   loadFailure = () => {
-    // this.loadHeader()
     return(  
       <Card>
         {ReUseComponents.loadHeader("Add Attachment")}
         <CardBody><center>{this.state.content}</center></CardBody>
+        {this.setState({ addFail: false })}
       </Card>)
   }
 

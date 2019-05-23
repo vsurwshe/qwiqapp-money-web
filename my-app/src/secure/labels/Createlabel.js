@@ -3,6 +3,7 @@ import { Alert, Button, Input, Card, CardHeader, FormGroup, Col, Collapse, Label
 import { AvForm, AvField } from 'availity-reactstrap-validation';
 import LabelApi from "../../services/LabelApi";
 import Lables from './Label';
+import Config from "../../data/Config";
 class CreateLable extends Component {
   constructor(props){
     super(props);
@@ -31,7 +32,6 @@ class CreateLable extends Component {
    this.handlePostData(event,values);
   }
   cancelCreateLabel=()=>{
-    console.log("object")
     this.setState({ cancelCreateLabel: true });
   }
   //this method handle the submission from user
@@ -53,22 +53,16 @@ class CreateLable extends Component {
     this.setState({ alertColor, content });
     setTimeout(() => {
       this.setState({ name: "", content: "", alertColor: "",labelCreated: true });
-     }, 1500);
+     }, Config.notificationMillis);
   };
   //this method makes true or false for the collapse
   toggle = () => {
     this.setState({ collapse : !this.state.collapse });
-    // new LabelApi().getlabels(this.successCall, this.errorCall, this.state.profileId);
   }
   
   render() {
     const { alertColor, content, cancelCreateLabel} = this.state;
-    
-    console.log(cancelCreateLabel)
-    
     if (cancelCreateLabel) {
-      console.log(cancelCreateLabel, "return Label")
-     // debugger;
       return <Lables/>
     } else {
       return <div>{this.state.labelCreated?<Lables />:this.loadCreatingLable(alertColor,content)}</div>  
@@ -77,8 +71,6 @@ class CreateLable extends Component {
 
   //this Method shows the input fields to Create a Label.
   loadCreatingLable = (alertColor, content) =>{
-    console.log("loadCreatingLable")
-    
     return (<div className="animated fadeIn" >
       <Card>
         <CardHeader>
@@ -98,8 +90,8 @@ class CreateLable extends Component {
             </FormGroup><br />
             {this.loadCollapse()}<br/>
             <FormGroup>
-            <Button color="info" > Save label </Button>
-           <Button active color="light" type="button" aria-pressed="true" onClick={this.cancelCreateLabel}>Cancel</Button>
+            <Button color="primary" > Save</Button>&nbsp;&nbsp;&nbsp;
+           <Button className="label" active color="light" type="button" aria-pressed="true" onClick={this.cancelCreateLabel}>Cancel</Button>
             </FormGroup>
           </AvForm>
         </Col>

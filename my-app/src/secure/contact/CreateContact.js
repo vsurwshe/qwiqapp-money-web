@@ -5,6 +5,7 @@ import Contacts from './Contacts';
 import chroma from 'chroma-js';
 import Select from "react-select";
 import ContactApi from "../../services/ContactApi";
+import Config from "../../data/Config";
 
 const colourStyles = {
   control: styles => ({ ...styles, backgroundColor: 'white' }),
@@ -104,7 +105,7 @@ class CreateContact extends Component {
     if(message !== "Firstname or Last name is needed "){
       setTimeout(() => {
         this.setState({ contactCreated: true});
-      }, 1500);
+      }, Config.notificationMillis);
     } 
   };
 
@@ -142,8 +143,8 @@ class CreateContact extends Component {
                 <Col><AvField name="email" placeholder="Your Email" type="text" validate={{email: true}} required /></Col></Row>
               <Row>
               <Col>
-                <AvField type="select" name="country" placeholder="Country" helpMessage="Select Country" required >
-                  <option value="">Select</option>
+                <AvField type="select" name="country" placeholder="Country" required >
+                  <option value="">Select Country</option>
                   <option value="India">INDIA</option>
                   <option value="UnitedKingdom">UK</option>
                   <option value="Afghanistan">AFGHANISTAN</option>
@@ -163,7 +164,7 @@ class CreateContact extends Component {
               <Row><Col>{this.loadAvCollapse()}</Col></Row> <br />
               <center><FormGroup row>
                 <Col>
-                  <Button color="info" > Save Contact </Button>
+                  <Button color="info" > Save </Button> &nbsp; &nbsp;
                   <Button active color="light" type="button" onClick={this.cancelAddContact}>Cancel</Button>
                 </Col>
               </FormGroup></center>

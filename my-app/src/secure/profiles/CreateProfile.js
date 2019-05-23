@@ -3,6 +3,7 @@ import { Button, Input, Card, CardBody, CardHeader, Col, Alert } from "reactstra
 import Store from "../../data/Store";
 import ProfileApi from "../../services/ProfileApi";
 import Profiles from "./Profiles";
+import Config from "../../data/Config";
 
 class CreateProfile extends Component {
   state = {
@@ -41,9 +42,9 @@ cancelCreateProfile=()=>{
   callAlertTimer = (color, content) => {
     this.setState({ color: color, content: content });
     setTimeout(() => {
-      window.location.reload();
       this.setState({ name : "", content : "", color : "", profileCreated: true });
-    }, 1500);
+      window.location.href="/dashboard";
+    }, Config.notificationMillis);
   };
 
   render() {

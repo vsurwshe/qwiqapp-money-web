@@ -24,7 +24,7 @@ class SignupApi {
           validResponse(resp,success) 
       } })
       .catch(err => { if (err.response.status === "404") console.log("Internal Error")});
-    },1500); 
+    }, Config.notificationMillis); 
   }
 
   //Verify the User Credentials
@@ -32,7 +32,7 @@ class SignupApi {
     this.getToken()
     setTimeout(()=>{
       process( success, failure, Config.cloudBaseURL + "/users/" + uid + "/verify?code=" + code, "GET" );
-    },2000);
+    }, Config.notificationMillis);
   }
 }
 
@@ -53,7 +53,6 @@ let errorResponse = function(error, failure) {
 };
 
 function httpCall(Uurl, Umethod) {
-  console.log("Dummy Token",Store.getDummyUserAccessToken())
   let HTTP = Axios.create({
     method: Umethod,
     url: Uurl,

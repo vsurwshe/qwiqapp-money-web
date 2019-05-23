@@ -8,6 +8,7 @@ import Store from "../../data/Store";
 import { DeleteModel } from "../uitility/deleteModel";
 import {ProfileEmpty} from '../uitility/ProfileEmpty';
 import { ReUseComponents } from "../uitility/ReUseComponents";
+import Config from "../../data/Config";
 
 const AddCategory = React.lazy(() =>  import("./AddCategory"));
 const EditCategory = React.lazy(() =>  import("./EditCategory"));
@@ -92,7 +93,8 @@ class Categories extends Component {
     if (this.state.visible) {
       setTimeout(() => {
         this.setState({ visible : false });
-      },1800);
+        window.location.reload()
+      }, Config.notificationMillis);
     }
   };
   //Method handle accoding tab variable
@@ -129,12 +131,11 @@ class Categories extends Component {
     if (Store.getProfile() === null || Store.getProfile().length===0) {
       return (<ProfileEmpty />)
     } else if(categories.length === 0 && !spinner){
-      return ReUseComponents.loadLoader("Categories : "+this.state.categories.length) //this.loadLoader()
+      return ReUseComponents.loadLoader("Categories : "+this.state.categories.length) 
     } else if(createCategory){
       return <AddCategory category = {categories} id= {profileId} />
     } else if(updateCategory){
       return <EditCategory categories = {categories} category = {requiredCategory} id = {profileId}/>
-      // <Link to="/categorie/update" Component={()=><EditCategory categories = {categories} category = {requiredCategory} id = {profileId}/> }/>
     } else if(deleteCategory){
       return <DeleteCategory cid = {categoryId} pid = {profileId} setCategories={this.setCategoriesAfterDelete} />
     } else{
@@ -212,7 +213,8 @@ class Categories extends Component {
   
   loadDeleteCategory = () => {
     return(
-      <DeleteModel danger={this.state.danger} headerMessage="Delete Category" bodyMessage="Are You Sure Want to Delete Category?" toggleDanger={this.toggleDanger} onClick1={this.deleteCategory} onClick2={this.toggleDanger} />);
+      <DeleteModel danger={this.state.danger} headerMessage="Delete Category" bodyMessage="Are You Sure Want to Delete Category?" 
+      toggleDanger={this.toggleDanger} delete={this.deleteCategory} cancel={this.toggleDanger} />);
   }
 
   showDropdown = (category, uKey) =>{

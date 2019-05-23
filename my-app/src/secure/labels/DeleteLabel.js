@@ -1,8 +1,8 @@
 import React, { Component } from "react";
-import { Card, CardHeader } from "reactstrap";
 import LabelApi from "../../services/LabelApi";
 import Lables from "./Label";
 import { ReUseComponents } from "../uitility/ReUseComponents";
+import Config from "../../data/Config";
 
 class DeleteLabel extends Component {
   constructor(props) {
@@ -30,7 +30,7 @@ class DeleteLabel extends Component {
   //this  method show the on page alert
   callAlertTimer = (color, content) => {
     this.setState({color: color,content: content});
-    setTimeout(() => {this.setState({ color: "",content:"",labelDeleted: true });}, 1500);
+    setTimeout(() => {this.setState({ color: "",content:"",labelDeleted: true });}, Config.notificationMillis);
   };
 
   render() {
