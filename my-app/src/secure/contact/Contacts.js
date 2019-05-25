@@ -4,15 +4,16 @@ import { FaPaperclip, FaUserCircle, FaSearch } from 'react-icons/fa';
 import UpdateContact from "./UpdateContact";
 import DeleteContact from "./DeleteContact";
 import Loader from 'react-loader-spinner'
-import ContactApi from "../../services/ContactApi";
 import CreateContact from "./CreateContact";
 import LabelApi from "../../services/LabelApi";
 import Attachments from "./Attachments/Attachments";
 import AddAttachment from "./Attachments/AddAttachment";
 import Store from "../../data/Store";
+// import moduleName from '../../services/'
 import { DeleteModel } from "../uitility/deleteModel";
-import { ProfileEmpty } from "../uitility/ProfileEmpty";
+import { ProfileEmptyMessage } from "../uitility/ProfileEmptyMessage";
 import { ReUseComponents } from "../uitility/ReUseComponents";
+import ContactApi from "../../services/ContactApi";
 
 class Contacts extends Component {
   constructor(props) {
@@ -99,6 +100,7 @@ class Contacts extends Component {
   };
 
   toggleDanger = () => {
+    console.log("setting DeleteTrue")
     this.setState({ danger : !this.state.danger});
   }
   toggleAccordion = (tab) => {
@@ -146,7 +148,7 @@ class Contacts extends Component {
     const { contacts,singleContact, createContact,updateContact,deleteContact,addAttachRequest,contactId,visible,profileId,spinner,labels} = this.state
     if (Store.getProfile()!==null && Store.getProfile().length!==0) {
       if (contacts.length === 0 && !createContact ) {
-        return <div>{contacts.length === 0 && !createContact && !spinner ? this.loadLoader() :this.loadNotContact()}</div>
+        return <div>{contacts.length === 0 && !createContact && !spinner ? this.loadSpinner() :this.loadNotContact()}</div>
       } else if (createContact) {
         return ( <CreateContact profileId={profileId} lables={labels}/>)
       } else if (updateContact) {
@@ -159,7 +161,7 @@ class Contacts extends Component {
         return <div>{this.loadShowContact(visible, contacts)}{this.loadDeleteContact()}</div>
       }
     } else {
-      return (<ProfileEmpty />)
+      return (<ProfileEmptyMessage />)
     }
   }
  
@@ -196,7 +198,7 @@ class Contacts extends Component {
     )
   }
 
-  loadLoader = () =>{
+  loadSpinner = () =>{
     return( 
       <div className="animated fadeIn">
         <Card>
@@ -228,7 +230,6 @@ class Contacts extends Component {
   }
   
   loadShowContact = (visible, contacts) => {
-
     this.callAlertTimer()
     return (
       <div className="animated fadeIn">
@@ -273,7 +274,7 @@ class Contacts extends Component {
    }
 
   loadDropDown = (contact,contactKey) =>{
-    return ReUseComponents.loadDropDown(contact, contactKey, this.state.dropdownOpen[contactKey], this.toggleDropDown, this.updateContact, this.setContactID, this.toggleDanger  )
+    return ReUseComponents.loadDropDown(contact, contactKey, this.state.dropdownOpen[contactKey], this.toggleDropDown, this.setContactID, this.toggleDanger,  this.updateContact )
     }
   setContactID = contact =>{
     this.setState({ contactId: contact.id });

@@ -9,7 +9,13 @@ import ViewProfile from "./ViewProfile";
 import Loader from 'react-loader-spinner'
 import { FaPen, FaTrashAlt } from 'react-icons/fa';
 import { DeleteModel } from "../uitility/deleteModel";
+import { ProfileEmptyMessage } from "../uitility/ProfileEmptyMessage";
 
+/**
+ * Display list of profiles,Manage profile like (update, delete)
+ * Call Add,Update, delete Componets.
+ * TODO: handel Error Message
+ */
 class Profiles extends Component {
   constructor(props) {
     super(props);
@@ -40,12 +46,10 @@ class Profiles extends Component {
 
   errorCall = err => { console.log("Internal Server Error") }
 
-  // Update Profile
   updateProfile = (uid, uName) => {
     this.setState({ updateProfile: true, id: uid, name: uName })
   };
 
-  //Delete profile 
   deleteProfile = () => {
     this.setState({ deleteProfile: true })
   };
@@ -67,7 +71,7 @@ class Profiles extends Component {
   render() {
     const { profiles, id, viewProfileRequest, createProfile, updateProfile, deleteProfile, name ,spinner} = this.state
     if (profiles.length === 0 && !createProfile) {
-      return <div>{profiles.length === 0 && !createProfile && !spinner ? this.loadLoader() :this.loadNotCreateProfile()}</div>
+      return <div>{profiles.length === 0 && !createProfile && !spinner ? this.loadSpinner() :<ProfileEmptyMessage/>}</div>
     } else if (createProfile) {
       return (<Container> <CreateProfile /> </Container>)
     } else if (updateProfile) {
@@ -75,7 +79,7 @@ class Profiles extends Component {
     } else if (deleteProfile) {
       return (<Container> <DeleteProfile id={id} /> </Container>)
     }else {
-      return <div>{this.loadShowProfile(viewProfileRequest, profiles)}{this.loadDeleteProfile()}</div>
+      return <div>{this.showProfile(viewProfileRequest, profiles)}{this.loadDeleteProfile()}</div>
     }
   }
 
@@ -85,9 +89,7 @@ class Profiles extends Component {
         <Button color="success" className="float-right" onClick={this.callCreateProfile}> + Create Profile </Button>
       </CardHeader>)
   }
-
-   //this method loads the spinner
-   loadLoader = () =>{
+   loadSpinner = () =>{
     return( 
       <div className="animated fadeIn">
         <Card>
@@ -99,21 +101,8 @@ class Profiles extends Component {
       </div>)
    }
 
-  //this method call when if any profile not created.
-  loadNotCreateProfile = () => {
-    return (
-      <div className="animated fadeIn">
-        <Card>
-          {this.loadHeader()}
-          <center style={{paddingTop:'20px'}}>
-            <CardBody><h5><b>You haven't created any Profiles yet... </b></h5><br/></CardBody>
-          </center>
-        </Card>
-      </div>)
-  }
-
   //if one or more profile is there then this method Call
-  loadShowProfile = (viewProfileRequest, profiles) => {
+  showProfile = (viewProfileRequest, profiles) => {
     return (
       <div className="animated fadeIn">
         <Card>

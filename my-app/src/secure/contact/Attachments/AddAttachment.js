@@ -13,6 +13,7 @@ class AddAttachment extends Component{
     addFail: false,
     content: '',
     cancelAddAttachment: false,
+    doubleClick: false
   }
 
   handleInput = (e) => {
@@ -20,6 +21,7 @@ class AddAttachment extends Component{
   }
 
   handleSubmit = (e) =>{
+    this.setState({ doubleClick: false });
     e.preventDefault()
     const {profileId, contactId, file} = this.state;
     let reader = new FormData()
@@ -75,7 +77,6 @@ class AddAttachment extends Component{
                {window.location.reload()}
       </div>)
   }
-
   loadAddAttachment = () => {
     return(
       <Card>
@@ -83,8 +84,8 @@ class AddAttachment extends Component{
         <FormGroup> <br></br>
           <center>
             <input type="file" onChange={e=>this.handleInput(e)}/> <br /><br/>
-            <Button color="info" onClick={e=>this.handleSubmit(e)}> Add </Button>&nbsp;&nbsp;
-            <Button active  color="light" aria-pressed="true"  onClick={this.cancelAddAttachment}>Cancel</Button><br/><br/>
+            <Button color="info" onClick={e=>this.handleSubmit(e)} disabled={this.state.doubleClick} > Add </Button>&nbsp;&nbsp;
+            <Button active  color="light" aria-pressed="true"  onClick={()=>window.location.reload()}>Cancel</Button><br/><br/>
           </center>
         </FormGroup>
       </Card>

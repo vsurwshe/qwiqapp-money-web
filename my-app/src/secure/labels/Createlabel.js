@@ -15,8 +15,9 @@ class CreateLable extends Component {
       labelCreated: false,
       collapse: false,
       profileId: props.pid,
-      cancelCreateLabel: false
-    };
+      cancelCreateLabel: false,
+      doubleClick: false
+     };
   }
 
   //this method handle the successfull response form geting api
@@ -28,29 +29,30 @@ class CreateLable extends Component {
   };
  
   handleSubmitValue=(event, errors, values)=> {
-   if(errors.length ===0)
+    if(errors.length ===0)
    this.handlePostData(event,values);
   }
   cancelCreateLabel=()=>{
     this.setState({ cancelCreateLabel: true });
   }
-  //this method handle the submission from user
+  // handle the submission from user
   handlePostData = async (e,data) => {
+    this.setState({ doubleClick: true });
     e.persist();
     const newData={...data,"parentId":this.state.parentId}
     await new LabelApi().createLabel( this.successCreate, this.errorCall, this.state.profileId, newData);
   };
-  //this method call when lables created successfully
-  successCreate=()=>{
+  // call when lables created successfully
+  successCreate=(response)=>{
      this.callAlertTimer("success", "New Label Created....");
   }
 
-  //this method handle the error response the when api calling
+  // handle the error response from api 
   errorCall = err => { this.callAlertTimer("danger", "Unable to Process Request, Please try again! ");};
 
   //this method show the success/error message and after 2 sec clear it off
   callAlertTimer = (alertColor, content) => {
-    this.setState({ alertColor, content });
+    this.setState({ alertColor, content});
     setTimeout(() => {
       this.setState({ name: "", content: "", alertColor: "",labelCreated: true });
      }, Config.notificationMillis);
@@ -61,43 +63,46 @@ class CreateLable extends Component {
   }
   
   render() {
-    const { alertColor, content, cancelCreateLabel} = this.state;
+    const { alertColor, content, cancelCreateLabel, doubleClick} = this.state;
     if (cancelCreateLabel) {
       return <Lables/>
     } else {
-      return <div>{this.state.labelCreated?<Lables />:this.loadCreatingLable(alertColor,content)}</div>  
+      return <div>{this.state.labelCreated?<Lables />:this.loadCreatingLable(alertColor,content, doubleClick)}</div>  
     }
   }
 
   //this Method shows the input fields to Create a Label.
-  loadCreatingLable = (alertColor, content) =>{
+  loadCreatingLable = (alertColor, content, doubleClick) => {
     return (<div className="animated fadeIn" >
       <Card>
         <CardHeader>
           <strong>Label</strong>
         </CardHeader>
         <Col sm="12" md={{ size: 5, offset: 4 }}>
-        <br/>
+          <br />
           {alertColor === "" ? "" : <Alert color={alertColor}>{content}</Alert>}
           <h5><b>CREATE LABEL</b></h5>
           <AvForm onSubmit={this.handleSubmitValue}>
-          <AvField name="name" type="text" errorMessage="Label Name Required" placeholder="Enter Label name"  required />
-          <AvField name="notes" value={this.state.notes} type="text" placeholder="Enter Label notes" />
-          <AvField name="color" type="color" list="colors"  placeholder="Enter Label Color" />
-          <FormGroup check className="checkbox">
+            <AvField name="name" type="text" errorMessage="Label Name Required" placeholder="Enter Label name" required />
+            <AvField name="notes" value={this.state.notes} type="text" placeholder="Enter Label notes" />
+            <AvField name="color" type="color" list="colors" placeholder="Enter Label Color" />
+            {this.state.labels.length !==0 ?
+            <FormGroup check className="checkbox">
               <Input className="form-check-input" type="checkbox" onClick={this.toggle} value=" " />
               <Label check className="form-check-label" htmlFor="checkbox1"> &nbsp;Nest label under </Label>
-            </FormGroup><br />
-            {this.loadCollapse()}<br/>
+            </FormGroup> : ""}
+            <br />
+            {this.loadCollapse()}<br />
             <FormGroup>
-            <Button color="primary" > Save</Button>&nbsp;&nbsp;&nbsp;
-           <Button className="label" active color="light" type="button" aria-pressed="true" onClick={this.cancelCreateLabel}>Cancel</Button>
+              <Button color="primary" disabled={doubleClick} > Save</Button>&nbsp;&nbsp;&nbsp;
+              <Button className="label" active color="light" type="button" aria-pressed="true" onClick={this.cancelCreateLabel}>Cancel</Button>
             </FormGroup>
           </AvForm>
         </Col>
       </Card>
     </div>);
   }
+  
   //This Method Called When Sublables Makes Enable true.
   loadCollapse=()=>{
     return (<Collapse isOpen={this.state.collapse}>

@@ -27,21 +27,24 @@ class EditCategory extends Component {
     };
   }
 
-  handleUpdate = () => {
+  handleUpdate = async() => {
     const data = {
       name: this.state.cName,
       color: this.state.categoryColor,
       code: this.state.code, parentId: this.state.parentId,
       version: this.state.version
     };
-    new CategoryApi().updateCategory(this.successCall, this.errorCall, data, this.state.profileId, this.state.categoryId );
+   await new CategoryApi().updateCategory(this.successCall, this.errorCall, data, this.state.profileId, this.state.categoryId );
   };
   cancelUpdateCategory = () => {
     this.setState({ cancelUpdateCategory: true })
   }
 
   successCall = () => {
-    this.callAlertTimer('success', 'Category Updated!')
+    setTimeout(()=>{
+      this.callAlertTimer('success', 'Category Updated!')
+    }, Config.notificationMillis)
+    
   }
 
   errorCall = err => {

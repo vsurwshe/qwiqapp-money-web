@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Card, CardBody, Button, Row, Col, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Card, CardBody, Button, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { FaTrashAlt, FaCloudUploadAlt, FaEye } from 'react-icons/fa';
 import AttachmentApi from '../../../services/AttachmentApi';
 import AddAttachment from './AddAttachment';

@@ -61,8 +61,9 @@ class CreateContact extends Component {
       message:'',
       selectedOption: [],
       formTouched: true,
-          formInput:'',
-          cancelAddContact:false,
+      formInput:'',
+      cancelAddContact:false,
+      doubleClick: false
     };
   }
   handleInput = e => {
@@ -75,6 +76,7 @@ class CreateContact extends Component {
     if (errors.length===0) {
       this.setState({formInput:values})
       if (values.firstName !== "" || values.lastName !== "" ) {
+        this.setState({ doubleClick: true });
         var newData={...values,"labelIds":this.state.selectedOption.map((opt)=>{return opt.value})}
         await new ContactApi().createContact(this.successCall, this.errorCall, this.state.profileId, newData);  
       } else{
@@ -85,9 +87,11 @@ class CreateContact extends Component {
   cancelAddContact=()=>{
     this.setState({cancelAddContact:true})
   }
+
   successCall = (response) =>{
     this.callAlertTimer("success","Contact Created Successfully !" );
   }
+
   handleSelect = selectedOption => {
     this.setState({ selectedOption });
   };
@@ -123,6 +127,7 @@ class CreateContact extends Component {
   }
 
   loadAvCreateContact = (alertColor,message) =>{
+    console.log(this.state.labels.length);
     return (
       <div>
         <Card>
@@ -161,10 +166,10 @@ class CreateContact extends Component {
                 <Col><AvField name="address2" placeholder="Address 2" /></Col>
               </Row>
               
-              <Row><Col>{this.loadAvCollapse()}</Col></Row> <br />
+              <Row><Col>{this.state.labels.length===0 ? "" :this.loadAvCollapse()}</Col></Row> <br />
               <center><FormGroup row>
                 <Col>
-                  <Button color="info" > Save </Button> &nbsp; &nbsp;
+                  <Button color="info" disabled={this.state.doubleClick} > Save </Button> &nbsp; &nbsp;
                   <Button active color="light" type="button" onClick={this.cancelAddContact}>Cancel</Button>
                 </Col>
               </FormGroup></center>
@@ -176,7 +181,6 @@ class CreateContact extends Component {
   
   loadAvCollapse = () =>{
     const labelQ = [];
-  
     if(this.state.labels.length===0){
       labelQ.push({
         value: null,
@@ -208,11 +212,11 @@ class CreateContact extends Component {
     slabel === undefined ? array.push({
         value: label.id,
         label: label.name,
-        color: label.color === null ? "#000000" : label.color,
+        color: label.color === null || label.color === "" ? "#000000" : label.color,
       }) : array.push({
       value: label.id,
       label: slabel.name+"/" +label.name,
-      color: label.color === null ? "#000000" : label.color,
+      color: label.color === null || label.color === "" ? "#000000" : label.color,
      })
   }
 }

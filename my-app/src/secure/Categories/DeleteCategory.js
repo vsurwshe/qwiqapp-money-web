@@ -17,12 +17,14 @@ class DeleteCategory extends Component {
     };
   }
 
-  componentDidMount = () => {
-    new CategoryApi().deleteCategory(this.successCall, this.errorCall,this.state.profileId, this.state.categoryId );
+  componentDidMount = async () => {
+    await new CategoryApi().deleteCategory(this.successCall, this.errorCall,this.state.profileId, this.state.categoryId );
   };
 
-  successCall = async () => {
-    await this.setState({categoryDeleted:true})
+  successCall = () => {
+    setTimeout(()=>{
+      this.setState({categoryDeleted:true})
+    }, Config.notificationMillis)
   };
 
   errorCall = () => {
@@ -33,13 +35,14 @@ class DeleteCategory extends Component {
     this.setState({ color,content });
     setTimeout(() => {
       this.setState({ categoryDeleted: true});
+      window.location.reload()
     }, Config.notificationMillis);
   };
 
   render() {
     const { categoryDeleted, color, content } = this.state;
     return  categoryDeleted ? <Categories color={color} content={content} visible={true}/> 
-                            : ReUseComponents.loadLoader("Delete Category")
+                            : ReUseComponents.loadSpinner("Delete Category")
   }
 }
 

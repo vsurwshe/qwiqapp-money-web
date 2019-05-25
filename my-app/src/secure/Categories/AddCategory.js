@@ -20,7 +20,8 @@ class AddCategory extends Component {
       content: '',
       collapse: false,
       categoryCreated: false,
-      cancelAddCategory:false,
+      cancelAddCategory: false,
+      doubleClick: false,
     }
   }
 
@@ -38,6 +39,7 @@ class AddCategory extends Component {
    }
 
   handlePostData = async (e, data) => {
+    this.setState({ doubleClick: true });    
     await this.generateCode()
     const newData = { ...data, parentId: this.state.parentId,code:this.state.code };
     new CategoryApi().createCategory(this.successCall, this.errorCall, this.state.profileId, newData);
@@ -81,14 +83,14 @@ class AddCategory extends Component {
     if(cancelAddCategory){
       return <Categories/>
     }else{
-    return <div>{categoryCreated ? <Categories/> :this.loadAddingCategory()}</div>
+      return <div>{categoryCreated ? <Categories/> :this.loadAddingCategory()}</div>
+    }
   }
-}
 
   loadAddingCategory = () =>{
-    const {alertColor,content}=this.state
+    const {alertColor,content, doubleClick}=this.state
     return(
-      <Card >
+      <Card style={{width:"100%"}}>
         <CardHeader><strong>Category</strong></CardHeader><br />
         <center>
           <Col sm="12" md={{ size: 3, offset: 1.5 }}>
@@ -107,7 +109,7 @@ class AddCategory extends Component {
                 </Input>
               </Collapse><br />
               <FormGroup>
-                <Button color="info" > Save </Button> &nbsp;&nbsp;
+                <Button color="info" disabled={doubleClick} > Save </Button> &nbsp;&nbsp;
                <Button active color="light" type="button" aria-pressed="true" onClick={this.cancelAddCategory}  >Cancel</Button>
               </FormGroup>
             </AvForm>

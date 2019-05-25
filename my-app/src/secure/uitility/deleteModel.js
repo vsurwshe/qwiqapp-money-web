@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 export const DeleteModel=(props)=>{
+  // return(<div>delete</div>)
     return (
         <Modal isOpen={props.danger} toggle={props.toggleDanger} style={{ paddingTop: "20%" }} backdrop={true}>
           <ModalHeader toggle={props.toggleDanger}>{props.headerMessage}</ModalHeader>

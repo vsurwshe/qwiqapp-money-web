@@ -1,18 +1,21 @@
 import React, { Component } from "react";
-import {
-  Button, Row, Col, Card, CardBody, Alert, CardHeader, Collapse,Input, InputGroupAddon, InputGroup, InputGroupText } from "reactstrap";
+import { Button, Row, Col, Card, CardBody,  CardHeader, Collapse } from "reactstrap";
 import CreateLabel from "./Createlabel";
 import Avatar from 'react-avatar';
-import { FaPen, FaTrashAlt, FaAngleDown, FaSearch } from 'react-icons/fa';
+import { FaPen, FaTrashAlt, FaAngleDown } from 'react-icons/fa';
 import UpdateLabel from "./UpdateLabel";
 import DeleteLabel from "./DeleteLabel";
 import LabelApi from "../../services/LabelApi";
 import Loader from 'react-loader-spinner'
 import Store from "../../data/Store";
 import { DeleteModel } from "../uitility/deleteModel";
-import { ProfileEmpty } from "../uitility/ProfileEmpty";
+import { ProfileEmptyMessage } from "../uitility/ProfileEmptyMessage";
 import { ReUseComponents } from "../uitility/ReUseComponents";
 
+/*
+*
+*
+*/
 class Lables extends Component {
   constructor(props) {
     super(props);
@@ -39,7 +42,6 @@ class Lables extends Component {
     };
   }
 
-  //this method get All Labels Related to that Profile
   componentDidMount = () => {
     this.setProfileId();
   }
@@ -56,7 +58,6 @@ class Lables extends Component {
     new LabelApi().getSublabels(this.successCall, this.errorCall, this.state.profileId);
   }
 
-  //this method sets labels when api given successfull Response
   successCall = async lable => {
     if (lable === []) {
       this.setState({ labels: [] })
@@ -66,9 +67,6 @@ class Lables extends Component {
     }
   }
 
-  callCreateLabel = () => { this.setState({ createLabel: true }) }
-
-  callCreateLabel = () => { this.setState({ createLabel: true }) }
 
   loadCollapse = () => {
     this.state.labels.map(lables => {
@@ -79,25 +77,25 @@ class Lables extends Component {
       }))
     });
   }
-  //this toggle for Delete Model
+
   toggleDanger = () => {
     this.setState({ danger: !this.state.danger });
   }
-  //this method for the load Update Compoents
+
   updateLabel = (ulable) => {
     this.setState({ updateLabel: true, requiredLabel: ulable })
   };
-  //this method for the load delete Components
+
   deleteLabel = () => {
     this.setState({ deleteLabel: true })
   };
-  //this method toggel Lables tab
+
   toggleAccordion = (tab) => {
     const prevState = this.state.accordion;
     const state = prevState.map((x, index) => tab === index ? !x : false);
     this.setState({ accordion: state });
   }
-  //this method use for showing sub-lables when swtich is yes
+
   toggleSublabel = () => {
     this.setState({ show: !this.state.show });
     this.getLabels(!this.state.show);
@@ -123,20 +121,24 @@ class Lables extends Component {
     this.hoverAccordion(hKey)
   }
 
+  setSearch = e =>{ this.setState({ search: e.target.value }) }
+  setLabelId = (labels)=>{ this.setState({ id: labels.id }) }
+  callCreateLabel = () => { this.setState({ createLabel: true }) }
+
   render() {
     const { labels, createLabel, updateLabel, id, deleteLabel, visible, profileId, requiredLabel, spinner, search } = this.state
     if (Store.getProfile() === null || Store.getProfile().length === 0) {
-      return (<ProfileEmpty />)
+      return (<ProfileEmptyMessage />)
     } else if (labels.length === 0 && !createLabel) {
       return <div>{labels.length === 0 && !createLabel && !spinner 
-                                  ? this.loadLoader() 
+                                  ? this.loadSpinner() 
                                   : this.loadNotLabel()}</div>
     } else if (createLabel) {
       return (<CreateLabel pid={profileId} label={labels} />)
     } else if (updateLabel) {
       return (<UpdateLabel pid={profileId} label={requiredLabel} lables={labels} />)
     } else if (deleteLabel) {
-      return (<DeleteLabel id={id} pid={profileId} />)
+      return <DeleteLabel id={id} pid={profileId} />
     } else {
       return <div>{this.loadShowLabel(visible, labels, search)}{this.loadDeleteLabel()}</div>
     }
@@ -150,8 +152,7 @@ class Lables extends Component {
       </CardHeader>);
   }
 
-  //this method load the spinner
-  loadLoader = () => {
+  loadSpinner = () => {
     return (
       <div className="animated fadeIn">
         <Card>
@@ -163,7 +164,6 @@ class Lables extends Component {
       </div>)
   }
 
-  //this method call when if any profile not created.
   loadNotLabel = () => {
     return ( <div className="animated fadeIn">
         <Card>
@@ -174,37 +174,38 @@ class Lables extends Component {
         </Card>
       </div>)
   }
-
-  //This Method Displays All the Labels of Corresponding Profile 
+  
   loadShowLabel = (visible, labels, search) => {
-    return (
-      <div className="animated fadeIn">
-        <Card>
-          <CardHeader>
-            <Row form>
-              <Col md={3} style={{ marginTop: "10px" }} >
-                <strong>Labels: {labels.length}</strong>
-              </Col>
-              <Col md={7} className="shadow p-0 mb-2 bg-white rounded">
-                <InputGroup>
-                  <Input type="search" className="float-right" style={{ width: '20%' }} onChange={e => this.setState({ search: e.target.value })} placeholder="Search Labels..." />
-                  <InputGroupAddon addonType="append"> <InputGroupText className="dark"><FaSearch /></InputGroupText></InputGroupAddon>
-                </InputGroup>
-              </Col>
-              <Col md={2}>
-                <Button color="primary" className="float-right" onClick={this.callCreateLabel}> + Add </Button>
-              </Col>
-            </Row>
-          </CardHeader>
-          <div style={{ margin: 30, paddingLeft: 10 }}>
-            <h6><Alert isOpen={visible} color="danger">Unable to Process Request, Please Try again</Alert></h6>
-            {labels.filter(ReUseComponents.searchingFor(search)).map((label, key) => { return this.loadSingleLable(label, key); })}
-          </div>
-        </Card>
-      </div>)
+    return ReUseComponents.loadItems(labels, this.setSearch, search, this.callCreateLabel, visible, this.toggleAccordion, this.state.accordion,  this.setLabelId, this.toggleDanger, this.updateLabel,
+  this.state.dropdownOpen, this.toggleDropDown);
+
+    // return (
+    //   <div className="animated fadeIn">
+    //     <Card>
+    //       <CardHeader>
+    //         <Row form>
+    //           <Col md={3} style={{ marginTop: "10px" }} >
+    //             <strong>Labels: {labels.length}</strong>
+    //           </Col>
+    //           <Col md={7} className="shadow p-0 mb-2 bg-white rounded">
+    //             <InputGroup>
+    //               <Input type="search" className="float-right" style={{ width: '20%' }} onChange={e => this.setState({ search: e.target.value })} placeholder="Search Labels..." />
+    //               <InputGroupAddon addonType="append"> <InputGroupText className="dark"><FaSearch /></InputGroupText></InputGroupAddon>
+    //             </InputGroup>
+    //           </Col>
+    //           <Col md={2}>
+    //             <Button color="primary" className="float-right" onClick={this.callCreateLabel}> + Add </Button>
+    //           </Col>
+    //         </Row>
+    //       </CardHeader>
+    //       <div style={{ margin: 30, paddingLeft: 10 }}>
+    //         <h6><Alert isOpen={visible} color="danger">Unable to Process Request, Please Try again</Alert></h6>
+    //         {labels.filter(ReUseComponents.searchingFor(search)).map((label, key) => { return this.loadSingleLable(label, key); })}
+    //       </div>
+    //     </Card>
+    //   </div>)
   }
 
-  //Shows the Single Label 
   loadSingleLable = (labels, ukey) => {
     const styles = { marginRight: 6 }
     const penColor = { marginTop: 15, color: 'blue' }
@@ -246,21 +247,17 @@ class Lables extends Component {
         </div>
       </div>)
   }
-  //this method call the delete model
+
   loadDeleteLabel = () => {
   return (
     <DeleteModel danger={this.state.danger}  headerMessage="Delete Label" bodyMessage="Are You Sure Want to Delete Label?"
      toggleDanger={this.toggleDanger} delete={this.deleteLabel} cancel={this.toggleDanger} />)
   }
-  //this Method load Browser DropDown
   loadDropDown = (labels, ukey) => {
     return ReUseComponents.loadDropDown(labels, ukey, this.state.dropdownOpen[ukey], this.toggleDropDown, this.updateLabel, this.setLabelId, this.toggleDanger  )
   }
 
-  setLabelId = (labels)=>{
-    this.setState({ id: labels.id });
-  }
-
+  
 }
 
 export default Lables;

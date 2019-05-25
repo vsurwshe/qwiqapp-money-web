@@ -34,7 +34,7 @@ class DeleteProfile extends Component {
     });
     setTimeout(() => {
       this.setState({ color: "" ,content:"",profileDeleted : true});
-      window.location.reload();
+       window.location.reload();
     }, Config.notificationMillis);
   };
 

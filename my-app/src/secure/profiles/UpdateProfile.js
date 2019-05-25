@@ -4,7 +4,6 @@ import ProfileApi from "../../services/ProfileApi";
 import Profiles from "./Profiles";
 import Config from "../../data/Config";
 
-
 class UpdateProfile extends Component {
   constructor(props) {
     super(props);
@@ -16,7 +15,6 @@ class UpdateProfile extends Component {
       updateSuccess: false,
       cancelUpdateProfile:false,
     };
-    //this.handleUpdate = this.handleUpdate.bind(this);
   }
   handleUpdate = () => {
     let data = { name: this.state.name };
@@ -35,6 +33,7 @@ class UpdateProfile extends Component {
     this.setState({ color: color, content: content });
     setTimeout(() => {
       this.setState({ name : '', color : '', updateSuccess : true});
+      //this.forceUpdate();
       window.location.href="/dashboard";
     }, Config.notificationMillis);
   };
@@ -49,7 +48,6 @@ class UpdateProfile extends Component {
       return <div>{updateSuccess ? <Profiles /> : this.loadUpdateProfile(name,color,content)}</div>  
     }
   }
-
   loadHeader = () => <CardHeader><strong>Profile</strong></CardHeader>
 
   // when updating profile
