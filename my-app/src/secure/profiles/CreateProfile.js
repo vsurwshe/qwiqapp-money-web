@@ -7,30 +7,32 @@ import Config from "../../data/Config";
 
 class CreateProfile extends Component {
   state = {
-    name : "",
-    userToken : "",
-    color : "",
-    content : "",
-    profileCreated : false,
-    cancelCreateProfile:false,
+    name: "",
+    userToken: "",
+    color: "",
+    content: "",
+    profileCreated: false,
+    cancelCreateProfile: false,
   };
 
   handleInput = e => {
     this.setState({ [e.target.name]: e.target.value });
   };
-cancelCreateProfile=()=>{
-  this.setState({ cancelCreateProfile:true  });
-}
+
+  cancelCreateProfile = () => {
+    this.setState({ cancelCreateProfile: true });
+  }
+
   componentDidMount() {
     this.setState({ userToken: Store.getAppUserAccessToken() });
   }
 
   handleSubmit = e => {
     e.preventDefault();
-    const data = { name : this.state.name };
-    new ProfileApi().createProfile( this.successCall, this.errorCall, data );
+    const data = { name: this.state.name };
+    new ProfileApi().createProfile(this.successCall, this.errorCall, data);
   };
-  
+
   successCall = () => {
     this.callAlertTimer("success", "New Profile Created!!");
   }
@@ -42,22 +44,22 @@ cancelCreateProfile=()=>{
   callAlertTimer = (color, content) => {
     this.setState({ color: color, content: content });
     setTimeout(() => {
-      this.setState({ name : "", content : "", color : "", profileCreated: true });
-      window.location.href="/dashboard";
+      this.setState({ name: "", content: "", color: "", profileCreated: true });
+      window.location.href = "/dashboard";
     }, Config.notificationMillis);
   };
 
   render() {
-    const {color,content,cancelCreateProfile}=this.state
+    const { color, content, cancelCreateProfile } = this.state
     if (cancelCreateProfile) {
       return <Profiles />
     } else {
-      return <div>{this.state.profileCreated?<Profiles />:this.loadCreateProfile(color,content)}</div>
+      return <div>{this.state.profileCreated ? <Profiles /> : this.loadCreateProfile(color, content)}</div>
     }
   }
 
   // when Profile Creation in process.
-  loadCreateProfile = (color,content) =>{
+  loadCreateProfile = (color, content) => {
     return (
       <div className="animated fadeIn">
         <Card>
@@ -70,7 +72,7 @@ cancelCreateProfile=()=>{
                 <Col sm="6">
                   <Input name="name" value={this.state.name} type="text" placeholder="Enter Profile name" autoFocus={true} onChange={e => this.handleInput(e)} />
                 </Col><br />
-                <Button color="info" disabled={!this.state.name} onClick={e => this.handleSubmit(e)} >Save </Button>
+                <Button color="info" disabled={!this.state.name} onClick={e => this.handleSubmit(e)} >Save </Button>&nbsp;&nbsp;
                 <Button active color="light" aria-pressed="true" onClick={this.cancelCreateProfile}>Cancel</Button>
               </Col>
             </center>

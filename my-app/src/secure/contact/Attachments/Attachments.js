@@ -5,6 +5,7 @@ import AttachmentApi from '../../../services/AttachmentApi';
 import AddAttachment from './AddAttachment';
 import Attachment from './Download_View_Delete_Attachment';
 import { DeleteModel } from '../../uitility/deleteModel';
+import FileViewer from 'react-file-viewer';
 
 class Attachments extends Component {
   constructor(props) {
@@ -23,7 +24,8 @@ class Attachments extends Component {
       pic: '',
       reattachment: '',
       display: false,
-      viewData: ''
+      viewData: '',
+      type:''
     }
   }
 
@@ -56,7 +58,7 @@ class Attachments extends Component {
   }
 
   toggleView = (viewData, reattachment) => {
-    this.setState({ display: !this.state.display, viewData, reattachment });
+   this.setState({ display: !this.state.display, viewData, reattachment });
   }
 
   deleteAttachmentRequest = async () => {
@@ -68,6 +70,7 @@ class Attachments extends Component {
     Attachment.DownloadAttachment(reattachment).then(response => console.log(response));
   }
   viewLink = (reattachment) => {
+      this.setState({ type: reattachment.filename.split(".")[1] });
     Attachment.viewAttachment(reattachment).then(response => this.toggleView(response, reattachment));
   }
   handleAddFile = () => {
@@ -109,7 +112,7 @@ class Attachments extends Component {
       <div className="list">
         <div className="list-item" key={key}>
           <Row>
-            <Col><Button onClick={() => { this.downloadLink(attachment) }} color="link">{attachment.filename}</Button> &nbsp;({this.attachmentFileSize(attachment.sizeBytes)})</Col>
+            <Col><Button onClick={() => { this.downloadLink(attachment) }} color="link">{attachment.filename} Type : {attachment.fileType}</Button> &nbsp;({this.attachmentFileSize(attachment.sizeBytes)})</Col>
             <FaEye color="#1E90FF" size={20} className="float-right" style={{ marginTop: -4, marginRight: 10 }} onClick={e => this.viewLink(attachment)} />{"    "}<span className="float-right">{"  "}</span>
             <FaTrashAlt color="#ff0000" className="float-right" style={styles} onClick={() => { this.toggleDanger(attachment.id, key) }} /><span className="float-right">{"  "}</span>
           </Row>
@@ -132,11 +135,15 @@ class Attachments extends Component {
   displayAttachment = () => {
     const { display, viewData, reattachment } = this.state
     return (
-      <Modal isOpen={display} centered={true} className={this.props.className}>
+      <Modal isOpen={display} centered={true} className={this.props.className} style={{width:"100%"}} >
         <ModalHeader toggle={() => { this.toggleView() }}>{reattachment === undefined ? '' : reattachment.filename}</ModalHeader>
         <ModalBody>
           <center>
-            <embed src={viewData} style={{ height: 300 }}></embed>
+            {/* <FileViewer fileType={(this.state.type).toLowerCase()} filePath={viewData} /> */}
+        {/* // errorComponent={CustomErrorComponent}
+        // onError={this.onError}
+        // /> */}
+            <embed src={viewData} style={{ width: 1000, height: 1000}}></embed>
           </center>
         </ModalBody>
       </Modal>)

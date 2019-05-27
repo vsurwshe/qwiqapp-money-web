@@ -46,6 +46,7 @@ class Contacts extends Component {
   componentDidMount = () =>{
     this.setProfileId();
   }
+
   setProfileId=async()=>{
     if(Store.getProfile()!=null && Store.getProfile().length!==0){
       var iterator=Store.getProfile().values()
@@ -53,6 +54,7 @@ class Contacts extends Component {
       this.getContacts();
     }
   }
+
   getContacts = () =>{
     new ContactApi().getContacts(this.successCall, this.errorCall, this.state.profileId);
   }
@@ -60,7 +62,6 @@ class Contacts extends Component {
   successCall = (contactJson) => {
     if (contactJson === []) {
       this.setState({ contacts : [0] })
-    
     } else {
       this.setState({ contacts : contactJson, spinner : true })
       this.loadCollapse();
@@ -100,9 +101,9 @@ class Contacts extends Component {
   };
 
   toggleDanger = () => {
-    console.log("setting DeleteTrue")
     this.setState({ danger : !this.state.danger});
   }
+
   toggleAccordion = (tab) => {
     const prevState = this.state.accordion;
     const state = prevState.map((x, index) => tab === index ? !x : false);
@@ -117,7 +118,11 @@ class Contacts extends Component {
   attachDropDown = (hKey, cId) =>{ 
     const prevState = this.state.attachDropdown;
     const state = prevState.map((x,index)=> hKey===index? !x : false );
-    this.setState({ attachDropdown : state, contactId: cId });
+    if (cId !== undefined) {
+      this.setState({ attachDropdown : state, contactId: cId });
+    } else {
+      this.setState({ attachDropdown : state });
+    }
   }
  
   hoverAccordion = (hKey) => {
@@ -171,7 +176,7 @@ class Contacts extends Component {
   
   searchingFor(term){
     return function(x){
-      return (x.firstName.toLowerCase()+x.lastName.toLowerCase()).includes(term.toLowerCase()) || !term
+      return x.name.toLowerCase().includes(term.toLowerCase()) || !term
     }
   }
 
@@ -226,7 +231,6 @@ class Contacts extends Component {
     if (this.state.visible) {
       setTimeout(()=>this.setState({visible:false}),1800)
     }
-     
   }
   
   loadShowContact = (visible, contacts) => {
@@ -247,9 +251,9 @@ class Contacts extends Component {
     const styles = { marginTop : 4 }
     return (
       <ListGroup flush key={contactKey} className="animated fadeIn" onPointerEnter={(e) => this.onHover(e, contactKey)} onPointerLeave={(e) => this.onHoverOff(e, contactKey)}>
-        <ListGroupItem action>
+        <ListGroupItem action >
           <Row>
-            <Col>
+            <Col onClick={()=>{this.attachDropDown(contactKey)}}>
               {this.displayName(contact, styles)}
               <FaPaperclip color="#34aec1" style={{marginTop : 5, marginLeft : 10}} size={17} onClick={()=>this.attachDropDown(contactKey, contact.id)} /> 
             </Col>
@@ -263,7 +267,7 @@ class Contacts extends Component {
   displayName = (contact, styles) =>{
     return( 
       <span style={{styles}} ><FaUserCircle size={20} style={{color:'#020e57'}}  />{" "}&nbsp;
-        <b style={{color:'#000000'}}>{ contact.firstName.length>20 ? contact.firstName.slice(0, 20)+"..." : contact.firstName+" "+contact.lastName }</b>
+        <b style={{color:'#000000'}}>{ contact.name.length>20 ? contact.name.slice(0, 20)+"..." : contact.name}</b>
         <Attachments profileId={this.state.profileId} contactId ={contact.id} getCount={true}/>
       </span>)
   }

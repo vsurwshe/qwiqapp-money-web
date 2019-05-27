@@ -15,28 +15,28 @@ class DeleteContact extends Component {
     };
   }
   componentDidMount = () => {
-    new ContactApi().deleteContact(this.successCall, this.errorCall ,this.state.profileId, this.state.contactId);
-   };
-   
-  successCall = async () => {
-    this.setState({ labelDeleted: true  });
-    this.callAlertTimer("success","Contact Deleted Successfully....");
-     window.location.reload();
+    new ContactApi().deleteContact(this.successCall, this.errorCall, this.state.profileId, this.state.contactId);
   };
- 
+
+  successCall = async () => {
+    this.setState({ labelDeleted: true });
+    this.callAlertTimer("success", "Contact Deleted Successfully....");
+    window.location.reload();
+  };
+
   errorCall = () => {
-    this.callAlertTimer("danger","Something went wrong, Please Try Again...  ");
+    this.callAlertTimer("danger", "Something went wrong, Please Try Again...  ");
   };
 
   callAlertTimer = (color, content) => {
-    this.setState({ color , content});
+    this.setState({ color, content });
   };
 
   render() {
     const { labelDeleted, content, color } = this.state;
-    return <div>{labelDeleted ? <Contacts color={color} content={content}/> 
-                               : ReUseComponents.loadDeleting("Delete Contact", "Contact Deleting")}</div>
-  }   
+    return <div>{labelDeleted ? <Contacts color={color} content={content} />
+      : ReUseComponents.loadDeleting("Delete Contact", "Contact Deleting")}</div>
+  }
 }
 
 export default DeleteContact;

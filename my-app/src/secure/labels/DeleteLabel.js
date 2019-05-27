@@ -19,6 +19,7 @@ class DeleteLabel extends Component {
   componentDidMount = async () => {
    await new LabelApi().deleteLabel(this.successCall,this.errorCall,this.state.profileId,this.state.id);
    };
+   
   successCall = () => {
     this.callAlertTimer("success","Label Deleted Successfully....");
   };

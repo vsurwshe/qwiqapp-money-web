@@ -36,7 +36,7 @@ class AddCategory extends Component {
   handleSubmitValue = (event, errors, values) => {
     if(errors.length ===0){}
     this.handlePostData(event,values);
-   }
+  }
 
   handlePostData = async (e, data) => {
     this.setState({ doubleClick: true });    
@@ -44,6 +44,7 @@ class AddCategory extends Component {
     const newData = { ...data, parentId: this.state.parentId,code:this.state.code };
     new CategoryApi().createCategory(this.successCall, this.errorCall, this.state.profileId, newData);
   };
+
   cancelAddCategory=()=>{
     this.setState({ cancelAddCategory:true  });
   }

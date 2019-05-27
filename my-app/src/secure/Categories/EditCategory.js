@@ -92,6 +92,8 @@ class EditCategory extends Component {
               <Input type="text" name="cName" value={cName} style={{ fontWeight: 'bold', color: '#000000' }} autoFocus={true} onChange={e => { this.setState({ cName: e.target.value }) }} />
               <br />
               <Input name="categoryColor" type="color" list="colors" value={`${categoryColor}`} onChange={e => { this.handleInput(e) }} /><br />
+              {this.props.category.subCategories === null ? <><Input name="check" type="checkbox" onClick={()=>{this.toggle()}} /><Label for="mark">Nest Under Category</Label> <br /></> : ""}
+              {this.loadCollapse()}
               <Button color="success" disabled={!cName} onClick={this.handleUpdate} >Update  </Button>&nbsp;&nbsp;&nbsp;
                <Link to="/listCategories" style={{ textDecoration: 'none' }}>
                 <Button active color="light" aria-pressed="true" onClick={this.cancelUpdateCategory}>Cancel</Button></Link>
@@ -114,7 +116,7 @@ class EditCategory extends Component {
               <Input type="text" name="cName" value={cName} style={{ fontWeight: 'bold', color: '#000000' }} autoFocus={true} onChange={e => { this.setState({ cName: e.target.value }) }} />
               <br />
               <Input name="categoryColor" type="color" list="colors" value={`${categoryColor}`} onChange={e => { this.handleInput(e) }} /><br />
-              <Input name="check" type="checkbox" onClick={this.toggle} /><Label for="mark">Make it a Parent Category </Label> <br />
+              <Input name="check" type="checkbox" onClick={()=>{this.toggle()}} /><Label for="mark">Make it as Parent</Label> <br />
               <Collapse isOpen={this.state.collapse}>
                 <FormGroup>
                   <Input type="select" name="parentId" id="exampleSelect" onChange={e => { this.handleInput(e) }}>
@@ -128,6 +130,19 @@ class EditCategory extends Component {
           </FormGroup>
         </center>
       </Card>)
+  }
+
+  loadCollapse = () => {
+    console.log(this.state.collapse);
+    return (
+        <Collapse isOpen={!this.state.collapse}>
+          <FormGroup>
+            <Input type="select" name="parentId" id="exampleSelect" onChange={e => { this.handleInput(e) }}>
+              {this.state.categories.map(category => { return <option key={category.id} value={category.id}>{category.name}</option> })}
+            </Input>
+          </FormGroup>
+        </Collapse>
+    );
   }
 }
 

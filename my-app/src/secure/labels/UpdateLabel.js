@@ -68,7 +68,6 @@ this.setState({ cancelUpdateLabel:true  });
 }
   //This method shows the fields to update a Lable
   loadUpdatingLable = (name, notes, alertColor, content, userColor) =>{
-    console.log(this.state.labels.length)
     return( 
       <div className="animated fadeIn" >
         <Card>
@@ -81,7 +80,7 @@ this.setState({ cancelUpdateLabel:true  });
               <Input type="text" name="Label name" value={name} style={{ fontWeight: 'bold', color: '#000000' }} autoFocus={true} onChange={e => { this.setState({ name: e.target.value }) }} /><br />
               <Input type="text" name="Label Notes" placeholder="Label notes" value={notes} style={{ fontWeight: 'bold', color: '#000000' }} onChange={e => { this.setState({ notes: e.target.value }) }} /><br/>
               <Input type="color" name="Label Color" list="Colors" value={userColor} style={{ fontWeight: 'bold', color: '#000000' }} onChange={e => { this.setState({ userColor: e.target.value }) }} /><br/>
-              {this.state.parentId !== null ?this.loadSublabelMakeParentLabel() : this.state.labels.length<=1? "" :this.loadParentLableMakeSubLable()}
+              {this.state.parentId !== null ? ( this.props.label.subLabels !== null ? "" : this.loadSublabelMakeParentLabel() ) : this.state.labels.length<=1? "" : this.props.label.subLabels !== null ? "" : this.loadParentLableMakeSubLable()}
               {this.state.labels.length<=1? "" : this.loadCollapse()}
               <br />
               <Button color="success" disabled={!name&&this.state.doubleClick} onClick={this.handleUpdate} >Update  </Button>&nbsp;&nbsp;&nbsp;

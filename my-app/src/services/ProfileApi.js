@@ -23,6 +23,9 @@ class ProfileApi {
   deleteProfile(success, failure, uid) {
     process(success, failure, "/profiles/" + uid, "DELETE");
   }
+  getCountrylist(success, failure){
+    process(success, failure, "/countries/", "GET");
+  }
 }
 
 export default ProfileApi;

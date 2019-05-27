@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Container, Button, Card, CardBody, Col, Row, CardHeader } from "reactstrap";
+import { Container, Button, Card, CardBody, Col, Row, CardHeader, Alert } from "reactstrap";
 import ProfileApi from "../../services/ProfileApi";
 import UpdateProfile from "./UpdateProfile";
 import CreateProfile from "./CreateProfile";
@@ -28,7 +28,8 @@ class Profiles extends Component {
       viewProfileRequest: false,
       id: 0,
       name: "",
-      spinner:false
+      spinner: false,
+      visible:false
     };
   }
 
@@ -38,13 +39,13 @@ class Profiles extends Component {
 
   successCall = async  json => {
     if (json === null) {
-      this.setState({ profiles : [],spinner : true })
-    }else {
-       this.setState({ profiles : json, spinner : true})
+      this.setState({ profiles: [], spinner: true })
+    } else {
+      this.setState({ profiles: json, spinner: true })
     }
   };
 
-  errorCall = err => { console.log("Internal Server Error") }
+  errorCall = err => { this.setState({visible : true}); console.log("Internal Server Error") }
 
   updateProfile = (uid, uName) => {
     this.setState({ updateProfile: true, id: uid, name: uName })
@@ -55,7 +56,7 @@ class Profiles extends Component {
   };
 
   profileView = () => {
-    this.setState({ viewProfileRequest : !this.state.viewProfileRequest })
+    this.setState({ viewProfileRequest: !this.state.viewProfileRequest })
   }
 
   callCreateProfile = () => {
@@ -69,44 +70,47 @@ class Profiles extends Component {
   }
 
   render() {
-    const { profiles, id, viewProfileRequest, createProfile, updateProfile, deleteProfile, name ,spinner} = this.state
+    const { profiles, id, viewProfileRequest, createProfile, updateProfile, deleteProfile, name, spinner } = this.state
     if (profiles.length === 0 && !createProfile) {
-      return <div>{profiles.length === 0 && !createProfile && !spinner ? this.loadSpinner() :<ProfileEmptyMessage/>}</div>
+      return <div>{profiles.length === 0 && !createProfile && !spinner ? this.loadSpinner() : <ProfileEmptyMessage />}</div>
     } else if (createProfile) {
       return (<Container> <CreateProfile /> </Container>)
     } else if (updateProfile) {
       return (<Container> <UpdateProfile id={id} name={name} /> </Container>)
     } else if (deleteProfile) {
       return (<Container> <DeleteProfile id={id} /> </Container>)
-    }else {
+    } else {
       return <div>{this.showProfile(viewProfileRequest, profiles)}{this.loadDeleteProfile()}</div>
     }
   }
 
-  loadHeader = () =>{
-    return(
+  loadHeader = () => {
+    return (
       <CardHeader><strong>PROFILES</strong>
         <Button color="success" className="float-right" onClick={this.callCreateProfile}> + Create Profile </Button>
       </CardHeader>)
   }
-   loadSpinner = () =>{
-    return( 
+
+  loadSpinner = () => {
+    return (
       <div className="animated fadeIn">
         <Card>
-          <center style={{paddingTop:'20px'}}>
+          <center style={{ paddingTop: '20px' }}>
             {this.loadHeader()}
-            <CardBody><Loader type="TailSpin" color="#2E86C1" height={60} width={60}/></CardBody>
+            <CardBody>
+              {this.state.visible && <Alert color="danger">Unable to Process your Request, please try Again...</Alert>}
+              <Loader type="TailSpin" color="#2E86C1" height={60} width={60} /></CardBody>
           </center>
         </Card>
       </div>)
-   }
+  }
 
   //if one or more profile is there then this method Call
   showProfile = (viewProfileRequest, profiles) => {
     return (
       <div className="animated fadeIn">
         <Card>
-         {this.loadHeader()}
+          {this.loadHeader()}
           <CardBody>
             <Row>
               <Col sm="12" md={{ size: 6, offset: 3 }}>
@@ -121,21 +125,21 @@ class Profiles extends Component {
   }
 
   //this method load the single profile
-  loadSingleProfile = (profiles, viewProfileRequest)=>{
+  loadSingleProfile = (profiles, viewProfileRequest) => {
     return (
       <div key={profiles.id}>
         <Avatar name={profiles.name.charAt(0)} size="40" round={true} onClick={this.profileView} /> &nbsp;&nbsp;{profiles.name}
         <FaTrashAlt onClick={() => { this.setState({ id: profiles.id }); this.toggleDanger() }} className="float-right" style={{ marginLeft: "20px", color: 'red', marginTop: "15px" }} />
         <FaPen size={15} className="float-right" style={{ marginLeft: "20px", color: '#4385ef', marginTop: "15px" }} onClick={() => { this.updateProfile(profiles.id, profiles.name) }} />
-         <Container>{viewProfileRequest ? <ViewProfile view={profiles} /> : " "}</Container>
+        <Container>{viewProfileRequest ? <ViewProfile view={profiles} /> : " "}</Container>
       </div>);
   }
 
   //this method call the delete model
   loadDeleteProfile = () => {
     return (
-      <DeleteModel danger={this.state.danger} headerMessage="Delete Profile" bodyMessage="Are You Sure Want to Delete Profile?" 
-      toggleDanger={this.toggleDanger} delete={this.deleteProfile} cancel={this.toggleDanger} />)
+      <DeleteModel danger={this.state.danger} headerMessage="Delete Profile" bodyMessage="Are You Sure Want to Delete Profile?"
+        toggleDanger={this.toggleDanger} delete={this.deleteProfile} cancel={this.toggleDanger} />)
   }
 }
 export default Profiles

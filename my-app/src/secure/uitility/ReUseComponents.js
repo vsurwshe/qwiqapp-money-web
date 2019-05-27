@@ -17,11 +17,13 @@ export const ReUseComponents = {
         </Card>
       </div>)
   },
+
   loadHeader: function (strongMessage) {
     return (<div style={{ padding: 10 }}>
       <center><strong> {strongMessage} </strong></center>
     </div>)
   },
+
   loadSpinner: function (headerMessage) {
     return (
       <div className="animated fadeIn">
@@ -33,6 +35,7 @@ export const ReUseComponents = {
         </Card>
       </div>)
   },
+
   searchingFor: function (term) {
     return function (x) {
       return x.name.toLowerCase().includes(term.toLowerCase()) || !term
@@ -40,8 +43,7 @@ export const ReUseComponents = {
   },
 
   loadDropDown: function (item, ukey, dropdownOpen, toggleDropDown, stateFun, toggleDanger, updateLabel) {
-    return (
-      <Dropdown isOpen={dropdownOpen} style={{ marginTop: 7 }} toggle={() => { toggleDropDown(ukey); }} size="sm">
+    return ( <Dropdown isOpen={dropdownOpen} style={{ marginTop: 7 }} toggle={() => { toggleDropDown(ukey); }} size="sm">
         <DropdownToggle tag="span" onClick={() => { toggleDropDown(ukey); }} data-toggle="dropdown" aria-expanded={dropdownOpen}>
           <FaEllipsisV style={{ marginLeft: 10, marginRight: 10 }} />
         </DropdownToggle>
@@ -59,6 +61,7 @@ export const ReUseComponents = {
     } else {
       itemType = "Categories"
     }
+    let placeHolder = "Search " + itemType + "..."
     return (
       <div className="animated fadeIn">
         <Card>
@@ -69,7 +72,7 @@ export const ReUseComponents = {
               </Col>
               <Col md={7} className="shadow p-0 mb-3 bg-white rounded">
                 <InputGroup>
-                  <Input type="search" className="float-right" style={{ width: '20%' }} onChange={e => setSearch(e)} placeholder="Search Categories..." />
+                  <Input type="search" className="float-right" style={{ width: '20%' }} onChange={e => setSearch(e)} placeholder={placeHolder} />
                   <InputGroupAddon addonType="append">
                     <InputGroupText className="dark"><FaSearch /></InputGroupText>
                   </InputGroupAddon>
@@ -86,6 +89,7 @@ export const ReUseComponents = {
         </Card>
       </div>)
   },
+
   loadSingleItem: function (singleItem, ukey, toggleAccordion, accordion, setItemId, toggleDanger, handleUpdate, stateDrodownAccord, dropDownAccordion) {
     const ellipsisText1 = { flex: 1, display: 'flex', alignItems: 'center', marginLeft: '-10' }
     const ellipsisText2 = { flex: 1, width: '100px', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', paddingLeft: 10 }
@@ -95,7 +99,7 @@ export const ReUseComponents = {
         <div className="list-group-item" style={{ paddingTop: 1, padding: 7 }}>
           <Row >
             <Col>
-              {this.loadAvatar(singleItem, ukey, ellipsisText1, ellipsisText2, toggleAccordion)}
+              {this.loadAvatar_DisplayName(singleItem, ukey, ellipsisText1, ellipsisText2, toggleAccordion)}
             </Col>
             <Col sm={1} md={1} lg={1} xl={1} >
               {this.loadDropDown(singleItem, ukey, stateDrodownAccord[ukey], dropDownAccordion, setItemId, toggleDanger, handleUpdate)}
@@ -107,33 +111,41 @@ export const ReUseComponents = {
       </div>)
   },
 
-  loadAvatar: function (singleItem, ukey, ellipsisText1, ellipsisText2, toggleAccordion) {
-    return (
-      <span style={ellipsisText1}>
+  loadAvatar_DisplayName: function (singleItem, ukey, ellipsisText1, ellipsisText2, toggleAccordion) {
+      if (singleItem.parentId !== null) {
+        return <span style={ellipsisText1} > {this.loadAvatar(singleItem, ukey, ellipsisText2, toggleAccordion)} </span>
+      } else {
+        return <span style={ellipsisText1} onClick={() => { toggleAccordion(ukey) }} > {this.loadAvatar(singleItem, ukey, ellipsisText2, toggleAccordion)} </span>
+      }
+  },
+  
+  loadAvatar: function(singleItem, ukey, ellipsisText2, toggleAccordion) {
+    return ( <>
         <Avatar name={singleItem.name.charAt(0)} color={singleItem.color === null || singleItem.color === "" ? '#000000' : singleItem.color} size="40" square={true} />
         <div style={ellipsisText2}>&nbsp;&nbsp;{singleItem.name}
           {singleItem.subCategories !== undefined
             ? (singleItem.subCategories !== null ? <span><FaAngleDown style={{ marginLeft: 8 }} onClick={() => { toggleAccordion(ukey) }} /></span> : "")
             : (singleItem.subLabels !== undefined ? (singleItem.subLabels !== null ? <span><FaAngleDown style={{ marginLeft: 8 }} onClick={() => { toggleAccordion(ukey) }} /></span> : "") : "")}
         </div>
-      </span>
+      </>
     )
   },
 
   loadCollapse: function (singleItem, ukey, accordion, setItemId, toggleDanger, handleUpdate, subItemCss, ellipsisText1, ellipsisText2, toggleAccordion) {
     return (
       <Collapse isOpen={accordion[ukey]}>
-        {singleItem.subCategories !== undefined ? (singleItem.subCategories !== null ? singleItem.subCategories.map((subCategory, subKey) => { return this.loadSub(subCategory, subKey, subItemCss, ellipsisText1, ellipsisText2, setItemId, toggleDanger, handleUpdate, toggleAccordion) }) : "")
-          : (singleItem.subLabels !== undefined ? (singleItem.subLabels !== null ? singleItem.subLabels.map((subLabel, subKey) => { return this.loadSub(subLabel, subKey, subItemCss, ellipsisText1, ellipsisText2, setItemId, toggleDanger, handleUpdate, toggleAccordion) }) : "") : "")}
+        {singleItem.subCategories !== undefined ? (singleItem.subCategories !== null ? singleItem.subCategories.map((subCategory, subKey) => { return this.loadSubItem(subCategory, subKey, subItemCss, ellipsisText1, ellipsisText2, setItemId, toggleDanger, handleUpdate, toggleAccordion) }) : "")
+          : (singleItem.subLabels !== undefined ? (singleItem.subLabels !== null ? singleItem.subLabels.map((subLabel, subKey) => { return this.loadSubItem(subLabel, subKey, subItemCss, ellipsisText1, ellipsisText2, setItemId, toggleDanger, handleUpdate, toggleAccordion) }) : "") : "")}
       </Collapse>
     )
   },
-  loadSub: function (subItem, key, subItemCss, ellipsisText1, ellipsisText2, setItemId, toggleDanger, handleUpdate) {
+  
+  loadSubItem: function (subItem, key, subItemCss, ellipsisText1, ellipsisText2, setItemId, toggleDanger, handleUpdate) {
     return (
       <span className="list-group-item" style={subItemCss} key={key}>
         <Row>
           <Col>
-            {this.loadAvatar(subItem, key, ellipsisText1, ellipsisText2)}
+            {this.loadAvatar_DisplayName(subItem, key, ellipsisText1, ellipsisText2)}
           </Col>
           <Col> <FaTrashAlt className="float-right" color="red" style={{ marginTop: 20, marginLeft: 10, marginRight: 20 }} onClick={() => { setItemId(subItem); toggleDanger() }} />
             <FaPen size={12} className="float-right" color="blue" style={{ marginTop: 20 }} onClick={() => handleUpdate(subItem)} />
