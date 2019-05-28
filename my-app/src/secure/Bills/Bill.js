@@ -165,7 +165,7 @@ class Bills extends Component {
   
   searchingFor = (term) =>{
     return function(x){
-      return (x.notes.toLowerCase()+x.amount+x.categoryName.name.toLowerCase()).includes(term.toLowerCase()) || !term
+      return (x.description.toLowerCase()+x.amount+x.categoryName.name.toLowerCase()).includes(term.toLowerCase()) || !term
     }
   }
 
@@ -236,11 +236,13 @@ class Bills extends Component {
               <strong style={{ paddingTop: 5 }}><center>{this.dateFormat(bill.billDate)}</center></strong>
             </Col>
             <Col sm={8}>
-              <Row style={{ paddingLeft: 10 }}>{bill.notes}</Row>
+              <Row style={{ paddingLeft: 10 }}>{bill.description}</Row>
               <Row style={{ paddingLeft: 10, fontStyle: "oblique", color: bill.categoryName.color}}>{bill.categoryName.name}</Row>
             </Col>
             <Col style={{ marginTop: 10 }} className="float-right">
-              <b style={{ color: "#F80505" }}>{new Intl.NumberFormat('en-IN', { style: 'currency', currency: bill.currency}).format( bill.amount)}</b>
+              <b style={{ color: "#F80505" }}>
+              {new Intl.NumberFormat('en-US', { style: 'currency', currency: bill.currency}).format( bill.amount)}
+              </b>
             </Col>
             <Col>{this.state.onHover && this.state.hoverAccord[ukey] ? this.loadDropDown(bill, ukey, styles) : ''}</Col>
           </Row>

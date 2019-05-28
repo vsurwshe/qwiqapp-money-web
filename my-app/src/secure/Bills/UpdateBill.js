@@ -21,14 +21,35 @@ class UpdateBill extends Component {
       labelOption : props.bill.labelIds,
       categoryOptionUpdate : false,
       labelOptionUpdate : false,
-      categoryOption : props.bill.categoryId
-     };
+      categoryOption : props.bill.categoryId,
+      currencies:[],
+      userAmount:props.bill.amount,
+      netAmount:0,
+    };
   }
- 
+
+  componentDidMount=async ()=>{
+    await Data.currencies().then(data=>{this.setState({currencies:data})})
+    this.calculateNetAmount();
+   }
+
+  handleChange=() =>{
+    let tax_amount= isNaN(parseInt(document.getElementById("tax").value)) ? 0 : parseInt(document.getElementById("tax").value)
+    let amount=isNaN(parseInt(document.getElementById("amount").value)) ?  0 : parseInt(document.getElementById("amount").value)
+    let gst_amount=  (amount * tax_amount) /100;
+      this.setState({userAmount :amount+gst_amount })
+ }
+ calculateNetAmount=() =>{
+   let tax_amount= isNaN(parseInt(document.getElementById("tax").value)) ? 0 : parseInt(document.getElementById("tax").value)
+  let amount=isNaN(parseInt(document.getElementById("grossAmount").value)) ?  0 : parseInt(document.getElementById("grossAmount").value)
+   // GST Amount = Original Cost - [Original Cost x {100/(100+GST%)}]
+  let gst_amount=  (amount -[amount*(100/(100+tax_amount))])
+  this.setState({netAmount :amount-gst_amount })
+}
   //this method handle form submission values and errors
   handleSubmitValue = (event, errors, values) => {
     const { labelOption, categoryOption, categoryOptionUpdate, labelOptionUpdate } = this.state 
-    const  newData = {...values,"categoryId":categoryOptionUpdate ? categoryOption.value : categoryOption,"labelIds":labelOption===null?[]:( labelOptionUpdate ? labelOption.map(opt=>{return opt.value}): labelOption ),"version": this.props.bill.version}
+    const  newData = {...values,"categoryId":categoryOptionUpdate ? categoryOption.value : categoryOption,"labelIds":labelOption===null || labelOption===[]?[]:( labelOptionUpdate ? labelOption.map(opt=>{return opt.value}): labelOption ),"version": this.props.bill.version}
     if (errors.length === 0) { this.handleUpdate(event, newData); }
   }
 
@@ -55,7 +76,8 @@ class UpdateBill extends Component {
   };
 
   labelSelected = (labelOption) =>{
-    this.setState({ labelOption, labelOptionUpdate : true})
+    console.log(labelOption)
+    this.setState({ labelOption ,labelOptionUpdate : true})
   }
 
   categorySelected = (categoryOption) =>{
@@ -64,6 +86,7 @@ class UpdateBill extends Component {
     
   render() {
     const { alertColor, content, updateSuccess, labels, categories, bill } = this.state;
+    console.log('Amount is : ',bill.amount)
     return <div>{updateSuccess ? <Lables /> : this.loadUpdatingLabel(alertColor, content, labels, categories, bill)}</div>
   }
 
@@ -80,27 +103,34 @@ class UpdateBill extends Component {
             <br />
             <Alert color={alertColor}>{content}</Alert>
               <AvForm onSubmit={this.handleSubmitValue}>
-                <Row>
+              <Row>
                   <Col sm={2}>
-                    <AvField type="select" name="currencgetProfileIdy" value={bill.currency} errorMessage="Select Any One Category" required>
-                      <option value="EUR">€</option>
-                      <option value="USD">$</option>
-                      <option value="INR">₹</option>
+                    <AvField type="select" id="symbol"  value={bill.currency} name="currency" errorMessage="Select Currency" required>
+                      {this.state.currencies.map((currencies,key)=>{return <option key={key} value={currencies.code} h={currencies.symbol} symbol={currencies.symbol} >{currencies.symbol}</option>})}
                     </AvField>
                   </Col>
                   <Col>
-                    <AvField name="amount" value={bill.amount} placeholder="Amount" type="text" errorMessage="Invalid amount" validate={{ required: { value: true }, pattern: { value: '^[0-9]+$' } }} required />
+                    <AvField name="userAmount" id="amount" value={this.state.netAmount}  onChange={()=>this.handleChange()} placeholder="Amount" type="text" errorMessage="Invalid amount" 
+                    validate={{ required: { value: true }, pattern: { value: '^([0-9]*[.])?[0-9]+$' } }} required  />
+                  </Col>
+                </Row>
+                <Row>
+                  <Col>
+                    <AvField name="tax" id="tax" value={bill.tax}  onChange={()=>this.handleChange()} placeholder="tax" label="Tax" type="text" errorMessage="Invalid amount" validate={{ required: { value: true }, pattern: { value: '^[0-9]+$' } }} required  />
+                     </Col>
+                  <Col>
+                    <AvField name="amount" id="grossAmount" value={this.state.userAmount} disabled={true}  label="Gross Amount" placeholder="Gross Amount" type="text" errorMessage="Invalid amount" validate={{ required: { value: true } }} required />
                   </Col>
                 </Row>
                 <Row>
                   <Col> <Select options={Data.categories(categories)}  defaultValue={Data.categories(categories).filter(item=>{return item.value===bill.categoryId})} styles={Data.singleStyles}  placeholder="Select Categories " onChange={this.categorySelected} required/></Col>
                 </Row><br />
                 <Row>
-                  <Col><AvField name="billDate" label="Bill Date" value={bill.billDate} type="date" errorMessage="Invalid Date" validate={{ date: { format: 'DD/MM/YYYY' }, required: { value: true } }} /></Col>
-                  <Col><AvField name="dueDate" label="Due Date" value={bill.dueDate} type="date" errorMessage="Invalid Date" validate={{ date: { format: 'DD/MM/YYYY' }, required: { value: true } }} /></Col>
+                  <Col><AvField name="billDate" label="Bill Date" value={bill.billDate} type="date" errorMessage="Invalid Date" validate={{ date: { format: 'dd/mm/yyyy' }, required: { value: true } }} /></Col>
+                  <Col><AvField name="dueDate" label="Due Date" value={bill.dueDate} type="date" errorMessage="Invalid Date" validate={{ date: { format: 'dd/mm/yyyy' }, required: { value: true } }} /></Col>
                 </Row>
                 <Row>
-                  <Col> <AvField name="notes" type="text" value={bill.notes} list="colors" errorMessage="Invalid Notes" placeholder="Enter Notes " required /></Col>
+                  <Col> <AvField name="description" type="text" value={bill.description} list="colors" errorMessage="Invalid Notes" placeholder="Enter Notes " required /></Col>
                 </Row>
                 <Row>
                   <Col> {this.lablesOptions(labels, bill)}</Col>
