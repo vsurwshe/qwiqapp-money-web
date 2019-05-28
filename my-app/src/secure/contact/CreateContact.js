@@ -6,7 +6,7 @@ import chroma from 'chroma-js';
 import Select from "react-select";
 import ContactApi from "../../services/ContactApi";
 import Config from "../../data/Config";
-import GenralApi from "../../services/GenralApi";
+import GeneralApi from "../../services/GeneralApi";
 
 const colourStyles = {
   control: styles => ({ ...styles, backgroundColor: 'white' }),
@@ -66,18 +66,18 @@ class CreateContact extends Component {
       formInput: '',
       cancelAddContact: false,
       doubleClick: false,
-      countries:[],
+      countries: [],
       selectedCountry: '',
     };
   }
+
   componentDidMount = () => {
-    new GenralApi().getCountrylist(this.successCallCountryList, this.errorCallContry)
+    new GeneralApi().getCountrylist(this.successCallCountryList, this.errorCallCountry)
   }
-  successCallCountryList = arrayResult =>{
-    console.log(arrayResult.data.length);
+  successCallCountryList = arrayResult => {
     this.setState({ countries: arrayResult });
   }
-  errorCallContry = error =>{console.log(error)}
+  errorCallCountry = error => { console.log(error) }
 
   handleInput = e => {
     this.setState({ [e.target.name]: e.target.value });
@@ -85,13 +85,12 @@ class CreateContact extends Component {
 
   handleSubmit = async (event, errors, values) => {
     event.persist();
-    let {selectedCountry, selectedOption, profileId } = this.state;
+    let { selectedCountry, selectedOption, profileId } = this.state;
     if (errors.length === 0) {
       this.setState({ formInput: values })
-      if (values.name === "" ) {
-        this.callAlertTimer("danger", "Name is required ")
-      } else if (selectedCountry === "") {
-        this.callAlertTimer("danger", "Country is Required ")
+      if (selectedCountry === "") {
+        console.log(selectedCountry)
+        this.callAlertTimer("danger", "Country is Required")
       } else {
         this.setState({ doubleClick: true });
         var newData = { ...values, "country": selectedCountry, "labelIds": selectedOption.map((opt) => { return opt.value }) }
@@ -114,7 +113,7 @@ class CreateContact extends Component {
 
   errorCall = (err) => {
     this.callAlertTimer("danger", "Unable to Process the request, Please Try Again");
-    this.setState({ failContactCreate: true, alertColor: "danger" })
+    this.setState({ failContactCreate: true })
   };
 
   toggle = () => {
@@ -123,7 +122,7 @@ class CreateContact extends Component {
 
   callAlertTimer = (alertColor, message) => {
     this.setState({ alertColor, message });
-    if (message !== "Firstname or Last name is needed ") {
+    if (message !== "Country is Required") {
       setTimeout(() => {
         this.setState({ contactCreated: true });
       }, Config.notificationMillis);
@@ -142,95 +141,94 @@ class CreateContact extends Component {
   loadHeader = () => {
     return <CardHeader><strong>Contacts</strong></CardHeader>
   }
-  handleCountrySelect =e=>{
-    this.setState({ selectedCountry: e.target.value });
+  handleCountrySelect = e => {
+    this.setState({ selectedCountry: e.target.value, alertColor: '', message: '' });
   }
 
   loadAvCreateContact = (alertColor, message) => {
-    console.log(this.state.labels.length);
     return (
       <div>
         <Card>
           <CardBody>
-            <Alert color={alertColor}>{message}</Alert>
+            {alertColor === "" ? "" : <Alert color={alertColor}>{message}</Alert>}
             <center><h5>Create Contact</h5></center><br />
             <AvForm onSubmit={this.handleSubmit}>
               <Row>
-                <Col><AvField name="name" placeholder="Contact Name" validate={{ pattern: { value: '^[A-Za-z_]+$' } }} required /></Col>
+                <Col><AvField name="name" placeholder="Contact Name" validate={{ pattern: { value: '^[A-Za-z_.-0-9]' } }} required /></Col>
                 <Col><AvField name="organization" placeholder="Organization" validate={{ pattern: { value: '^[a-zA-Z0-9_.-]*' } }} required /></Col>
               </Row>
               <Row>
-                <Col><AvField name="phone" placeholder="Phone Number" required /></Col>
+                <Col><AvField name="phone" placeholder="Phone Number" validate={{ pattern: { value: '^[0-9*+-]+$' } }} required /></Col>
                 <Col><AvField name="email" placeholder="Your Email" type="text" validate={{ email: true }} required /></Col></Row>
-                <Row>
-                  <Col><AvField name="address1" placeholder="Address 1" /></Col>
-                  <Col><AvField name="address2" placeholder="Address 2" /></Col>
-                </Row>
-                <Row>
-                  <Col><AvField name="postcode" placeholder="Your Postal Code" errorMessage="Enter Valid Postal Code" validate={{ pattern: { value: '^[0-9]{6}' } }} /></Col>
-                  <Col><AvField name="state" placeholder="Your State" /></Col>
-                  <Col>
-                    <Input type="select" onChange={e=>this.handleCountrySelect(e)} label="Multiple Select" >
-                      <option value="">Select Country</option>
-                      {this.state.countries.map((country, key) => {
-                        return <option key={key} value={country}>{country}</option>;
-                      })}
-                    </Input>
-                  </Col>
+              <Row>
+                <Col><AvField name="address1" placeholder="Address 1" /></Col>
+                <Col><AvField name="address2" placeholder="Address 2" /></Col>
+              </Row>
+              <Row>
+                <Col><AvField name="postcode" placeholder="Your Postal Code" errorMessage="Enter Valid Postal Code" validate={{ pattern: { value: '^[0-9]{6}' } }} /></Col>
+                <Col><AvField name="state" placeholder="Your State" /></Col>
+                <Col>
+                  <Input type="select" onChange={e => this.handleCountrySelect(e)} value={this.state.selectedCountry} placeholder="Select country" required>
+                    <option value="">Select Country</option>
+                    {this.state.countries.map((country, key) => {
+                      return <option key={key} value={country.code}>{country.name + ' (' + country.short + ')'}</option>;
+                    })}
+                  </Input>
+                </Col>
                 <Col><AvField name="website" placeholder="Website" /></Col>
-                </Row>
-                <Row><Col>{this.state.labels.length === 0 ? "" : this.loadAvCollapse()}</Col></Row> <br />
-                <center><FormGroup row>
-                  <Col>
-                    <Button color="info" disabled={this.state.doubleClick} > Save </Button> &nbsp; &nbsp;
-                  <Button active color="light" type="button" onClick={this.cancelAddContact}>Cancel</Button>
-                  </Col>
-                </FormGroup></center>
+              </Row>
+              <Row><Col>{this.state.labels.length === 0 ? <center>You dont have Labels</center> : this.loadAvCollapse()}</Col></Row> <br />
+              <center><FormGroup row>
+                <Col>
+                  <Button color="info" disabled={this.state.doubleClick} > Save </Button> &nbsp; &nbsp;
+                    <Button active color="light" type="button" onClick={this.cancelAddContact}>Cancel</Button>
+                </Col>
+              </FormGroup></center>
             </AvForm>
           </CardBody>
         </Card>
       </div>)
-    }
-  
+  }
+
   loadAvCollapse = () => {
     const labelQ = [];
     if (this.state.labels.length === 0) {
-          labelQ.push({
-            value: null,
-            label: "You don't have any lables now.",
-          })
+      labelQ.push({
+        value: null,
+        label: "You don't have any lables now.",
+      })
 
       return (<div >
-          <Select options={labelQ} placeholder="Select the Label" />
-        </div>);
+        <Select options={labelQ} placeholder="Select the Label" />
+      </div>);
     } else {
-          this.state.labels.map((slabel, key) => {
-            if (Array.isArray(slabel.subLabels)) {
-              this.pushArray(labelQ, slabel);
-              slabel.subLabels.map(sul => { return (this.pushArray(labelQ, sul, slabel)) })
-            } else {
-              this.pushArray(labelQ, slabel);
-            }
-            return 0;
-          });
+      this.state.labels.map((slabel, key) => {
+        if (Array.isArray(slabel.subLabels)) {
+          this.pushArray(labelQ, slabel);
+          slabel.subLabels.map(sul => { return (this.pushArray(labelQ, sul, slabel)) })
+        } else {
+          this.pushArray(labelQ, slabel);
+        }
+        return 0;
+      });
 
-        return (<div >
-          <Select onChange={this.handleSelect} isMulti options={labelQ} placeholder="Select the Label" styles={colourStyles} />
-        </div>);
-      }
+      return (<div >
+        <Select onChange={this.handleSelect} isMulti options={labelQ} placeholder="Select the Label" styles={colourStyles} />
+      </div>);
     }
-  
+  }
+
   pushArray = (array, label, slabel) => {
-          slabel === undefined ? array.push({
-            value: label.id,
-            label: label.name,
-            color: label.color === null || label.color === "" ? "#000000" : label.color,
-          }) : array.push({
-            value: label.id,
-            label: slabel.name + "/" + label.name,
-            color: label.color === null || label.color === "" ? "#000000" : label.color,
-          })
-        }
-        }
-        
-        export default CreateContact;
+    slabel === undefined ? array.push({
+      value: label.id,
+      label: label.name,
+      color: label.color === null || label.color === "" ? "#000000" : label.color,
+    }) : array.push({
+      value: label.id,
+      label: slabel.name + "/" + label.name,
+      color: label.color === null || label.color === "" ? "#000000" : label.color,
+    })
+  }
+}
+
+export default CreateContact;

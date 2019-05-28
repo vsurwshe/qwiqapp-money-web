@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Button, Card,Col, Input, Alert ,CardHeader,FormGroup} from "reactstrap";
+import { Button, Card, Col, Input, Alert, CardHeader, FormGroup } from "reactstrap";
 import ProfileApi from "../../services/ProfileApi";
 import Profiles from "./Profiles";
 import Config from "../../data/Config";
@@ -13,46 +13,45 @@ class UpdateProfile extends Component {
       color: "",
       content: "",
       updateSuccess: false,
-      cancelUpdateProfile:false,
+      cancelUpdateProfile: false,
     };
   }
   handleUpdate = () => {
     let data = { name: this.state.name };
-    new ProfileApi().updateProfile( this.successCall, this.errorCall, data, this.state.id );
+    new ProfileApi().updateProfile(this.successCall, this.errorCall, data, this.state.id);
   };
 
-  successCall = () =>{
-    this.callAlertTimer( "success", "Profile Updated Succesfully!");
+  successCall = () => {
+    this.callAlertTimer("success", "Profile Updated Succesfully!");
   }
 
   errorCall = err => {
-    this.callAlertTimer( "danger", "Unable to Process Request, Please Try Again!! ");
+    this.callAlertTimer("danger", "Unable to Process Request, Please Try Again!! ");
   };
 
   callAlertTimer = (color, content) => {
     this.setState({ color: color, content: content });
     setTimeout(() => {
-      this.setState({ name : '', color : '', updateSuccess : true});
-      //this.forceUpdate();
-      window.location.href="/dashboard";
+      this.setState({ name: '', color: '', updateSuccess: true });
+      window.location.href = "/dashboard";
     }, Config.notificationMillis);
   };
-  cancelUpdateProfile = () =>{
+  cancelUpdateProfile = () => {
     this.setState({ cancelUpdateProfile: true });
   }
   render() {
-    const { name, color, content, updateSuccess,cancelUpdateProfile } = this.state;
+    const { name, color, content, updateSuccess, cancelUpdateProfile } = this.state;
     if (cancelUpdateProfile) {
       return <Profiles />
     } else {
-      return <div>{updateSuccess ? <Profiles /> : this.loadUpdateProfile(name,color,content)}</div>  
+      return <div>{updateSuccess ? <Profiles /> : this.loadUpdateProfile(name, color, content)}</div>
     }
   }
   loadHeader = () => <CardHeader><strong>Profile</strong></CardHeader>
 
   // when updating profile
-  loadUpdateProfile = (name, color, content) =>{
-    return( 
+  loadUpdateProfile = (name, color, content) => {
+    return (
       <div className="animated fadeIn">
         <Card>
           {this.loadHeader()}

@@ -8,8 +8,8 @@ import Avatar from 'react-avatar';
 import ViewProfile from "./ViewProfile";
 import Loader from 'react-loader-spinner'
 import { FaPen, FaTrashAlt } from 'react-icons/fa';
-import { DeleteModel } from "../uitility/deleteModel";
-import { ProfileEmptyMessage } from "../uitility/ProfileEmptyMessage";
+import { DeleteModel } from "../utility/deleteModel";
+import { ProfileEmptyMessage } from "../utility/ProfileEmptyMessage";
 
 /**
  * Display list of profiles,Manage profile like (update, delete)
@@ -29,7 +29,7 @@ class Profiles extends Component {
       id: 0,
       name: "",
       spinner: false,
-      visible:false
+      visible: false
     };
   }
 
@@ -45,7 +45,7 @@ class Profiles extends Component {
     }
   };
 
-  errorCall = err => { this.setState({visible : true}); console.log("Internal Server Error") }
+  errorCall = err => { this.setState({ visible: true }); console.log("Internal Server Error") }
 
   updateProfile = (uid, uName) => {
     this.setState({ updateProfile: true, id: uid, name: uName })

@@ -1,11 +1,11 @@
 import React, { Component } from "react";
-import { Alert, Button, Input, Card, CardHeader, FormGroup, Col, Collapse, Label  } from "reactstrap";
+import { Alert, Button, Input, Card, CardHeader, FormGroup, Col, Collapse, Label } from "reactstrap";
 import { AvForm, AvField } from 'availity-reactstrap-validation';
 import LabelApi from "../../services/LabelApi";
 import Lables from './Label';
 import Config from "../../data/Config";
 class CreateLable extends Component {
-  constructor(props){
+  constructor(props) {
     super(props);
     this.state = {
       labels: props.label,
@@ -17,57 +17,58 @@ class CreateLable extends Component {
       profileId: props.pid,
       cancelCreateLabel: false,
       doubleClick: false
-     };
+    };
   }
 
   //this method handle the successfull response form geting api
   successCall = json => {
     if (json === []) {
       this.setState({ labels: [0] })
-    }else {
-      this.setState({ labels: json })}
+    } else {
+      this.setState({ labels: json })
+    }
   };
- 
-  handleSubmitValue=(event, errors, values)=> {
-    if(errors.length ===0)
-   this.handlePostData(event,values);
+
+  handleSubmitValue = (event, errors, values) => {
+    if (errors.length === 0)
+      this.handlePostData(event, values);
   }
-  cancelCreateLabel=()=>{
+  cancelCreateLabel = () => {
     this.setState({ cancelCreateLabel: true });
   }
   // handle the submission from user
-  handlePostData = async (e,data) => {
+  handlePostData = async (e, data) => {
     this.setState({ doubleClick: true });
     e.persist();
-    const newData={...data,"parentId":this.state.parentId}
-    await new LabelApi().createLabel( this.successCreate, this.errorCall, this.state.profileId, newData);
+    const newData = { ...data, "parentId": this.state.parentId }
+    await new LabelApi().createLabel(this.successCreate, this.errorCall, this.state.profileId, newData);
   };
   // call when lables created successfully
-  successCreate=(response)=>{
-     this.callAlertTimer("success", "New Label Created....");
+  successCreate = (response) => {
+    this.callAlertTimer("success", "New Label Created....");
   }
 
   // handle the error response from api 
-  errorCall = err => { this.callAlertTimer("danger", "Unable to Process Request, Please try again! ");};
+  errorCall = err => { this.callAlertTimer("danger", "Unable to Process Request, Please try again! "); };
 
   //this method show the success/error message and after 2 sec clear it off
   callAlertTimer = (alertColor, content) => {
-    this.setState({ alertColor, content});
+    this.setState({ alertColor, content });
     setTimeout(() => {
-      this.setState({ name: "", content: "", alertColor: "",labelCreated: true });
-     }, Config.notificationMillis);
+      this.setState({ name: "", content: "", alertColor: "", labelCreated: true });
+    }, Config.notificationMillis);
   };
   //this method makes true or false for the collapse
   toggle = () => {
-    this.setState({ collapse : !this.state.collapse });
+    this.setState({ collapse: !this.state.collapse });
   }
-  
+
   render() {
-    const { alertColor, content, cancelCreateLabel, doubleClick} = this.state;
+    const { alertColor, content, cancelCreateLabel, doubleClick } = this.state;
     if (cancelCreateLabel) {
-      return <Lables/>
+      return <Lables />
     } else {
-      return <div>{this.state.labelCreated?<Lables />:this.loadCreatingLable(alertColor,content, doubleClick)}</div>  
+      return <div>{this.state.labelCreated ? <Lables /> : this.loadCreatingLable(alertColor, content, doubleClick)}</div>
     }
   }
 
@@ -86,11 +87,11 @@ class CreateLable extends Component {
             <AvField name="name" type="text" errorMessage="Label Name Required" placeholder="Enter Label name" required />
             <AvField name="notes" value={this.state.notes} type="text" placeholder="Enter Label notes" />
             <AvField name="color" type="color" list="colors" placeholder="Enter Label Color" />
-            {this.state.labels.length !==0 ?
-            <FormGroup check className="checkbox">
-              <Input className="form-check-input" type="checkbox" onClick={this.toggle} value=" " />
-              <Label check className="form-check-label" htmlFor="checkbox1"> &nbsp;Nest label under </Label>
-            </FormGroup> : ""}
+            {this.state.labels.length !== 0 ?
+              <FormGroup check className="checkbox">
+                <Input className="form-check-input" type="checkbox" onClick={this.toggle} value=" " />
+                <Label check className="form-check-label" htmlFor="checkbox1"> &nbsp;Nest label under </Label>
+              </FormGroup> : ""}
             <br />
             {this.loadCollapse()}<br />
             <FormGroup>
@@ -102,15 +103,15 @@ class CreateLable extends Component {
       </Card>
     </div>);
   }
-  
+
   //This Method Called When Sublables Makes Enable true.
-  loadCollapse=()=>{
+  loadCollapse = () => {
     return (<Collapse isOpen={this.state.collapse}>
-        <Input type="select" name="selectLg" id="selectLg" onChange={(event)=>this.setState({parentId:event.target.value})} bsSize="lg">
-          <option value="null">Please select Parent Lables</option>
-          {this.state.labels.length===0 ?'': this.state.labels.map((label,key) => {return(<option key={key} value={label.id}>{label.name}</option>)})}
-        </Input>
-      </Collapse>);
+      <Input type="select" name="selectLg" id="selectLg" onChange={(event) => this.setState({ parentId: event.target.value })} bsSize="lg">
+        <option value="null">Please select Parent Lables</option>
+        {this.state.labels.length === 0 ? '' : this.state.labels.map((label, key) => { return (<option key={key} value={label.id}>{label.name}</option>) })}
+      </Input>
+    </Collapse>);
   }
 }
 

@@ -5,8 +5,8 @@ import Select from "react-select";
 import chroma from 'chroma-js';
 import { AvForm, AvField } from 'availity-reactstrap-validation';
 import ContactApi from "../../services/ContactApi";
-import { Loader } from 'react-loader-spinner'
-import GenralApi from "../../services/GenralApi";
+import Loader from 'react-loader-spinner'
+import GeneralApi from "../../services/GeneralApi";
 
 const colourStyles = {
   control: styles => ({ ...styles, backgroundColor: 'white' }),
@@ -55,74 +55,51 @@ class UpdateContact extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      contact: [],
-      country:[],
+      contact: this.props.contact,
+      country: [],
       alertColor: "#000000",
       message: "",
       updateSuccess: false,
       profileId: this.props.profileId,
       collapse: false,
       labels: this.props.lables,
-      contactId: this.props.contactId,
+      contactId: this.props.contact.id,
       selectedOption: [],
       labelUpdate: '',
       spinner: false,
       doubleClick: false,
-      selectedCountry: '',
+      selectedCountry: this.props.contact.country,
+      cancelUpdateContact: false,
     };
   }
 
   componentDidMount = () => {
-    new ContactApi().getContactById(this.successContact, this.errorCall, this.state.profileId, this.state.contactId)
-  }
-
-  successContact = async (json) => {
-    console.log(json.country)
-    await this.setState({ contact: json, selectedOption: json.labelIds, spinner: !this.state.spinner });
     this.getCountryList();
   }
-  getCountryList = () =>{
-    new GenralApi().getCountrylist(this.setCountryList, this.countrErrorCall);
+
+  getCountryList = () => {
+    new GeneralApi().getCountrylist(this.setCountryList, this.errorCall);
   }
-  setCountryList = arrayOfJson =>{
-    this.setState({ countries: arrayOfJson});
+
+  setCountryList = arrayOfJson => {
+    this.setState({ countries: arrayOfJson, spinner: !this.state.spinner });
   }
-  countrErrorCall = error => {console.log(error)}
 
   handleUpdate = (event, errors, values) => {
     const { profileId, contactId, selectedOption, labelUpdate, selectedCountry } = this.state
     if (errors.length === 0) {
-      var new_Values = { ...values,"country": selectedCountry, "labelIds": selectedOption === [] ? [] : (labelUpdate ? selectedOption.map(opt => { return opt.value }) : selectedOption), "version": this.state.contact.version }
-      if (profileId !== undefined | contactId !== undefined) {
+      if (profileId !== undefined | contactId !== undefined || selectedCountry !== "") {
         this.setState({ doubleClick: true });
-        if (this.state.selectedCountry !=="") {
-          
-        }
+        var new_Values = { ...values, "country": selectedCountry, "labelIds": selectedOption === [] ? [] : (labelUpdate ? selectedOption.map(opt => { return opt.value }) : selectedOption), "version": this.state.contact.version }
         new ContactApi().updateContact(this.successCall, this.errorCall, new_Values, this.state.profileId, this.state.contactId)
       }
     }
   };
 
-  loadSpinner = () => {
-    return (<div className="animated fadeIn">
-      <Card>
-        <CardHeader>
-          <strong>Total Labels: {this.state.labels.length}</strong>
-        </CardHeader>
-        <center style={{ paddingTop: '20px' }}>
-          <CardBody>
-            <Loader type="Ball-Triangle" color="#2E86C1" height={80} width={80} />
-          </CardBody>
-        </center>
-      </Card>
-    </div>
-    )
-  }
-
   handleSelect = selectedOption => {
     this.setState({ selectedOption, labelUpdate: true });
   };
-  
+
   successCall = json => {
     this.callAlertTimer("success", "Contact Updated Successfully... ");
   };
@@ -145,16 +122,33 @@ class UpdateContact extends Component {
   toggle = () => {
     this.setState({ collapse: !this.state.collapse });
   }
+  cancelUpdateContact = () => {
+    this.setState({ cancelUpdateContact: true })
+  }
   handleCountrySelect = e => {
     this.setState({ selectedCountry: e.target.value });
   }
+
   render() {
-    if (this.state.spinner) {
-      const { contact, updateSuccess, alertColor, message } = this.state;
-      return <div>{updateSuccess ? <Contacts /> : this.loadUpdateContact(contact, alertColor, message)}</div>
+    const { contact, updateSuccess, alertColor, message, cancelUpdateContact } = this.state;
+    if (cancelUpdateContact) {
+      return <Contacts />
+    } else if (this.state.spinner) {
+      return <div>{updateSuccess ? <Contacts /> : this.loadUpdateContact(contact, alertColor, message)} </div>
     } else {
-      return this.loadSpinner
+      return this.loadSpinner()
     }
+  }
+
+  loadSpinner = () => {
+    return (<div className="animated fadeIn">
+      <Card>
+        <CardHeader><strong>Total Labels: {this.state.labels.length}</strong></CardHeader>
+        <center style={{ paddingTop: '20px' }}>
+          <CardBody><Loader type="TailSpin" color="#2E86C1" height={60} width={60} /></CardBody>
+        </center>
+      </Card>
+    </div>)
   }
 
   loadHeader = () => <CardHeader><strong>EDIT CONTACT</strong></CardHeader>
@@ -164,15 +158,14 @@ class UpdateContact extends Component {
       <Card>
         {this.loadHeader()}
         <CardBody>
-          <Alert color={alertColor}>{message}</Alert>
+          {alertColor === "#000000" ? "" : <Alert color={alertColor}>{message}</Alert>}
           <AvForm onSubmit={this.handleUpdate}>
             <Row>
-              <Col> <AvField name="name" placeholder="Contact name" value={contact.name} /> </Col>
-              <Col><AvField name="organization" placeholder="Organization Name" value={contact.organization} /></Col>
+              <Col> <AvField name="name" placeholder="Contact name" value={contact.name} validate={{ pattern: { value: '^[A-Za-z_.-0-9]' } }} /> </Col>
+              <Col><AvField name="organization" placeholder="Organization Name" value={contact.organization} validate={{ pattern: { value: '^[a-zA-Z0-9_.-]*' } }} /></Col>
             </Row>
-              
             <Row>
-              <Col><AvField name="phone" placeholder="Phone Number" value={contact.phone} /></Col>
+              <Col><AvField name="phone" placeholder="Phone Number" value={contact.phone} validate={{ pattern: { value: '^[0-9*+-]+$' } }} /></Col>
               <Col><AvField name="email" type="text" placeholder="Your Email" validate={{ email: true }} value={contact.email} /></Col>
             </Row>
             <Row>
@@ -180,39 +173,26 @@ class UpdateContact extends Component {
               <Col><AvField name="address2" placeholder="Address 2" value={contact.address2} /></Col>
             </Row>
             <Row>
-              <Col><AvField name="postcode" placeholder="Your Postal Code" value={contact.postcode} /></Col>
+              <Col><AvField name="postcode" placeholder="Your Postal Code" value={contact.postcode} validate={{ pattern: { value: '^[0-9]{6}' } }} /></Col>
               <Col><AvField name="state" placeholder="Your State" value={contact.state} /></Col>
               <Col>
-                <Input type="select" onChange={e=>this.handleCountrySelect(e)} value={contact.country} label="Multiple Select" >
-                    <option value="">Select Country</option>
-                    {this.state.countries.map((country, key) => {
-                      return <option key={key} value={country}>{country}</option>;
-                    })}
-                  </Input>
-                {/* <AvField type="select" name="country" value={contact.country} placeholder="Select Country">
-                  <option value="">select</option>
-                  <option value="India">INDIA</option>
-                  <option value="UnitedKingdom">UK</option>
-                  <option value="Afghanistan">AFGHANISTAN</option>
-                  <option value="Australia">AUSTRALIA</option>
-                  <option value="Russia">RUSSIA</option>
-                  <option value="France">FRANCE</option>
-                  <option value="Germany">GERMANY</option>
-                  <option value="Romania">ROMANIA</option>
-                </AvField> */}
+                <Input type="select" onChange={e => this.handleCountrySelect(e)} value={this.state.selectedCountry}  >
+                  <option value="">Select Country</option>
+                  {this.state.countries.map((country, key) => {
+                    return <option key={key} value={country.code}>{country.name + ' (' + country.short + ')'}</option>;
+                  })}
+                </Input>
               </Col>
               <Col><AvField name="website" placeholder="Your Website" value={contact.website} /></Col>
             </Row>
-            
             <Row>
               <Col>
-                {this.state.labels.length === 0 ? "" : this.loadAvCollapse(contact)}
+                {this.state.labels.length === 0 ? <center>You dont have Label</center> : this.loadAvCollapse(contact)}
               </Col>
             </Row><br />
-
             <center>
               <Button color="info" disabled={this.state.doubleClick}> Update Contact </Button> &nbsp;&nbsp;
-             <a href="/contact/viewContacts" style={{ textDecoration: 'none' }}> <Button active color="light" type="button">Cancel</Button></a>
+              <Button active color="light" type="button" onClick={this.cancelUpdateContact}>Cancel</Button>
             </center>
           </AvForm>
         </CardBody>

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Button,Col, Input, Alert ,FormGroup,Card,CardHeader,Label,Collapse} from "reactstrap";
+import { Button, Col, Input, Alert, FormGroup, Card, CardHeader, Label, Collapse } from "reactstrap";
 import LabelApi from "../../services/LabelApi";
 import Lables from "./Label";
 import Config from "../../data/Config";
@@ -19,98 +19,101 @@ class UpdateLabel extends Component {
       content: "",
       updateSuccess: false,
       collapse: false,
-      cancelUpdateLabel:false,
+      cancelUpdateLabel: false,
       doubleClick: false,
     };
   }
   handleUpdate = () => {
-    let data = { color:this.state.userColor,
+    let data = {
+      color: this.state.userColor,
       name: this.state.name,
-      notes:this.state.notes,
-      parentId:this.state.parentId,
-      version:this.state.version };
-      this.setState({ doubleClick: true });
-    new LabelApi().updateLabel(this.SuccessCall, this.errorCall, data,this.state.profileId, this.state.id )
+      notes: this.state.notes,
+      parentId: this.state.parentId,
+      version: this.state.version
+    };
+    this.setState({ doubleClick: true });
+    new LabelApi().updateLabel(this.SuccessCall, this.errorCall, data, this.state.profileId, this.state.id)
   };
-  cancelUpdateLabel=()=>{
-this.setState({ cancelUpdateLabel:true  });
+  cancelUpdateLabel = () => {
+    this.setState({ cancelUpdateLabel: true });
   }
   //this called When Componets Calling SucessFully
   SuccessCall = json => {
-     this.callAlertTimer( "success", "Label Updated Successfully... ");
+    this.callAlertTimer("success", "Label Updated Successfully... ");
   };
- //when any api goto the api executions failed then called this method 
+  //when any api goto the api executions failed then called this method 
   errorCall = err => {
-    this.callAlertTimer( "danger", "Unable to Process Your Request, Please Try Again... ");
+    this.callAlertTimer("danger", "Unable to Process Your Request, Please Try Again... ");
   };
-//this  method show the on page alert
+  //this  method show the on page alert
   callAlertTimer = (alertColor, content) => {
-    this.setState({ alertColor, content});
-    setTimeout(() => {this.setState({ name: '', alertColor: '',updateSuccess: true });
+    this.setState({ alertColor, content });
+    setTimeout(() => {
+      this.setState({ name: '', alertColor: '', updateSuccess: true });
     }, Config.notificationMillis);
   };
   //this method make lable as main lable
-  changeParentId=()=>{
-    this.setState({parentId:""});
+  changeParentId = () => {
+    this.setState({ parentId: "" });
   }
   //this method makes true or false for the collapse
-  toggle=()=> {
+  toggle = () => {
     this.setState({ collapse: !this.state.collapse });
   }
 
   render() {
-    const { name, notes, alertColor, content, updateSuccess, userColor,cancelUpdateLabel } = this.state;
-    if(cancelUpdateLabel){
-      return <Lables/>
-    }else{
-    return <div>{ updateSuccess ? <Lables /> : this.loadUpdatingLable(name,notes,alertColor,content,userColor) }</div>
-   }
-}
+    const { name, notes, alertColor, content, updateSuccess, userColor, cancelUpdateLabel } = this.state;
+    if (cancelUpdateLabel) {
+      return <Lables />
+    } else {
+      return <div>{updateSuccess ? <Lables /> : this.loadUpdatingLable(name, notes, alertColor, content, userColor)}</div>
+    }
+  }
   //This method shows the fields to update a Lable
-  loadUpdatingLable = (name, notes, alertColor, content, userColor) =>{
-    return( 
+  loadUpdatingLable = (name, notes, alertColor, content, userColor) => {
+    return (
       <div className="animated fadeIn" >
         <Card>
           <CardHeader><strong>Label</strong> </CardHeader>
           <Col sm="12" md={{ size: 5, offset: 4 }}>
-            <br/>
+            <br />
             <Alert color={alertColor}>{content}</Alert>
             <FormGroup>
               <h5><b>EDIT LABEL</b></h5>
               <Input type="text" name="Label name" value={name} style={{ fontWeight: 'bold', color: '#000000' }} autoFocus={true} onChange={e => { this.setState({ name: e.target.value }) }} /><br />
-              <Input type="text" name="Label Notes" placeholder="Label notes" value={notes} style={{ fontWeight: 'bold', color: '#000000' }} onChange={e => { this.setState({ notes: e.target.value }) }} /><br/>
-              <Input type="color" name="Label Color" list="Colors" value={userColor} style={{ fontWeight: 'bold', color: '#000000' }} onChange={e => { this.setState({ userColor: e.target.value }) }} /><br/>
-              {this.state.parentId !== null ? ( this.props.label.subLabels !== null ? "" : this.loadSublabelMakeParentLabel() ) : this.state.labels.length<=1? "" : this.props.label.subLabels !== null ? "" : this.loadParentLableMakeSubLable()}
-              {this.state.labels.length<=1? "" : this.loadCollapse()}
+              <Input type="text" name="Label Notes" placeholder="Label notes" value={notes} style={{ fontWeight: 'bold', color: '#000000' }} onChange={e => { this.setState({ notes: e.target.value }) }} /><br />
+              <Input type="color" name="Label Color" list="Colors" value={userColor} style={{ fontWeight: 'bold', color: '#000000' }} onChange={e => { this.setState({ userColor: e.target.value }) }} /><br />
+              {this.state.parentId !== null ? (this.props.label.subLabels !== null ? "" : this.loadSublabelMakeParentLabel()) : this.state.labels.length <= 1 ? "" : this.props.label.subLabels !== null ? "" : this.loadParentLableMakeSubLable()}
+              {this.state.labels.length <= 1 ? "" : this.loadCollapse()}
               <br />
-              <Button color="success" disabled={!name&&this.state.doubleClick} onClick={this.handleUpdate} >Update  </Button>&nbsp;&nbsp;&nbsp;
+              <Button color="success" disabled={!name && this.state.doubleClick} onClick={this.handleUpdate} >Update  </Button>&nbsp;&nbsp;&nbsp;
              <Button active color="light" aria-pressed="true" onClick={this.cancelUpdateLabel}>Cancel</Button>
             </FormGroup>
           </Col>
         </Card>
       </div>)
   }
-  loadSublabelMakeParentLabel=()=>{
-    return(<FormGroup check className="checkbox">
-    <Input className="form-check-input" type="checkbox"   onClick={this.changeParentId}  value=" " />
-    <Label check className="form-check-label" htmlFor="checkbox1"> &nbsp;Make as Parent-Label</Label>
-  </FormGroup>)
+  loadSublabelMakeParentLabel = () => {
+    return (<FormGroup check className="checkbox">
+      <Input className="form-check-input" type="checkbox" onClick={this.changeParentId} value=" " />
+      <Label check className="form-check-label" htmlFor="checkbox1"> &nbsp;Make as Parent-Label</Label>
+    </FormGroup>)
   }
 
-  loadParentLableMakeSubLable=()=>{
-    return(<FormGroup check className="checkbox">
-    <Input className="form-check-input" type="checkbox"   onClick={this.toggle}  value=" " />
-    <Label check className="form-check-label" htmlFor="checkbox1"> &nbsp;Nest label under</Label>
-  </FormGroup>)
+  loadParentLableMakeSubLable = () => {
+    return (<FormGroup check className="checkbox">
+      <Input className="form-check-input" type="checkbox" onClick={this.toggle} value=" " />
+      <Label check className="form-check-label" htmlFor="checkbox1"> &nbsp;Nest label under</Label>
+    </FormGroup>)
   }
 
-  loadCollapse=()=>{
+  loadCollapse = () => {
     return (<Collapse isOpen={this.state.collapse}>
-        <Input type="select" name="selectLg" id="selectLg" onChange={(event)=>this.setState({parentId:event.target.value})} bsSize="lg">
-          <option value="null">Please select Parent Lables</option>
-          {this.state.labels.map((label) => {return( this.state.id===label.id ? '': <option key={label.id} value={label.id}>{label.name}</option>)})}
-        </Input>
-      </Collapse>);
+      <Input type="select" name="selectLg" id="selectLg" onChange={(event) => this.setState({ parentId: event.target.value })} bsSize="lg">
+        <option value="null">Please select Parent Lables</option>
+        {this.state.labels.map((label) => { return (this.state.id === label.id ? '' : <option key={label.id} value={label.id}>{label.name}</option>) })}
+      </Input>
+    </Collapse>);
   }
 
 

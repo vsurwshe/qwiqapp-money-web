@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import { Card, CardBody, CardHeader, Button } from "reactstrap";
 import CreateProfile from '../profiles/CreateProfile';
 

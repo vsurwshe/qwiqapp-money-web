@@ -1,13 +1,13 @@
 import React, { Component } from "react";
 import CategoryApi from "../../services/CategoryApi";
 import Store from "../../data/Store";
-import { DeleteModel } from "../uitility/deleteModel";
-import { ProfileEmptyMessage } from '../uitility/ProfileEmptyMessage';
-import { ReUseComponents } from "../uitility/ReUseComponents";
 import Config from "../../data/Config";
 import AddCategory from './AddCategory';
 import EditCategory from './EditCategory';
 import DeleteCategory from "./DeleteCategory";
+import { ProfileEmptyMessage } from "../utility/ProfileEmptyMessage";
+import { ReUseComponents } from "../utility/ReUseComponents";
+import { DeleteModel } from "../utility/deleteModel";
 
 
 class Categories extends Component {
@@ -40,7 +40,7 @@ class Categories extends Component {
 
   setProfileId = async () => {
     if (Store.getProfile() !== null && Store.getProfile().length !== 0) {
-      var iterator = Store.getProfile().values()
+      var iterator = Store.getProfile().values();
       await this.setState({ profileId: iterator.next().value.id });
       this.getCategory();
     }

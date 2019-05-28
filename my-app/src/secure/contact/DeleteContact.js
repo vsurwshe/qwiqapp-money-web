@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import Contacts from "./Contacts";
 import ContactApi from "../../services/ContactApi";
-import { ReUseComponents } from "../uitility/ReUseComponents";
+import { ReUseComponents } from "../utility/ReUseComponents";
+import Config from "../../data/Config";
 
 class DeleteContact extends Component {
   constructor(props) {
@@ -19,9 +20,7 @@ class DeleteContact extends Component {
   };
 
   successCall = async () => {
-    this.setState({ labelDeleted: true });
     this.callAlertTimer("success", "Contact Deleted Successfully....");
-    window.location.reload();
   };
 
   errorCall = () => {
@@ -30,12 +29,15 @@ class DeleteContact extends Component {
 
   callAlertTimer = (color, content) => {
     this.setState({ color, content });
+    setTimeout(() => {
+      this.setState({ labelDeleted: true });
+    }, Config.notificationMillis)
   };
 
   render() {
     const { labelDeleted, content, color } = this.state;
-    return <div>{labelDeleted ? <Contacts color={color} content={content} />
-      : ReUseComponents.loadDeleting("Delete Contact", "Contact Deleting")}</div>
+    return <div>{labelDeleted ? <Contacts color={color} content={content} visible={true} />
+      : ReUseComponents.loadDeleting("", "", "Delete Contact", "Contact Deleting")}</div>
   }
 }
 

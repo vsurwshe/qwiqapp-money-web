@@ -6,11 +6,11 @@ import CategoryApi from "../../services/CategoryApi";
 import Categories from "./Categories";
 import Config from "../../data/Config";
 class AddCategory extends Component {
-  constructor(props){
+  constructor(props) {
     super(props)
-    this.state={
-      profileId:props.id,
-      categories : props.category,
+    this.state = {
+      profileId: props.id,
+      categories: props.category,
       parentId: 0,
       name: '',
       userToken: '',
@@ -34,64 +34,64 @@ class AddCategory extends Component {
   }
 
   handleSubmitValue = (event, errors, values) => {
-    if(errors.length ===0){}
-    this.handlePostData(event,values);
+    if (errors.length === 0) { }
+    this.handlePostData(event, values);
   }
 
   handlePostData = async (e, data) => {
-    this.setState({ doubleClick: true });    
+    this.setState({ doubleClick: true });
     await this.generateCode()
-    const newData = { ...data, parentId: this.state.parentId,code:this.state.code };
+    const newData = { ...data, parentId: this.state.parentId, code: this.state.code };
     new CategoryApi().createCategory(this.successCall, this.errorCall, this.state.profileId, newData);
   };
 
-  cancelAddCategory=()=>{
-    this.setState({ cancelAddCategory:true  });
+  cancelAddCategory = () => {
+    this.setState({ cancelAddCategory: true });
   }
 
-  successCall = () =>{
-    this.callAlertTimer('success','Category Added !')
+  successCall = () => {
+    this.callAlertTimer('success', 'Category Added !')
   }
 
   errorCall = err => {
-    this.callAlertTimer('danger','Unable to Process Request, Please Try Again')
+    this.callAlertTimer('danger', 'Unable to Process Request, Please Try Again')
   };
 
-  toggle = () =>{
-    this.setState({ collapse: !this.state.collapse  });
+  toggle = () => {
+    this.setState({ collapse: !this.state.collapse });
   }
 
-  callAlertTimer = (alertColor,content) => {
+  callAlertTimer = (alertColor, content) => {
     this.setState({ alertColor, content });
     setTimeout(() => {
-      this.setState({ categoryCreated: true});
+      this.setState({ categoryCreated: true });
     }, Config.notificationMillis);
   };
 
-  generateCode = () =>{
+  generateCode = () => {
     let characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxys0123456789"
     var length = characters.length
-    var i=0;
+    var i = 0;
     var code = '#';
-    for (i;i<3;i++){
-      code = code +  characters.charAt(Math.floor(Math.random() * length));
+    for (i; i < 3; i++) {
+      code = code + characters.charAt(Math.floor(Math.random() * length));
     }
-    this.setState({code})
-  } 
+    this.setState({ code })
+  }
 
   render() {
-    const {cancelAddCategory,categoryCreated}=this.state;
-    if(cancelAddCategory){
-      return <Categories/>
-    }else{
-      return <div>{categoryCreated ? <Categories/> :this.loadAddingCategory()}</div>
+    const { cancelAddCategory, categoryCreated } = this.state;
+    if (cancelAddCategory) {
+      return <Categories />
+    } else {
+      return <div>{categoryCreated ? <Categories /> : this.loadAddingCategory()}</div>
     }
   }
 
-  loadAddingCategory = () =>{
-    const {alertColor,content, doubleClick}=this.state
-    return(
-      <Card style={{width:"100%"}}>
+  loadAddingCategory = () => {
+    const { alertColor, content, doubleClick } = this.state
+    return (
+      <Card style={{ width: "100%" }}>
         <CardHeader><strong>Category</strong></CardHeader><br />
         <center>
           <Col sm="12" md={{ size: 3, offset: 1.5 }}>

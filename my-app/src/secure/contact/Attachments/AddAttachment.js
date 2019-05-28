@@ -1,15 +1,15 @@
-import React,  { Component } from 'react';
+import React, { Component } from 'react';
 import { Card, CardBody, FormGroup, Button } from 'reactstrap';
 import AttachmentApi from '../../../services/AttachmentApi';
-import { ReUseComponents } from '../../uitility/ReUseComponents';
+import { ReUseComponents } from '../../utility/ReUseComponents';
 import Contacts from '../Contacts';
 
-class AddAttachment extends Component{
+class AddAttachment extends Component {
   state = {
-    file : '',
-    profileId : this.props.profileId,
-    contactId : this.props.contactId,
-    addSuccess:false,
+    file: '',
+    profileId: this.props.profileId,
+    contactId: this.props.contactId,
+    addSuccess: false,
     addFail: false,
     content: '',
     cancelAddAttachment: false,
@@ -17,53 +17,46 @@ class AddAttachment extends Component{
   }
 
   handleInput = (e) => {
-    this.setState({ file :e.target.files[0] })
+    this.setState({ file: e.target.files[0] })
   }
 
-  handleSubmit = (e) =>{
-    this.setState({ doubleClick: false });
-    e.preventDefault()
-    const {profileId, contactId, file} = this.state;
+  handleSubmit = (e) => {
+    e.preventDefault();
+    const { profileId, contactId, file } = this.state;
     let reader = new FormData()
     reader.append('file', file);
     if (profileId !== undefined || contactId !== undefined) {
-      new AttachmentApi().createAttachment( this.successCall, this.errorCall, profileId, contactId, reader )  
+      this.setState({ doubleClick: false });
+      new AttachmentApi().createAttachment(this.successCall, this.errorCall, profileId, contactId, reader)
     }
-    
+
   }
-  cancelAddAttachment=()=>{
-    this.setState({cancelAddAttachment:true})
+  cancelAddAttachment = () => {
+    this.setState({ cancelAddAttachment: true })
   }
   successCall = (json) => {
-     this.setState({ addSuccess: true, content: "Successfully Added ", });
-  } 
-  
+    this.setState({ addSuccess: true, content: "Successfully Added ", });
+  }
+
   errorCall = (err) => {
     this.setState({ content: "Unable to Process, please try Again", addFail: true });
   }
 
-  render(){
-  const {addSuccess,addFail,cancelAddAttachment}=this.state;
+  render() {
+    const { addSuccess, addFail, cancelAddAttachment } = this.state;
     if (addSuccess) {
-     return this.loadSuccess();
+      return this.loadSuccess();
     } else if (addFail) {
       return this.loadFailure();
-    } else if (cancelAddAttachment){
+    } else if (cancelAddAttachment) {
       return <Contacts />
-    }else{
+    } else {
       return this.loadAddAttachment();
     }
-
-  }
-
-  loadHeader = () => {
-    return (
-        <div style={{padding:10}}><center><strong>Add Attachment</strong></center></div>
-      )
   }
 
   loadFailure = () => {
-    return(  
+    return (
       <Card>
         {ReUseComponents.loadHeader("Add Attachment")}
         <CardBody><center>{this.state.content}</center></CardBody>
@@ -71,25 +64,21 @@ class AddAttachment extends Component{
       </Card>)
   }
 
-  loadSuccess = () =>{
-    return (
-      <div style={{color: "green"}}> Added Successfully !
-               {window.location.reload()}
-      </div>)
-  }
+  loadSuccess = () => <div style={{ color: "green" }}> Added Successfully !{window.location.reload()}</div>
+
   loadAddAttachment = () => {
-    return(
+    return (
       <Card>
-        {this.loadHeader() }
+        {ReUseComponents.loadHeader("Add Attachment")}
         <FormGroup> <br></br>
           <center>
-            <input type="file" onChange={e=>this.handleInput(e)}/> <br /><br/>
-            <Button color="info" onClick={e=>this.handleSubmit(e)} disabled={this.state.doubleClick} > Add </Button>&nbsp;&nbsp;
-            <Button active  color="light" aria-pressed="true"  onClick={()=>window.location.reload()}>Cancel</Button><br/><br/>
+            <input type="file" onChange={e => this.handleInput(e)} /> <br /><br />
+            <Button color="info" onClick={e => this.handleSubmit(e)} disabled={this.state.doubleClick} > Add </Button>&nbsp;&nbsp;
+            <Button active color="light" aria-pressed="true" onClick={() => window.location.reload()}>Cancel</Button><br /><br />
           </center>
         </FormGroup>
       </Card>
-   )
+    )
   }
 }
 

@@ -1,21 +1,15 @@
 import React, { Component } from "react";
-import { Button, Row, Col, Card, CardBody,  CardHeader, Collapse } from "reactstrap";
+import { Button, Card, CardBody, CardHeader } from "reactstrap";
 import CreateLabel from "./Createlabel";
-import Avatar from 'react-avatar';
-import { FaPen, FaTrashAlt, FaAngleDown } from 'react-icons/fa';
 import UpdateLabel from "./UpdateLabel";
 import DeleteLabel from "./DeleteLabel";
 import LabelApi from "../../services/LabelApi";
 import Loader from 'react-loader-spinner'
 import Store from "../../data/Store";
-import { DeleteModel } from "../uitility/deleteModel";
-import { ProfileEmptyMessage } from "../uitility/ProfileEmptyMessage";
-import { ReUseComponents } from "../uitility/ReUseComponents";
+import { ProfileEmptyMessage } from "../utility/ProfileEmptyMessage";
+import { ReUseComponents } from "../utility/ReUseComponents";
+import { DeleteModel } from "../utility/deleteModel";
 
-/*
-*
-*
-*/
 class Lables extends Component {
   constructor(props) {
     super(props);
@@ -121,8 +115,8 @@ class Lables extends Component {
     this.hoverAccordion(hKey)
   }
 
-  setSearch = e =>{ this.setState({ search: e.target.value }) }
-  setLabelId = (labels)=>{ this.setState({ id: labels.id }) }
+  setSearch = e => { this.setState({ search: e.target.value }) }
+  setLabelId = (labels) => { this.setState({ id: labels.id }) }
   callCreateLabel = () => { this.setState({ createLabel: true }) }
 
   render() {
@@ -130,9 +124,9 @@ class Lables extends Component {
     if (Store.getProfile() === null || Store.getProfile().length === 0) {
       return (<ProfileEmptyMessage />)
     } else if (labels.length === 0 && !createLabel) {
-      return <div>{labels.length === 0 && !createLabel && !spinner 
-                                  ? this.loadSpinner() 
-                                  : this.loadNotLabel()}</div>
+      return <div>{labels.length === 0 && !createLabel && !spinner
+        ? this.loadSpinner()
+        : this.loadNotLabel()}</div>
     } else if (createLabel) {
       return (<CreateLabel pid={profileId} label={labels} />)
     } else if (updateLabel) {
@@ -165,99 +159,30 @@ class Lables extends Component {
   }
 
   loadNotLabel = () => {
-    return ( <div className="animated fadeIn">
-        <Card>
-          {this.loadHeader()}
-          <center style={{ paddingTop: '20px' }}>
-            <CardBody> <h5><b>You haven't created any Lables yet... </b></h5><br /> </CardBody>
-          </center>
-        </Card>
-      </div>)
+    return (<div className="animated fadeIn">
+      <Card>
+        {this.loadHeader()}
+        <center style={{ paddingTop: '20px' }}>
+          <CardBody> <h5><b>You haven't created any Lables yet... </b></h5><br /> </CardBody>
+        </center>
+      </Card>
+    </div>)
   }
-  
+
   loadShowLabel = (visible, labels, search) => {
-    return ReUseComponents.loadItems(labels, this.setSearch, search, this.callCreateLabel, visible, this.toggleAccordion, this.state.accordion,  this.setLabelId, this.toggleDanger, this.updateLabel,
-  this.state.dropdownOpen, this.toggleDropDown);
-
-    // return (
-    //   <div className="animated fadeIn">
-    //     <Card>
-    //       <CardHeader>
-    //         <Row form>
-    //           <Col md={3} style={{ marginTop: "10px" }} >
-    //             <strong>Labels: {labels.length}</strong>
-    //           </Col>
-    //           <Col md={7} className="shadow p-0 mb-2 bg-white rounded">
-    //             <InputGroup>
-    //               <Input type="search" className="float-right" style={{ width: '20%' }} onChange={e => this.setState({ search: e.target.value })} placeholder="Search Labels..." />
-    //               <InputGroupAddon addonType="append"> <InputGroupText className="dark"><FaSearch /></InputGroupText></InputGroupAddon>
-    //             </InputGroup>
-    //           </Col>
-    //           <Col md={2}>
-    //             <Button color="primary" className="float-right" onClick={this.callCreateLabel}> + Add </Button>
-    //           </Col>
-    //         </Row>
-    //       </CardHeader>
-    //       <div style={{ margin: 30, paddingLeft: 10 }}>
-    //         <h6><Alert isOpen={visible} color="danger">Unable to Process Request, Please Try again</Alert></h6>
-    //         {labels.filter(ReUseComponents.searchingFor(search)).map((label, key) => { return this.loadSingleLable(label, key); })}
-    //       </div>
-    //     </Card>
-    //   </div>)
-  }
-
-  loadSingleLable = (labels, ukey) => {
-    const styles = { marginRight: 6 }
-    const penColor = { marginTop: 15, color: 'blue' }
-    const trashColor = { marginLeft: 10, marginRight: 40, marginTop: 15, color: 'red' }
-    const ellipsisText1 = { flex: 1, display: 'flex', alignItems: 'center', marginLeft: '-10' }
-    const ellipsisText2 = { flex: 1, width: '100px', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', paddingLeft: 10 }
-    const subLabelList = { marginLeft: 50, paddingTop: 4, paddingBottom: 0, paddingLeft: 5, height: 50 };
-    return (
-      <div className="list-group" key={ukey}>
-        <div className="list-group-item" style={{ padding: 7 }}>
-          <Row>
-            <Col>
-              <div style={ellipsisText1}>
-                <Avatar name={labels.name.charAt(0)} color={labels.color === "" ? "#000000" : labels.color} size="40" square={true} key={labels.id} />
-                <div style={ellipsisText2}>&nbsp;&nbsp;{labels.name}
-                  {Array.isArray(labels.subLabels) ? <span style={{ paddingLeft: 10 }}>
-                    <FaAngleDown style={{ marginLeft: 1 }} onClick={() => this.toggleAccordion(ukey)} /></span> : ''}
-                </div></div>
-            </Col>
-            <Col sm={2} md={2.5} lg={1} xl={1} >{this.loadDropDown(labels, ukey)}</Col>
-          </Row>
-          <Collapse isOpen={this.state.accordion[ukey]}>
-            {Array.isArray(labels.subLabels) ? labels.subLabels.map((ulable, key) => {
-              return (
-                <span className="list-group-item" style={subLabelList} key={key}>
-                  <Row>
-                    <Col sm={{ size: 9 }}>
-                      <span style={Object.assign(ellipsisText1, { paddingBotttom: 0 })}>
-                        <Avatar name={ulable.name.charAt(0)} color={ulable.color} size="40" square={true} /> <div style={ellipsisText2}>{ulable.name}</div>
-                      </span> </Col>
-                    <Col >
-                      <FaTrashAlt className="float-right" onClick={() => { this.setState({ id: ulable.id }); this.toggleDanger(); }} style={Object.assign({}, styles, trashColor)} />
-                      <FaPen className="float-right" size={12} style={Object.assign({}, styles, penColor)} onClick={() => { this.updateLabel(ulable) }} />
-                    </Col>
-                  </Row>
-                </span>)
-            }) : ""}
-          </Collapse>
-        </div>
-      </div>)
+    return ReUseComponents.loadItems(labels, this.setSearch, search, this.callCreateLabel, visible, this.toggleAccordion, this.state.accordion, this.setLabelId, this.toggleDanger, this.updateLabel,
+      this.state.dropdownOpen, this.toggleDropDown);
   }
 
   loadDeleteLabel = () => {
-  return (
-    <DeleteModel danger={this.state.danger}  headerMessage="Delete Label" bodyMessage="Are You Sure Want to Delete Label?"
-     toggleDanger={this.toggleDanger} delete={this.deleteLabel} cancel={this.toggleDanger} />)
-  }
-  loadDropDown = (labels, ukey) => {
-    return ReUseComponents.loadDropDown(labels, ukey, this.state.dropdownOpen[ukey], this.toggleDropDown, this.updateLabel, this.setLabelId, this.toggleDanger  )
+    return (
+      <DeleteModel danger={this.state.danger} headerMessage="Delete Label" bodyMessage="Are You Sure Want to Delete Label?"
+        toggleDanger={this.toggleDanger} delete={this.deleteLabel} cancel={this.toggleDanger} />)
   }
 
-  
+  loadDropDown = (labels, ukey) => {
+    return ReUseComponents.loadDropDown(labels, ukey, this.state.dropdownOpen[ukey], this.toggleDropDown, this.updateLabel, this.setLabelId, this.toggleDanger)
+  }
 }
 
 export default Lables;

@@ -8,7 +8,7 @@ class ContactApi {
   }
  
   getContacts(success, failure, profileId, value) {
-    Store.getContacts()===null||value==="true" ? process(success, failure, profileId + "/contacts", "GET"): success(Store.getContacts());
+    Store.getContacts()===null||value==="true" ? process(success, failure, profileId + "/contacts?withlabels=true", "GET"): success(Store.getContacts());
   }
  
   getContactById(success, failure, profileId, contactId) {
@@ -32,8 +32,8 @@ async function process(success, failure, Uurl, Umethod, profileId, data) {
   let promise;
     try {
       if (HTTP !== null) {
-        data === null ? promise = await HTTP.request() : promise = await HTTP.request({ data });
-        if (Umethod === "GET" && data === undefined) {
+        data === null || data === undefined ? promise = await HTTP.request() : promise = await HTTP.request({ data });
+        if (Umethod === "GET" && data === undefined ) {
           Store.saveContacts(promise.data);
           validResponse(promise, success)
         } else if(Umethod === "GET" && data === true){
