@@ -5,6 +5,7 @@ import Lables from "./Bill";
 import BillApi from "../../services/BillApi";
 import Select from 'react-select';
 import Data from '../../data/SelectData';
+import Bills from "./Bill";
 
 class UpdateBill extends Component {
   constructor(props) {
@@ -25,6 +26,7 @@ class UpdateBill extends Component {
       currencies:[],
       userAmount:props.bill.amount,
       netAmount:0,
+      cancelUpdateBill:false,
     };
   }
 
@@ -39,6 +41,9 @@ class UpdateBill extends Component {
     let gst_amount=  (amount * tax_amount) /100;
       this.setState({userAmount :amount+gst_amount })
  }
+ cancelUpdateBill=()=>{
+  this.setState({cancelUpdateBill:true})
+}
  calculateNetAmount=() =>{
    let tax_amount= isNaN(parseInt(document.getElementById("tax").value)) ? 0 : parseInt(document.getElementById("tax").value)
   let amount=isNaN(parseInt(document.getElementById("grossAmount").value)) ?  0 : parseInt(document.getElementById("grossAmount").value)
@@ -49,7 +54,8 @@ class UpdateBill extends Component {
   //this method handle form submission values and errors
   handleSubmitValue = (event, errors, values) => {
     const { labelOption, categoryOption, categoryOptionUpdate, labelOptionUpdate } = this.state 
-    const  newData = {...values,"categoryId":categoryOptionUpdate ? categoryOption.value : categoryOption,"labelIds":labelOption===null || labelOption===[]?[]:( labelOptionUpdate ? labelOption.map(opt=>{return opt.value}): labelOption ),"version": this.props.bill.version}
+    const  newData = {...values,"categoryId":categoryOptionUpdate ? categoryOption.value :
+     categoryOption,"labelIds":labelOption===null || labelOption===[]?[]:( labelOptionUpdate ? labelOption.map(opt=>{return opt.value}): labelOption ),"version": this.props.bill.version}
     if (errors.length === 0) { this.handleUpdate(event, newData); }
   }
 
@@ -85,10 +91,14 @@ class UpdateBill extends Component {
   }
     
   render() {
-    const { alertColor, content, updateSuccess, labels, categories, bill } = this.state;
-    console.log('Amount is : ',bill.amount)
+    const { alertColor, content, updateSuccess, labels, categories, bill,cancelUpdateBill } = this.state;
+    
+    if(cancelUpdateBill){
+      return <Bills/>
+    }else{
     return <div>{updateSuccess ? <Lables /> : this.loadUpdatingLabel(alertColor, content, labels, categories, bill)}</div>
   }
+}
 
   loadHeader = () => <CardHeader><strong>Update Bill</strong></CardHeader>
 
@@ -98,19 +108,19 @@ class UpdateBill extends Component {
       <div className="animated fadeIn" >
         <Card>
           {this.loadHeader()}
-          <h5 style={{paddingTop:20}}><b><center>EDIT BILL</center></b></h5>
+          {/* <h5 style={{paddingTop:20}}><b><center>Update Bill</center></b></h5> */}
           <Col sm="12" md={{ size: 5, offset: 4 }}>
             <br />
             <Alert color={alertColor}>{content}</Alert>
               <AvForm onSubmit={this.handleSubmitValue}>
               <Row>
                   <Col sm={2}>
-                    <AvField type="select" id="symbol"  value={bill.currency} name="currency" errorMessage="Select Currency" required>
+                    <AvField type="select" id="symbol" label="currency" value={bill.currency} name="currency" errorMessage="Select Currency" required>
                       {this.state.currencies.map((currencies,key)=>{return <option key={key} value={currencies.code} h={currencies.symbol} symbol={currencies.symbol} >{currencies.symbol}</option>})}
                     </AvField>
                   </Col>
                   <Col>
-                    <AvField name="userAmount" id="amount" value={this.state.netAmount}  onChange={()=>this.handleChange()} placeholder="Amount" type="text" errorMessage="Invalid amount" 
+                    <AvField name="userAmount" id="amount"  label ="Amount" value={this.state.netAmount}  onChange={()=>this.handleChange()} placeholder="Amount" type="text" errorMessage="Invalid amount" 
                     validate={{ required: { value: true }, pattern: { value: '^([0-9]*[.])?[0-9]+$' } }} required  />
                   </Col>
                 </Row>
@@ -123,21 +133,24 @@ class UpdateBill extends Component {
                   </Col>
                 </Row>
                 <Row>
-                  <Col> <Select options={Data.categories(categories)}  defaultValue={Data.categories(categories).filter(item=>{return item.value===bill.categoryId})} styles={Data.singleStyles}  placeholder="Select Categories " onChange={this.categorySelected} required/></Col>
+                  <Col><label >Category</label>
+                  <Select options={Data.categories(categories)}  defaultValue={Data.categories(categories).filter(item=>{return item.value===bill.categoryId})} styles={Data.singleStyles}  placeholder="Select Categories " onChange={this.categorySelected} required/></Col>
                 </Row><br />
                 <Row>
                   <Col><AvField name="billDate" label="Bill Date" value={bill.billDate} type="date" errorMessage="Invalid Date" validate={{ date: { format: 'dd/mm/yyyy' }, required: { value: true } }} /></Col>
                   <Col><AvField name="dueDate" label="Due Date" value={bill.dueDate} type="date" errorMessage="Invalid Date" validate={{ date: { format: 'dd/mm/yyyy' }, required: { value: true } }} /></Col>
                 </Row>
                 <Row>
-                  <Col> <AvField name="description" type="text" value={bill.description} list="colors" errorMessage="Invalid Notes" placeholder="Enter Notes " required /></Col>
+                  <Col><label >Description/Notes</label>
+                   <AvField name="description" type="text" value={bill.description} list="colors" errorMessage="Invalid Notes" placeholder="Enter Notes " required /></Col>
                 </Row>
                 <Row>
-                  <Col> {this.lablesOptions(labels, bill)}</Col>
+                  <Col><label >Select Labels</label>
+                  {this.lablesOptions(labels, bill)}</Col>
                 </Row><br />
                 <FormGroup>
                   <Button color="info"> Update </Button> &nbsp;&nbsp;
-                  <a href='/listBills'><Button type="button">Cancel</Button></a>
+                  <Button type="button" onClick={this.cancelUpdateBill}>Cancel</Button>
                 </FormGroup>
               </AvForm>
             </Col>

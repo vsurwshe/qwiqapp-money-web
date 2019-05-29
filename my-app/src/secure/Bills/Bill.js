@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Link } from 'react-router-dom';
 import { Button,Row, Col, Card, CardBody, Alert, Modal, ModalHeader, ModalBody, ModalFooter, Dropdown, DropdownToggle, Input,
          DropdownMenu, DropdownItem, ListGroupItem, ListGroup, InputGroup, InputGroupAddon, InputGroupText  } from "reactstrap";
 import CreateBill from "./CreateBill";
@@ -84,6 +85,7 @@ class Bills extends Component {
 
   //this method seting label when api given successfull Response
   successCallLabel = async label => {
+    this.setState({spinner: true})
      if (label === []) {
       this.setState({ labels : [0] })
     } else {
@@ -146,8 +148,16 @@ class Bills extends Component {
 
   render() {
     const { bills, createBill, updateBill, id, deleteBill, visible, profileId, rebill, spinner, labels, categories } = this.state
-    if (bills.length === 0 && !createBill ) {
-      return <div>{bills.length === 0 && !createBill && !spinner ? this.loadLoader() :this.loadNotBill()}</div>
+    console.log(' profileId: ',profileId)
+    if (profileId===null || profileId=== undefined || profileId==="") {
+      return <div>
+          {this.loadHeader()} &nbsp; &nbsp;<br/>
+          <center>
+            <p style={{paddingTop:10}}>We don't have any profiel , need to cteate { <Link to="/profiles/createProfile" >profile.</Link>} </p> 
+          </center>
+        </div>
+    } else if (bills.length === 0 && !createBill ) {
+      return <div>{!spinner ? this.loadLoader() : bills.length === 0 && !createBill ? this.loadNotBill() : ""}</div>
     } else if (createBill) {
       return ( <CreateBill pid={profileId} label={labels} categories={categories} />)
     }else if (updateBill) {
@@ -171,16 +181,17 @@ class Bills extends Component {
 
   loadHeader = () => {
     return (
-      <div style={{ paddingTop: 20, paddingRight: 10 }} >
+      // <div className="serachHeader" style={{ paddingTop: 20, paddingRight: 10 }} className="HeaderContext">
+      <div style={{ paddingTop: 20, paddingRight: 10 }}  >
         <Row>
-          <Col sm={3}><strong style={{ fontSize: 20, marginLeft: 20 }}>BILLS</strong></Col>
+          <Col sm={3} ><strong style={{fontSize:20, marginLeft:20 }} >BILLS</strong></Col>
           <Col>
             <InputGroup>
               <Input  placeholder="Search Bills....." onChange={this.searchSelected} />
               <InputGroupAddon addonType="append"> <InputGroupText><FaSearch /></InputGroupText></InputGroupAddon>
             </InputGroup>
           </Col>
-          <Col sm={3}> <Button color="success" className="float-right" onClick={this.callCreateBill} style={{ marginRight: 20 }}> + Add </Button></Col>
+          <Col sm={3}> <Button color="success" className="float-right" onClick={this.callCreateBill} > + Add </Button></Col>
         </Row>  
       </div>
     )

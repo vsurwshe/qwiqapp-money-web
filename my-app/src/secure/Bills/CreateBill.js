@@ -21,6 +21,8 @@ class CreateBill extends Component {
       userAmount:0,
       contactOption:'',
       labelUpdate: '',
+      cancelCreateBill:false,
+      doubleClick:false
      };
   }
   componentDidMount=()=>{
@@ -33,7 +35,9 @@ class CreateBill extends Component {
     let gst_amount=  (amount * tax_amount) /100;
     this.setState({userAmount :amount+gst_amount })
  }
-
+cancelCreateBill=()=>{
+  this.setState({cancelCreateBill:true})
+}
   //this method handle form submitons values and errors
   handleSubmitValue = (event, errors, values) => {
     const { labelOption, categoryOption } = this.state 
@@ -48,6 +52,7 @@ class CreateBill extends Component {
   //this method handle the Post method from user
   handlePostData = async (e, data) => {
     e.persist();
+    this.setState({doubleClick:true})
     await new BillApi().createBill(this.successCreate, this.errorCall, this.state.profileId, data);
   };
 
@@ -68,9 +73,13 @@ class CreateBill extends Component {
   };
 
   render() {
-    const { alertColor, content, categories } = this.state;
+    const { alertColor, content, categories,cancelCreateBill } = this.state;
+    if(cancelCreateBill){
+      return <Bills/>
+    }else{
     return <div>{this.state.billCreated ? <Bills /> : this.selectLabels(alertColor, content, categories)}</div>
   }
+}
   
   selectLabels = (alertColor, content, categories) =>{
     return this.loadCreatingBill(alertColor, this.state.labels, content, categories);
@@ -84,15 +93,16 @@ class CreateBill extends Component {
           <h4 style={{ paddingTop: 20 }}><b><center>CREATE BILL</center></b></h4>
           <Col sm="12" md={{ size: 5, offset: 4 }}>
             <Alert color={alertColor}>{content}</Alert>
+            <div style={{backgroundColor:"#D2D2CB"}}>
             <AvForm onSubmit={this.handleSubmitValue}>
               <Row>
                 <Col sm={2}>
-                  <AvField type="select" id="symbol" name="currency" errorMessage="Select Currency" onChange={() => this.handleChange()} required>
+                  <AvField type="select" id="symbol" name="currency" label="Currency" errorMessage="Select Currency" onChange={() => this.handleChange()} required>
                     {this.state.currencies.map((currencies, key) => { return <option key={key} value={currencies.code} h={currencies.symbol} symbol={currencies.symbol} >{currencies.symbol}</option> })}
                   </AvField>
                 </Col>
                 <Col>
-                  <AvField name="userAmount" id="amount" placeholder="Amount" type="number" errorMessage="Invalid amount"
+                  <AvField name="userAmount" id="amount" label="Amount" placeholder="Amount" type="number" errorMessage="Invalid amount"
                     validate={{ required: { value: true }, pattern: { value: '^([0-9]*[.])?[0-9]+$' } }} required
                     onChange={() => this.handleChange()} />
                 </Col>
@@ -102,12 +112,14 @@ class CreateBill extends Component {
                   <AvField name="tax" id="tax" placeholder="tax" label="Tax" type="text" errorMessage="Invalid amount" validate={{ required: { value: true }, pattern: { value: '^[0-9]+$' } }} required
                     onChange={() => this.handleChange()} />
                 </Col>
-                <Col>
+                <Col md={6}>
                   <AvField name="amount" disabled={true} value={this.state.userAmount} label="Gross Amount" placeholder="Gross Amount" type="text" errorMessage="Invalid amount" validate={{ required: { value: true } }} required />
                 </Col>
               </Row>
               <Row>
-                <Col> <Select options={Data.categories(categories)} styles={Data.singleStyles} placeholder="Select Categories " onChange={this.categorySelected} required /></Col>
+                <Col> 
+                <label >Category</label>
+                <Select options={Data.categories(categories)} styles={Data.singleStyles} placeholder="Select Categories " onChange={this.categorySelected} required /></Col>
               </Row><br />
 
               <Row>
@@ -115,22 +127,26 @@ class CreateBill extends Component {
                 <Col><AvField name="dueDate" label="Due Date" value={this.state.userDueDate} type="date" errorMessage="Invalid Date" validate={{ date: { format: 'dd/mm/yyyy' }, required: { value: true } }} /></Col>
               </Row>
               <Row>
-                <Col> <AvField name="description" type="text" list="colors" errorMessage="Invalid Notes" placeholder="Enter Notes " required /></Col>
+                <Col>
+                <label >Description/Notes</label>
+                 <AvField name="description" type="text" list="colors" errorMessage="Invalid Notes" placeholder="Enter Notes " required /></Col>
               </Row>
               <Row>
-                <Col><Select isMulti options={Data.labels(labels)} styles={Data.colourStyles} placeholder="Select Lables " onChange={this.labelSelected} /></Col>
+                <Col>
+                <label >Select Labels</label>
+                <Select isMulti options={Data.labels(labels)} styles={Data.colourStyles} placeholder="Select Lables " onChange={this.labelSelected} /></Col>
               </Row><br />
               <Row>
                 <Col>
-                  <Select
-                    // options={Data.contact(contact)} styles={Data.singleStyles}  
-                    placeholder="Select Contact " onChange={this.contactSelected} /></Col>
+                <label >Contact Name</label>
+                  <Select placeholder="Select Contact " onChange={this.contactSelected} /></Col>
               </Row><br />
               <FormGroup >
-                <Button color="info"> Save Bill </Button> &nbsp;&nbsp;
-                  <a href='/listBills'><Button type="button">Cancel</Button></a>
+                <Button color="success" disabled={this.state.doubleClick}> Save  </Button> &nbsp;&nbsp;
+                <Button type="button" onClick={this.cancelCreateBill}>Cancel</Button>
               </FormGroup>
             </AvForm>
+            </div>
           </Col>
         </Card>
       </div>);
