@@ -32,8 +32,9 @@ class CreateBill extends Component {
   handleChange=() =>{
     let tax_amount= isNaN(parseInt(document.getElementById("tax").value)) ? 0 : parseInt(document.getElementById("tax").value)
     let amount=isNaN(parseInt(document.getElementById("amount").value)) ?  0 : parseInt(document.getElementById("amount").value)
-    let gst_amount=  (amount * tax_amount) /100;
-    this.setState({userAmount :amount+gst_amount })
+    // let gst_amount=  (amount * tax_amount) /100;
+    let gst_amount=  (amount * 100) /(100+tax_amount);
+    this.setState({userAmount :gst_amount })
  }
 cancelCreateBill=()=>{
   this.setState({cancelCreateBill:true})
@@ -43,13 +44,30 @@ cancelCreateBill=()=>{
     const { labelOption, categoryOption } = this.state 
     if (categoryOption === null){
       this.setState({ alertColor : "warning", content : "Please Select Category..."})
-    } else{
-      const  newData = {...values,"categoryId":categoryOption.value,"labelIds":labelOption===[] ? '': labelOption.map(opt=>{return opt.value})}
-      if (errors.length === 0) { this.handlePostData(event, newData); }
-    } 
+    } else if (errors.length === 0) { 
+        let billDateCal = new Date(values.bill_Date);
+        const dueDateCal = new Date(values.due_Date);
+        if ((dueDateCal-billDateCal)>=0) {
+          let dueDate, billDate;
+          let year= values.bill_Date.split("-")[0];
+          let month= values.bill_Date.split("-")[1];
+          let day= values.bill_Date.split("-")[2];
+          billDate = year+month+day;
+          year = values.due_Date.split("-")[0];
+          month = values.due_Date.split("-")[1];
+          day = values.due_Date.split("-")[2];
+          dueDate = year+month+day;
+          console.log(values)
+          const  newData = {...values, "billDate":billDate, "dueDate":dueDate, "categoryId":categoryOption.value,"labelIds":labelOption===[] ? '': labelOption.map(opt=>{return opt.value})}
+          this.handlePostData(event, newData); 
+        } else{
+          this.setState({ alertColor : "danger", content : "Due Date should be greater than or equal to Bill Date"})
+          // this.callAlertTimer("danger", "Please Check Due Date should be greater then or equal to bill date ")
+        }
+    }
   }
 
-  //this method handle the Post method from user
+  //this method handle the Post method from user`
   handlePostData = async (e, data) => {
     e.persist();
     this.setState({doubleClick:true})
@@ -102,7 +120,7 @@ cancelCreateBill=()=>{
                   </AvField>
                 </Col>
                 <Col>
-                  <AvField name="userAmount" id="amount" label="Amount" placeholder="Amount" type="number" errorMessage="Invalid amount"
+                  <AvField name="amount" id="amount" label="Amount" placeholder="Amount" type="number" errorMessage="Invalid amount"
                     validate={{ required: { value: true }, pattern: { value: '^([0-9]*[.])?[0-9]+$' } }} required
                     onChange={() => this.handleChange()} />
                 </Col>
@@ -112,9 +130,9 @@ cancelCreateBill=()=>{
                   <AvField name="tax" id="tax" placeholder="tax" label="Tax" type="text" errorMessage="Invalid amount" validate={{ required: { value: true }, pattern: { value: '^[0-9]+$' } }} required
                     onChange={() => this.handleChange()} />
                 </Col>
-                <Col md={6}>
+                {/* <Col md={6}>
                   <AvField name="amount" disabled={true} value={this.state.userAmount} label="Gross Amount" placeholder="Gross Amount" type="text" errorMessage="Invalid amount" validate={{ required: { value: true } }} required />
-                </Col>
+                </Col> */}
               </Row>
               <Row>
                 <Col> 
@@ -123,8 +141,8 @@ cancelCreateBill=()=>{
               </Row><br />
 
               <Row>
-                <Col><AvField name="billDate" label="Bill Date" value={this.state.userBillDate} type="date" errorMessage="Invalid Date" validate={{ date: { format: 'dd/mm/yyyy' }, required: { value: true } }} /></Col>
-                <Col><AvField name="dueDate" label="Due Date" value={this.state.userDueDate} type="date" errorMessage="Invalid Date" validate={{ date: { format: 'dd/mm/yyyy' }, required: { value: true } }} /></Col>
+                <Col><AvField name="bill_Date" label="Bill Date" value={this.state.userBillDate} type="date" errorMessage="Invalid Date" validate={{ date: { format: 'yyyy/MM/dd' }, required: { value: true } }} /></Col>
+                <Col><AvField name="due_Date" label="Due Date" value={this.state.userDueDate} type="date" errorMessage="Invalid Date" validate={{ date: { format: 'yyyy/MM/dd' }, required: { value: true } }} /></Col>
               </Row>
               <Row>
                 <Col>

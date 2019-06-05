@@ -42,6 +42,7 @@ async function process(success, failure, Uurl, Umethod, profileId, data) {
       validResponse(promise, success)
     }
   } catch (err) {
+    console.log(err);
     AccessTokenError(profileId, err, failure, Uurl, Umethod, data, success);
   }
 }

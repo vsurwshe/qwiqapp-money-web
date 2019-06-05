@@ -147,8 +147,7 @@ class Bills extends Component {
   }
 
   render() {
-    const { bills, createBill, updateBill, id, deleteBill, visible, profileId, rebill, spinner, labels, categories } = this.state
-    console.log(' profileId: ',profileId)
+    const { bills, createBill, updateBill, id, deleteBill, visible, profileId, rebill, spinner, labels, categories } = this.state;
     if (profileId===null || profileId=== undefined || profileId==="") {
       return <div>
           {this.loadHeader()} &nbsp; &nbsp;<br/>
@@ -262,8 +261,12 @@ class Bills extends Component {
   }
  
   dateFormat = (userDate) =>{
-    var parts = userDate.split('-');
-    var date = new Date(parts[0], parts[1]-1, parts[2]);
+    let sd=userDate.toString().split('');
+    let year= sd[0]+sd[1]+sd[2]+sd[3];
+    let month =sd[4]+sd[5];
+    let day = sd[6]+sd[7];
+    //   var parts = userDate.split('-');
+    var date = new Date(year, month, day);
     const finalDate = new Intl.DateTimeFormat('en-gb', {  month: 'short',  weekday: 'short',  day: '2-digit' }).format(date);
     return finalDate;
   }
