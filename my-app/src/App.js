@@ -14,10 +14,10 @@ export default App;
 
 const AuthButton = withRouter(({ history }) =>
   Store.isAppUserLoggedIn() ? (
-    <span > <Button onClick={() => {Store.logoutAppUser(() => history.push("/"));}} color="danger">Sign out</Button>  </span>
-      ): (
-            <span onClick={() => { history.push("/login");}}>Login</span>
-      )
+    <span > <Button onClick={() => { Store.logoutAppUser(() => history.push("/")); }} color="danger">Sign out</Button>  </span>
+  ) : (
+      <span onClick={() => { history.push("/login"); }}>Login</span>
+    )
 );
 
 export { AuthButton };

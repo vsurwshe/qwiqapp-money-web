@@ -1,7 +1,8 @@
 import React, { Component } from "react";
-import { Card, CardHeader,CardBody,Alert,Col } from "reactstrap";
 import LabelApi from "../../services/LabelApi";
 import Lables from "./Label";
+import Config from "../../data/Config";
+import { ReUseComponents } from "../utility/ReUseComponents";
 
 class DeleteLabel extends Component {
   constructor(props) {
@@ -9,61 +10,35 @@ class DeleteLabel extends Component {
     this.state = {
       id: this.props.id,
       labelDeleted: false,
-      color: "warning",
+      color: "",
       content: "Deleting Label.....",
-      profileId:this.props.pid
+      profileId: this.props.pid
     };
   }
 
-  componentDidMount = () => {
-    new LabelApi().deleteLabel(this.successCall,this.errorCall,this.state.profileId,this.state.id);
-   };
-  //this method call when the delete api called and successfully Executed.
-  successCall = () => {
-    this.callAlertTimer("success","Label Deleted Successfully....");
+  componentDidMount = async () => {
+    await new LabelApi().deleteLabel(this.successCall, this.errorCall, this.state.profileId, this.state.id);
   };
-  
-  //when any api goto the api executions failed then called this method 
+
+  successCall = () => {
+    this.callAlertTimer("success", "Label Deleted Successfully....");
+  };
+
   errorCall = () => {
-    this.callAlertTimer("danger","Unable to Process Request, Please Try Again...  ");
+    this.callAlertTimer("danger", "Unable to Process Request, Please Try Again...  ");
   };
 
   //this  method show the on page alert
   callAlertTimer = (color, content) => {
-    this.setState({color: color,content: content});
-    setTimeout(() => {this.setState({ color: "",content:"",labelDeleted: true });}, 2000);
+    this.setState({ color: color, content: content });
+    setTimeout(() => {
+      this.setState({ color: "", content: "", labelDeleted: true });
+    }, Config.notificationMillis);
   };
 
   render() {
     const { labelDeleted, content, color } = this.state;
-    return <div>{ labelDeleted ? <Lables /> : this.loadDeleting(color,content) }</div>
-  }
-
-  //This Method called After Label is successfully deleted
-  loadDeleteMessage = (content) =>{
-    return(
-      <div className="animated fadeIn">
-        <Card>
-          <CardHeader><strong>Label</strong></CardHeader>
-          <center style={{paddingTop:'20px'}}>
-            <h5><b>{content}</b><br /> <br />
-            <a href="/label/labels">View Labels </a></h5>
-        </center>
-      </Card>
-    </div>)
-  }
-
-  //This Method shows the status of Deletion process through Alert
-  loadDeleting = (color, content) =>{
-    return(
-      <div className="animated fadeIn">
-        <Card>
-          <CardHeader><strong>Label</strong></CardHeader>
-          <CardBody>
-            <Col sm="12" md={{ size: 5, offset: 4 }}><Alert color={color}>{content}</Alert></Col>
-          </CardBody>
-        </Card>
-      </div>)
+    return <div>{labelDeleted ? <Lables /> : ReUseComponents.loadDeleting("Label", "", color, content)}</div>
   }
 }
 

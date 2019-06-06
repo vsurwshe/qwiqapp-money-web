@@ -3,6 +3,7 @@ import { CardTitle,Container,Card, CardBody } from "reactstrap";
 import { Link } from "react-router-dom";
 import queryString from "query-string";
 import SignupApi from "../services/SignupApi";
+import Config from "../data/Config";
 
 class SignupVerify extends Component {
   constructor(props) {
@@ -21,7 +22,9 @@ class SignupVerify extends Component {
   };
 
   successCall = json => {
-    this.setState({ flag: true });
+    setTimeout(()=>{
+      this.setState({ flag: true });
+    }, Config.notificationMillis)
   };
 
   errorCall = err => {

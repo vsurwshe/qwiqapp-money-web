@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import CategoryApi from "../../services/CategoryApi";
 import Categories from "./Categories";
-import { Card, CardBody } from "reactstrap";
-import Loader from 'react-loader-spinner';
+import Config from "../../data/Config";
+import { ReUseComponents } from "../utility/ReUseComponents";
 
 class DeleteCategory extends Component {
   constructor(props) {
@@ -17,39 +17,33 @@ class DeleteCategory extends Component {
     };
   }
 
-  componentDidMount = () => {
-    new CategoryApi().deleteCategory(this.successCall, this.errorCall,this.state.profileId, this.state.categoryId );
+  componentDidMount = async () => {
+    await new CategoryApi().deleteCategory(this.successCall, this.errorCall, this.state.profileId, this.state.categoryId);
   };
 
   successCall = () => {
-    this.callAlertTimer("info","Deleted Successfully !")
+    setTimeout(() => {
+      this.setState({ categoryDeleted: true })
+    }, Config.notificationMillis)
   };
 
   errorCall = () => {
-    this.callAlertTimer('danger','Unable to Process Request, Please Try Again')
+    this.callAlertTimer('danger', 'Unable to Process Request, Please Try Again')
   };
 
-  callAlertTimer = (color,content) => {
-    this.setState({ color,content });
+  callAlertTimer = (color, content) => {
+    this.setState({ color, content });
     setTimeout(() => {
-      this.setState({ categoryDeleted: true});
-    }, 100);
+      this.setState({ categoryDeleted: true });
+      window.location.reload()
+    }, Config.notificationMillis);
   };
 
   render() {
-    const { categoryDeleted, color,content } = this.state;
-    return  categoryDeleted ? <Categories color={color} content={content} visible={true}/> : this.loadLoader()
+    const { categoryDeleted, color, content } = this.state;
+    return categoryDeleted ? <Categories color={color} content={content} visible={true} />
+      : ReUseComponents.loadSpinner("Delete Category")
   }
-  loadLoader = () =>{
-    return( 
-      <div className="animated fadeIn">
-        <Card>
-          <center style={{paddingTop:'20px'}}>
-            <CardBody><Loader type="TailSpin" color="#2E86C1" height={60} width={60}/></CardBody>
-          </center>
-        </Card>
-      </div>)
-    }
 }
 
 export default DeleteCategory;

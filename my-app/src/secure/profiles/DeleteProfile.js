@@ -1,7 +1,8 @@
 import React, { Component } from "react";
-import { Card, CardHeader, CardBody, Col, Alert } from "reactstrap";
 import ProfileApi from "../../services/ProfileApi";
 import Profiles from "./Profiles";
+import { ReUseComponents } from "../utility/ReUseComponents";
+import Config from "../../data/Config";
 
 class DeleteProfile extends Component {
   constructor(props) {
@@ -21,10 +22,10 @@ class DeleteProfile extends Component {
     );
   };
   successCall = () => {
-    this.callAlertTimer( "success", "Profile Deleted Successfully!  " );
+    this.callAlertTimer("success", "Profile Deleted Successfully!  ");
   };
   errorCall = () => {
-    this.callAlertTimer( "danger", "Unable to Process Request, Please Try Again!! " );
+    this.callAlertTimer("danger", "Unable to Process Request, Please Try Again!! ");
   };
   callAlertTimer = (color, content) => {
     this.setState({
@@ -32,31 +33,16 @@ class DeleteProfile extends Component {
       content: content
     });
     setTimeout(() => {
-      this.setState({ color: "" ,content:"",profileDeleted : true});
+      this.setState({ color: "", content: "", profileDeleted: true });
       window.location.reload();
-    }, 2000);
+    }, Config.notificationMillis);
   };
 
   render() {
     const { profileDeleted, content, color } = this.state;
-    return <div>{ profileDeleted ? <Profiles /> : this.loadDeleting(color,content) }</div>
+    return <div>{profileDeleted ? <Profiles /> : ReUseComponents.loadDeleting("Profile", "", color, content)}</div>
   }
 
-  //this Method Call Between Deleting Process.
-  loadDeleting = (color, content) =>{
-    return(
-      <div className="animated fadeIn">
-        <Card>
-          <CardHeader><strong>Label</strong></CardHeader>
-          <CardBody>
-            <Col sm="12" md={{ size: 5, offset: 4 }}>
-              <Alert color={color}>{content}</Alert>
-            </Col>
-          </CardBody>
-        </Card>
-        </div>
-    )
-  }
 }
 
 export default DeleteProfile;

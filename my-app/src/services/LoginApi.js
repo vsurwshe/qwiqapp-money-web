@@ -14,7 +14,7 @@ class LoginApi {
 
   refresh(success, failure) {
     if (!Store.isAppUserLoggedIn) {
-      failure();return;
+      failure(); return;
     }
     let params = {
       grant_type: "refresh_token",
@@ -26,22 +26,20 @@ class LoginApi {
 
 export default LoginApi;
 
-let process = function(params, success, failure) {
+let process = function (params, success, failure) {
   let promise = HTTP.request({ params: params })
-    .then(resp => validResponse(resp, success,params))
-    .catch(error => {errorResponse(error, failure);});
-    console.log(promise)
+    .then(resp => validResponse(resp, success, params))
+    .catch(error => { errorResponse(error, failure); });
+  console.log(promise)
 };
 
-let validResponse = function(resp, successMethod,params) {
-  if(params.username === "dummy@email.com")
-    {Store.saveDummyUserAccessToken(resp.data.access_token, resp.data.refresh_token);}
-  else
-    {Store.saveAppUserAccessToken(resp.data.access_token, resp.data.refresh_token,resp.data.expires_in);}
-    if (successMethod != null) {successMethod();}
+let validResponse = function (resp, successMethod, params) {
+  if (params.username === "dummy@email.com") { Store.saveDummyUserAccessToken(resp.data.access_token, resp.data.refresh_token); }
+  else { Store.saveAppUserAccessToken(resp.data.access_token, resp.data.refresh_token, resp.data.expires_in); }
+  if (successMethod != null) { successMethod(); }
 };
 
-let errorResponse = function(error, failure) {
+let errorResponse = function (error, failure) {
   if (failure != null) {
     failure();
   }
