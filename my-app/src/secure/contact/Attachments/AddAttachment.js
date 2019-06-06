@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Card, CardBody, FormGroup, Button } from 'reactstrap';
+import { Card, CardBody, FormGroup, Button, Alert, Col } from 'reactstrap';
 import AttachmentApi from '../../../services/AttachmentApi';
 import { ReUseComponents } from '../../utility/ReUseComponents';
 import Contacts from '../Contacts';
@@ -11,13 +11,18 @@ class AddAttachment extends Component {
     contactId: this.props.contactId,
     addSuccess: false,
     addFail: false,
+    color:'',
     content: '',
     cancelAddAttachment: false,
     doubleClick: false
   }
 
   handleInput = (e) => {
-    this.setState({ file: e.target.files[0] })
+    if(e.target.files[0].size >= 5242880){
+      this.setState({color:'danger',content : "Uploaded file size must be below 5 MB"})
+    } else{
+      this.setState({ file: e.target.files[0],color:'',content:'' })
+    }
   }
 
   handleSubmit = (e) => {
@@ -72,6 +77,7 @@ class AddAttachment extends Component {
         {ReUseComponents.loadHeader("Add Attachment")}
         <FormGroup> <br></br>
           <center>
+            <Col sm={6}><Alert color={this.state.color} >{this.state.content}</Alert></Col>
             <input type="file" onChange={e => this.handleInput(e)} /> <br /><br />
             <Button color="info" onClick={e => this.handleSubmit(e)} disabled={this.state.doubleClick} > Add </Button>&nbsp;&nbsp;
             <Button active color="light" aria-pressed="true" onClick={() => window.location.reload()}>Cancel</Button><br /><br />

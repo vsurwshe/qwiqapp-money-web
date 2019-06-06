@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Card, CardBody, Button, Row, Col, Modal, ModalHeader, ModalBody } from 'reactstrap';
+import { Card, CardBody, Button, Row, Col, Modal, ModalHeader } from 'reactstrap';
 import { FaTrashAlt, FaCloudUploadAlt, FaEye } from 'react-icons/fa';
 import AttachmentApi from '../../../services/AttachmentApi';
 import AddAttachment from './AddAttachment';
@@ -128,12 +128,13 @@ class Attachments extends Component {
   displayAttachment = () => {
     const { display, viewData, reattachment } = this.state
     return (
-      <Modal isOpen={display} style={{ width: window.screen.width, height: window.screen.height }} className={this.props.className} >
+      <Modal isOpen={display}  size="xl" style={{ height: window.screen.height}} className={this.props.className} >
         <ModalHeader toggle={() => { this.toggleView() }}>{reattachment === undefined ? '' : reattachment.filename}</ModalHeader>
-        <ModalBody>
-          <center><embed src={viewData} ></embed></center>
-        </ModalBody>
-      </Modal>)
+          <object size="xl" style={{ height: window.screen.height }} data={viewData} > 
+            <embed src={viewData}  />
+          </object>
+      </Modal>
+      )
   }
 }
 
