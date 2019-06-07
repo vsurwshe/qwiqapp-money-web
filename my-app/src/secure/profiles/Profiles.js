@@ -8,8 +8,8 @@ import Avatar from 'react-avatar';
 import ViewProfile from "./ViewProfile";
 import Loader from 'react-loader-spinner'
 import { FaPen, FaTrashAlt } from 'react-icons/fa';
-import { DeleteModel } from "../utility/deleteModel";
-import { ProfileEmptyMessage } from "../utility/ProfileEmptyMessage";
+import { DeleteModel } from "../Utility/deleteModel";
+import { ProfileEmptyMessage } from "../Utility/ProfileEmptyMessage";
 
 /**
  * Display list of profiles,Manage profile like (update, delete)

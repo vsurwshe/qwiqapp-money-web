@@ -109,7 +109,12 @@ const Data={
     return options;
   },
   contacts:function(contacts){
-   return contacts
+    const options = [];
+    contacts.map(contact => {
+           return options.push({value: contact.id, label: <b>{contact.name}</b>})
+       })
+
+   return options
   },
   currencies: function(){
     let currencies=[]

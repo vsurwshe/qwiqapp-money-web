@@ -8,15 +8,14 @@ import Home from "./Home";
 import Login from "./Login";
 import Store from "../data/Store";
 import SignupVerify from "../components/SignupVerify";
-import Profiles from "../secure/profiles/Profiles";
+import Profiles from "../secure/Profiles/Profiles";
 import navigation, {item} from "../data/navigations";
-import CreateLable from "../secure/labels/Createlabel";
-import Lables from "../secure/labels/Label";
+import CreateLable from "../secure/Labels/Createlabel";
+import Lables from "../secure/Labels/Label";
 import Categories from "../secure/Categories/Categories";
-import Contacts from "../secure/contact/Contacts";
-import CreateContact from "../secure/contact/CreateContact";
+import Contacts from "../secure/Contact/Contacts";
+import CreateContact from "../secure/Contact/CreateContact";
 import EditCategory from "../secure/Categories/EditCategory";
-import CreateProfile from "../secure/profiles/CreateProfile";
 import Bills from "../secure/Bills/Bill";
 
 const DefaultFooter = React.lazy(() =>import("../secure/Sidebar/DefaultFooter"));
@@ -58,6 +57,7 @@ class Main extends Component {
         <Route path="/categorie/update" component={EditCategory} />
         <PrivateRoute exact path="/contact/createContact" component={CreateContact} />
         <PrivateRoute exact path="/contact/viewContacts" component={Contacts} />
+        <PrivateRoute path="/listBills" component={Bills} />
         <Route path="/login" component={Login} />
         <Route path="/signup" component={Signup} />
         <Route path="/register/:id/verify" component={SignupVerify} />

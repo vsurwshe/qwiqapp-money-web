@@ -11,6 +11,7 @@ import Store from "../../data/Store";
 import CategoryApi from "../../services/CategoryApi";
 import LabelApi from "../../services/LabelApi";
 import DeleteBill from "./DeleteBill";
+import ContactApi from '../../services/ContactApi';
 
 class Bills extends Component {
   constructor(props) {
@@ -20,6 +21,7 @@ class Bills extends Component {
       labels: [],
       categories: [],
       collapse: [],
+      contacts:[],
       rebill: [],
       createBill: false,
       updateBill: false,
@@ -90,9 +92,20 @@ class Bills extends Component {
       this.setState({ labels : [0] })
     } else {
       await this.setState({ labels : label});
+      new ContactApi().getContacts(this.successCallContact, this.errorCall, this.state.profileId);
     }
   };
-  
+  successCallContact = async contacts => {
+    this.setState({spinner: true})
+     if (contacts === []) {
+      this.setState({ contacts : [0] })
+    } else {
+      await this.setState({contacts});
+      
+    }
+  };
+
+
   bills = (bills) =>{
     const prevState = bills;
     const state = prevState.map((x, index) => {
@@ -147,7 +160,7 @@ class Bills extends Component {
   }
 
   render() {
-    const { bills, createBill, updateBill, id, deleteBill, visible, profileId, rebill, spinner, labels, categories } = this.state;
+    const { bills, createBill, updateBill, id, deleteBill, visible, profileId, rebill, spinner, labels, categories,contacts} = this.state;
     if (profileId===null || profileId=== undefined || profileId==="") {
       return <div>
           {this.loadHeader()} &nbsp; &nbsp;<br/>
@@ -158,9 +171,9 @@ class Bills extends Component {
     } else if (bills.length === 0 && !createBill ) {
       return <div>{!spinner ? this.loadLoader() : bills.length === 0 && !createBill ? this.loadNotBill() : ""}</div>
     } else if (createBill) {
-      return ( <CreateBill pid={profileId} label={labels} categories={categories} />)
+      return ( <CreateBill pid={profileId} label={labels} categories={categories} contacts={contacts} />)
     }else if (updateBill) {
-      return(<UpdateBill pid={profileId} bill={rebill} lables={labels} categories={categories} />)
+      return(<UpdateBill pid={profileId} bill={rebill} lables={labels} categories={categories} contacts={contacts} />)
     }else if(deleteBill) {
       return ( <DeleteBill id={id}  pid={profileId}/> )
     }else{

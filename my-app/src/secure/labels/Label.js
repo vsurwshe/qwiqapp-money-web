@@ -6,9 +6,9 @@ import DeleteLabel from "./DeleteLabel";
 import LabelApi from "../../services/LabelApi";
 import Loader from 'react-loader-spinner'
 import Store from "../../data/Store";
-import { ProfileEmptyMessage } from "../utility/ProfileEmptyMessage";
-import { ReUseComponents } from "../utility/ReUseComponents";
-import { DeleteModel } from "../utility/deleteModel";
+import { ProfileEmptyMessage } from "../Utility/ProfileEmptyMessage";
+import { ReUseComponents } from "../Utility/ReUseComponents";
+import { DeleteModel } from "../Utility/deleteModel";
 
 class Lables extends Component {
   constructor(props) {

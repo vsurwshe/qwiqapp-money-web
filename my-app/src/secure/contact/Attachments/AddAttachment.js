@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Card, CardBody, FormGroup, Button, Alert, Col } from 'reactstrap';
 import AttachmentApi from '../../../services/AttachmentApi';
-import { ReUseComponents } from '../../utility/ReUseComponents';
+import { ReUseComponents } from '../../Utility/ReUseComponents';
 import Contacts from '../Contacts';
 
 class AddAttachment extends Component {

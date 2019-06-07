@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import LabelApi from "../../services/LabelApi";
 import Lables from "./Label";
 import Config from "../../data/Config";
-import { ReUseComponents } from "../utility/ReUseComponents";
+import { ReUseComponents } from "../Utility/ReUseComponents";
 
 class DeleteLabel extends Component {
   constructor(props) {

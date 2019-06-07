@@ -10,6 +10,7 @@ class CreateBill extends Component {
     super(props);
     this.state = {
       labels: props.label,
+      contacts:props.contacts,
       categories : props.categories, 
       billCreated : false,
       profileId : props.pid,
@@ -41,7 +42,7 @@ cancelCreateBill=()=>{
 }
   //this method handle form submitons values and errors
   handleSubmitValue = (event, errors, values) => {
-    const { labelOption, categoryOption } = this.state 
+    const { labelOption, categoryOption ,contactOption} = this.state 
     if (categoryOption === null){
       this.setState({ alertColor : "warning", content : "Please Select Category..."})
     } else if (errors.length === 0) { 
@@ -58,11 +59,10 @@ cancelCreateBill=()=>{
           day = values.due_Date.split("-")[2];
           dueDate = year+month+day;
           console.log(values)
-          const  newData = {...values, "billDate":billDate, "dueDate":dueDate, "categoryId":categoryOption.value,"labelIds":labelOption===[] ? '': labelOption.map(opt=>{return opt.value})}
+          const  newData = {...values, "billDate":billDate, "dueDate":dueDate, "categoryId":categoryOption.value, "contactId":contactOption.value ,"labelIds":labelOption===[] ? '': labelOption.map(opt=>{return opt.value})}
           this.handlePostData(event, newData); 
         } else{
           this.setState({ alertColor : "danger", content : "Due Date should be greater than or equal to Bill Date"})
-          // this.callAlertTimer("danger", "Please Check Due Date should be greater then or equal to bill date ")
         }
     }
   }
@@ -91,20 +91,20 @@ cancelCreateBill=()=>{
   };
 
   render() {
-    const { alertColor, content, categories,cancelCreateBill } = this.state;
+    const { alertColor, content, categories,cancelCreateBill, contacts } = this.state;
     if(cancelCreateBill){
       return <Bills/>
     }else{
-    return <div>{this.state.billCreated ? <Bills /> : this.selectLabels(alertColor, content, categories)}</div>
+    return <div>{this.state.billCreated ? <Bills /> : this.selectLabels(alertColor, content, categories,contacts)}</div>
   }
 }
   
-  selectLabels = (alertColor, content, categories) =>{
-    return this.loadCreatingBill(alertColor, this.state.labels, content, categories);
+  selectLabels = (alertColor, content, categories,contacts) =>{
+    return this.loadCreatingBill(alertColor, this.state.labels, content, categories,contacts);
   }
   
   //this Method Call when Label Creation in porceess.
-  loadCreatingBill = (alertColor, labels, content, categories,contact) => {
+  loadCreatingBill = (alertColor, labels, content, categories,contacts) => {
     return (
       <div className="animated fadeIn" >
         <Card>
@@ -157,7 +157,7 @@ cancelCreateBill=()=>{
               <Row>
                 <Col>
                 <label >Contact Name</label>
-                  <Select placeholder="Select Contact " onChange={this.contactSelected} /></Col>
+                  <Select options={Data.contacts(contacts)}  placeholder="Select Contact " onChange={this.contactSelected} /></Col>
               </Row><br />
               <FormGroup >
                 <Button color="success" disabled={this.state.doubleClick}> Save  </Button> &nbsp;&nbsp;

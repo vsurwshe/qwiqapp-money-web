@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import Contacts from "./Contacts";
 import ContactApi from "../../services/ContactApi";
-import { ReUseComponents } from "../utility/ReUseComponents";
+import { ReUseComponents } from "../Utility/ReUseComponents";
 import Config from "../../data/Config";
 
 class DeleteContact extends Component {

@@ -9,9 +9,9 @@ import LabelApi from "../../services/LabelApi";
 import Attachments from "./Attachments/Attachments";
 import AddAttachment from "./Attachments/AddAttachment";
 import Store from "../../data/Store";
-import { DeleteModel } from "../utility/deleteModel";
-import { ProfileEmptyMessage } from "../utility/ProfileEmptyMessage";
-import { ReUseComponents } from "../utility/ReUseComponents";
+import { DeleteModel } from "../Utility/deleteModel";
+import { ProfileEmptyMessage } from "../Utility/ProfileEmptyMessage";
+import { ReUseComponents } from "../Utility/ReUseComponents";
 import ContactApi from "../../services/ContactApi";
 
 class Contacts extends Component {
