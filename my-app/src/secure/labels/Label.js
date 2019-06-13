@@ -53,14 +53,34 @@ class Lables extends Component {
    }
 
 
-  successCall = async lable => {
-    if (lable === []) {
+  successCall = async labels => {
+    if (labels === []) {
       this.setState({ labels: [] })
     } else {
-      await this.setState({ labels: lable, spinner: true })
+      await this.setState({ spinner: true })
+      await this.labelsSet(labels)
       this.loadCollapse();
     }
   };
+
+  labelsSet = (labels) =>{
+    const prevState = labels;
+    const state = prevState.map((x, index) => {
+        return {...x, childName: this.displaySubLabelName(x)}
+    });
+    this.setState({labels : state});
+  }
+
+  displaySubLabelName = (labels) => {
+    if(labels.subLabels !== null){
+      const name= labels.subLabels.map(sub=>sub.name);
+      return name;
+    }else{
+      return null;
+    }
+  }
+
+
   errorCall = err =>  { this.setState({ visible: true }) }
 
 

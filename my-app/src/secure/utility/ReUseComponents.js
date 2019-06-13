@@ -6,6 +6,7 @@ import { FaEllipsisV, FaSearch, FaTrashAlt, FaPen, FaAngleDown } from 'react-ico
 
 export const ReUseComponents = {
 
+  //Shows Deleting in process Message
   loadDeleting: function (strongHeaderMsg, bodyMessage, color, content) {
     return (
       <div className="animated fadeIn">
@@ -18,12 +19,14 @@ export const ReUseComponents = {
       </div>)
   },
 
+  // Shows Header
   loadHeader: function (strongMessage) {
     return (<div style={{ padding: 10 }}>
       <center><strong> {strongMessage} </strong></center>
     </div>)
   },
 
+  //Shows Spinner 
   loadSpinner: function (headerMessage) {
     return (
       <div className="animated fadeIn">
@@ -36,12 +39,18 @@ export const ReUseComponents = {
       </div>)
   },
 
-  searchingFor: function (term) {
-    return function (x) {
-      return x.name.toLowerCase().includes(term.toLowerCase()) || !term
+  //Searches Items based on user given SearchTerm
+  searchingFor: function (searchTerm) {
+    return function (item) {
+      let subItemName ='' ;
+      if(item.childName !== null){
+        subItemName = subItemName+ item.childName.map(item => item )
+      }
+      return (item.name.toLowerCase()+subItemName.toLowerCase()).includes(searchTerm.toLowerCase()) ||!searchTerm
     }
   },
 
+  //This method loads Dropdown when Ellipsis is clicked to Update/Delete
   loadDropDown: function (item, ukey, dropdownOpen, toggleDropDown, stateFun, toggleDanger, updateLabel) {
     return (<Dropdown isOpen={dropdownOpen} style={{ marginTop: 7 }} toggle={() => { toggleDropDown(ukey); }} size="sm">
       <DropdownToggle tag="span" onClick={() => { toggleDropDown(ukey); }} data-toggle="dropdown" aria-expanded={dropdownOpen}>
@@ -54,6 +63,7 @@ export const ReUseComponents = {
     </Dropdown>);
   },
 
+  //This method Shows Categories/labels as Items
   loadItems: function (items, setSearch, search, addItem, visible, toggleAccordion, accordion, setItemId, toggleDanger, handleUpdate, stateDrodownAccord, dropDownAccordion, color, content) {
     let itemType;
     if (items[0].subLabels !== undefined) {
@@ -90,6 +100,7 @@ export const ReUseComponents = {
       </div>)
   },
 
+  //This method loads Single Items One by One
   loadSingleItem: function (singleItem, ukey, toggleAccordion, accordion, setItemId, toggleDanger, handleUpdate, stateDrodownAccord, dropDownAccordion) {
     const ellipsisText1 = { flex: 1, display: 'flex', alignItems: 'center', marginLeft: '-10' }
     const ellipsisText2 = { flex: 1, width: '100px', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', paddingLeft: 10 }
@@ -111,6 +122,7 @@ export const ReUseComponents = {
       </div>)
   },
 
+  //This method adjusts the text design relatively
   loadAvatar_DisplayName: function (singleItem, ukey, ellipsisText1, ellipsisText2, toggleAccordion) {
     if (singleItem.parentId !== null) {
       return <span style={ellipsisText1} > {this.loadAvatar(singleItem, ukey, ellipsisText2, toggleAccordion)} </span>
@@ -119,6 +131,7 @@ export const ReUseComponents = {
     }
   },
 
+  //This method displays Items's Name with Avatar and AngleDown for SubItems
   loadAvatar: function (singleItem, ukey, ellipsisText2, toggleAccordion) {
     return (<>
       <Avatar name={singleItem.name.charAt(0)} color={singleItem.color === null || singleItem.color === "" ? '#000000' : singleItem.color} size="40" square={true} />
@@ -131,6 +144,7 @@ export const ReUseComponents = {
     )
   },
 
+  //This method displays subItems 
   loadCollapse: function (singleItem, ukey, accordion, setItemId, toggleDanger, handleUpdate, subItemCss, ellipsisText1, ellipsisText2, toggleAccordion) {
     return (
       <Collapse isOpen={accordion[ukey]}>
@@ -140,6 +154,7 @@ export const ReUseComponents = {
     )
   },
 
+  // This method each subitem one by one
   loadSubItem: function (subItem, key, subItemCss, ellipsisText1, ellipsisText2, setItemId, toggleDanger, handleUpdate) {
     return (
       <span className="list-group-item" style={subItemCss} key={key}>

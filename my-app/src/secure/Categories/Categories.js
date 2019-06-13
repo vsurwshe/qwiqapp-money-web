@@ -51,9 +51,26 @@ class Categories extends Component {
   }
 
   //This Method is called for Api's Success Call
-  successCall = async json => {
-    await this.setState({ categories: json, spinner: true })
+  successCall = async categories => {
+    await this.categoriesSet(categories);
     this.loadCollapse();
+  }
+
+  categoriesSet = (categories) =>{
+    const prevState = categories;
+    const state = prevState.map((x, index) => {
+        return {...x, childName: this.displaySubCategoryName(x)}
+    });
+    this.setState({categories : state});
+  }
+
+  displaySubCategoryName = (categories) => {
+    if(categories.subCategories !==null){
+      const name= categories.subCategories.map(sub=>sub.name);
+      return name;
+    }else{
+      return null;
+    }
   }
 
   loadCollapse = () => {
@@ -141,7 +158,9 @@ class Categories extends Component {
     }
   }
   setSearch = e => {
+    // this.loadCollapse();
     this.setState({ search: e.target.value });
+    
   }
   loadCategories = (categories, visible, search) => {
     const color = this.props.color;
