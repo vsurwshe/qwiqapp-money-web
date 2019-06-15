@@ -8,7 +8,7 @@ import Loader from 'react-loader-spinner'
 import Store from "../../data/Store";
 import { ProfileEmptyMessage } from "../Utility/ProfileEmptyMessage";
 import { ReUseComponents } from "../Utility/ReUseComponents";
-import { DeleteModel } from "../Utility/deleteModel";
+import { DeleteModel } from "../Utility/DeleteModel";
 
 class Lables extends Component {
   constructor(props) {

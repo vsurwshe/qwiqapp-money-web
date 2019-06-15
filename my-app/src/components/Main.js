@@ -13,8 +13,8 @@ import navigation, {item} from "../data/navigations";
 import CreateLable from "../secure/Labels/Createlabel";
 import Lables from "../secure/Labels/Label";
 import Categories from "../secure/Categories/Categories";
-import Contacts from "../secure/contact/Contacts";
-import CreateContact from "../secure/contact/CreateContact";
+import Contacts from "../secure/Contacts/Contacts";
+import CreateContact from "../secure/Contacts/CreateContact";
 import EditCategory from "../secure/Categories/EditCategory";
 import Bills from "../secure/Bills/Bill";
 

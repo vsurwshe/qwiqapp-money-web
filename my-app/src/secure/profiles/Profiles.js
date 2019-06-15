@@ -8,7 +8,7 @@ import Avatar from 'react-avatar';
 import ViewProfile from "./ViewProfile";
 import Loader from 'react-loader-spinner'
 import { FaPen, FaTrashAlt } from 'react-icons/fa';
-import { DeleteModel } from "../Utility/deleteModel";
+import { DeleteModel } from "../Utility/DeleteModel";
 import { ProfileEmptyMessage } from "../Utility/ProfileEmptyMessage";
 
 /**

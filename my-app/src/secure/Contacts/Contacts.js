@@ -9,7 +9,7 @@ import LabelApi from "../../services/LabelApi";
 import Attachments from "./Attachments/Attachments";
 import AddAttachment from "./Attachments/AddAttachment";
 import Store from "../../data/Store";
-import { DeleteModel } from "../Utility/deleteModel";
+import { DeleteModel } from "../Utility/DeleteModel";
 import { ProfileEmptyMessage } from "../Utility/ProfileEmptyMessage";
 import { ReUseComponents } from "../Utility/ReUseComponents";
 import ContactApi from "../../services/ContactApi";

@@ -7,7 +7,7 @@ import EditCategory from './EditCategory';
 import DeleteCategory from "./DeleteCategory";
 import { ProfileEmptyMessage } from "../Utility/ProfileEmptyMessage";
 import { ReUseComponents } from "../Utility/ReUseComponents";
-import { DeleteModel } from "../Utility/deleteModel";
+import { DeleteModel } from "../Utility/DeleteModel";
 
 
 class Categories extends Component {
