@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component } from "./node_modules/react";
 import CategoryApi from "../../services/CategoryApi";
 import Categories from "./Categories";
 import Config from "../../data/Config";

@@ -1,7 +1,7 @@
-import React, { Component } from "react";
-import { Link } from 'react-router-dom'
+import React, { Component } from "./node_modules/react";
+import { Link } from './node_modules/react-router-dom'
 
-import { Button, Card, Col, Input, Alert, CardHeader, FormGroup, Label, Collapse } from "reactstrap";
+import { Button, Card, Col, Input, Alert, CardHeader, FormGroup, Label, Collapse } from "./node_modules/reactstrap";
 import CategoryApi from "../../services/CategoryApi";
 import Categories from "./Categories";
 import Config from "../../data/Config";

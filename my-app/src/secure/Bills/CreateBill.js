@@ -1,7 +1,7 @@
 import React, {Component} from "react";
 import { AvForm, AvField } from 'availity-reactstrap-validation';
 import { Alert, Button, Card, FormGroup, Col, Row } from "reactstrap";
-import Select from 'react-select';
+import Select from '.react-select';
 import BillApi from "../../services/BillApi";
 import Bills from "./Bill";
 import Data from '../../data/SelectData'
