@@ -1,6 +1,6 @@
-import React, { Component } from "./node_modules/react";
-import { Label, Button, Input, Card, CardHeader, FormGroup, Collapse, Col, Alert } from "./node_modules/reactstrap";
-import { AvForm, AvField } from './node_modules/availity-reactstrap-validation';
+import React, { Component } from "react";
+import { Label, Button, Input, Card, CardHeader, FormGroup, Collapse, Col, Alert } from "reactstrap";
+import { AvForm, AvField } from 'availity-reactstrap-validation';
 import Store from "../../data/Store";
 import CategoryApi from "../../services/CategoryApi";
 import Categories from "./Categories";

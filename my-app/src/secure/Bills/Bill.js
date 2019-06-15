@@ -1,12 +1,12 @@
-import React, { Component } from "./node_modules/react";
-import { Link } from './node_modules/react-router-dom';
+import React, { Component } from "react";
+import { Link } from 'react-router-dom';
 import { Button,Row, Col, Card, CardBody, Alert, Modal, ModalHeader, ModalBody, ModalFooter, Dropdown, DropdownToggle, Input,
-         DropdownMenu, DropdownItem, ListGroupItem, ListGroup, InputGroup, InputGroupAddon, InputGroupText  } from "./node_modules/reactstrap";
+         DropdownMenu, DropdownItem, ListGroupItem, ListGroup, InputGroup, InputGroupAddon, InputGroupText  } from "reactstrap";
 import CreateBill from "./CreateBill";
-import { FaEllipsisV, FaSearch } from './node_modules/react-icons/fa';
+import { FaEllipsisV, FaSearch } from 'react-icons/fa';
 import UpdateBill from "./UpdateBill";
 import BillApi from "../../services/BillApi";
-import Loader from './node_modules/react-loader-spinner'
+import Loader from 'react-loader-spinner'
 import Store from "../../data/Store";
 import CategoryApi from "../../services/CategoryApi";
 import LabelApi from "../../services/LabelApi";

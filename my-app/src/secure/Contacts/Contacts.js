@@ -6,8 +6,8 @@ import DeleteContact from "./DeleteContact";
 import Loader from 'react-loader-spinner'
 import CreateContact from "./CreateContact";
 import LabelApi from "../../services/LabelApi";
-import Attachments from "./attachments/Attachments";
-import AddAttachment from "./attachments/AddAttachment";
+import Attachments from "./Attachments/Attachments";
+import AddAttachment from "./Attachments/AddAttachment";
 import Store from "../../data/Store";
 import { DeleteModel } from "../Utility/DeleteModel";
 import { ProfileEmptyMessage } from "../Utility/ProfileEmptyMessage";

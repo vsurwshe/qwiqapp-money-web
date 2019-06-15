@@ -8,18 +8,18 @@ import Home from "./Home";
 import Login from "./Login";
 import Store from "../data/Store";
 import SignupVerify from "../components/SignupVerify";
-import Profiles from "../secure/profiles/Profiles";
+import Profiles from "../secure/Profiles/Profiles";
 import navigation, {item} from "../data/navigations";
-import CreateLable from "../secure/labels/Createlabel";
-import Lables from "../secure/labels/Label";
-import Categories from "../secure/categories/Categories";
-import Contacts from "../secure/contacts/Contacts";
-import CreateContact from "../secure/contacts/CreateContact";
-import EditCategory from "../secure/categories/EditCategory";
-import Bills from "../secure/bills/Bill";
+import CreateLable from "../secure/Labels/Createlabel";
+import Lables from "../secure/Labels/Label";
+import Categories from "../secure/Categories/Categories";
+import Contacts from "../secure/Contacts/Contacts";
+import CreateContact from "../secure/Contacts/CreateContact";
+import EditCategory from "../secure/Categories/EditCategory";
+import Bills from "../secure/Bills/Bill";
 
-const DefaultFooter = React.lazy(() =>import("../secure/sidebar/DefaultFooter"));
-const DefaultHeader = React.lazy(() =>  import("../secure/sidebar/DefaultHeader"));
+const DefaultFooter = React.lazy(() =>import("../secure/Sidebar/DefaultFooter"));
+const DefaultHeader = React.lazy(() =>  import("../secure/Sidebar/DefaultHeader"));
 
 class Main extends Component {
   constructor(props){

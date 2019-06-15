@@ -1,5 +1,5 @@
-import React, { Component } from "./node_modules/react";
-import { Card, CardHeader, CardBody, Alert, Col } from "./node_modules/reactstrap";
+import React, { Component } from "react";
+import { Card, CardHeader, CardBody, Alert, Col } from "reactstrap";
 import Bills from "./Bill";
 import BillApi from "../../services/BillApi";
 
