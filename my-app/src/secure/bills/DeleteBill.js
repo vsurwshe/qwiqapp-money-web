@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Card, CardHeader, CardBody, Alert, Col } from "reactstrap";
 import Bills from "./Bills";
 import BillApi from "../../services/BillApi";
+import Config from "../../data/Config";
 
 class DeleteBill extends Component {
   constructor(props) {
@@ -33,7 +34,7 @@ class DeleteBill extends Component {
   //This method show the alert message
   callAlertTimer = (color, content) => {
     this.setState({ color, content });
-    setTimeout(() => {this.setState({ color: "", content:"", labelDeleted: true });}, 2000);
+    setTimeout(() => {this.setState({ color: "", content:"", labelDeleted: true });}, Config.notificationMillis);
   };
 
   render() {

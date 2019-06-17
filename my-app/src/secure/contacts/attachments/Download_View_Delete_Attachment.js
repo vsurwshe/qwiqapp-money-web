@@ -43,7 +43,6 @@ const Attachment = {
       return error.message;
     })
   }
-
 }
 
 export default Attachment;

@@ -124,7 +124,6 @@ const Data={
     .catch(error=>{
       console.log(error);
     })
-    console.log("currency is: ", currencies);
     return currencies;
   }
 }

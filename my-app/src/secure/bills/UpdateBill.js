@@ -6,6 +6,7 @@ import Lables from "./Bills";
 import BillApi from "../../services/BillApi";
 import Data from '../../data/SelectData';
 import Bills from "./Bills";
+import Config from "../../data/Config";
 
 class UpdateBill extends Component {
   constructor(props) {
@@ -15,7 +16,6 @@ class UpdateBill extends Component {
       content: '', 
       updateSuccess: false,
       profileId: props.pid,
-      collapse: false,
       labels: props.lables,
       categories: props.categories,
       contacts:props.contacts,
@@ -28,7 +28,6 @@ class UpdateBill extends Component {
       categoryOption: props.bill.categoryId,
       currencies: [],
       userAmount: props.bill.amount,
-      netAmount: 0,
       cancelUpdateBill: false,
     };
   }
@@ -80,7 +79,7 @@ class UpdateBill extends Component {
     this.setState({ alertColor, content });
     setTimeout(() => {
       this.setState({ name: '', alertColor: '', updateSuccess: true });
-    }, 2000);
+    }, Config.notificationMillis);
   };
 
   labelSelected = (labelOption) => {
@@ -110,7 +109,6 @@ class UpdateBill extends Component {
       <div className="animated fadeIn" >
         <Card>
           {this.loadHeader()}
-          {/* <h5 style={{paddingTop:20}}><b><center>Update Bill</center></b></h5> */}
           <Col sm="12" md={{ size: 5, offset: 4 }}>
             <br />
             <Alert color={alertColor}>{content}</Alert>
@@ -130,14 +128,12 @@ class UpdateBill extends Component {
                 <Col>
                   <AvField name="tax" id="tax" value={bill.tax} placeholder="tax" label="Tax" type="text" errorMessage="Invalid amount" validate={{ required: { value: true }, pattern: { value: '^[0-9]+$' } }} required />
                 </Col>
-                {/* <Col>
-                    <AvField name="amount" id="grossAmount" value={this.state.userAmount} disabled={true}  label="Gross Amount" placeholder="Gross Amount" type="text" errorMessage="Invalid amount" validate={{ required: { value: true } }} required />
-                  </Col> */}
               </Row>
               <Row>
                 <Col><label >Category</label>
                   <Select options={Data.categories(categories)} defaultValue={Data.categories(categories).filter(item => { return item.value === bill.categoryId })} styles={Data.singleStyles} placeholder="Select Categories " onChange={this.categorySelected} required /></Col>
-              </Row><br />
+              </Row>
+              <br />
               <Row>
                 <Col><AvField name="bill_Date" label="Bill Date" value={this.loadDateFormat(bill.billDate)} type="date" errorMessage="Invalid Date" validate={{ date: { format: 'yyyy/MM/dd' }, required: { value: true } }} /></Col>
                 <Col><AvField name="due_Date" label="Due Date" value={this.loadDateFormat(bill.dueDate)} type="date" errorMessage="Invalid Date" validate={{ date: { format: 'yyyy/MM/dd' }, required: { value: true } }} /></Col>

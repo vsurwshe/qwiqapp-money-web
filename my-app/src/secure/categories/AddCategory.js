@@ -40,10 +40,11 @@ class AddCategory extends Component {
   }
 
   handlePostData = async (e, data) => {
+    const {parentId,profileId,code}=this.state;
     this.setState({ doubleClick: true });
     await this.generateCode()
-    const newData = { ...data, parentId: this.state.parentId, code: this.state.code };
-    new CategoryApi().createCategory(this.successCall, this.errorCall, this.state.profileId, newData);
+    const newData = { ...data, parentId: parentId, code:code };
+    new CategoryApi().createCategory(this.successCall, this.errorCall,profileId, newData);
   };
 
   cancelAddCategory = () => {
@@ -90,7 +91,7 @@ class AddCategory extends Component {
   }
 
   loadAddingCategory = () => {
-    const { alertColor, content, doubleClick } = this.state
+    const { alertColor, content, doubleClick,collapse,categories } = this.state
     return (
       <Card style={{ width: "100%" }}>
         <CardHeader><strong>Category</strong></CardHeader><br />
@@ -104,9 +105,9 @@ class AddCategory extends Component {
                 <Input className="form-check-input" type="checkbox" onClick={this.toggle} value=" " />
                 <Label check className="form-check-label" htmlFor="checkbox1"> &nbsp;Nest Category under </Label>
               </FormGroup><br />
-              <Collapse isOpen={this.state.collapse}>
+              <Collapse isOpen={collapse}>
                 <Input type="select" name="parentId" id="exampleSelect" onChange={e => { this.handleInput(e) }}>
-                  {this.state.categories.map((category, key) => { return <option key={key} value={category.id}>{category.name}</option> })}
+                  {categories.map((category, key) => { return <option key={key} value={category.id}>{category.name}</option> })}
                 </Input>
               </Collapse><br />
               <FormGroup>

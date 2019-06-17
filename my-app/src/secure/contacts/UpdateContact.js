@@ -1,55 +1,13 @@
 import React, { Component } from "react";
 import { Button, Col, Row, CardHeader, Card, CardBody, Alert, Input } from "reactstrap";
-import Select from "react-select";
-import chroma from 'chroma-js';
+ import Select from "react-select";
 import { AvForm, AvField } from 'availity-reactstrap-validation';
 import Loader from 'react-loader-spinner';
 import Contacts from "./Contacts";
 import ContactApi from "../../services/ContactApi";
 import GeneralApi from "../../services/GeneralApi";
-
-const colourStyles = {
-  control: styles => ({ ...styles, backgroundColor: 'white' }),
-  option: (styles, { data, isDisabled, isFocused, isSelected }) => {
-    const color = chroma(data.color);
-    return {
-      ...styles,
-      backgroundColor: isDisabled
-        ? null
-        : isSelected ? data.color : isFocused ? color.alpha(0.1).css() : null,
-      color: isDisabled
-        ? '#ccc'
-        : isSelected
-          ? chroma.contrast(color, 'white') > 2 ? 'white' : 'black'
-          : data.color,
-      cursor: isDisabled ? 'not-allowed' : 'default',
-
-      ':active': {
-        ...styles[':active'],
-        backgroundColor: !isDisabled && (isSelected ? data.color : color.alpha(0.3).css()),
-      },
-    };
-  },
-  multiValue: (styles, { data }) => {
-    const color = chroma(data.color);
-    return {
-      ...styles,
-      backgroundColor: color.alpha(0.1).css(),
-    };
-  },
-  multiValueLabel: (styles, { data }) => ({
-    ...styles,
-    color: data.color,
-  }),
-  multiValueRemove: (styles, { data }) => ({
-    ...styles,
-    color: data.color,
-    ':hover': {
-      backgroundColor: data.color,
-      color: 'white',
-    },
-  }),
-};
+import Data from '../../data/SelectData';
+import Config from "../../data/Config";
 
 class UpdateContact extends Component {
   constructor(props) {
@@ -112,7 +70,7 @@ class UpdateContact extends Component {
     this.setState({ alertColor, message });
     setTimeout(() => {
       this.setState({ name: '', alertColor: '', updateSuccess: true });
-    }, 2000);
+    }, Config.notificationMillis);
   };
 
   handleInput = e => {
@@ -130,10 +88,10 @@ class UpdateContact extends Component {
   }
 
   render() {
-    const { contact, updateSuccess, alertColor, message, cancelUpdateContact } = this.state;
+    const { contact, updateSuccess, alertColor, message, cancelUpdateContact,spinner } = this.state;
     if (cancelUpdateContact) {
       return <Contacts />
-    } else if (this.state.spinner) {
+    } else if (spinner) {
       return <div>{updateSuccess ? <Contacts /> : this.loadUpdateContact(contact, alertColor, message)} </div>
     } else {
       return this.loadSpinner()
@@ -211,7 +169,7 @@ class UpdateContact extends Component {
       return 0;
     })
     const data = contact.labelIds === null ? '' : contact.labelIds.map(id => { return labelOption.filter(item => { return item.value === id }) }).flat();
-    return <Select isMulti options={labelOption} defaultValue={data} styles={colourStyles} placeholder="Select Lables " autoFocus={true} onChange={this.handleSelect} />;
+    return <Select isMulti options={labelOption} defaultValue={data} styles={Data.colourStyles} placeholder="Select Lables " autoFocus={true} onChange={this.handleSelect} />;
   }
 
   pushArray = (array, label, slabel) => {

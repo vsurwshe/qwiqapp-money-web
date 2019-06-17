@@ -11,7 +11,6 @@ class DeleteCategory extends Component {
       profileId: props.pid,
       categoryId: props.cid,
       categoryDeleted: false,
-      loader: true,
       color: '',
       content: ''
     };

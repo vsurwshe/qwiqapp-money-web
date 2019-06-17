@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import { Link } from 'react-router-dom';
 import { Button,Row, Col, Card, CardBody, Alert, Modal, ModalHeader, ModalBody, ModalFooter, Dropdown, DropdownToggle, Input,
          DropdownMenu, DropdownItem, ListGroupItem, ListGroup, InputGroup, InputGroupAddon, InputGroupText  } from "reactstrap";
 import { FaEllipsisV, FaSearch } from 'react-icons/fa';
@@ -12,6 +11,7 @@ import CategoryApi from "../../services/CategoryApi";
 import LabelApi from "../../services/LabelApi";
 import DeleteBill from "./DeleteBill";
 import ContactApi from '../../services/ContactApi';
+import { ProfileEmptyMessage } from "../utility/ProfileEmptyMessage";
 
 class Bills extends Component {
   constructor(props) {
@@ -162,12 +162,7 @@ class Bills extends Component {
   render() {
     const { bills, createBill, updateBill, id, deleteBill, visible, profileId, rebill, spinner, labels, categories,contacts} = this.state;
     if (profileId===null || profileId=== undefined || profileId==="") {
-      return <div>
-          {this.loadHeader()} &nbsp; &nbsp;<br/>
-          <center>
-            <p style={{paddingTop:10}}>We don't have any profiel , need to cteate { <Link to="/profiles/createProfile" >profile.</Link>} </p> 
-          </center>
-        </div>
+      return <ProfileEmptyMessage/>
     } else if (bills.length === 0 && !createBill ) {
       return <div>{!spinner ? this.loadLoader() : bills.length === 0 && !createBill ? this.loadNotBill() : ""}</div>
     } else if (createBill) {
@@ -291,9 +286,10 @@ class Bills extends Component {
   }
 
   displayCategoryName = (cid) => {
-    var data = this.state.categories.filter(item => { return item.id === cid });
+    const {categories}=this.state;
+    var data = categories.filter(item => { return item.id === cid });
     if (data.length === 0) {
-      this.state.categories.map(category => {
+     categories.map(category => {
         if (Array.isArray(category.subCategories)) {
           category.subCategories.forEach(element => {
             if (element.id === cid) {

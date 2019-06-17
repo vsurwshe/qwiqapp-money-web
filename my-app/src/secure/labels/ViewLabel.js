@@ -9,7 +9,6 @@ export class ViewLabel extends Component {
     super(props);
     this.state = {
       collapse: false,
-      viewLabelRequest: false,
       id: 0,
       name: "",
       version: "",

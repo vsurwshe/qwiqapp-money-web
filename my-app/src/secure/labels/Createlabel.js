@@ -106,10 +106,11 @@ class CreateLable extends Component {
 
   //This Method Called When Sublables Makes Enable true.
   loadCollapse = () => {
-    return (<Collapse isOpen={this.state.collapse}>
+    const {collapse,labels}=this.state;
+    return (<Collapse isOpen={collapse}>
       <Input type="select" name="selectLg" id="selectLg" onChange={(event) => this.setState({ parentId: event.target.value })} bsSize="lg">
         <option value="null">Please select Parent Lables</option>
-        {this.state.labels.length === 0 ? '' : this.state.labels.map((label, key) => { return (<option key={key} value={label.id}>{label.name}</option>) })}
+        {labels.length === 0 ? '' : labels.map((label, key) => { return (<option key={key} value={label.id}>{label.name}</option>) })}
       </Input>
     </Collapse>);
   }

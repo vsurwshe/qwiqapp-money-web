@@ -24,15 +24,16 @@ class UpdateLabel extends Component {
     };
   }
   handleUpdate = () => {
+    const {userColor,name,notes,parentId,version,profileId,id}=this.state;
     let data = {
-      color: this.state.userColor,
-      name: this.state.name,
-      notes: this.state.notes,
-      parentId: this.state.parentId,
-      version: this.state.version
+      color:userColor,
+      name: name,
+      notes: notes,
+      parentId: parentId,
+      version:version
     };
     this.setState({ doubleClick: true });
-    new LabelApi().updateLabel(this.SuccessCall, this.errorCall, data, this.state.profileId, this.state.id)
+    new LabelApi().updateLabel(this.SuccessCall, this.errorCall, data, profileId, id)
   };
   cancelUpdateLabel = () => {
     this.setState({ cancelUpdateLabel: true });

@@ -21,8 +21,6 @@ class Categories extends Component {
       createCategory: false,
       updateCategory: false,
       deleteCategory: false,
-      viewRequest: false,
-      toggle: false,
       accordion: [],
       hoverAccord: [],
       dropDownAccord: [],
@@ -142,11 +140,11 @@ class Categories extends Component {
   }
 
   render() {
-    const { categories, requiredCategory, createCategory, updateCategory, deleteCategory, profileId, categoryId, visible, spinner, search } = this.state;
+    const {requiredCategory, createCategory, updateCategory, deleteCategory, profileId, categoryId, visible, spinner, search,categories } = this.state;
     if (Store.getProfile() === null || Store.getProfile().length === 0) {
       return (<ProfileEmptyMessage />)
     } else if (categories.length === 0 && !spinner) {
-      return ReUseComponents.loadSpinner("Categories : " + this.state.categories.length)
+      return ReUseComponents.loadSpinner("Categories : " + categories.length)
     } else if (createCategory) {
       return <AddCategory category={categories} id={profileId} />
     } else if (updateCategory) {

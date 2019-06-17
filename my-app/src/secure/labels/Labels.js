@@ -18,8 +18,6 @@ class Lables extends Component {
       requiredLabel: [],
       id: 0,
       name: "",
-      version: "",
-      addContainer: false,
       createLabel: false,
       visible: false,
       updateLabel: false,
@@ -27,7 +25,6 @@ class Lables extends Component {
       profileId:"",
       accordion: [],
       danger: false,
-      show: true,
       dropdownOpen: [],
       onHover: false,
       hoverAccord: [],
@@ -112,10 +109,6 @@ class Lables extends Component {
     this.setState({ accordion: state });
   }
 
-  toggleSublabel = () => {
-    this.setState({ show: !this.state.show });
-    this.getLabels(!this.state.show);
-  }
   toggleDropDown = (tab) => {
     const prevState = this.state.dropdownOpen;
     const state = prevState.map((x, index) => tab === index ? !x : false);
