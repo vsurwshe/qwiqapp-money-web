@@ -1,11 +1,11 @@
 import React, { Component } from "react";
 import { Button, Col, Row, CardHeader, Card, CardBody, Alert, Input } from "reactstrap";
-import Contacts from "./Contacts";
 import Select from "react-select";
 import chroma from 'chroma-js';
 import { AvForm, AvField } from 'availity-reactstrap-validation';
+import Loader from 'react-loader-spinner';
+import Contacts from "./Contacts";
 import ContactApi from "../../services/ContactApi";
-import Loader from 'react-loader-spinner'
 import GeneralApi from "../../services/GeneralApi";
 
 const colourStyles = {

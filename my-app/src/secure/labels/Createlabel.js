@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Alert, Button, Input, Card, CardHeader, FormGroup, Col, Collapse, Label } from "reactstrap";
 import { AvForm, AvField } from 'availity-reactstrap-validation';
 import LabelApi from "../../services/LabelApi";
-import Lables from './Label';
+import Lables from './Labels';
 import Config from "../../data/Config";
 class CreateLable extends Component {
   constructor(props) {

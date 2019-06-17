@@ -4,7 +4,7 @@ import { FaTrashAlt, FaCloudUploadAlt, FaEye } from 'react-icons/fa';
 import AttachmentApi from '../../../services/AttachmentApi';
 import AddAttachment from './AddAttachment';
 import Attachment from './Download_View_Delete_Attachment';
-import { DeleteModel } from '../../Utility/DeleteModel';
+import { DeleteModel } from '../../utility/DeleteModel';
 
 class Attachments extends Component {
   constructor(props) {

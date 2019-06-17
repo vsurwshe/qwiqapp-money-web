@@ -1,17 +1,17 @@
 import React, { Component } from "react";
 import { Button, Row, Col, Card, CardBody, Alert, Input, InputGroup, InputGroupAddon, InputGroupText, ListGroupItem, ListGroup, Collapse } from "reactstrap";
 import { FaPaperclip, FaUserCircle, FaSearch } from 'react-icons/fa';
+import Loader from 'react-loader-spinner'
 import UpdateContact from "./UpdateContact";
 import DeleteContact from "./DeleteContact";
-import Loader from 'react-loader-spinner'
 import CreateContact from "./CreateContact";
 import LabelApi from "../../services/LabelApi";
-import Attachments from "./Attachments/Attachments";
-import AddAttachment from "./Attachments/AddAttachment";
+import Attachments from "./attachments/Attachments";
+import AddAttachment from "./attachments/AddAttachment";
 import Store from "../../data/Store";
-import { DeleteModel } from "../Utility/DeleteModel";
-import { ProfileEmptyMessage } from "../Utility/ProfileEmptyMessage";
-import { ReUseComponents } from "../Utility/ReUseComponents";
+import { DeleteModel } from "../utility/DeleteModel";
+import { ProfileEmptyMessage } from "../utility/ProfileEmptyMessage";
+import { ReUseComponents } from "../utility/ReUseComponents";
 import ContactApi from "../../services/ContactApi";
 
 class Contacts extends Component {

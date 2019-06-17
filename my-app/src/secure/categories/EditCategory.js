@@ -1,15 +1,14 @@
-import React, { Component } from "react";
-import { Link } from 'react-router-dom'
+import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
+import { Button, Card, Col, Input, Alert, CardHeader, FormGroup, Label, Collapse } from 'reactstrap';
+import CategoryApi from '../../services/CategoryApi';
+import Categories from './Categories';
+import Config from '../../data/Config';
 
-import { Button, Card, Col, Input, Alert, CardHeader, FormGroup, Label, Collapse } from "reactstrap";
-import CategoryApi from "../../services/CategoryApi";
-import Categories from "./Categories";
-import Config from "../../data/Config";
-
+let values;
 class EditCategory extends Component {
   constructor(props) {
     super(props);
-
     this.state = {
       categories: props.categories,
       profileId: props.id,
@@ -23,15 +22,18 @@ class EditCategory extends Component {
       content: '',
       updateSuccess: false,
       collapse: true,
+      categoryName:false,
       cancelUpdateCategory: false,
     };
   }
 
   handleUpdate = async () => {
+    const parentId = this.state.parentId
     const data = {
       name: this.state.cName,
       color: this.state.categoryColor,
-      code: this.state.code, parentId: this.state.parentId,
+      code: this.state.code,
+      parentId: parentId === "" ? this.props.category.parentId : parentId,
       version: this.state.version
     };
     await new CategoryApi().updateCategory(this.successCall, this.errorCall, data, this.state.profileId, this.state.categoryId);
@@ -65,22 +67,27 @@ class EditCategory extends Component {
   toggle = () => {
     this.setState({ collapse: !this.state.collapse, parentId: null });
   }
-
-  render() {
-    const { cName, categoryColor, color, content, updateSuccess, parentId, cancelUpdateCategory } = this.state;
+    render() {
+    const { cName, categoryColor, color, content, updateSuccess, cancelUpdateCategory } = this.state;
+    values =this.state.categories.filter(categories=>categories.id===this.state.parentId).map(item=>item.name)
+    //   if(categories.id===this.state.parentId){
+    //     this.setState({categoryName:true})
+    // return  categories[0].name;
+    //     }});
+      console.log("value is: ", values);
     if (cancelUpdateCategory) {
       return <div><Categories /></div>
     } else {
       return (
         <div>
-          {updateSuccess ? <Categories /> : parentId === null ?
-            <div>{this.loadCategoryToUpdate(cName, categoryColor, color, content)}</div>
-            : <div>{this.loadSubCategoryToUpdate(cName, categoryColor, color, content)}</div>}
+          {updateSuccess ? <Categories /> : this.props.category.parentId === null  ?
+            <div>{this.loadCategoryToUpdate(cName, categoryColor, color, content,values)}</div>
+          : <div>{this.loadSubCategoryToUpdate(cName, categoryColor, color, content,values)}</div>}
         </div>)
     }
   }
 
-  loadCategoryToUpdate = (cName, categoryColor, color, content) => {
+  loadCategoryToUpdate = (cName, categoryColor, color, content,values ) => {
     return (
       <Card>
         <CardHeader><strong>Category</strong></CardHeader><br />
@@ -93,7 +100,7 @@ class EditCategory extends Component {
               <br />
               <Input name="categoryColor" type="color" list="colors" value={`${categoryColor}`} onChange={e => { this.handleInput(e) }} /><br />
               {this.props.category.subCategories === null ? <><Input name="check" type="checkbox" onClick={() => { this.toggle() }} /><Label for="mark">Nest Under Category</Label> <br /></> : ""}
-              {this.loadCollapse()}
+              {this.loadCollapse(values)}
               <Button color="success" disabled={!cName} onClick={this.handleUpdate} >Update  </Button>&nbsp;&nbsp;&nbsp;
                <Link to="/listCategories" style={{ textDecoration: 'none' }}>
                 <Button active color="light" aria-pressed="true" onClick={this.cancelUpdateCategory}>Cancel</Button></Link>
@@ -104,7 +111,7 @@ class EditCategory extends Component {
   }
 
   //This method Updates SubCategory
-  loadSubCategoryToUpdate = (cName, categoryColor, color, content) => {
+  loadSubCategoryToUpdate = (cName, categoryColor, color, content,values) => {
     return (
       <Card>
         <CardHeader><strong>Category</strong></CardHeader><br />
@@ -120,7 +127,8 @@ class EditCategory extends Component {
               <Collapse isOpen={this.state.collapse}>
                 <FormGroup>
                   <Input type="select" name="parentId" id="exampleSelect" onChange={e => { this.handleInput(e) }}>
-                    {this.state.categories.map(category => { return <option key={category.id} value={category.id}>{category.name}</option> })}
+                    <option value="" style={{color:"#008000", fontWeight:"bold"}}>{values}</option>
+                    {this.state.categories.filter(category=>category.id!==this.state.parentId).map(category => { return <option key={category.id} value={category.id}>{category.name}</option> })}
                   </Input>
                 </FormGroup>
               </Collapse>
@@ -132,12 +140,13 @@ class EditCategory extends Component {
       </Card>)
   }
 
-  loadCollapse = () => {
+  loadCollapse = (values) => {
     console.log(this.state.collapse);
     return (
       <Collapse isOpen={!this.state.collapse}>
         <FormGroup>
           <Input type="select" name="parentId" id="exampleSelect" onChange={e => { this.handleInput(e) }}>
+          {this.state.categoryName?<option value="" style={{color:"#008000", fontWeight:"bold"}}>{values}</option>:<option value="" >Select Category</option>}
             {this.state.categories.map(category => { return <option key={category.id} value={category.id}>{category.name}</option> })}
           </Input>
         </FormGroup>

@@ -21,7 +21,7 @@ export default {
       url:"/contact/viewContacts",
       icon: "cui-phone"},
     {
-      name: "Bill",
+      name: "Bills",
       url: "/listBills",
       icon: "cui-note"
     }

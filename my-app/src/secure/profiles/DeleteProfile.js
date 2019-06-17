@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import ProfileApi from "../../services/ProfileApi";
 import Profiles from "./Profiles";
-import { ReUseComponents } from "../Utility/ReUseComponents";
+import { ReUseComponents } from "../utility/ReUseComponents";
 import Config from "../../data/Config";
 
 class DeleteProfile extends Component {

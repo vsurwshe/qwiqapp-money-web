@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import CategoryApi from "../../services/CategoryApi";
 import Categories from "./Categories";
 import Config from "../../data/Config";
-import { ReUseComponents } from "../Utility/ReUseComponents";
+import { ReUseComponents } from "../utility/ReUseComponents";
 
 class DeleteCategory extends Component {
   constructor(props) {

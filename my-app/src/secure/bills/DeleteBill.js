@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Card, CardHeader, CardBody, Alert, Col } from "reactstrap";
-import Bills from "./Bill";
+import Bills from "./Bills";
 import BillApi from "../../services/BillApi";
 
 class DeleteBill extends Component {

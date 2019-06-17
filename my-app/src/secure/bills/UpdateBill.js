@@ -1,18 +1,18 @@
 import React, { Component } from "react";
 import { AvForm, AvField } from 'availity-reactstrap-validation';
 import { Button, Col, Row, Alert, FormGroup, Card, CardHeader } from "reactstrap";
-import Lables from "./Bill";
-import BillApi from "../../services/BillApi";
 import Select from 'react-select';
+import Lables from "./Bills";
+import BillApi from "../../services/BillApi";
 import Data from '../../data/SelectData';
-import Bills from "./Bill";
+import Bills from "./Bills";
 
 class UpdateBill extends Component {
   constructor(props) {
     super(props);
     this.state = {
       alertColor: "#000000",
-      content: '',
+      content: '', 
       updateSuccess: false,
       profileId: props.pid,
       collapse: false,
@@ -35,27 +35,11 @@ class UpdateBill extends Component {
 
   componentDidMount = async () => {
     await Data.currencies().then(data => { this.setState({ currencies: data }) })
-    // this.calculateNetAmount();
-  }
-
-  handleChange = () => {
-    let tax_amount = isNaN(parseInt(document.getElementById("tax").value)) ? 0 : parseInt(document.getElementById("tax").value)
-    let amount = isNaN(parseInt(document.getElementById("amount").value)) ? 0 : parseInt(document.getElementById("amount").value)
-    let gst_amount = (amount * 100) / (100 + tax_amount);
-    this.setState({ userAmount: gst_amount })
   }
 
   cancelUpdateBill = () => {
     this.setState({ cancelUpdateBill: true })
   }
-
-  // calculateNetAmount = () => {
-  //   let tax_amount = isNaN(parseInt(document.getElementById("tax").value)) ? 0 : parseInt(document.getElementById("tax").value)
-  //   let amount = isNaN(parseInt(document.getElementById("grossAmount").value)) ? 0 : parseInt(document.getElementById("grossAmount").value)
-  //   // GST Amount = Original Cost - [Original Cost x {100/(100+GST%)}]
-  //   let gst_amount = (amount - [amount * (100 / (100 + tax_amount))])
-  //   this.setState({ netAmount: amount - gst_amount })
-  // }
 
   //this method handle form submission values and errors
   handleSubmitValue = (event, errors, values) => {
@@ -117,7 +101,7 @@ class UpdateBill extends Component {
       return <div>{updateSuccess ? <Lables /> : this.loadUpdatingLabel(alertColor, content, labels, categories, bill,contacts)}</div>
     }
   }
-
+  
   loadHeader = () => <CardHeader><strong>Update Bill</strong></CardHeader>
 
   //this method call when updating profile
@@ -138,13 +122,13 @@ class UpdateBill extends Component {
                   </AvField>
                 </Col>
                 <Col>
-                  <AvField name="amount" id="amount" label="Amount" value={this.state.userAmount} onChange={() => this.handleChange()} placeholder="Amount" type="text" errorMessage="Invalid amount"
+                  <AvField name="amount" id="amount" label="Amount" value={this.state.userAmount} placeholder="Amount" type="text" errorMessage="Invalid amount"
                     validate={{ required: { value: true }, pattern: { value: '^([0-9]*[.])?[0-9]+$' } }} required />
                 </Col>
               </Row>
               <Row>
                 <Col>
-                  <AvField name="tax" id="tax" value={bill.tax} onChange={() => this.handleChange()} placeholder="tax" label="Tax" type="text" errorMessage="Invalid amount" validate={{ required: { value: true }, pattern: { value: '^[0-9]+$' } }} required />
+                  <AvField name="tax" id="tax" value={bill.tax} placeholder="tax" label="Tax" type="text" errorMessage="Invalid amount" validate={{ required: { value: true }, pattern: { value: '^[0-9]+$' } }} required />
                 </Col>
                 {/* <Col>
                     <AvField name="amount" id="grossAmount" value={this.state.userAmount} disabled={true}  label="Gross Amount" placeholder="Gross Amount" type="text" errorMessage="Invalid amount" validate={{ required: { value: true } }} required />

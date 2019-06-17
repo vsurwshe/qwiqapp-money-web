@@ -3,8 +3,9 @@ import { AvForm, AvField } from 'availity-reactstrap-validation';
 import { Alert, Button, Card, FormGroup, Col, Row } from "reactstrap";
 import Select from 'react-select';
 import BillApi from "../../services/BillApi";
-import Bills from "./Bill";
+import Bills from "./Bills";
 import Data from '../../data/SelectData'
+
 class CreateBill extends Component {
   constructor(props) {
     super(props);

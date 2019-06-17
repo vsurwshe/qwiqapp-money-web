@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-
 import { Container, Card, CardBody, CardTitle } from "reactstrap";
 
 class Home extends Component {

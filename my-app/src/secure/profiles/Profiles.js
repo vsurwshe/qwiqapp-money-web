@@ -1,15 +1,15 @@
 import React, { Component } from "react";
 import { Container, Button, Card, CardBody, Col, Row, CardHeader, Alert } from "reactstrap";
+import Loader from 'react-loader-spinner'
+import { FaPen, FaTrashAlt } from 'react-icons/fa';
+import Avatar from 'react-avatar';
 import ProfileApi from "../../services/ProfileApi";
 import UpdateProfile from "./UpdateProfile";
 import CreateProfile from "./CreateProfile";
 import DeleteProfile from "./DeleteProfile";
-import Avatar from 'react-avatar';
 import ViewProfile from "./ViewProfile";
-import Loader from 'react-loader-spinner'
-import { FaPen, FaTrashAlt } from 'react-icons/fa';
-import { DeleteModel } from "../Utility/DeleteModel";
-import { ProfileEmptyMessage } from "../Utility/ProfileEmptyMessage";
+import { DeleteModel } from "../utility/DeleteModel";
+import { ProfileEmptyMessage } from "../utility/ProfileEmptyMessage";
 
 /**
  * Display list of profiles,Manage profile like (update, delete)

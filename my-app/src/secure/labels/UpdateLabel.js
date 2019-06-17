@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Button, Col, Input, Alert, FormGroup, Card, CardHeader, Label, Collapse } from "reactstrap";
 import LabelApi from "../../services/LabelApi";
-import Lables from "./Label";
+import Lables from "./Labels";
 import Config from "../../data/Config";
 class UpdateLabel extends Component {
   constructor(props) {

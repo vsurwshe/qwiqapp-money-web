@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Card, CardBody, CardHeader, Button } from "reactstrap";
-import CreateProfile from '../Profiles/CreateProfile';
+import CreateProfile from '../profiles/CreateProfile';
 
 export const ProfileEmptyMessage = () => {
   let [addProfile, changeAddProfile] = useState(false)

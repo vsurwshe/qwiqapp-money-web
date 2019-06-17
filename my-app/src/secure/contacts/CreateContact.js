@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import { CardBody, Button, Card, Row, CardHeader, FormGroup, Col, Alert, Input } from "reactstrap";
 import { AvForm, AvField } from 'availity-reactstrap-validation';
-import Contacts from './Contacts';
 import chroma from 'chroma-js';
 import Select from "react-select";
+import Contacts from './Contacts';
 import ContactApi from "../../services/ContactApi";
 import Config from "../../data/Config";
 import GeneralApi from "../../services/GeneralApi";

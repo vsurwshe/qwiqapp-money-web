@@ -1,14 +1,14 @@
 import React, { Component } from "react";
 import { Button, Card, CardBody, CardHeader } from "reactstrap";
+import Loader from 'react-loader-spinner'
 import CreateLabel from "./Createlabel";
 import UpdateLabel from "./UpdateLabel";
 import DeleteLabel from "./DeleteLabel";
 import LabelApi from "../../services/LabelApi";
-import Loader from 'react-loader-spinner'
 import Store from "../../data/Store";
-import { ProfileEmptyMessage } from "../Utility/ProfileEmptyMessage";
-import { ReUseComponents } from "../Utility/ReUseComponents";
-import { DeleteModel } from "../Utility/DeleteModel";
+import { ProfileEmptyMessage } from "../utility/ProfileEmptyMessage";
+import { ReUseComponents } from "../utility/ReUseComponents";
+import { DeleteModel } from "../utility/DeleteModel";
 
 class Lables extends Component {
   constructor(props) {

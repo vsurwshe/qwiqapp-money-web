@@ -5,9 +5,9 @@ import Config from "../../data/Config";
 import AddCategory from './AddCategory';
 import EditCategory from './EditCategory';
 import DeleteCategory from "./DeleteCategory";
-import { ProfileEmptyMessage } from "../Utility/ProfileEmptyMessage";
-import { ReUseComponents } from "../Utility/ReUseComponents";
-import { DeleteModel } from "../Utility/DeleteModel";
+import { ProfileEmptyMessage } from "../utility/ProfileEmptyMessage";
+import { ReUseComponents } from "../utility/ReUseComponents";
+import { DeleteModel } from "../utility/DeleteModel";
 
 
 class Categories extends Component {
