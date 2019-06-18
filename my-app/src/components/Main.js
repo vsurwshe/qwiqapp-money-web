@@ -15,8 +15,8 @@ import Lables from "../secure/labels/Labels";
 import Categories from "../secure/categories/Categories";
 import Contacts from "../secure/contacts/Contacts";
 import CreateContact from "../secure/contacts/CreateContact";
-import EditCategory from "../secure/categories/EditCategory";
 import Bills from "../secure/bills/Bills";
+import CreateProfile from "../secure/profiles/CreateProfile";
 
 const DefaultFooter = React.lazy(() =>import("../secure/sidebar/DefaultFooter"));
 const DefaultHeader = React.lazy(() =>  import("../secure/sidebar/DefaultHeader"));
@@ -51,10 +51,10 @@ class Main extends Component {
       <Switch>
         <PrivateRoute path="/dashboard" component={Dashboard} />
         <PrivateRoute path="/profiles" component={Profiles} />
+        <PrivateRoute exact path="/createProfile" component={CreateProfile} />
         <PrivateRoute path="/label/labels" component={Lables} />
         <PrivateRoute path="/label/createLabel" component={CreateLable} />
         <PrivateRoute path="/listCategories" component={Categories} />
-        <Route path="/categorie/update" component={EditCategory} />
         <PrivateRoute exact path="/contact/createContact" component={CreateContact} />
         <PrivateRoute exact path="/contact/viewContacts" component={Contacts} />
         <PrivateRoute path="/listBills" component={Bills} />
