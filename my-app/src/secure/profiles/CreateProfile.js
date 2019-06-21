@@ -51,12 +51,9 @@ class CreateProfile extends Component {
 
   render() {
     const { color, content, cancelCreateProfile } = this.state
-    console.log("Create Profile");
     if (cancelCreateProfile) {
-      console.log("Cancel create");
       return <Profiles />
     } else {
-      console.log("else conditon");
       return <div>{this.state.profileCreated ? <Profiles /> : this.loadCreateProfile(color, content)}</div>
     }
   }

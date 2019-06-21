@@ -34,7 +34,8 @@ class Bills extends Component {
       danger: false,
       onHover: false,
       spinner: false,
-      selectedOption: ''
+      selectedOption: '',
+      searchName:false,
     };
   }
 
@@ -178,17 +179,20 @@ class Bills extends Component {
 
   searchSelected = (e) =>{
     this.setState({ selectedOption : e.target.value });
+    if(this.state.selectedOption!==null){
+      this.setState({searchName:true});
+    }
   }
   
   searchingFor = (term) =>{
     return function(x){
-      return (x.description.toLowerCase()+x.amount+x.categoryName.name.toLowerCase()).includes(term.toLowerCase()) || !term
+        //return (x.description.toLowerCase()+x.amount+x.categoryName.name.toLowerCase()).includes(term.toLowerCase())
+        return ((x.description.toLowerCase()+x.amount+x.categoryName.name.toLowerCase()).includes(term.toLowerCase()))|| !term
     }
   }
 
   loadHeader = () => {
     return (
-      // <div className="serachHeader" style={{ paddingTop: 20, paddingRight: 10 }} className="HeaderContext">
       <div style={{ paddingTop: 20, paddingRight: 10 }}  >
         <Row>
           <Col sm={3} ><strong style={{fontSize:20, marginLeft:20 }} >BILLS</strong></Col>
@@ -203,7 +207,7 @@ class Bills extends Component {
       </div>
     )
   }
-
+  
   //this method loads the spinner
   loadLoader = () =>{
     return( 
@@ -238,7 +242,11 @@ class Bills extends Component {
           {this.loadHeader()}
           <div style={{margin:30, paddingLeft:50}}>
             <h6><Alert isOpen={visible} color="danger">Unable to Process Request, Please try Again....</Alert></h6>
-            {bills.filter(this.searchingFor(this.state.selectedOption)).map((bill, key) => {return this.loadSingleBill(bill, key); })}</div>
+            {/* {bills.filter(this.searchingFor(this.state.selectedOption)).map((bill, key) => {return this.loadSingleBill(bill, key); })}</div> */}
+             { this.state.searchName?bills.filter(this.searchingFor(this.state.selectedOption)).map((bill, key) => {return this.loadSingleBill(bill, key); }) 
+               : bills.map((bill, key) => {return this.loadSingleBill(bill, key); })
+              }
+              </div>
         </Card>
       </div>)
   }
@@ -273,7 +281,6 @@ class Bills extends Component {
     let year= sd[0]+sd[1]+sd[2]+sd[3];
     let month =sd[4]+sd[5];
     let day = sd[6]+sd[7];
-    //   var parts = userDate.split('-');
     var date = new Date(year, month, day);
     const finalDate = new Intl.DateTimeFormat('en-gb', {  month: 'short',  weekday: 'short',  day: '2-digit' }).format(date);
     return finalDate;

@@ -7,6 +7,7 @@ import BillApi from "../../services/BillApi";
 import Data from '../../data/SelectData';
 import Bills from "./Bills";
 import Config from "../../data/Config";
+import GeneralApi from "../../services/GeneralApi";
 
 class UpdateBill extends Component {
   constructor(props) {
@@ -33,9 +34,15 @@ class UpdateBill extends Component {
   }
 
   componentDidMount = async () => {
-    await Data.currencies().then(data => { this.setState({ currencies: data }) })
+    // await Data.currencies().then(data => { this.setState({ currencies: data }) })
+    new GeneralApi().getCurrencyList(this.successCurrency, this.failureCurrency)
   }
-
+  successCurrency = currencies =>{
+    this.setState({ currencies });
+  }
+  failureCurrency = err =>{
+    console.log(err);
+  }
   cancelUpdateBill = () => {
     this.setState({ cancelUpdateBill: true })
   }
@@ -46,7 +53,7 @@ class UpdateBill extends Component {
     if (errors.length === 0) {
       let bill_DateCal = new Date(values.bill_Date)
       let dueDateCal = new Date(values.due_Date)
-      let diffDate = dueDateCal - bill_DateCal;
+      let diffDate = (dueDateCal - bill_DateCal)/(1000*60*60*24);
       if (diffDate >= 0) {
         let billDate = values.bill_Date.split("-")[0] + values.bill_Date.split("-")[1] + values.bill_Date.split("-")[2];
        let dueDate = values.due_Date.split("-")[0] + values.due_Date.split("-")[1] + values.due_Date.split("-")[2];
@@ -56,6 +63,11 @@ class UpdateBill extends Component {
             contactOption, "labelIds": labelOption === null || labelOption === [] ? [] : (labelOptionUpdate ? labelOption.map(opt => { return opt.value }) : labelOption), "version": this.props.bill.version
         }
         this.handleUpdate(event, newData);
+      } else {
+        this.setState({ alertColor: "danger", content: "Bill Date should not be more than Due Date" });
+        setTimeout(()=>{
+          this.setState({ content: "", alertColor: "" });
+        }, Config.notificationMillis)
       }
     }
   }
@@ -109,13 +121,14 @@ class UpdateBill extends Component {
       <div className="animated fadeIn" >
         <Card>
           {this.loadHeader()}
-          <Col sm="12" md={{ size: 5, offset: 4 }}>
+          <Col sm="12" md={{ size: 7, offset: 3 }}>
             <br />
-            <Alert color={alertColor}>{content}</Alert>
+            {alertColor === "" ? "" : <Alert color={alertColor}>{content}</Alert>}
             <AvForm onSubmit={this.handleSubmitValue}>
               <Row>
-                <Col sm={2}>
+                <Col sm={3}>
                   <AvField type="select" id="symbol" label="currency" value={bill.currency} name="currency" errorMessage="Select Currency" required>
+                  <option value="">Select</option>
                     {this.state.currencies.map((currencies, key) => { return <option key={key} value={currencies.code} h={currencies.symbol} symbol={currencies.symbol} >{currencies.symbol}</option> })}
                   </AvField>
                 </Col>
@@ -135,12 +148,12 @@ class UpdateBill extends Component {
               </Row>
               <br />
               <Row>
-                <Col><AvField name="bill_Date" label="Bill Date" value={this.loadDateFormat(bill.billDate)} type="date" errorMessage="Invalid Date" validate={{ date: { format: 'yyyy/MM/dd' }, required: { value: true } }} /></Col>
-                <Col><AvField name="due_Date" label="Due Date" value={this.loadDateFormat(bill.dueDate)} type="date" errorMessage="Invalid Date" validate={{ date: { format: 'yyyy/MM/dd' }, required: { value: true } }} /></Col>
+                <Col><AvField name="bill_Date" label="Bill Date" value={this.loadDateFormat(bill.billDate)} type="date" max="9999/12/30" errorMessage="Invalid Date" validate={{ date: { format: 'yyyy/MM/dd' }, required: { value: true } }} /></Col>
+                <Col><AvField name="due_Date" label="Due Date" value={this.loadDateFormat(bill.dueDate)} type="date"  max="9999/12/30" errorMessage="Invalid Date" validate={{ date: { format: 'yyyy/MM/dd' }, required: { value: true } }} /></Col>
               </Row>
               <Row>
                 <Col><label >Description/Notes</label>
-                  <AvField name="description" type="text" value={bill.description} list="colors" errorMessage="Invalid Notes" placeholder="Enter Notes " required /></Col>
+                  <AvField name="description" type="text" value={bill.description} list="colors" errorMessage="Invalid Notes" placeholder="Enter Notes " /></Col>
               </Row>
               <Row>
                 <Col><label >Select Labels</label>

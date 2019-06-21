@@ -159,6 +159,7 @@ const Store = {
         db.removeItem("PROFILES");
         db.removeItem("PROFILE");
         db.removeItem("CONTACTS");
+        db.removeItem("BILL");
     },
     
    

@@ -1,6 +1,5 @@
 import chroma from 'chroma-js';
 import React from 'react';
-import Config from './Config';
 
 const Data={
   colourStyles : {
@@ -115,16 +114,7 @@ const Data={
        })
 
    return options
-  },
-  currencies: function(){
-    let currencies=[]
-    currencies=fetch(Config.cloudBaseURL+"/currencies")
-    .then(response=>response.json())
-    .then(currencies=>{return currencies})
-    .catch(error=>{
-      console.log(error);
-    })
-    return currencies;
   }
+  
 }
 export default Data;

@@ -111,9 +111,9 @@ class Categories extends Component {
     }
   };
 
-  toggleAccordion = (tab) => {
+  toggleAccordion = (specificIndex) => {
     const prevState = this.state.accordion;
-    const state = prevState.map((x, index) => tab === index ? !x : false);
+    const state = prevState.map((x, index) => specificIndex === index ? !x : false);
     this.setState({ accordion: state });
   }
 

@@ -106,7 +106,7 @@ class AddCategory extends Component {
               </FormGroup><br />
               <Collapse isOpen={collapse}>
                 <Input type="select" name="parentId" id="exampleSelect" onChange={e => { this.handleInput(e) }}>
-                  {categories.map((category, key) => { return <option key={key} value={category.id}>{category.name}</option> })}
+                 {categories.map((category, key) => { return <option key={key} value={category.id}>{category.name}</option> })}
                 </Input>
               </Collapse><br />
               <FormGroup>

@@ -38,16 +38,18 @@ export default LabelApi;
 async function process(success, failure, Uurl, Umethod, profileId, data) {
   let HTTP = httpCall(Uurl, Umethod);
   let promise;
-  try {
-    data === null ? promise = await HTTP.request() : promise = await HTTP.request({ data });
-    if (Umethod === "GET") {
-      Store.storeLabels(promise.data);
-    } else {
-      new LabelApi().getSublabels(success, failure, profileId, "True");
+  if (HTTP !== null) {
+    try {
+      data === null ? promise = await HTTP.request() : promise = await HTTP.request({ data });
+      if (Umethod === "GET") {
+        Store.storeLabels(promise.data);
+      } else {
+        new LabelApi().getSublabels(success, failure, profileId, "True");
+      }
+      validResponse(promise, success)
+    } catch (err) {
+      AccessTokenError(profileId, err, failure, Uurl, Umethod, data, success);
     }
-    validResponse(promise, success)
-  } catch (err) {
-    AccessTokenError(profileId, err, failure, Uurl, Umethod, data, success);
   }
 }
 
@@ -74,14 +76,17 @@ let errorResponse = function (error, failure) {
 
 function httpCall(Uurl, Umethod) {
   let baseURL = Store.getProfile();
-  let instance = Axios.create({
-    baseURL: baseURL[0].url + "/profile/",
-    method: Umethod,
-    url: Uurl,
-    headers: {
-      "content-type": "application/json",
-      Authorization: "Bearer " + Store.getAppUserAccessToken()
-    }
-  });
+  let instance = null;
+  if (baseURL !== null || baseURL !== undefined || baseURL !== "") {
+    instance = Axios.create({
+      baseURL: baseURL[0].url + "/profile/",
+      method: Umethod,
+      url: Uurl,
+      headers: {
+        "content-type": "application/json",
+        Authorization: "Bearer " + Store.getAppUserAccessToken()
+      }
+    });
+  }
   return instance;
 }

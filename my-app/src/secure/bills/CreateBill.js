@@ -6,6 +6,7 @@ import BillApi from "../../services/BillApi";
 import Bills from "./Bills";
 import Data from '../../data/SelectData'
 import Config from "../../data/Config";
+import GeneralApi from "../../services/GeneralApi";
 
 class CreateBill extends Component {
   constructor(props) {
@@ -27,8 +28,13 @@ class CreateBill extends Component {
      };
   }
   componentDidMount=()=>{
-   Data.currencies().then(data=>{this.setState({currencies:data})})
-   
+  new GeneralApi().getCurrencyList(this.successCurrency, this.failureCurrency)
+  }
+  successCurrency = jsonArray =>{
+    this.setState({ currencies: jsonArray });
+  }
+  failureCurrency = err =>{
+    console.log(err);
   }
 
 cancelCreateBill=()=>{
@@ -42,7 +48,7 @@ cancelCreateBill=()=>{
     } else if (errors.length === 0) { 
         let billDateCal = new Date(values.bill_Date);
         let dueDateCal = new Date(values.due_Date);
-        if ((dueDateCal-billDateCal)>=0) {
+        if ((dueDateCal-billDateCal)/(1000*60*60*24)>=0) {
           let dueDate, billDate;
           // bill date formate Year+Month+Day
           billDate = values.bill_Date.split("-")[0]+values.bill_Date.split("-")[1]+values.bill_Date.split("-")[2];
@@ -59,6 +65,8 @@ cancelCreateBill=()=>{
   //this method handle the Post method from user`
   handlePostData = async (e, data) => {
     e.persist();
+    delete data.bill_Date;
+    delete data.due_Date;
     this.setState({doubleClick:true})
     await new BillApi().createBill(this.successCreate, this.errorCall, this.state.profileId, data);
   };
@@ -98,17 +106,18 @@ cancelCreateBill=()=>{
       <div className="animated fadeIn" >
         <Card>
           <h4 style={{ paddingTop: 20 }}><b><center>CREATE BILL</center></b></h4>
-          <Col sm="12" md={{ size: 5, offset: 4 }}>
+          <Col sm="12" md={{ size: 7, offset: 3 }}>
             <Alert color={alertColor}>{content}</Alert>
-            <div style={{backgroundColor:"#D2D2CB"}}>
             <AvForm onSubmit={this.handleSubmitValue}>
               <Row>
-                <Col sm={2}>
+                <Col sm={3}>
                   <AvField type="select" id="symbol" name="currency" label="Currency" errorMessage="Select Currency" required>
-                    {this.state.currencies.map((currencies, key) => { return <option key={key} value={currencies.code} h={currencies.symbol} symbol={currencies.symbol} >{currencies.symbol}</option> })}
+                    <option value="">Select</option>
+                    {this.state.currencies.map((currencies, key) => { return <option key={key} value={currencies.code}
+                     data={currencies.symbol} symbol={currencies.symbol} >{currencies.symbol}</option> })}
                   </AvField>
                 </Col>
-                <Col>
+                <Col sm={9}>
                   <AvField name="amount" id="amount" label="Amount" placeholder="Amount" type="number" errorMessage="Invalid amount"
                     validate={{ required: { value: true }, pattern: { value: '^([0-9]*[.])?[0-9]+$' } }} required />
                 </Col>
@@ -125,13 +134,13 @@ cancelCreateBill=()=>{
               </Row>
               <br />
               <Row>
-                <Col><AvField name="bill_Date" label="Bill Date" value={this.state.userBillDate} type="date" errorMessage="Invalid Date" validate={{ date: { format: 'yyyy/MM/dd' }, required: { value: true } }} /></Col>
+                <Col><AvField name="bill_Date" label="Bill Date" value={this.state.userBillDate} type="date" errorMessage="Invalid Date" validate={{ date: { format: 'dd/MM/yyyy' }, required: { value: true } }} /></Col>
                 <Col><AvField name="due_Date" label="Due Date" value={this.state.userDueDate} type="date" errorMessage="Invalid Date" validate={{ date: { format: 'yyyy/MM/dd' }, required: { value: true } }} /></Col>
               </Row>
               <Row>
                 <Col>
                 <label >Description/Notes</label>
-                 <AvField name="description" type="text" list="colors" errorMessage="Invalid Notes" placeholder="Enter Notes " required /></Col>
+                 <AvField name="description" type="text" list="colors" errorMessage="Invalid Notes" placeholder="Enter Notes " /></Col>
               </Row>
               <Row>
                 <Col>
@@ -148,7 +157,6 @@ cancelCreateBill=()=>{
                 <Button type="button" onClick={this.cancelCreateBill}>Cancel</Button>
               </FormGroup>
             </AvForm>
-            </div>
           </Col>
         </Card>
       </div>);
