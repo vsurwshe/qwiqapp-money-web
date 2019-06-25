@@ -44,20 +44,25 @@ cancelCreateBill=()=>{
   handleSubmitValue = (event, errors, values) => {
     const { labelOption, categoryOption ,contactOption} = this.state 
     if (categoryOption === null){
-      this.setState({ alertColor : "warning", content : "Please Select Category..."})
+      this.callAlertTimer("warning", "Please Select Category...");
     } else if (errors.length === 0) { 
         let billDateCal = new Date(values.bill_Date);
         let dueDateCal = new Date(values.due_Date);
         if ((dueDateCal-billDateCal)/(1000*60*60*24)>=0) {
           let dueDate, billDate;
-          // bill date formate Year+Month+Day
+          let billYear =values.bill_Date.split("-")[0];
+          if (billYear <=1800) {
+            this.callAlertTimer("danger", "Bill Date should be more than 1800!!");
+          } else {
+            // bill date formate Year+Month+Day
           billDate = values.bill_Date.split("-")[0]+values.bill_Date.split("-")[1]+values.bill_Date.split("-")[2];
           //due Date formate Year+Month+Day
           dueDate = values.due_Date.split("-")[0]+values.due_Date.split("-")[1]+values.due_Date.split("-")[2];
           const newData = {...values, "billDate":billDate, "dueDate":dueDate, "categoryId":categoryOption.value, "contactId":contactOption.value ,"labelIds":labelOption===[] ? '': labelOption.map(opt=>{return opt.value})}
           this.handlePostData(event, newData); 
+          }
         } else{
-          this.setState({ alertColor : "danger", content : "Due Date should be greater than or equal to Bill Date"})
+          this.callAlertTimer("danger", "Due Date should be greater than or equal to Bill Date");
         }
     }
   }
@@ -82,9 +87,11 @@ cancelCreateBill=()=>{
   //this method Notifies the user after every request
   callAlertTimer = (alertColor, content) => {
     this.setState({ alertColor, content });
-    setTimeout(() => {
-      this.setState({ name: "", content: "", alertColor: "", billCreated: true });
-    }, Config.notificationMillis);
+    if (alertColor === "success") {
+      setTimeout(() => {
+        this.setState({ name: "", content: "", alertColor: "", billCreated: true });
+      }, Config.notificationMillis);
+    }
   };
 
   render() {

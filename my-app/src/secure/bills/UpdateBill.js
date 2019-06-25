@@ -55,14 +55,19 @@ class UpdateBill extends Component {
       let dueDateCal = new Date(values.due_Date)
       let diffDate = (dueDateCal - bill_DateCal)/(1000*60*60*24);
       if (diffDate >= 0) {
-        let billDate = values.bill_Date.split("-")[0] + values.bill_Date.split("-")[1] + values.bill_Date.split("-")[2];
-       let dueDate = values.due_Date.split("-")[0] + values.due_Date.split("-")[1] + values.due_Date.split("-")[2];
-        const newData = {
-          ...values, "billDate": billDate, "dueDate": dueDate, "categoryId": categoryOptionUpdate ? categoryOption.value :
-            categoryOption,"contactId": contactOptionUpdate ? contactOption.value :
-            contactOption, "labelIds": labelOption === null || labelOption === [] ? [] : (labelOptionUpdate ? labelOption.map(opt => { return opt.value }) : labelOption), "version": this.props.bill.version
+        if (values.bill_Date.split("-")[0]<=1800) {
+         this.setState({ alertColor: "danger", content: "Bill Date should be more than 1800!!"}); 
+        } else {
+          let billDate = values.bill_Date.split("-")[0] + values.bill_Date.split("-")[1] + values.bill_Date.split("-")[2];
+          let dueDate = values.due_Date.split("-")[0] + values.due_Date.split("-")[1] + values.due_Date.split("-")[2];
+            const newData = {
+              ...values, "billDate": billDate, "dueDate": dueDate, "categoryId": categoryOptionUpdate ? categoryOption.value :
+                categoryOption,"contactId": contactOptionUpdate ? contactOption.value :
+                contactOption, "labelIds": labelOption === null || labelOption === [] ? [] : (labelOptionUpdate ? labelOption.map(opt => { return opt.value }) : labelOption), "version": this.props.bill.version
+            }
+            this.handleUpdate(event, newData);
         }
-        this.handleUpdate(event, newData);
+       
       } else {
         this.setState({ alertColor: "danger", content: "Bill Date should not be more than Due Date" });
         setTimeout(()=>{
