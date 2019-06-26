@@ -1,14 +1,14 @@
 import React, { Component } from "react";
 import { Button, Card, CardBody, CardHeader } from "reactstrap";
+import Loader from 'react-loader-spinner'
 import CreateLabel from "./Createlabel";
 import UpdateLabel from "./UpdateLabel";
 import DeleteLabel from "./DeleteLabel";
 import LabelApi from "../../services/LabelApi";
-import Loader from 'react-loader-spinner'
 import Store from "../../data/Store";
 import { ProfileEmptyMessage } from "../utility/ProfileEmptyMessage";
 import { ReUseComponents } from "../utility/ReUseComponents";
-import { DeleteModel } from "../utility/deleteModel";
+import { DeleteModel } from "../utility/DeleteModel";
 
 class Lables extends Component {
   constructor(props) {
@@ -18,16 +18,13 @@ class Lables extends Component {
       requiredLabel: [],
       id: 0,
       name: "",
-      version: "",
-      addContainer: false,
       createLabel: false,
       visible: false,
       updateLabel: false,
       deleteLabel: false,
-      profileId: 0,
+      profileId:"",
       accordion: [],
       danger: false,
-      show: true,
       dropdownOpen: [],
       onHover: false,
       hoverAccord: [],
@@ -50,16 +47,38 @@ class Lables extends Component {
 
   getLabels = () => {
     new LabelApi().getSublabels(this.successCall, this.errorCall, this.state.profileId);
-  }
+   }
 
-  successCall = async lable => {
-    if (lable === []) {
+
+  successCall = async labels => {
+    if (labels === []) {
       this.setState({ labels: [] })
     } else {
-      await this.setState({ labels: lable, spinner: true })
+      await this.setState({ spinner: true })
+      await this.labelsSet(labels)
       this.loadCollapse();
     }
+  };
+
+  labelsSet = (labels) =>{
+    const prevState = labels;
+    const state = prevState.map((x, index) => {
+        return {...x, childName: this.displaySubLabelName(x)}
+    });
+    this.setState({labels : state});
   }
+
+  displaySubLabelName = (labels) => {
+    if(labels.subLabels !== null){
+      const name= labels.subLabels.map(sub=>sub.name);
+      return name;
+    }else{
+      return null;
+    }
+  }
+
+
+  errorCall = err =>  { this.setState({ visible: true }) }
 
 
   loadCollapse = () => {
@@ -90,10 +109,6 @@ class Lables extends Component {
     this.setState({ accordion: state });
   }
 
-  toggleSublabel = () => {
-    this.setState({ show: !this.state.show });
-    this.getLabels(!this.state.show);
-  }
   toggleDropDown = (tab) => {
     const prevState = this.state.dropdownOpen;
     const state = prevState.map((x, index) => tab === index ? !x : false);

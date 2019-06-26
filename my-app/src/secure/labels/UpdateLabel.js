@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Button, Col, Input, Alert, FormGroup, Card, CardHeader, Label, Collapse } from "reactstrap";
 import LabelApi from "../../services/LabelApi";
-import Lables from "./Label";
+import Lables from "./Labels";
 import Config from "../../data/Config";
 class UpdateLabel extends Component {
   constructor(props) {
@@ -24,15 +24,16 @@ class UpdateLabel extends Component {
     };
   }
   handleUpdate = () => {
+    const {userColor,name,notes,parentId,version,profileId,id}=this.state;
     let data = {
-      color: this.state.userColor,
-      name: this.state.name,
-      notes: this.state.notes,
-      parentId: this.state.parentId,
-      version: this.state.version
+      color:userColor,
+      name: name,
+      notes: notes,
+      parentId: parentId,
+      version:version
     };
     this.setState({ doubleClick: true });
-    new LabelApi().updateLabel(this.SuccessCall, this.errorCall, data, this.state.profileId, this.state.id)
+    new LabelApi().updateLabel(this.SuccessCall, this.errorCall, data, profileId, id)
   };
   cancelUpdateLabel = () => {
     this.setState({ cancelUpdateLabel: true });

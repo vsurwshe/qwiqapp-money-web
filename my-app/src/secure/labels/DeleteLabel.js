@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import LabelApi from "../../services/LabelApi";
-import Lables from "./Label";
+import Lables from "./Labels";
 import Config from "../../data/Config";
 import { ReUseComponents } from "../utility/ReUseComponents";
 

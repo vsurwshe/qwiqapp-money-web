@@ -11,14 +11,15 @@ import SignupVerify from "../components/SignupVerify";
 import Profiles from "../secure/profiles/Profiles";
 import navigation, {item} from "../data/navigations";
 import CreateLable from "../secure/labels/Createlabel";
-import Lables from "../secure/labels/Label";
-import Categories from "../secure/Categories/Categories";
-import Contacts from "../secure/contact/Contacts";
-import CreateContact from "../secure/contact/CreateContact";
-import EditCategory from "../secure/Categories/EditCategory";
+import Lables from "../secure/labels/Labels";
+import Categories from "../secure/categories/Categories";
+import Contacts from "../secure/contacts/Contacts";
+import CreateContact from "../secure/contacts/CreateContact";
+import Bills from "../secure/bills/Bills";
+import CreateProfile from "../secure/profiles/CreateProfile";
 
-const DefaultFooter = React.lazy(() =>import("../secure/Sidebar/DefaultFooter"));
-const DefaultHeader = React.lazy(() =>  import("../secure/Sidebar/DefaultHeader"));
+const DefaultFooter = React.lazy(() =>import("../secure/sidebar/DefaultFooter"));
+const DefaultHeader = React.lazy(() =>  import("../secure/sidebar/DefaultHeader"));
 
 class Main extends Component {
   constructor(props){
@@ -50,12 +51,13 @@ class Main extends Component {
       <Switch>
         <PrivateRoute path="/dashboard" component={Dashboard} />
         <PrivateRoute path="/profiles" component={Profiles} />
+        <PrivateRoute exact path="/createProfile" component={CreateProfile} />
         <PrivateRoute path="/label/labels" component={Lables} />
         <PrivateRoute path="/label/createLabel" component={CreateLable} />
         <PrivateRoute path="/listCategories" component={Categories} />
-        <Route path="/categorie/update" component={EditCategory} />
         <PrivateRoute exact path="/contact/createContact" component={CreateContact} />
         <PrivateRoute exact path="/contact/viewContacts" component={Contacts} />
+        <PrivateRoute path="/listBills" component={Bills} />
         <Route path="/login" component={Login} />
         <Route path="/signup" component={Signup} />
         <Route path="/register/:id/verify" component={SignupVerify} />

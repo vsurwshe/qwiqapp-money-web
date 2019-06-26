@@ -107,27 +107,33 @@ const Store = {
     clearDummyAccessToken: function() {
         db.removeItem(DUMMY_KEY);       
     },
-
+    //this is save categories in local storege
     saveCategories: function(data) {
       db.setItem("CATEGORIES",JSON.stringify(data))
     },
-
+     //this is get categories form local storege
     getCategories: function(){
         const categories = db.getItem("CATEGORIES")
         return JSON.parse(categories)
     },
-
-    //this saves profiles in local storage
+    //this is save bills in local storege
+    saveBills: function (data) {
+        db.setItem("BILL", JSON.stringify(data))
+    },
+     //this is get bills form local storege
+    getBills: function () {
+        const categories = db.getItem("BILL")
+        return JSON.parse(categories)
+    },
+    //this is save profiles in local storege
     saveUserProfiles: function (data) {
-      db.setItem("PROFILES", JSON.stringify(data))
+        db.setItem("PROFILES", JSON.stringify(data))
     },
-
-    //get profiles from local storage
+     //this is get profiles form local storege
     getUserProfiles: function () {
-      const categories = db.getItem("PROFILES")
-      return JSON.parse(categories)
+        const categories = db.getItem("PROFILES")
+        return JSON.parse(categories)
     },
-
     //this saves selected profile in local storage
     saveProfile: function (data) {
         db.setItem("PROFILE", JSON.stringify(data))
@@ -153,6 +159,7 @@ const Store = {
         db.removeItem("PROFILES");
         db.removeItem("PROFILE");
         db.removeItem("CONTACTS");
+        db.removeItem("BILL");
     },
     
    

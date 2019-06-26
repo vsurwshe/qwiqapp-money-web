@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Button, Nav, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 import { AppSidebarToggler, AppNavbarBrand } from "@coreui/react";
-import { AuthButton } from "../../App";
 import { FaCaretDown, FaSync, FaCaretUp, FaUserTie, FaPowerOff } from "react-icons/fa";
+import { withRouter } from 'react-router-dom'
+import { AuthButton } from "../../App";
 import ProfileApi from "../../services/ProfileApi";
 import Store from "../../data/Store";
-import { withRouter } from 'react-router-dom'
 
 const DefaultHeader = (props) => {
 

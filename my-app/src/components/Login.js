@@ -29,12 +29,13 @@ class Login extends Component {
     }
   };
   handleButton = event => {
-    if (this.state.email === "" || this.state.password === "") {
+    const {email,password}=this.state;
+    if (email === "" || password === "") {
       this.callAlertTimer("danger", "Please Enter Username/Password");
     } else {
       new LoginApi().login(
-        this.state.email,
-        this.state.password,
+        email,
+        password,
         () => {
           browserHistory.push("/dashboard");
           Store.clearDummyAccessToken();
@@ -76,6 +77,7 @@ class Login extends Component {
   }
 
   render() {
+    const {color,content,email,password}=this.state;
     const {emailState} = this.state.validate;
     if (Store.isAppUserLoggedIn()) {
       return (
@@ -94,18 +96,18 @@ class Login extends Component {
         <div style={{ color: "teal" }}>
           <center>
             <Container style={{ paddingTop: 50 }} className="App">
-              <Alert color={this.state.color}>{this.state.content}</Alert>
+              <Alert color={color}>{content}</Alert>
               <Card style={{ width: 300, borderRadius: 8 }}>
                 <CardBody>
                   <CardTitle>Login to Web-Money !</CardTitle><br />
                   <FormGroup>
-                    <Input name="email" type="email" placeholder="Your Email" value={this.state.email} valid={ emailState === 'success' }
+                    <Input name="email" type="email" placeholder="Your Email" value={email} valid={ emailState === 'success' }
                         invalid={ emailState === 'danger'} onChange={ (e) => { this.validateEmail(e);this.handleEvent(e) }} />
                     <FormFeedback> Uh oh! Incorrect email. </FormFeedback>  
                   </FormGroup>
                   <FormGroup>
                     <Input type="password"  name="password" onChange={(e) => { this.handleEvent(e)}}
-                      onKeyPress={this.handleEnter} placeholder="Your Password" value={this.state.password} /> 
+                      onKeyPress={this.handleEnter} placeholder="Your Password" value={password} /> 
                   </FormGroup>
                   <Button color="info" onClick={this.handleButton}>Login</Button>
                 </CardBody>

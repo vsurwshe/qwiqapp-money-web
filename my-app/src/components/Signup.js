@@ -2,6 +2,7 @@ import React from "react";
 import { Container, Alert, Label, Button, Input, Card, CardBody, CardTitle, FormGroup, FormFeedback } from "reactstrap";
 import { Link } from "react-router-dom";
 import SignupApi from "../services/SignupApi";
+import Config from "../data/Config";
 
 class Signup extends React.Component {
   state = {
@@ -32,14 +33,15 @@ class Signup extends React.Component {
       
   handleSubmit = e => {
     e.preventDefault();
+    const {name,email,password}=this.state;
     const data = {
-      name: this.state.name,
-      email: this.state.email,
-      password: this.state.password
+      name: name,
+      email: email,
+      password: password
     };
-    if (this.state.name === "") {
+    if (name === "") {
       this.callAlertTimer("danger", "Name should not be empty")
-    } else if (this.state.password.length > 5) {
+    } else if (password.length > 5) {
         new SignupApi().registerUser(this.successCall, this.errorCall, data);
     }
   };
@@ -70,8 +72,8 @@ class Signup extends React.Component {
   callAlertTimer = (color, content) => {
     this.setState({color: color,content: content});
     if ( this.state.color === "success"  && this.state.content === "Succesfull! Please Check your Email for Activation Link") {
-      setTimeout(() => { this.setState({ color: '', content: '', flag: false }) }, 4000)
-    }else {setTimeout(() => { this.setState({ color: '', content: '', email: '' }) }, 4000)}
+      setTimeout(() => { this.setState({ color: '', content: '', flag: false }) }, Config.notificationMillis)
+    }else {setTimeout(() => { this.setState({ color: '', content: '', email: '' }) }, Config.notificationMillis)}
   };
 
   //this method checks user entered email is in valid format or not

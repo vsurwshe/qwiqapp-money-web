@@ -19,7 +19,11 @@ export default {
     {
       name: "Contacts",
       url:"/contact/viewContacts",
-      icon: "cui-phone",
+      icon: "cui-phone"},
+    {
+      name: "Bills  ",
+      url: "/listBills",
+      icon: "cui-note"
     }
   ]
 };
@@ -33,7 +37,7 @@ export const item = {
     },
     {
       name : "Create Profile",
-      url : "/profiles/createProfile",
+      url : "/createProfile",
       icon : "cui-pencil"
     },
   ]

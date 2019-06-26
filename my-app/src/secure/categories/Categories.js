@@ -7,7 +7,7 @@ import EditCategory from './EditCategory';
 import DeleteCategory from "./DeleteCategory";
 import { ProfileEmptyMessage } from "../utility/ProfileEmptyMessage";
 import { ReUseComponents } from "../utility/ReUseComponents";
-import { DeleteModel } from "../utility/deleteModel";
+import { DeleteModel } from "../utility/DeleteModel";
 
 
 class Categories extends Component {
@@ -21,8 +21,6 @@ class Categories extends Component {
       createCategory: false,
       updateCategory: false,
       deleteCategory: false,
-      viewRequest: false,
-      toggle: false,
       accordion: [],
       hoverAccord: [],
       dropDownAccord: [],
@@ -51,9 +49,26 @@ class Categories extends Component {
   }
 
   //This Method is called for Api's Success Call
-  successCall = async json => {
-    await this.setState({ categories: json, spinner: true })
+  successCall = async categories => {
+    await this.categoriesSet(categories);
     this.loadCollapse();
+  }
+
+  categoriesSet = (categories) =>{
+    const prevState = categories;
+    const state = prevState.map((x, index) => {
+        return {...x, childName: this.displaySubCategoryName(x)}
+    });
+    this.setState({categories : state});
+  }
+
+  displaySubCategoryName = (categories) => {
+    if(categories.subCategories !==null){
+      const name= categories.subCategories.map(sub=>sub.name);
+      return name;
+    }else{
+      return null;
+    }
   }
 
   loadCollapse = () => {
@@ -96,9 +111,9 @@ class Categories extends Component {
     }
   };
 
-  toggleAccordion = (tab) => {
+  toggleAccordion = (specificIndex) => {
     const prevState = this.state.accordion;
-    const state = prevState.map((x, index) => tab === index ? !x : false);
+    const state = prevState.map((x, index) => specificIndex === index ? !x : false);
     this.setState({ accordion: state });
   }
 
@@ -125,11 +140,11 @@ class Categories extends Component {
   }
 
   render() {
-    const { categories, requiredCategory, createCategory, updateCategory, deleteCategory, profileId, categoryId, visible, spinner, search } = this.state;
+    const {requiredCategory, createCategory, updateCategory, deleteCategory, profileId, categoryId, visible, spinner, search,categories } = this.state;
     if (Store.getProfile() === null || Store.getProfile().length === 0) {
       return (<ProfileEmptyMessage />)
     } else if (categories.length === 0 && !spinner) {
-      return ReUseComponents.loadSpinner("Categories : " + this.state.categories.length)
+      return ReUseComponents.loadSpinner("Categories : " + categories.length)
     } else if (createCategory) {
       return <AddCategory category={categories} id={profileId} />
     } else if (updateCategory) {
@@ -141,7 +156,9 @@ class Categories extends Component {
     }
   }
   setSearch = e => {
+    // this.loadCollapse();
     this.setState({ search: e.target.value });
+    
   }
   loadCategories = (categories, visible, search) => {
     const color = this.props.color;

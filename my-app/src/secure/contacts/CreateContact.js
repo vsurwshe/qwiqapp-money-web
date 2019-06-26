@@ -1,55 +1,12 @@
 import React, { Component } from "react";
 import { CardBody, Button, Card, Row, CardHeader, FormGroup, Col, Alert, Input } from "reactstrap";
 import { AvForm, AvField } from 'availity-reactstrap-validation';
-import Contacts from './Contacts';
-import chroma from 'chroma-js';
 import Select from "react-select";
+import Contacts from './Contacts';
 import ContactApi from "../../services/ContactApi";
 import Config from "../../data/Config";
 import GeneralApi from "../../services/GeneralApi";
-
-const colourStyles = {
-  control: styles => ({ ...styles, backgroundColor: 'white' }),
-  option: (styles, { data, isDisabled, isFocused, isSelected }) => {
-    const color = chroma(data.color);
-    return {
-      ...styles,
-      backgroundColor: isDisabled
-        ? null
-        : isSelected ? data.color : isFocused ? color.alpha(0.1).css() : null,
-      color: isDisabled
-        ? '#ccc'
-        : isSelected
-          ? chroma.contrast(color, 'white') > 2 ? 'white' : 'black'
-          : data.color,
-      cursor: isDisabled ? 'not-allowed' : 'default',
-
-      ':active': {
-        ...styles[':active'],
-        backgroundColor: !isDisabled && (isSelected ? data.color : color.alpha(0.3).css()),
-      },
-    };
-  },
-  multiValue: (styles, { data }) => {
-    const color = chroma(data.color);
-    return {
-      ...styles,
-      backgroundColor: color.alpha(0.1).css(),
-    };
-  },
-  multiValueLabel: (styles, { data }) => ({
-    ...styles,
-    color: data.color,
-  }),
-  multiValueRemove: (styles, { data }) => ({
-    ...styles,
-    color: data.color,
-    ':hover': {
-      backgroundColor: data.color,
-      color: 'white',
-    },
-  }),
-};
+import Data from '../../data/SelectData';
 
 class CreateContact extends Component {
   constructor(props) {
@@ -62,7 +19,6 @@ class CreateContact extends Component {
       alertColor: '',
       message: '',
       selectedOption: [],
-      formTouched: true,
       formInput: '',
       cancelAddContact: false,
       doubleClick: false,
@@ -89,7 +45,6 @@ class CreateContact extends Component {
     if (errors.length === 0) {
       this.setState({ formInput: values })
       if (selectedCountry === "") {
-        console.log(selectedCountry)
         this.callAlertTimer("danger", "Country is Required")
       } else {
         this.setState({ doubleClick: true });
@@ -213,7 +168,7 @@ class CreateContact extends Component {
       });
 
       return (<div >
-        <Select onChange={this.handleSelect} isMulti options={labelQ} placeholder="Select the Label" styles={colourStyles} />
+        <Select onChange={this.handleSelect} isMulti options={labelQ} placeholder="Select the Label" styles={Data.colourStyles} />
       </div>);
     }
   }

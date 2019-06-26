@@ -4,7 +4,7 @@ import { FaTrashAlt, FaCloudUploadAlt, FaEye } from 'react-icons/fa';
 import AttachmentApi from '../../../services/AttachmentApi';
 import AddAttachment from './AddAttachment';
 import Attachment from './Download_View_Delete_Attachment';
-import { DeleteModel } from '../../utility/deleteModel';
+import { DeleteModel } from '../../utility/DeleteModel';
 
 class Attachments extends Component {
   constructor(props) {
@@ -18,9 +18,7 @@ class Attachments extends Component {
       attachments: [],
       dropdownOpen: [],
       addFile: false,
-      downloadAttachmentFile: false,
       viewLink: '',
-      pic: '',
       reattachment: '',
       display: false,
       viewData: '',
@@ -61,7 +59,8 @@ class Attachments extends Component {
 
   deleteAttachmentRequest = async () => {
     this.setState({ danger: !this.state.danger });
-    await Attachment.DeleteAttachment(this.success, this.errorCall, this.state.profileId, this.state.contactId, this.state.attachmentId)
+    const {profileId,contactId,attachmentId}=this.state;
+    await Attachment.DeleteAttachment(this.success, this.errorCall, profileId,contactId, attachmentId)
   }
 
   downloadLink = async (reattachment) => {

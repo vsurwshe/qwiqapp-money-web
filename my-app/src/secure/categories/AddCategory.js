@@ -5,6 +5,7 @@ import Store from "../../data/Store";
 import CategoryApi from "../../services/CategoryApi";
 import Categories from "./Categories";
 import Config from "../../data/Config";
+
 class AddCategory extends Component {
   constructor(props) {
     super(props)
@@ -89,12 +90,11 @@ class AddCategory extends Component {
   }
 
   loadAddingCategory = () => {
-    const { alertColor, content, doubleClick } = this.state
+    const { alertColor, content, doubleClick,collapse,categories } = this.state
     return (
       <Card style={{ width: "100%" }}>
         <CardHeader><strong>Category</strong></CardHeader><br />
-        <center>
-          <Col sm="12" md={{ size: 3, offset: 1.5 }}>
+        <Col sm="12" md={{ size: 5, offset: 4 }}>
             <Alert color={alertColor} >{content}</Alert>
             <h5><b>CREATE CATEGORY</b></h5><br />
             <AvForm onSubmit={this.handleSubmitValue}>
@@ -104,9 +104,9 @@ class AddCategory extends Component {
                 <Input className="form-check-input" type="checkbox" onClick={this.toggle} value=" " />
                 <Label check className="form-check-label" htmlFor="checkbox1"> &nbsp;Nest Category under </Label>
               </FormGroup><br />
-              <Collapse isOpen={this.state.collapse}>
+              <Collapse isOpen={collapse}>
                 <Input type="select" name="parentId" id="exampleSelect" onChange={e => { this.handleInput(e) }}>
-                  {this.state.categories.map((category, key) => { return <option key={key} value={category.id}>{category.name}</option> })}
+                 {categories.map((category, key) => { return <option key={key} value={category.id}>{category.name}</option> })}
                 </Input>
               </Collapse><br />
               <FormGroup>
@@ -115,7 +115,6 @@ class AddCategory extends Component {
               </FormGroup>
             </AvForm>
           </Col>
-        </center>
       </Card>)
   }
 }
