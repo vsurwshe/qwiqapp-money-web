@@ -55,8 +55,8 @@ class UpdateBill extends Component {
       let dueDateCal = new Date(values.due_Date)
       let diffDate = (dueDateCal - bill_DateCal)/(1000*60*60*24);
       if (diffDate >= 0) {
-        if (values.bill_Date.split("-")[0]<=1800) {
-         this.setState({ alertColor: "danger", content: "Bill Date should be more than 1800!!"}); 
+        if (values.bill_Date.split("-")[0]<1900) {
+         this.setState({ alertColor: "danger", content: "Unsupported 'BillDate', Select a date after year 1900. Ex: 24/08/1995!!"}); 
         } else {
           let billDate = values.bill_Date.split("-")[0] + values.bill_Date.split("-")[1] + values.bill_Date.split("-")[2];
           let dueDate = values.due_Date.split("-")[0] + values.due_Date.split("-")[1] + values.due_Date.split("-")[2];
@@ -69,7 +69,7 @@ class UpdateBill extends Component {
         }
        
       } else {
-        this.setState({ alertColor: "danger", content: "Bill Date should not be more than Due Date" });
+        this.setState({ alertColor: "danger", content: "Unsupported Bill Date it should not be more than Due Date. Ex: Bill Date: 24/08/1995  && Due Date: 26/08/1995" });
         setTimeout(()=>{
           this.setState({ content: "", alertColor: "" });
         }, Config.notificationMillis)
@@ -144,7 +144,7 @@ class UpdateBill extends Component {
               </Row>
               <Row>
                 <Col>
-                  <AvField name="tax" id="tax" value={bill.tax} placeholder="tax" label="Tax" type="text" errorMessage="Invalid amount" validate={{ required: { value: true }, pattern: { value: '^[0-9]+$' } }} required />
+                  <AvField name="tax" id="tax" value={bill.tax+''} placeholder="tax" label="Tax" type="text" errorMessage="Invalid amount" validate={{ required: { value: true }, pattern: { value: '^[0-9]+$' } }} required />
                 </Col>
               </Row>
               <Row>
@@ -153,8 +153,11 @@ class UpdateBill extends Component {
               </Row>
               <br />
               <Row>
-                <Col><AvField name="bill_Date" label="Bill Date" value={this.loadDateFormat(bill.billDate)} type="date" max="9999/12/30" errorMessage="Invalid Date" validate={{ date: { format: 'yyyy/MM/dd' }, required: { value: true } }} /></Col>
-                <Col><AvField name="due_Date" label="Due Date" value={this.loadDateFormat(bill.dueDate)} type="date"  max="9999/12/30" errorMessage="Invalid Date" validate={{ date: { format: 'yyyy/MM/dd' }, required: { value: true } }} /></Col>
+                <Col><AvField name="bill_Date" label="Bill Date" value={this.loadDateFormat(bill.billDate)} type="date"  errorMessage="Invalid Date" validate={{ date: { format: 'yyyy/MM/dd' },
+                  dateRange: {format: 'YYYY/MM/DD', start: {value: '1900/01/01'}, end: {value: '9999/12/31'}},
+                  required: { value: true } }} /></Col>
+                <Col><AvField name="due_Date" label="Due Date" value={this.loadDateFormat(bill.dueDate)} type="date"  max="9999/12/30" errorMessage="Invalid Date" validate={{ date: { format: 'yyyy/MM/dd' },
+                      dateRange: {format: 'YYYY/MM/DD', start: {value: '1900/01/01'}, end: {value: '9999/12/31'}}, required: { value: true } }} /></Col>
               </Row>
               <Row>
                 <Col><label >Description/Notes</label>
