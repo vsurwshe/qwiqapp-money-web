@@ -9,19 +9,20 @@ import Store from "../data/Store";
 
 
 const browserHistory = createBrowserHistory();
+const notificationMillis = 1500;
 class Signup extends React.Component {
   state = {
-    name: "",
-    email: "",
-    password: "",
-    adminToken: "",
+    name: '',
+    email: '',
+    password: '',
+    adminToken: '',
     flag: true,
-    color: "",
-    content: "",
+    color: '',
+    content: '',
     emailAlert: false,
     validate: {
-      emailState: "",
-      passwordState: ""
+      emailState: '',
+      passwordState: ''
     }
   };
 
@@ -38,12 +39,8 @@ class Signup extends React.Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const data = {
-      name: this.state.name,
-      email: this.state.email,
-      password: this.state.password
-    };
-    if (this.state.name === "") {
+    const data = {  name: this.state.name,  email: this.state.email,  password: this.state.password };
+    if (this.state.name === '') {
       this.callAlertTimer("danger", "Name should not be empty")
     } else if (this.state.password.length > 5) {
       new SignupApi().registerUser(this.successCall, this.errorCall, data);
@@ -63,7 +60,7 @@ class Signup extends React.Component {
 
   // when any internal Error occur
   errorCall = err => {
-    this.callAlertTimer("danger", "Internal Error");
+    this.callAlertTimer("danger", "Unable to Process Request, Please try Again...");
   };
 
   //if Email not exists
@@ -75,10 +72,13 @@ class Signup extends React.Component {
   //this prints onscreen alert
   callAlertTimer = (color, content) => {
     this.setState({ color, content });
-    setTimeout(async () => {
-      await this.setState({ color: '', content: '', flag: false })
-      new LoginApi().login(this.state.email, this.state.password, this.loginSuccessCall, this.errorCall)
-    }, 1500)
+    if(color==="success"){
+      setTimeout(async () => {
+        await this.setState({ color: '', content: '', flag: false })
+        new LoginApi().login(this.state.email, this.state.password, this.loginSuccessCall, this.errorCall)
+      },notificationMillis)
+    }
+    
   };
 
   loginSuccessCall = () => {
@@ -152,14 +152,14 @@ class Signup extends React.Component {
               <Label style={{ align }} for="Email">Email <span style={requiredLabel}>*</span></Label>
               <Input name="email" type="email" placeholder="Your Email" value={email} valid={emailState === 'success'}
                 invalid={emailState === 'danger'} onChange={e => { this.handleInput(e); this.validateEmail(e) }} />
-              <FormFeedback invalid> {emailAlert ? "Email already Exists, try another Email..." : "Uh oh! Incorrect email"}
+              <FormFeedback > {emailAlert ? "Email already Exists, try another Email..." : "Uh oh! Incorrect email"}
               </FormFeedback>
             </FormGroup>
             <FormGroup style={align}>
               <Label for="password">Password <span style={requiredLabel}>*</span></Label>
               <Input name="password" type="password" placeholder="Your password" onChange={e => { this.handleInput(e); this.validatePassword(e) }}
                 onKeyPress={this.handleEnter} disabled={!email || emailState === 'danger'} valid={passwordState === 'success'} invalid={passwordState === 'danger'} value={password} />
-              <FormFeedback invalid tooltip> Password length must be more then 5 characters </FormFeedback>
+              <FormFeedback > Password length must be more then 5 characters </FormFeedback>
             </FormGroup>
             <center>
               <Button color="info" disabled={!password || (emailAlert && emailState === 'danger')} onClick={e => this.handleSubmit(e)}> Signup </Button>

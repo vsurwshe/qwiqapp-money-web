@@ -4,6 +4,7 @@ import { createBrowserHistory } from "history";
 import { Container, Button, Input, Card, CardBody, CardTitle, FormFeedback, Alert, FormGroup } from "reactstrap";
 import LoginApi from "../services/LoginApi";
 import Store from "../data/Store";
+import Config from "../data/Config";
 
 const browserHistory = createBrowserHistory();
 class Login extends Component {
@@ -66,7 +67,7 @@ class Login extends Component {
       content: content
     });
     this.resetData();
-    setTimeout(() => this.setState({ color: '', content: '' }), 5000);
+    setTimeout(() => this.setState({ color: '', content: '' }), Config.notificationMillis);
   }
 
   validateEmail = e => {
