@@ -13,6 +13,7 @@ class CreateProfile extends Component {
     content: "",
     profileCreated: false,
     cancelCreateProfile: false,
+    userAction: ''
   };
 
   handleInput = e => {
@@ -24,13 +25,17 @@ class CreateProfile extends Component {
   }
 
   componentDidMount() {
-    this.setState({ userToken: Store.getAppUserAccessToken() });
+    this.setState({ userToken: Store.getAppUserAccessToken(), userAction: Store.getUser().action });
   }
 
   handleSubmit = e => {
     e.preventDefault();
-    const data = { name: this.state.name };
-    new ProfileApi().createProfile(this.successCall, this.errorCall, data);
+    if (this.state.userAction !== 'VERIFY_EMAIL') {
+      const data = { name: this.state.name };
+      new ProfileApi().createProfile(this.successCall, this.errorCall, data);
+    } else {
+      this.callAlertTimer("danger", "Please verify with the code sent to your Email.....");
+    }
   };
 
   successCall = () => {
@@ -38,15 +43,22 @@ class CreateProfile extends Component {
   }
 
   errorCall = err => {
-    this.callAlertTimer("danger", "You can't Create Second Profile");
+    if (Store.getProfile() !== null) {
+      this.callAlertTimer("danger", "Sorry, You can't create another Profile.....");
+    } else {
+      this.callAlertTimer("danger", "Sorry ! Unable to process request, Please try Again ...");
+    }
+
   };
 
   callAlertTimer = (color, content) => {
     this.setState({ color: color, content: content });
-    setTimeout(() => {
-      this.setState({ name: "", content: "", color: "", profileCreated: true });
-      window.location.href = "/dashboard";
-    }, Config.notificationMillis);
+    if (color === "success") {
+      setTimeout(() => {
+        this.setState({ content: "", color: "", name: "", profileCreated: true });
+        window.location.href = "/profiles";
+      }, Config.notificationMillis);
+    }
   };
 
   render() {
