@@ -21,6 +21,8 @@ import ProfileApi from "../services/ProfileApi";
 import CreateProfile from "../secure/profiles/CreateProfile";
 import Bills from "../secure/bills/Bills"
 import DefaultHeader from "../secure/sidebar/DefaultHeader"
+import GetBillingAddress from "../secure/billingAddress/GetBillingAddress";
+import AddBillingAddress from "../secure/billingAddress/AddBillingAddress";
 
 const DefaultFooter = React.lazy(() => import("../secure/sidebar/DefaultFooter"));
 
@@ -87,6 +89,9 @@ class Main extends Component {
         <PrivateRoute path="/profiles" component={Profiles} />
         <PrivateRoute path="/createProfile" component={CreateProfile} />
         <PrivateRoute path="/listBills" component={Bills} />
+        <PrivateRoute exact path="/createProfile" component={CreateProfile} />
+        <PrivateRoute exact path="/billing/address" component={GetBillingAddress} />
+        <PrivateRoute exact path="/billing/address/add" component={AddBillingAddress} />
         <PrivateRoute path="/label/labels" component={Lables} />
         <PrivateRoute path="/label/createLabel" component={CreateLable} />
         <PrivateRoute path="/listCategories" component={Categories} />

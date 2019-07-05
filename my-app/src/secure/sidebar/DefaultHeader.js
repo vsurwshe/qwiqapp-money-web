@@ -1,56 +1,77 @@
 import React, { useEffect, useState } from "react";
-import { Button, Nav, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
-import { AppSidebarToggler, AppNavbarBrand } from "@coreui/react";
-import { FaCaretDown, FaSync, FaCaretUp, FaUserTie, FaPowerOff } from "react-icons/fa";
-import { withRouter } from 'react-router-dom'
+import { withRouter, Link } from 'react-router-dom';
+import { Button, Nav, Modal, ModalHeader, ModalBody, ModalFooter, DropdownItem, DropdownMenu, DropdownToggle, } from "reactstrap";
+import { AppSidebarToggler, AppNavbarBrand, AppHeaderDropdown } from "@coreui/react";
+import { FaCaretDown, FaSync, FaCaretUp, FaUserTie, FaPowerOff, FaUserEdit, FaAngleDown, } from "react-icons/fa";
 import { AuthButton } from "../../App";
 import ProfileApi from "../../services/ProfileApi";
+import Config from "../../data/Config";
+import UserApi from '../../services/UserApi'
 import Store from "../../data/Store";
 
 const DefaultHeader = (props) => {
-
+ 
   const styles = { paddingTop: '10px', marginRight: 10, marginBottom: 10, color: "#228B22" }
   let [profileName, changeProfleName] = useState("Web Money");
   let [flag, changeFlag] = useState(false);
   let [authButton, chnageAuthButton] = useState(false);
+  let [userName, changeUsername] = useState("");
+  let [icon, animatedIcon] = useState(false);
   const toggle = (e) => {
     changeFlag(flag = !flag)
     props.onFlagChange()
   }
-
+ 
   const refreshButton = async () => {
     await Store.clearLocalStorage();
+    callAlert()
     changeProfleName(profileName = "Web Money")
+ 
   }
-
+  let callAlert = () => {
+    animatedIcon(icon=true);
+    setTimeout(() => {
+      animatedIcon(icon=false);
+    }, Config.notificationMillis);
+  }
+ 
   const toggleDanger = () => {
     chnageAuthButton(authButton = !authButton)
   }
-
-  useEffect(() => {
-    new ProfileApi().getProfiles(async (json) => {
-      if (json.length === 0 || json === null) {
-        changeProfleName(profileName = "Web Money");
-      } else {
-        await Store.saveProfile(json)
-        changeProfleName(profileName = json.map(profile => profile.name).toString());
-      }
-    }, (error) => {
-      console.log(error)
-    });
-  })
-
-  const loadAuthButton = () => {
-    return (<Modal isOpen={authButton} toggle={toggleDanger} >
-      <ModalHeader toggle={toggleDanger}>Sign Out</ModalHeader>
-      <ModalBody>Are you Sure you want to Signout ?</ModalBody>
-      <ModalFooter>
-        <AuthButton> Signout </AuthButton>
-        <Button color="secondary" onClick={toggleDanger}>Cancel</Button>
-      </ModalFooter>
-    </Modal>)
+ 
+  const successCall = async (profiles) => {
+    if (profiles.length === 0 || profiles === null) {
+      changeProfleName(profileName = "Web Money");
+    } else {
+      await Store.saveProfile(profiles)
+      changeProfleName(profileName = profiles.map(profile => profile.name).toString());
+    }
   }
-
+  //TODO:  handle profile error message
+  useEffect(() => {
+    new ProfileApi().getProfiles(successCall, (error) => { console.log(error) });
+    new UserApi().getUser(successGetUser, failGetUser);
+  });
+  const successGetUser = (user) => {
+    changeUsername(userName = user.name)
+  };
+  //TODO: user failure message
+  const failGetUser = (error) => {
+    console.log("Error")
+  };
+ 
+  const loadAuthButton = () => {
+    return (
+      <Modal isOpen={authButton} toggle={toggleDanger} >
+        <ModalHeader toggle={toggleDanger}>Sign Out</ModalHeader>
+        <ModalBody>Are you Sure you want to Signout ?</ModalBody>
+        <ModalFooter>
+          <AuthButton> Signout </AuthButton>
+          <Button color="secondary" onClick={toggleDanger}>Cancel</Button>
+        </ModalFooter>
+      </Modal>)
+  }
+ 
   return (
     <React.Fragment>
       <AppSidebarToggler className="d-lg-none" display="md" mobile />
@@ -63,9 +84,20 @@ const DefaultHeader = (props) => {
       </AppNavbarBrand>
       <Nav className="d-md-down-none" navbar />
       <Nav className="ml-auto" navbar>
-        <FaSync style={styles} data-toggle="tooltip" boundary="scrollParent" data-placement="bottom" title="Refresh" size={25}
-          onClick={refreshButton} />
-        <FaPowerOff onClick={e => toggleDanger(e)} style={{ color: "red", marginRight: 25 }} />
+        {!icon ? <FaSync style={styles} data-toggle="tooltip" boundary="scrollParent" data-placement="bottom" title="Refresh" size={25}
+          onClick={refreshButton} /> : 
+          <i className="fa fa-refresh fa-spin " style={{color: "rgb(34, 139, 34)", overflowX: "auto", marginRight:20 }}></i>
+          } 
+        <AppHeaderDropdown direction="down">
+          <DropdownToggle nav>
+             <b>{userName}</b>&nbsp;<FaAngleDown size={18} style={{ color: "darkblue", marginRight: 25 }} /> 
+          </DropdownToggle>
+          <DropdownMenu right style={{ right: 'auto' }}>
+            <DropdownItem header tag="div" className="text-center"><strong> Settings</strong></DropdownItem>
+            <DropdownItem><Link to="/billing/address" ><FaUserEdit style={{ color: "blue", marginRight: 15 }} />Billing Address</Link> </DropdownItem>
+            <DropdownItem onClick={e => toggleDanger(e)} ><FaPowerOff style={{ color: "red", marginRight: 15 }} />Logout</DropdownItem>
+          </DropdownMenu>
+        </AppHeaderDropdown>
       </Nav>
       {loadAuthButton()}
     </React.Fragment>)
