@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import {Redirect} from 'react-router';
+import { Redirect } from 'react-router';
 import { AvForm, AvField } from 'availity-reactstrap-validation';
 import { Alert, Button, Card, FormGroup, Col, Row } from "reactstrap";
 import BillingAddressApi from '../../services/BillingAddressApi';
@@ -34,12 +34,13 @@ class AddBillingAddress extends Component {
     const { updateBill } = this.state
     let newData = "";
     if (errors.length === 0) {
-      if (values.country) {
-        newData = { ...values }
-        this.handlePostData(event, newData);
-      } else if (updateBill.country) {
-        values.country = updateBill.country
-        newData = { ...values }
+      if (values.country || updateBill.country) {
+        if (values.country) {
+          newData = { ...values }
+        } else {
+          values.country = updateBill.country
+          newData = { ...values }
+        }
         this.handlePostData(event, newData);
       } else {
         this.setState({ alertColor: "danger", content: "Country should not be empty" });
@@ -51,20 +52,22 @@ class AddBillingAddress extends Component {
   }
 
   //this method handle the Post method from user`
-  handlePostData = async (e, data) => {
+  handlePostData = (e, data) => {
     this.setState({ doubleClick: true })
-    await new BillingAddressApi().createBillingAddress(this.successCreate, this.errorCall, data);
+    setTimeout(() => {
+      new BillingAddressApi().createBillingAddress(this.successCreate, this.errorCall, data);
+    }, Config.notificationMillis)
   };
   //this method call when lables created successfully
   successCreate = () => {
-    this.callAlertTimer("success", "Saved Billing Address Successfully...");
-    setTimeout(()=>this.setState({ cancelCreateBill: true }), Config.notificationMillis)
+    this.callAlertTimer("success", "Saved Billing Address");
+    setTimeout(() => this.setState({ cancelCreateBill: true }), Config.notificationMillis)
   }
 
   //this handle the error response the when api calling
   errorCall = err => {
-     this.callAlertTimer("danger", "Unable to Process Request, Please try Again....");
-     };
+    this.callAlertTimer("danger", "Unable to Process Request, Please try Again....");
+  };
 
   cancelCreateBill = () => {
     this.setState({ cancelCreateBill: true })
@@ -73,19 +76,22 @@ class AddBillingAddress extends Component {
   //this method Notifies the user after every request
   callAlertTimer = (alertColor, content) => {
     this.setState({ alertColor, content });
-    setTimeout(() => {
-        if (this.state.alertColor) {
+    if(alertColor==="success"){
+      setTimeout(() => {
+        const { name, alertColor, content, billCreated, doubleClick } = this.state;
+        if (alertColor || content || name || billCreated || doubleClick) {
           this.setState({ name: "", content: "", alertColor: "", billCreated: true, doubleClick: false });
         }
-    }, 100);
-  // }
-    // Config.notificationMillis);
+      }, Config.notificationMillis);
+    }
+   
   };
 
   render() {
     const { alertColor, content, cancelCreateBill, updateBill } = this.state
     if (cancelCreateBill) {
-      return <Redirect to={{pathname: '/billing/address'}}/>
+      return <Redirect to={{ pathname: '/billing/address' }} />
+
     } else {
       return <div>{this.loadCreatingBill(alertColor, content, updateBill)}</div>
     }
@@ -93,10 +99,10 @@ class AddBillingAddress extends Component {
 
   //this Method Call when Label Creation in porceess.
   loadCreatingBill = (alertColor, content, updateBill) => {
-      const placeholderStyle={
-          color: '#000000',
-          fontSize: '1.0em',
-      }
+    const placeholderStyle = {
+      color: '#000000',
+      fontSize: '1.0em',
+    }
     return (
       <div className="animated fadeIn" >
         <Card>
@@ -106,21 +112,21 @@ class AddBillingAddress extends Component {
             <AvForm onSubmit={this.handleSubmitValue}>
               <Row>
                 <Col><AvField name="firstName" placeholder="First Name" style={placeholderStyle} value={updateBill.firstName} required /></Col>
-                <Col><AvField name="lastName" placeholder="Last Name"  style={placeholderStyle} value={updateBill.lastName} /></Col>
-                <Col><AvField name="company" placeholder="Organization"  style={placeholderStyle} value={updateBill.company} validate={{ pattern: { value: '^[a-zA-Z0-9_.-]*' } }} required /></Col>
+                <Col><AvField name="lastName" placeholder="Last Name" style={placeholderStyle} value={updateBill.lastName} /></Col>
+                <Col><AvField name="company" placeholder="Organization" style={placeholderStyle} value={updateBill.company} validate={{ pattern: { value: '^[a-zA-Z0-9_.-]*' } }} required /></Col>
               </Row>
               <Row>
-                <Col><AvField name="addressLine1" placeholder="Address 1"  style={placeholderStyle} required value={updateBill.addressLine1} /></Col>
-                <Col><AvField name="addressLine2" placeholder="Address 2"  style={placeholderStyle} value={updateBill.addressLine2} /></Col>
+                <Col><AvField name="addressLine1" placeholder="Address 1" style={placeholderStyle} required value={updateBill.addressLine1} /></Col>
+                <Col><AvField name="addressLine2" placeholder="Address 2" style={placeholderStyle} value={updateBill.addressLine2} /></Col>
               </Row>
               <Row>
-                <Col><AvField name="postCode" placeholder="Postal Code"  style={placeholderStyle} value={updateBill.postCode} errorMessage="Postal Code" validate={{ pattern: { value: '^[0-9]{6}' } }} /></Col>
-                <Col><AvField name="city" placeholder="City" style={placeholderStyle}  value={updateBill.city} /></Col>
+                <Col><AvField name="postCode" placeholder="Postal Code" style={placeholderStyle} value={updateBill.postCode} errorMessage="Postal Code" validate={{ pattern: { value: '^[0-9]{6}' } }} /></Col>
+                <Col><AvField name="city" placeholder="City" style={placeholderStyle} value={updateBill.city} /></Col>
               </Row>
               <Row>
                 <Col><AvField name="region" placeholder="State" style={placeholderStyle} value={updateBill.region} /></Col>
                 <Col>
-                  <AvField style={placeholderStyle}type="select" id="country" name="country" errorMessage="Select Country" >
+                  <AvField style={placeholderStyle} type="select" id="country" name="country" errorMessage="Select Country" >
                     {this.selectOPtionCuntry(updateBill)}
                     {this.state.countries.map((country, key) => { return <option key={key} value={country.code}>{country.name}</option> })}
                   </AvField>
@@ -137,16 +143,16 @@ class AddBillingAddress extends Component {
         </Card>
       </div>);
   }
-  selectOPtionCuntry=(updateBill)=>{
+  selectOPtionCuntry = (updateBill) => {
     return (<>
-               {updateBill.country === "" ? <option value="">Select Country</option>
-                      : (this.state.countries.map((country, index) => {
-                        if (country.code === updateBill.country) {
-                          return <option key={index} value={country.code}> {updateBill.country} </option>
-                        }
-                        return 0;
-                      }))
-                    } 
+      {updateBill.country === "" ? <option value="">Select Country</option>
+        : (this.state.countries.map((country, index) => {
+          if (country.code === updateBill.country) {
+            return <option key={index} value={country.code}> {updateBill.country} </option>
+          }
+          return 0;
+        }))
+      }
     </>
     )
   }

@@ -7,12 +7,9 @@ class GeneralApi {
   getCountrylist(success, failure) {
     process(success, failure, "/countries", "GET");
   };
-
   getCurrencyList(success, failure) {
-  console.log("call App Token:");
     process(success, failure, "/currencies", "GET");
   }
-
 }
 
 export default GeneralApi;

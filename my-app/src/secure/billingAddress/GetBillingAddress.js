@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Alert } from 'reactstrap';
 import { Card, CardBody, CardHeader, Button } from 'reactstrap';
 import BillingAddressApi from '../../services/BillingAddressApi';
@@ -45,15 +44,15 @@ class GetBillingAddress extends Component {
   addBillingAddress = () => {
     this.setState({ addBilling: true, spinner: true });
   }
-  
+
   updateBillingAddress = () => {
     this.setState({ updateBill: true })
   }
 
   render() {
     const { billings, visible, addBilling } = this.state;
-   if (addBilling) {
-     return <AddBillingAddress updateBill = {billings} />
+    if (addBilling) {
+      return <AddBillingAddress updateBill={billings} />
     } else if (!billings.country) {
       return this.showingNoBillingMessage(billings)
     } else {
@@ -66,7 +65,7 @@ class GetBillingAddress extends Component {
       <div className="animated fadeIn">
         <Card>
           <CardHeader><strong>Billing Address</strong>
-           <Link to={{pathname:"/billing/address/add", state:{updateBill:billings}}}><Button color="success" className="float-right" onClick={this.addBillingAddress}> Update </Button></Link>
+            <Link to={{ pathname: "/billing/address/add", state: { updateBill: billings } }}><Button color="success" className="float-right" onClick={this.addBillingAddress}> Update </Button></Link>
           </CardHeader>
           <CardBody>
             <Alert isOpen={visible} color="danger">Unable to process, Please try Again.... </Alert>
@@ -93,7 +92,7 @@ class GetBillingAddress extends Component {
     return (
       <CardHeader>
         <strong>Billing Address</strong>
-        <Link to={{pathname:"/billing/address/add", state:{updateBill:billings}}}><Button color="success" className="float-right" onClick={this.addBillingAddress}> + Billing Address</Button></Link>
+        <Link to={{ pathname: "/billing/address/add", state: { updateBill: billings } }}><Button color="success" className="float-right" onClick={this.addBillingAddress}> + Billing Address</Button></Link>
       </CardHeader>);
   }
 
