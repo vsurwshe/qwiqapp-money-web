@@ -14,9 +14,9 @@ export const ProfileEmptyMessage = () => {
     return (
       <div className="animated fadeIn">
         <Card>
-          <CardHeader> <Button color="info" onClick={profileChange} className="float-right">Create Profile</Button> </CardHeader>
+          <CardHeader> <Button color="info" onClick={profileChange} className="float-right"> + Create Profile</Button> </CardHeader>
           <center style={{ paddingTop: '20px' }}>
-            <CardBody><h5><b>You haven't created any Profile yet. So Please Create Profile. </b></h5> </CardBody>
+            <CardBody><h5><b>You haven't created any Profile yet. So Please Create Profile... </b></h5> </CardBody>
           </center>
         </Card>
       </div>)

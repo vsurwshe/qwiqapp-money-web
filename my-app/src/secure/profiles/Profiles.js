@@ -1,14 +1,14 @@
 import React, { Component } from "react";
 import { Container, Button, Card, CardBody, Col, Row, CardHeader, Alert } from "reactstrap";
+import Avatar from 'react-avatar';
 import Loader from 'react-loader-spinner'
 import { FaPen, FaTrashAlt } from 'react-icons/fa';
-import Avatar from 'react-avatar';
+import { DeleteModel } from "../utility/DeleteModel";
 import ProfileApi from "../../services/ProfileApi";
 import UpdateProfile from "./UpdateProfile";
 import CreateProfile from "./CreateProfile";
 import DeleteProfile from "./DeleteProfile";
 import ViewProfile from "./ViewProfile";
-import { DeleteModel } from "../utility/DeleteModel";
 import { ProfileEmptyMessage } from "../utility/ProfileEmptyMessage";
 
 /**

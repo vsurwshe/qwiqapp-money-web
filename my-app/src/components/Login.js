@@ -1,21 +1,23 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import { createBrowserHistory } from "history";
-import { Container,Button,Input,Card,CardBody,CardTitle,FormFeedback,Alert,FormGroup} from "reactstrap";
+import { Container, Button, Input, Card, CardBody, CardTitle, FormFeedback, Alert, FormGroup } from "reactstrap";
 import LoginApi from "../services/LoginApi";
 import Store from "../data/Store";
+import Config from "../data/Config";
 
+const browserHistory = createBrowserHistory();
 class Login extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      email: "",
-      password: "",
-      color: "",
-      content: "",
+      email: '',
+      password: '',
+      color: '',
+      content: '',
       validate: {
-        emailState: "",
-        passwordState: ""
+        emailState: '',
+        passwordState: ''
       }
     };
   }
@@ -29,15 +31,15 @@ class Login extends Component {
     }
   };
   handleButton = event => {
-    const {email,password}=this.state;
-    if (email === "" || password === "") {
+    const { email, password } = this.state;
+    if (email === '' || password === '') {
       this.callAlertTimer("danger", "Please Enter Username/Password");
     } else {
       new LoginApi().login(
         email,
         password,
         () => {
-          browserHistory.push("/dashboard");
+          browserHistory.push("/profiles");
           Store.clearDummyAccessToken();
           window.location.reload();
         },
@@ -50,11 +52,11 @@ class Login extends Component {
 
   resetData() {
     this.setState({
-      email:'',
-      password:'',
-      validate :{
-        emailState:'',
-        passwordState:''
+      email: '',
+      password: '',
+      validate: {
+        emailState: '',
+        passwordState: ''
       }
     })
   }
@@ -65,7 +67,7 @@ class Login extends Component {
       content: content
     });
     this.resetData();
-    setTimeout(() => this.setState({ color: "", content: "" }), 5000);
+    setTimeout(() => this.setState({ color: '', content: '' }), Config.notificationMillis);
   }
 
   validateEmail = e => {
@@ -77,8 +79,8 @@ class Login extends Component {
   }
 
   render() {
-    const {color,content,email,password}=this.state;
-    const {emailState} = this.state.validate;
+    const { color, content, email, password } = this.state;
+    const { emailState } = this.state.validate;
     if (Store.isAppUserLoggedIn()) {
       return (
         <div>
@@ -101,13 +103,13 @@ class Login extends Component {
                 <CardBody>
                   <CardTitle>Login to Web-Money !</CardTitle><br />
                   <FormGroup>
-                    <Input name="email" type="email" placeholder="Your Email" value={email} valid={ emailState === 'success' }
-                        invalid={ emailState === 'danger'} onChange={ (e) => { this.validateEmail(e);this.handleEvent(e) }} />
-                    <FormFeedback> Uh oh! Incorrect email. </FormFeedback>  
+                    <Input name="email" type="email" placeholder="Your Email" value={email} valid={emailState === 'success'}
+                      invalid={emailState === 'danger'} onChange={(e) => { this.validateEmail(e); this.handleEvent(e) }} />
+                    <FormFeedback> Uh oh! Incorrect email. </FormFeedback>
                   </FormGroup>
                   <FormGroup>
-                    <Input type="password"  name="password" onChange={(e) => { this.handleEvent(e)}}
-                      onKeyPress={this.handleEnter} placeholder="Your Password" value={password} /> 
+                    <Input type="password" name="password" onChange={(e) => { this.handleEvent(e) }}
+                      onKeyPress={this.handleEnter} placeholder="Your Password" value={password} />
                   </FormGroup>
                   <Button color="info" onClick={this.handleButton}>Login</Button>
                 </CardBody>
@@ -123,5 +125,5 @@ class Login extends Component {
     }
   }
 }
-const browserHistory = createBrowserHistory();
+
 export default Login;
