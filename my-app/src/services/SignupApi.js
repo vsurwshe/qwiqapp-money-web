@@ -27,7 +27,7 @@ class SignupApi {
         }
       })
         .catch(err => { if (err.response.status === "404") console.log("Internal Error") });
-    }, 1500);
+    }, Config.apiTimeoutMillis);
   }
 
   //Verify the User Credentials
@@ -35,7 +35,7 @@ class SignupApi {
     await this.getToken()
     setTimeout(() => {
       process(success, failure, Config.cloudBaseURL + "/user/verify?code=" + code + "&type=EMAIL", "GET", "verify");
-    }, Config.notificationMillis);
+    }, Config.apiTimeoutMillis);
   }
 }
 

@@ -6,10 +6,10 @@ import { Link } from "react-router-dom";
 import SignupApi from "../services/SignupApi";
 import LoginApi from "../services/LoginApi";
 import Store from "../data/Store";
+import Config from "../data/Config";
 
 
 const browserHistory = createBrowserHistory();
-const notificationMillis = 1500;
 class Signup extends React.Component {
   state = {
     name: '',
@@ -76,7 +76,7 @@ class Signup extends React.Component {
       setTimeout(async () => {
         await this.setState({ color: '', content: '', flag: false })
         new LoginApi().login(this.state.email, this.state.password, this.loginSuccessCall, this.errorCall)
-      },notificationMillis)
+      }, Config.apiTimeoutMillis)
     }
     
   };

@@ -6,7 +6,8 @@ const Config = {
     cloudBaseURL: "https://124apps.com/bills/cloud",
     clientId: "trusted-app",
     clientSecret: "secret",
-    notificationMillis: 400
+    notificationMillis: 400,
+    apiTimeoutMillis: 2000
 }
 
 export default Config;
