@@ -7,14 +7,13 @@ import GeneralApi from "../../services/GeneralApi";
 import Config from "../../data/Config";
 
 class AddBillingAddress extends Component {
-  is_unmount = false
+
   constructor(props) {
     super(props);
     this.state = {
-      billCreated: false,
+      navigateToBilling: false,
       alertColor: "",
       content: "",
-      cancelCreateBill: false,
       doubleClick: false,
       countries: [],
       updateBill: props.location.state.updateBill
@@ -22,7 +21,6 @@ class AddBillingAddress extends Component {
   }
 
   componentDidMount = () => {
-    this.is_unmount = true;
     new GeneralApi().getCountrylist(this.successCall, this.errorCall)
   }
 
@@ -43,10 +41,7 @@ class AddBillingAddress extends Component {
         }
         this.handlePostData(event, newData);
       } else {
-        this.setState({ alertColor: "danger", content: "Country should not be empty" });
-        setTimeout(() => {
-          this.setState({ alertColor: "", content: "" });
-        }, Config.notificationMillis)
+        this.callAlertTimer("danger", "Country should not be empty")
       }
     }
   }
@@ -58,10 +53,10 @@ class AddBillingAddress extends Component {
       new BillingAddressApi().createBillingAddress(this.successCreate, this.errorCall, data);
     }, Config.notificationMillis)
   };
+
   //this method call when lables created successfully
   successCreate = () => {
     this.callAlertTimer("success", "Saved Billing Address");
-    setTimeout(() => this.setState({ cancelCreateBill: true }), Config.notificationMillis)
   }
 
   //this handle the error response the when api calling
@@ -69,27 +64,20 @@ class AddBillingAddress extends Component {
     this.callAlertTimer("danger", "Unable to Process Request, Please try Again....");
   };
 
-  cancelCreateBill = () => {
-    this.setState({ cancelCreateBill: true })
-  }
-
   //this method Notifies the user after every request
   callAlertTimer = (alertColor, content) => {
     this.setState({ alertColor, content });
-    if(alertColor==="success"){
+    if(alertColor ==='success' ){    
       setTimeout(() => {
-        const { name, alertColor, content, billCreated, doubleClick } = this.state;
-        if (alertColor || content || name || billCreated || doubleClick) {
-          this.setState({ name: "", content: "", alertColor: "", billCreated: true, doubleClick: false });
-        }
+        this.setState({ name: "", content: "", alertColor: "", navigateToBilling: true, doubleClick: false });
       }, Config.notificationMillis);
     }
    
   };
 
   render() {
-    const { alertColor, content, cancelCreateBill, updateBill } = this.state
-    if (cancelCreateBill) {
+    const { alertColor, content, navigateToBilling, updateBill } = this.state
+    if (navigateToBilling ) {
       return <Redirect to={{ pathname: '/billing/address' }} />
 
     } else {
@@ -126,7 +114,7 @@ class AddBillingAddress extends Component {
               <Row>
                 <Col><AvField name="region" placeholder="State" style={placeholderStyle} value={updateBill.region} /></Col>
                 <Col>
-                  <AvField style={placeholderStyle} type="select" id="country" name="country" errorMessage="Select Country" >
+                  <AvField style={placeholderStyle} type="select" id="country" name="country" errorMessage="Select Country" onClick={()=>this.setState({alertColor: "", content: ""})}>
                     {this.selectOPtionCuntry(updateBill)}
                     {this.state.countries.map((country, key) => { return <option key={key} value={country.code}>{country.name}</option> })}
                   </AvField>
@@ -135,7 +123,7 @@ class AddBillingAddress extends Component {
               <center><FormGroup row>
                 <Col>
                   <Button color="info" disabled={this.state.doubleClick} > Save </Button> &nbsp; &nbsp;
-                  <Button active color="light" type="button" onClick={this.cancelCreateBill}>Cancel</Button>
+                  <Button active color="light" type="button" onClick={()=>this.setState({ navigateToBilling:true  })}>Cancel</Button>
                 </Col>
               </FormGroup></center>
             </AvForm>
