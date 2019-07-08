@@ -68,10 +68,15 @@ const DefaultHeader = (props) => {
     if (Store.getProfile() === null) {
       changeProfleName(profileName = "Web Money");
     } else {
+      console.log(props.location)
       await changeProfleName(profileName = Store.getProfile().name);
+       //rediectCall();
+      // this.props.history.push(`/profiels`)
     }
   }
-
+   const rediectCall=()=>{
+     return <Redirect to="/profiles"/>
+   }
   const loadAuthButton = () => {
     return (
       <Modal isOpen={authButton} toggle={toggleDanger} >

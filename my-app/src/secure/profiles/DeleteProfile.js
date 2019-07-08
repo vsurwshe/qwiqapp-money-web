@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import {Redirect} from 'react-router';
 import ProfileApi from "../../services/ProfileApi";
 import Profiles from "./Profiles";
 import { ReUseComponents } from "../utility/ReUseComponents";
@@ -35,12 +36,13 @@ class DeleteProfile extends Component {
     setTimeout(() => {
       this.setState({ color: "", content: "", profileDeleted: true });
       window.location.reload();
-    }, Config.notificationMillis);
+    }, Config.apiTimeoutMillis);
   };
 
   render() {
     const { profileDeleted, content, color } = this.state;
-    return <div>{profileDeleted ? <Profiles /> : ReUseComponents.loadDeleting("Profile", "", color, content)}</div>
+    return <div>{profileDeleted ? <Profiles/>
+    : ReUseComponents.loadDeleting("Profile", "", color, content)}</div>
   }
 
 }

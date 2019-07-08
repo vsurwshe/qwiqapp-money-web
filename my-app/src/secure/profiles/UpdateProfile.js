@@ -1,4 +1,6 @@
 import React, { Component } from "react";
+import { Link } from 'react-router-dom'
+
 import { Button, Card, Col, Input, Alert, CardHeader, FormGroup } from "reactstrap";
 import ProfileApi from "../../services/ProfileApi";
 import Profiles from "./Profiles";
@@ -27,7 +29,6 @@ class UpdateProfile extends Component {
     if(this.state.id === Store.getProfile().id){
       storeProfile = Store.getUserProfiles().filter(profile => profile.id === this.state.id)
       Store.saveProfile(storeProfile[0])
-      console.log("Profile in Store =",Store.getProfile());
     }
     this.callAlertTimer("success", "Profile Updated Succesfully!");
   }
@@ -37,10 +38,11 @@ class UpdateProfile extends Component {
   };
 
   callAlertTimer = (color, content) => {
-    this.setState({ color: color, content: content });
+    this.setState({ color, content });
     setTimeout(() => {
       this.setState({ name: '', color: '', updateSuccess: true });
-      window.location.href = "/dashboard";
+      window.location.href = "/profiles";
+      
     }, Config.notificationMillis);
   };
 
@@ -50,11 +52,8 @@ class UpdateProfile extends Component {
   
   render() {
     const { name, color, content, updateSuccess, cancelUpdateProfile } = this.state;
-    if (cancelUpdateProfile) {
-      return <Profiles />
-    } else {
-      return <div>{updateSuccess ? <Profiles /> : this.loadUpdateProfile(name, color, content)}</div>
-    }
+      return <div>{(updateSuccess || cancelUpdateProfile) ? <Profiles /> : this.loadUpdateProfile(name, color, content)}</div>
+
   }
   loadHeader = () => <CardHeader><strong>Profile</strong></CardHeader>
 

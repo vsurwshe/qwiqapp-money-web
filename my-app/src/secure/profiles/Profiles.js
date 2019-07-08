@@ -10,6 +10,9 @@ import ProfileApi from "../../services/ProfileApi";
 import { DeleteModel } from "../utility/DeleteModel";
 import { ProfileEmptyMessage } from "../utility/ProfileEmptyMessage";
 import { Container, Button, Card, CardBody, Col, Row, CardHeader, Alert } from "reactstrap";
+import DefaultHeader from '../sidebar/DefaultHeader';
+import Main from '../../components/Main';
+import SetProfile from './SetProfile';
 
 /**
  * Display list of profiles,Manage profile like (update, delete)
@@ -70,8 +73,8 @@ class Profiles extends Component {
     if (profiles.length === 0 && !createProfile) {
       return <div>{profiles.length === 0 && !createProfile && !spinner ? this.loadSpinner() : <ProfileEmptyMessage />}</div>
     } else if (selectProfile) {
-      let url = "/profiles/" + this.state.id
-      return (<Container> <Redirect push to={url} /></Container>)
+      let url = "/profiles/" + this.state.id     
+      return (<Container> <Redirect push to={url} /></Container>)     
     } else if (createProfile) {
       return (<Container> <CreateProfile /> </Container>)
     } else if (updateProfile) {

@@ -1,98 +1,164 @@
 import React, { Component } from "react";
-import { Button, Input, Card, CardBody, CardHeader, Col, Alert } from "reactstrap";
+import { Redirect } from 'react-router';
+import { Button, Input, Card, CardBody, CardHeader, Col, Alert, FormGroup, Label } from "reactstrap";
 import Store from "../../data/Store";
+import { Link } from 'react-router-dom'
 import ProfileApi from "../../services/ProfileApi";
 import Profiles from "./Profiles";
 import Config from "../../data/Config";
+import ProfileInfoTable from './ProfileInfoTable';
+// import AddBilling from "../billing/AddBillingAddress";
+// import GetBillings from "../billing/GetBillingDetails";
 
 class CreateProfile extends Component {
   state = {
-    name: "",
-    userToken: "",
-    color: "",
-    content: "",
+    name: '',
+    userToken: '',
+    color: '',
+    content: '',
     profileCreated: false,
     cancelCreateProfile: false,
-    userAction: ''
+    profileType: 0,
+    buttonText: "Create Free Profile",
+    profileInfoTable: false,
+    action: '',
+    addBillingRequest: false,
+    comparisionText: "View Feature Comparision",
   };
 
   handleInput = e => {
     this.setState({ [e.target.name]: e.target.value });
   };
 
+  profileType = async type => {
+    await this.setState({ profileType: type });
+    this.buttonText(type);
+  }
+
+  buttonText = async (id) => {
+    if (id === 0) {
+      await this.setState({ buttonText: "Create Free Profile" });
+    } else if (id === 1) {
+      await this.setState({ buttonText: "Create Basic Profile" });
+    } else {
+      await this.setState({ buttonText: "Create Premium Profile" });
+    }
+  }
+
   cancelCreateProfile = () => {
     this.setState({ cancelCreateProfile: true });
   }
 
-  componentDidMount() {
-    this.setState({ userToken: Store.getAppUserAccessToken(), userAction: Store.getUser().action });
+  componentDidMount = async () => {
+    await this.setState({ action: Store.getUser().action });
+    this.setState({ userToken: Store.getAppUserAccessToken() });
   }
-
   handleSubmit = e => {
     e.preventDefault();
-    const { name, profileType, userAction } = this.state
-    if (userAction !== 'VERIFY_EMAIL') {
+    const { name, profileType, action } = this.state
+    if (action !== 'VERIFY_EMAIL') {
       const data = { name: name, type: profileType };
       new ProfileApi().createProfile(this.successCall, this.errorCall, data);
     } else {
-      this.callAlertTimer("danger", "Please verify with the code sent to your Email.....");
+      this.callAlertTimer("danger", "First Please verify with the code sent to your Email.....")
     }
   };
-
   successCall = () => {
     this.callAlertTimer("success", "New Profile Created!!");
   }
-
   errorCall = err => {
-    if (Store.getProfile() !== null) {
+    if (this.state.profileType) {
+      this.callAlertTimer("danger", "You need to purchase to create these Profiles, For more info View Feature Comparision.....");
+    } else if (Store.getProfile() !== null) {
       this.callAlertTimer("danger", "Sorry, You can't create another Profile.....");
     } else {
-      this.callAlertTimer("danger", "Sorry ! Unable to process request, Please try Again ...");
+      this.callAlertTimer("danger", "Unable to process request, Please Try Again ...");
     }
-
   };
-
   callAlertTimer = (color, content) => {
-    this.setState({ color: color, content: content });
+    this.setState({ color, content });
     if (color === "success") {
       setTimeout(() => {
-        this.setState({ content: "", color: "", name: "", profileCreated: true });
+        this.setState({ content: '', color: '', name: '', profileCreated: true });
         window.location.href = "/profiles";
-      }, Config.notificationMillis);
+      }, Config.apiTimeoutMillis);
     }
   };
 
-  render() {
-    const { color, content, cancelCreateProfile } = this.state
-    if (cancelCreateProfile) {
-      return <Profiles />
+  profileInfoTable = () => {
+    let { comparisionText } = this.state
+    this.setState({ profileInfoTable: !this.state.profileInfoTable });
+    if (comparisionText === "View Feature Comparision") {
+      this.setState({ comparisionText: "Hide Feature Comparision" });
     } else {
-      return <div>{this.state.profileCreated ? <Profiles /> : this.loadCreateProfile(color, content)}</div>
+      this.setState({ comparisionText: "View Feature Comparision" });
     }
   }
 
+  render() {
+    const { color, content, profileCreated, cancelCreateProfile, action, profileType, comparisionText, profileInfoTable } = this.state
+    return <div>
+      {(profileCreated || cancelCreateProfile) ? <Profiles />
+        : this.loadCreateProfile(color, content, action, profileType, comparisionText, profileInfoTable)}
+    </div>
+
+  }
+
   // when Profile Creation in process.
-  loadCreateProfile = (color, content) => {
+  loadCreateProfile = (color, content, action, profileType, comparisionText, profileInfoTable) => {
     return (
       <div className="animated fadeIn">
         <Card>
-          <CardHeader><strong>Profile</strong></CardHeader>
+          <CardHeader><strong>CREATE PROFILE</strong></CardHeader>
           <CardBody>
             <center>
+              <h5><b>CHOOSE PROFILE TYPES</b></h5>
               <Col >
                 <Alert color={color}>{content}</Alert>
-                <h5><b>CREATE PROFILE</b></h5>
-                <Col sm="6">
-                  <Input name="name" value={this.state.name} type="text" placeholder="Enter Profile name" autoFocus={true} onChange={e => this.handleInput(e)} />
-                </Col><br />
-                <Button color="info" disabled={!this.state.name} onClick={e => this.handleSubmit(e)} >Save </Button>&nbsp;&nbsp;
-                <Button active color="light" aria-pressed="true" onClick={this.cancelCreateProfile}>Cancel</Button>
+                <FormGroup check>
+                  <Label check>
+                    <Input type="radio" name="radio1" onChange={() => this.profileType(0)} />{' '} Free
+                  </Label>
+                  <Label check style={{ paddingLeft: 60 }}>
+                    <Input type="radio" name="radio1" onChange={() => this.profileType(1)} />{' '} Basic
+                  </Label>
+                  <Label check style={{ paddingLeft: 60 }}>
+                    <Input type="radio" name="radio1" onChange={() => this.profileType(2)} />{' '} Premium
+                  </Label>
+                </FormGroup><br />
+                {this.loadProfileCreations(action, profileType)}<br /><br />
+                <h5><span onClick={this.profileInfoTable} className="float-right" style={{ color: '#7E0462' }} ><u>{comparisionText}</u></span></h5>
               </Col>
-            </center>
+            </center> <br /><br />
+            {profileInfoTable && <ProfileInfoTable /> }
           </CardBody>
         </Card>
       </div>);
   }
-}
 
+  loadProfileCreations = (action, profileType) => {
+    const { name, buttonText } = this.state
+    if (action === "VERIFY_EMAIL") {
+      return <Alert color="warning">Please verify your Email</Alert>
+    } else if ((action === "ADD_CREDITS" || action === "ADD_BILLING") && profileType > 0) {
+      return <>
+        <Link to="/billing/address" ><Button color="info" > {action} </Button> </Link>&nbsp;&nbsp;
+        <Button active color="light" aria-pressed="true" onClick={this.cancelCreateProfile}>Cancel</Button>
+      </>
+    } else {
+      return this.loadProfile(name, buttonText)
+    }
+  }
+
+  loadProfile = (name, buttonText) => {
+    return (
+      <>
+        <Col sm="6">
+          <Input name="name" value={name} type="text" placeholder="Enter Profile name" autoFocus={true} onChange={e => this.handleInput(e)} />
+        </Col><br />
+        <Button color="success" disabled={!name} onClick={e => this.handleSubmit(e)} > {buttonText} </Button>&nbsp;&nbsp;
+        <Button active color="light" aria-pressed="true" onClick={this.cancelCreateProfile}>Cancel</Button>
+      </>)
+  }
+}
 export default CreateProfile;
