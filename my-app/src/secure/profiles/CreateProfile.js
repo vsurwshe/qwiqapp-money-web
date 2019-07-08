@@ -30,8 +30,9 @@ class CreateProfile extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    if (this.state.userAction !== 'VERIFY_EMAIL') {
-      const data = { name: this.state.name };
+    const { name, profileType, userAction } = this.state
+    if (userAction !== 'VERIFY_EMAIL') {
+      const data = { name: name, type: profileType };
       new ProfileApi().createProfile(this.successCall, this.errorCall, data);
     } else {
       this.callAlertTimer("danger", "Please verify with the code sent to your Email.....");

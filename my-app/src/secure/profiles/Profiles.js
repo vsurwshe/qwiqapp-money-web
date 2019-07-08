@@ -1,15 +1,15 @@
-import React, { Component } from "react";
-import { Container, Button, Card, CardBody, Col, Row, CardHeader, Alert } from "reactstrap";
 import Avatar from 'react-avatar';
+import React, { Component } from "react";
 import Loader from 'react-loader-spinner'
-import { FaPen, FaTrashAlt } from 'react-icons/fa';
-import { DeleteModel } from "../utility/DeleteModel";
-import ProfileApi from "../../services/ProfileApi";
 import UpdateProfile from "./UpdateProfile";
 import CreateProfile from "./CreateProfile";
 import DeleteProfile from "./DeleteProfile";
-import ViewProfile from "./ViewProfile";
+import {Redirect} from 'react-router';
+import { FaPen, FaTrashAlt } from 'react-icons/fa';
+import ProfileApi from "../../services/ProfileApi";
+import { DeleteModel } from "../utility/DeleteModel";
 import { ProfileEmptyMessage } from "../utility/ProfileEmptyMessage";
+import { Container, Button, Card, CardBody, Col, Row, CardHeader, Alert } from "reactstrap";
 
 /**
  * Display list of profiles,Manage profile like (update, delete)
@@ -21,15 +21,15 @@ class Profiles extends Component {
     super(props);
     this.state = {
       profiles: [],
+      id: 0,
+      name: "",
       updateProfile: false,
       deleteProfile: false,
       createProfile: false,
       danger: false,
-      viewProfileRequest: false,
-      id: 0,
-      name: "",
       spinner: false,
-      visible: false
+      visible: false,
+      selectProfile: false
     };
   }
 
@@ -55,10 +55,6 @@ class Profiles extends Component {
     this.setState({ deleteProfile: true })
   };
 
-  profileView = () => {
-    this.setState({ viewProfileRequest: !this.state.viewProfileRequest })
-  }
-
   callCreateProfile = () => {
     this.setState({ createProfile: true })
   }
@@ -70,9 +66,12 @@ class Profiles extends Component {
   }
 
   render() {
-    const { profiles, id, viewProfileRequest, createProfile, updateProfile, deleteProfile, name, spinner } = this.state
+    const { profiles, id, createProfile, updateProfile, deleteProfile, selectProfile, name, spinner } = this.state
     if (profiles.length === 0 && !createProfile) {
       return <div>{profiles.length === 0 && !createProfile && !spinner ? this.loadSpinner() : <ProfileEmptyMessage />}</div>
+    } else if (selectProfile) {
+      let url = "/profiles/" + this.state.id
+      return (<Container> <Redirect push to={url} /></Container>)
     } else if (createProfile) {
       return (<Container> <CreateProfile /> </Container>)
     } else if (updateProfile) {
@@ -80,7 +79,7 @@ class Profiles extends Component {
     } else if (deleteProfile) {
       return (<Container> <DeleteProfile id={id} /> </Container>)
     } else {
-      return <div>{this.showProfile(viewProfileRequest, profiles)}{this.loadDeleteProfile()}</div>
+      return <div>{this.showProfile(profiles)}{this.loadDeleteProfile()}</div>
     }
   }
 
@@ -106,7 +105,7 @@ class Profiles extends Component {
   }
 
   //if one or more profile is there then this method Call
-  showProfile = (viewProfileRequest, profiles) => {
+  showProfile = (profiles) => {
     return (
       <div className="animated fadeIn">
         <Card>
@@ -114,8 +113,8 @@ class Profiles extends Component {
           <CardBody>
             <Row>
               <Col sm="12" md={{ size: 6, offset: 3 }}>
-                {profiles.map(profiles => {
-                  return this.loadSingleProfile(profiles, viewProfileRequest);
+                {profiles.map((profile,key) => {
+                  return this.loadSingleProfile(profile, key);
                 })}
               </Col>
             </Row>
@@ -124,14 +123,17 @@ class Profiles extends Component {
       </div>)
   }
 
+  selectProfile = (selectedId) => {
+    this.setState({ id: selectedId, selectProfile: true })
+  }
+
   //this method load the single profile
-  loadSingleProfile = (profiles, viewProfileRequest) => {
+  loadSingleProfile = (profile, key) => {
     return (
-      <div key={profiles.id}>
-        <Avatar name={profiles.name.charAt(0)} size="40" round={true} onClick={this.profileView} /> &nbsp;&nbsp;{profiles.name}
-        <FaTrashAlt onClick={() => { this.setState({ id: profiles.id }); this.toggleDanger() }} className="float-right" style={{ marginLeft: "20px", color: 'red', marginTop: "15px" }} />
-        <FaPen size={15} className="float-right" style={{ marginLeft: "20px", color: '#4385ef', marginTop: "15px" }} onClick={() => { this.updateProfile(profiles.id, profiles.name) }} />
-        <Container>{viewProfileRequest ? <ViewProfile view={profiles} /> : " "}</Container>
+      <div key={key} style={{ padding: 10 }} >
+        <b onClick={() => { this.selectProfile(profile.id) }} ><Avatar name={profile.name.charAt(0)} size="40" round={true} /> &nbsp;&nbsp;{profile.name}</b>
+        <FaTrashAlt onClick={() => { this.setState({ id: profile.id }); this.toggleDanger() }} className="float-right" style={{ marginLeft: "20px", color: 'red', marginTop: "15px" }} />
+        <FaPen size={14} className="float-right" style={{ marginLeft: "20px", color: '#4385ef', marginTop: "15px" }} onClick={() => { this.updateProfile(profile.id, profile.name) }} />
       </div>);
   }
 

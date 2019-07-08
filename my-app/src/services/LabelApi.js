@@ -79,7 +79,7 @@ function httpCall(Uurl, Umethod) {
   let instance = null;
   if (baseURL !== null || baseURL !== undefined || baseURL !== "") {
     instance = Axios.create({
-      baseURL: baseURL[0].url + "/profile/",
+      baseURL: baseURL.url + "/profile/",
       method: Umethod,
       url: Uurl,
       headers: {

@@ -28,12 +28,14 @@ const Store = {
     saveAppUserAccessToken: function (token, refresh, expiry) {
         let appUser = { oauthToken: token, refreshToken: refresh, timeExpiry: expiry };
         db.setItem(USER_KEY, JSON.stringify(appUser));
+        this.setSelectedValue(false)
     },
 
     //this Saves The DummyUser Response
     saveDummyUserAccessToken: function (token, refresh) {
         let dummyUser = { oauthToken: token, refreshToken: refresh };
         db.setItem(DUMMY_KEY, JSON.stringify(dummyUser));
+        this.setSelectedValue(false)
     },
 
     //this is getting AppUser User Key
@@ -164,16 +166,31 @@ const Store = {
         return JSON.parse(categories)
     },
 
+    setSelectedValue: function (data){
+        db.setItem("selectedProfile",data)
+    },
+
+    getSelectedValue: function (){
+        const selected = db.getItem("selectedProfile")
+        return selected
+    },
+
+
     // Clears the Local Storage
-    clearLocalStorage: function () {
-        db.removeItem("CATEGORIES");
-        db.removeItem("LABELS");
+    clearLocalStorage: function(){
+        this.userDataClear()
         db.removeItem("PROFILES");
         db.removeItem("PROFILE");
-        db.removeItem("CONTACTS");
-        db.removeItem("BILL");
-        db.removeItem("USERDATA");
+        db.removeItem("selectedProfile");
+        db.removeItem("USERDATA");   
     },
+
+    //userDataClear
+    userDataClear:function(){
+        db.removeItem("CATEGORIES");
+        db.removeItem("LABELS");
+        db.removeItem("CONTACTS");
+    }
 }
 export default Store;
 

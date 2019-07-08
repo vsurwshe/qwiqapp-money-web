@@ -3,6 +3,7 @@ import { Button, Card, Col, Input, Alert, CardHeader, FormGroup } from "reactstr
 import ProfileApi from "../../services/ProfileApi";
 import Profiles from "./Profiles";
 import Config from "../../data/Config";
+import Store from "../../data/Store";
 
 class UpdateProfile extends Component {
   constructor(props) {
@@ -22,6 +23,12 @@ class UpdateProfile extends Component {
   };
 
   successCall = () => {
+    let storeProfile;
+    if(this.state.id === Store.getProfile().id){
+      storeProfile = Store.getUserProfiles().filter(profile => profile.id === this.state.id)
+      Store.saveProfile(storeProfile[0])
+      console.log("Profile in Store =",Store.getProfile());
+    }
     this.callAlertTimer("success", "Profile Updated Succesfully!");
   }
 
@@ -36,9 +43,11 @@ class UpdateProfile extends Component {
       window.location.href = "/dashboard";
     }, Config.notificationMillis);
   };
+
   cancelUpdateProfile = () => {
     this.setState({ cancelUpdateProfile: true });
   }
+  
   render() {
     const { name, color, content, updateSuccess, cancelUpdateProfile } = this.state;
     if (cancelUpdateProfile) {

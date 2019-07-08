@@ -25,6 +25,7 @@ const DefaultHeader = (props) => {
   const refreshButton = async () => {
     await Store.clearLocalStorage();
     callAlert()
+    await Store.userDataClear();
     changeProfleName(profileName = "Web Money")
  
   }
@@ -60,6 +61,17 @@ const DefaultHeader = (props) => {
     console.log("Error")
   };
  
+    successCall();
+  })
+
+  const successCall = async () => {
+    if (Store.getProfile() === null) {
+      changeProfleName(profileName = "Web Money");
+    } else {
+      await changeProfleName(profileName = Store.getProfile().name);
+    }
+  }
+
   const loadAuthButton = () => {
     return (
       <Modal isOpen={authButton} toggle={toggleDanger} >
