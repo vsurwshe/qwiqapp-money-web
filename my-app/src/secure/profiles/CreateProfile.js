@@ -95,14 +95,13 @@ class CreateProfile extends Component {
   render() {
     const { color, content, profileCreated, cancelCreateProfile, action, profileType, comparisionText, profileInfoTable } = this.state
     return <div>
-      {(profileCreated || cancelCreateProfile) ? <Profiles />
-        : this.createProfiel(color, content, action, profileType, comparisionText, profileInfoTable)}
+      {(profileCreated || cancelCreateProfile) ? <Profiles /> : this.createProfile(color, content, action, profileType, comparisionText, profileInfoTable)}
     </div>
 
   }
 
   // when Profile Creation in process.
-  createProfiel = (color, content, action, profileType, comparisionText, profileInfoTable) => {
+  createProfile = (color, content, action, profileType, comparisionText, profileInfoTable) => {
     return (
       <div className="animated fadeIn">
         <Card>
@@ -113,8 +112,7 @@ class CreateProfile extends Component {
               <Col >
                 <Alert color={color}>{content}</Alert>
                 {action !== "VERIFY_EMAIL" && this.createProfielTypes()}
-               
-                {this.createProfiel(action, profileType)}<br /><br />
+                {this.loadActionsButton(action, profileType)}<br /><br />
                 <h5><span onClick={this.profileInfoTable} className="float-right" style={{ color: '#7E0462' }} ><u>{comparisionText}</u></span></h5>
               </Col>
             </center> <br /><br />
@@ -134,7 +132,7 @@ class CreateProfile extends Component {
     </>)
   }
 
-  createProfiel = (action, profileType) => {
+  loadActionsButton = (action, profileType) => {
     const { name, buttonText } = this.state
     if (action === "VERIFY_EMAIL") {
       return <Alert color="warning">Sorry you can not Create Profile unitl verify Your Email</Alert>

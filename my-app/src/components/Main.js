@@ -20,7 +20,6 @@ import UserApi from "../services/UserApi";
 import ProfileApi from "../services/ProfileApi";
 import CreateProfile from "../secure/profiles/CreateProfile";
 import Bills from "../secure/bills/Bills"
-import DefaultHeader from "../secure/sidebar/DefaultHeader"
 import BillingInfo from "../secure/billingAddress/BillingInfo";
 import EditBillingAddress from "../secure/billingAddress/EditBillingAddress";
 import DefaultHeader from "../secure/sidebar/DefaultHeader";
@@ -98,7 +97,6 @@ class Main extends Component {
         <PrivateRoute exact path ="/createProfile" component={CreateProfile} />
         <PrivateRoute exact path="/profiles/:id" component={SetProfile} />
         <PrivateRoute path="/listBills" component={Bills} />
-        <PrivateRoute exact path="/createProfile" component={CreateProfile} />
         <PrivateRoute exact path="/billing/address" component={BillingInfo} />
         <PrivateRoute exact path="/billing/address/add" component={EditBillingAddress} />
         <PrivateRoute path="/label/labels" component={Lables} />
