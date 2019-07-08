@@ -44,7 +44,7 @@ class Main extends Component {
   }
 
   successCallProfiles = async (profiles) => {
-    let profile;
+    let profileSet;
     if (profiles.length === 0 || profiles === null) {
       console.log("There is No Profile");
     } else {
@@ -52,8 +52,8 @@ class Main extends Component {
       if(Store.getSelectedValue()=== 'false'){
         await Store.saveProfile(profiles[0])
       }
-      profile = await profiles.map(profile=>{return {name:profile.name,url: "/profiles/"+profile.id, icon: "cui-user"}})
-      await this.setState({profileNames : profile})
+      profileSet = await profiles.map(profile=>{return {name:profile.name,url: "/profiles/"+profile.id, icon: "cui-user"}})
+      await this.setState({profileNames : profileSet})
       this.forceUpdate();
     }
     this.getUser();
@@ -149,13 +149,12 @@ class Main extends Component {
 
   //This method calls the inbuilt SideBar Component acc to condition
   loadSideBar = () => {
-    const { profileNames } = this.state
-    const newItem =profileNames.concat(item.items)
-    const profileItem={items:newItem}
+    //added currently profiels into sidebar items json array 
+    const sideNavbarProfileItems={items:this.state.profileNames.concat(item.items)}
     return(
       <AppSidebar fixed display="sm">
         <Suspense>
-           { Store.getProfile() !== null && !this.state.flag  ?  <AppSidebarNav navConfig={navigation} {...this.props} /> : <AppSidebarNav navConfig={profileItem}  {...this.props} />  }
+           { Store.getProfile() !== null && !this.state.flag  ?  <AppSidebarNav navConfig={navigation} {...this.props} /> : <AppSidebarNav navConfig={sideNavbarProfileItems}  {...this.props} />  }
         </Suspense>
       </AppSidebar>);
   }

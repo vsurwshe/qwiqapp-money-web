@@ -23,11 +23,8 @@ const DefaultHeader = (props) => {
   }
  
   const refreshButton = async () => {
-    await Store.clearLocalStorage();
-    callAlert()
     await Store.userDataClear();
-    changeProfleName(profileName = "Web Money")
- 
+    callAlert();
   }
   let callAlert = () => {
     animatedIcon(icon=true);
