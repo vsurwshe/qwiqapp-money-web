@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Alert } from 'reactstrap';
 import { Card, CardBody, CardHeader, Button } from 'reactstrap';
 import BillingAddressApi from '../../services/BillingAddressApi';
-import AddBillingAddress from './AddBillingAddress';
+import EditBillingAddress from './EditBillingAddress';
 
 let emptyBillingAddress = {
   addressLine1: '',
@@ -16,9 +16,9 @@ let emptyBillingAddress = {
   postCode: '',
   region: ''
 }
-class GetBillingAddress extends Component {
+class BillingInfo extends Component {
   state = {
-    billings: [],
+    billing: [],
     visible: false,
     spinner: false,
     addBilling: false,
@@ -29,11 +29,11 @@ class GetBillingAddress extends Component {
     await new BillingAddressApi().getBillings(this.successcall, this.errorcall)
   }
 
-  successcall = async (billings) => {
-    if (billings === null || billings === " ") {
-      await this.setState({ billings: emptyBillingAddress, spinner: true })
+  successcall = async (billing) => {
+    if (billing === null || billing === " ") {
+      await this.setState({ billing: emptyBillingAddress, spinner: true })
     } else {
-      await this.setState({ billings })
+      await this.setState({ billing })
     }
   }
 
@@ -41,7 +41,7 @@ class GetBillingAddress extends Component {
     this.setState({ visible: true })
   }
 
-  addBillingAddress = () => {
+  EditBillingAddress = () => {
     this.setState({ addBilling: true, spinner: true });
   }
 
@@ -50,31 +50,31 @@ class GetBillingAddress extends Component {
   }
 
   render() {
-    const { billings, visible, addBilling } = this.state;
+    const { billing, visible, addBilling } = this.state;
     if (addBilling) {
-      return <AddBillingAddress updateBill={billings} />
-    } else if (!billings.country) {
-      return this.showingNoBillingMessage(billings)
+      return <EditBillingAddress updateBill={billing} />
+    } else if (!billing.country) {
+      return this.showingNoBillingMessage(billing)
     } else {
-      return this.billingAddress(billings, visible);
+      return this.billingAddress(billing, visible);
     }
   }
 
-  billingAddress = (billings, visible) => {
+  billingAddress = (billing, visible) => {
     return (
       <div className="animated fadeIn">
         <Card>
           <CardHeader><strong>Billing Address</strong>
-            <Link to={{ pathname: "/billing/address/add", state: { updateBill: billings } }}><Button color="success" className="float-right" onClick={this.addBillingAddress}> Update </Button></Link>
+            <Link to={{ pathname: "/billing/address/add", state: { updateBill: billing } }}><Button color="success" className="float-right" onClick={this.EditBillingAddress}> Update </Button></Link>
           </CardHeader>
           <CardBody>
             <Alert isOpen={visible} color="danger">Unable to process, Please try Again.... </Alert>
-            {billings !== null ?
+            {billing !== null ?
               <center className="text-sm-left">
-                <b>{billings.firstName} {billings.lastName}</b><br />
-                <span style={{color:"#50b4eb"}}>{billings.addressLine1}</span>, {billings.addressLine2} <br />
-                {billings.city}, {billings.postCode} <br />
-                {billings.region}, {billings.country}
+                <b>{billing.firstName} {billing.lastName}</b><br />
+                <span style={{color:"#50b4eb"}}>{billing.addressLine1}</span>, {billing.addressLine2} <br />
+                {billing.city}, {billing.postCode} <br />
+                {billing.region}, {billing.country}
               </center>
               : ''}
           </CardBody>
@@ -83,19 +83,19 @@ class GetBillingAddress extends Component {
     )
   }
 
-  loadHeader = (billings) => {
+  loadHeader = (billing) => {
     return (
       <CardHeader>
         <strong>Billing Address</strong>
-        <Link to={{ pathname: "/billing/address/add", state: { updateBill: billings } }}><Button color="success" className="float-right" onClick={this.addBillingAddress}> + Billing Address</Button></Link>
+        <Link to={{ pathname: "/billing/address/add", state: { updateBill: billing } }}><Button color="success" className="float-right" onClick={this.EditBillingAddress}> + Billing Address</Button></Link>
       </CardHeader>);
   }
 
-  showingNoBillingMessage = (billings) => {
+  showingNoBillingMessage = (billing) => {
     return (
       <div className="animated fadeIn">
         <Card>
-          {this.loadHeader(billings)}
+          {this.loadHeader(billing)}
           <center style={{ paddingTop: '20px' }}>
             <CardBody> <b>No Billing Address added, Please Add Now...</b></CardBody>
           </center>
@@ -104,4 +104,4 @@ class GetBillingAddress extends Component {
   }
 }
 
-export default GetBillingAddress;
+export default BillingInfo;

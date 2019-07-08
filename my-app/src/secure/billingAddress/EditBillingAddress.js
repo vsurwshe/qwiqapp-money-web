@@ -6,7 +6,7 @@ import BillingAddressApi from '../../services/BillingAddressApi';
 import GeneralApi from "../../services/GeneralApi";
 import Config from "../../data/Config";
 
-class AddBillingAddress extends Component {
+class EditBillingAddress extends Component {
 
   constructor(props) {
     super(props);
@@ -145,4 +145,4 @@ class AddBillingAddress extends Component {
     )
   }
 }
-export default AddBillingAddress;
+export default EditBillingAddress;
