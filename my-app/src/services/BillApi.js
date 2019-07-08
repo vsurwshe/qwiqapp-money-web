@@ -41,7 +41,9 @@ async function process(success, failure, Uurl, Umethod, profileId, data) {
       new BillApi().getBills(success, failure, profileId, "True");
       validResponse(promise, success)
     }
-  } catch (err) {
+  } 
+  //TODO: handle user error   
+  catch (err) {
     console.log(err);
     AccessTokenError(profileId, err, failure, Uurl, Umethod, data, success);
   }
