@@ -104,11 +104,11 @@ class AddBillingAddress extends Component {
                 <Col><AvField name="company" placeholder="Organization" style={placeholderStyle} value={updateBill.company} validate={{ pattern: { value: '^[a-zA-Z0-9_.-]*' } }} required /></Col>
               </Row>
               <Row>
-                <Col><AvField name="addressLine1" placeholder="Address 1" style={placeholderStyle} required value={updateBill.addressLine1} /></Col>
+                <Col><AvField name="addressLine1" placeholder="Address 1" style={placeholderStyle} value={updateBill.addressLine1} helpMessage="H.No 1-1-1/1, xyz  street" required /></Col>
                 <Col><AvField name="addressLine2" placeholder="Address 2" style={placeholderStyle} value={updateBill.addressLine2} /></Col>
               </Row>
               <Row>
-                <Col><AvField name="postCode" placeholder="Postal Code" style={placeholderStyle} value={updateBill.postCode} errorMessage="Postal Code" validate={{ pattern: { value: '^[0-9]{6}' } }} /></Col>
+                <Col><AvField name="postCode" placeholder="Postal Code" style={placeholderStyle} value={updateBill.postCode} errorMessage="Postal Code" /></Col>
                 <Col><AvField name="city" placeholder="City" style={placeholderStyle} value={updateBill.city} /></Col>
               </Row>
               <Row>

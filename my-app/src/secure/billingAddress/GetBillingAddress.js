@@ -71,15 +71,10 @@ class GetBillingAddress extends Component {
             <Alert isOpen={visible} color="danger">Unable to process, Please try Again.... </Alert>
             {billings !== null ?
               <center className="text-sm-left">
-                <b>FirstName: </b>{billings.firstName}<br />
-                <b>LastName:</b> {billings.lastName}<br />
-                <b>Company: </b>{billings.company}<br />
-                <b>Address1:</b> {billings.addressLine1}<br />
-                <b>Address2:</b> {billings.addressLine2}<br />
-                <b>City:</b> {billings.city}<br />
-                <b>Region: </b>{billings.region}<br />
-                <b>PostCode:</b> {billings.postCode}<br />
-                <b>Country : </b>{billings.country}<br />
+                <b>{billings.firstName} {billings.lastName}</b><br />
+                <span style={{color:"#50b4eb"}}>{billings.addressLine1}</span>, {billings.addressLine2} <br />
+                {billings.city}, {billings.postCode} <br />
+                {billings.region}, {billings.country}
               </center>
               : ''}
           </CardBody>
