@@ -1,6 +1,4 @@
 import React, { Component } from "react";
-import { Link } from 'react-router-dom'
-
 import { Button, Card, Col, Input, Alert, CardHeader, FormGroup } from "reactstrap";
 import ProfileApi from "../../services/ProfileApi";
 import Profiles from "./Profiles";
@@ -41,14 +39,9 @@ class UpdateProfile extends Component {
     this.setState({ color, content });
     setTimeout(() => {
       this.setState({ name: '', color: '', updateSuccess: true });
-      window.location.href = "/profiles";
-      
+      window.location.href = "/profiles";      
     }, Config.notificationMillis);
   };
-
-  cancelUpdateProfile = () => {
-    this.setState({ cancelUpdateProfile: true });
-  }
   
   render() {
     const { name, color, content, updateSuccess, cancelUpdateProfile } = this.state;
@@ -72,7 +65,7 @@ class UpdateProfile extends Component {
               </Col>
               <br />
               <Button color="success" disabled={!name} onClick={this.handleUpdate} >Update  </Button>&nbsp;&nbsp;&nbsp;
-              <Button active color="light" aria-pressed="true" onClick={this.cancelUpdateProfile}>Cancel</Button>
+              <Button active color="light" aria-pressed="true" onClick={()=>{this.setState({cancelUpdateProfile:true})}}>Cancel</Button>
             </FormGroup>
           </center>
         </Card>

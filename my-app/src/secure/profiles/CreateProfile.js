@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import { Redirect } from 'react-router';
 import { Button, Input, Card, CardBody, CardHeader, Col, Alert, FormGroup, Label } from "reactstrap";
 import Store from "../../data/Store";
 import { Link } from 'react-router-dom'
@@ -7,8 +6,6 @@ import ProfileApi from "../../services/ProfileApi";
 import Profiles from "./Profiles";
 import Config from "../../data/Config";
 import ProfileInfoTable from './ProfileInfoTable';
-// import AddBilling from "../billing/AddBillingAddress";
-// import GetBillings from "../billing/GetBillingDetails";
 
 class CreateProfile extends Component {
   state = {
@@ -68,7 +65,7 @@ class CreateProfile extends Component {
   }
   errorCall = err => {
     if (this.state.profileType) {
-      this.callAlertTimer("danger", "You need to purchase to create these Profiles, For more info View Feature Comparision.....");
+      this.callAlertTimer("danger", "You need to purchase credits to create these Profiles, For more info View Feature Comparision.....");
     } else if (Store.getProfile() !== null) {
       this.callAlertTimer("danger", "Sorry, You can't create another Profile.....");
     } else {
@@ -99,13 +96,13 @@ class CreateProfile extends Component {
     const { color, content, profileCreated, cancelCreateProfile, action, profileType, comparisionText, profileInfoTable } = this.state
     return <div>
       {(profileCreated || cancelCreateProfile) ? <Profiles />
-        : this.loadCreateProfile(color, content, action, profileType, comparisionText, profileInfoTable)}
+        : this.createProfiel(color, content, action, profileType, comparisionText, profileInfoTable)}
     </div>
 
   }
 
   // when Profile Creation in process.
-  loadCreateProfile = (color, content, action, profileType, comparisionText, profileInfoTable) => {
+  createProfiel = (color, content, action, profileType, comparisionText, profileInfoTable) => {
     return (
       <div className="animated fadeIn">
         <Card>
@@ -115,31 +112,32 @@ class CreateProfile extends Component {
               <h5><b>CHOOSE PROFILE TYPES</b></h5>
               <Col >
                 <Alert color={color}>{content}</Alert>
-                <FormGroup check>
-                  <Label check>
-                    <Input type="radio" name="radio1" onChange={() => this.profileType(0)} />{' '} Free
-                  </Label>
-                  <Label check style={{ paddingLeft: 60 }}>
-                    <Input type="radio" name="radio1" onChange={() => this.profileType(1)} />{' '} Basic
-                  </Label>
-                  <Label check style={{ paddingLeft: 60 }}>
-                    <Input type="radio" name="radio1" onChange={() => this.profileType(2)} />{' '} Premium
-                  </Label>
-                </FormGroup><br />
-                {this.loadProfileCreations(action, profileType)}<br /><br />
+                {action !== "VERIFY_EMAIL" && this.createProfielTypes()}
+               
+                {this.createProfiel(action, profileType)}<br /><br />
                 <h5><span onClick={this.profileInfoTable} className="float-right" style={{ color: '#7E0462' }} ><u>{comparisionText}</u></span></h5>
               </Col>
             </center> <br /><br />
-            {profileInfoTable && <ProfileInfoTable /> }
+            {profileInfoTable && <ProfileInfoTable />}
           </CardBody>
         </Card>
       </div>);
   }
+  createProfielTypes = () => {
+    const styles = {paddingLeft: 60}
+    return (<>
+      <FormGroup check>
+        <Label check> <Input type="radio" name="radio1" onChange={() => this.profileType(0)} />{' '} Free  </Label>
+        <Label check style={styles}> <Input type="radio" name="radio1" onChange={() => this.profileType(1)} />{' '} Basic </Label>
+        <Label check style={styles}> <Input type="radio" name="radio1" onChange={() => this.profileType(2)} />{' '} Premium </Label>
+      </FormGroup> <br />
+    </>)
+  }
 
-  loadProfileCreations = (action, profileType) => {
+  createProfiel = (action, profileType) => {
     const { name, buttonText } = this.state
     if (action === "VERIFY_EMAIL") {
-      return <Alert color="warning">Please verify your Email</Alert>
+      return <Alert color="warning">Sorry you can not Create Profile unitl verify Your Email</Alert>
     } else if ((action === "ADD_CREDITS" || action === "ADD_BILLING") && profileType > 0) {
       return <>
         <Link to="/billing/address" ><Button color="info" > {action} </Button> </Link>&nbsp;&nbsp;

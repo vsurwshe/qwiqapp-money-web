@@ -59,9 +59,9 @@ let validResponse = async function (resp, successMethod, requestMethod,deleteId)
   if (successMethod != null) {
     if (requestMethod === "DELETE") {
       if(Store.getProfile().id===deleteId){
-       await Store.saveProfile(null);
-       Store.setSelectedValue(false);
-       await Store.userDataClear();
+        await Store.saveProfile(null);
+        Store.setSelectedValue(false);
+        await Store.userDataClear();
       } 
     }else if(requestMethod === "POST"){
       await Store.saveProfile(resp.data)
