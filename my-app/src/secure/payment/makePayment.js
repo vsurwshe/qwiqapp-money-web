@@ -8,7 +8,7 @@ import BillingAddressApi from '../../services/BillingAddressApi';
 import PaymentSuccessMessage from './PaymentSuccessMessage';
 
 
-let REF_ID = '';
+let paymentReferenceId = '';
 class MakePayment extends Component {
   constructor(props) {
     super(props);
@@ -57,7 +57,7 @@ class MakePayment extends Component {
   render() {
     const { paymentSuccess } = this.state
    if (paymentSuccess) {
-      return <PaymentSuccessMessage REF_ID={REF_ID} />
+      return <PaymentSuccessMessage paymentReferenceId={paymentReferenceId} />
     } else {
       return <div>{this.loadMakePayment()}</div>
     }
@@ -99,7 +99,7 @@ class MakePayment extends Component {
     let value = this.state.inputValue;
     // Capture the funds from the transaction
     actions.order.capture().then(function (details) {
-      REF_ID = data.orderID;
+      paymentReferenceId = data.orderID;
       // Call your server to save the transaction
       fetch(paymentURL, {
         method: 'post',
@@ -169,12 +169,6 @@ class MakePayment extends Component {
             return this.loadRadioButtons(item, index)
           })}
         </FormGroup><br /><br />
-        {/* <label>Amount</label> 
-            <div className="input-group">
-              <span className="input-group-addon">£</span>
-              <input name="amountInput" value={this.state.inputValue} onChange={evt => this.updateInputValue(evt)}
-                aria-describedby="emailHelp" type="number" className="form-control" placeholder="Enter amount. Ex: 10.00" />
-            </div> */}
         <small id="amountHelp" className="form-text text-center text-muted">This amount will be deducted from your payment method.</small>
       </div>
       <center>

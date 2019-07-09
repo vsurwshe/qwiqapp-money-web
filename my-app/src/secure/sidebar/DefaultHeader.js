@@ -76,7 +76,7 @@ const DefaultHeader = (props) => {
       <AppNavbarBrand>
         <span onClick={toggle} >
           <FaUserTie style={{ marginLeft: 5, position: "relative" }} size={25} />
-          <strong style={{ marginLeft: 5, marginTop: 10 }}>{profileName.length <= 13 ? profileName : profileName.slice(0, 11) + "..."}</strong>&nbsp;
+          <strong style={{ marginLeft: 5, marginTop: 10 }}>{profileName ? profileName.length <= 13 ? profileName : profileName.slice(0, 11) + "..." : ""}</strong>&nbsp;
                  {flag ? <FaCaretUp style={{ color: '#0e2f73' }} /> : <FaCaretDown />}
         </span>
       </AppNavbarBrand>
