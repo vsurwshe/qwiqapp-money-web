@@ -7,6 +7,7 @@ import Store from "../../data/Store";
 import BillingAddressApi from '../../services/BillingAddressApi';
 import PaymentSuccessMessage from './PaymentSuccessMessage';
 
+
 let REF_ID = '';
 class MakePayment extends Component {
   constructor(props) {
@@ -47,14 +48,15 @@ class MakePayment extends Component {
   }
 
   callAlertTimer = () => {
+    
     setTimeout(() => {
-      this.setState({ paymentSuccess: true, doubleClick: false });
+      this.setState({paymentSuccess: true, doubleClick: false });
     }, 1500)
   };
 
   render() {
     const { paymentSuccess } = this.state
-    if (paymentSuccess) {
+   if (paymentSuccess) {
       return <PaymentSuccessMessage REF_ID={REF_ID} />
     } else {
       return <div>{this.loadMakePayment()}</div>

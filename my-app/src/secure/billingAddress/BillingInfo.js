@@ -71,10 +71,17 @@ class BillingInfo extends Component {
             <Alert isOpen={visible} color="danger">Unable to process, Please try Again.... </Alert>
             {billing !== null ?
               <center className="text-sm-left">
-                <b>{billing.firstName} {billing.lastName}</b><br />
-                <span style={{color:"#50b4eb"}}>{billing.addressLine1}</span>, {billing.addressLine2} <br />
-                {billing.city}, {billing.postCode} <br />
-                {billing.region}, {billing.country}
+                {billing.firstName} {billing.lastName}<br></br>
+               <span style={{paddingLeft:10}}><b>Address: </b></span><br/>
+              <p style={{paddingLeft:99,paddingTop:10}}  >
+                <span style={{color:"#50b4eb"}}>
+                {billing.addressLine1}</span>,
+                {billing.addressLine2 && ' '+billing.addressLine2+','} <br />
+                {billing.city && billing.city+', '} 
+                {billing.postCode && billing.postCode+','} <br />
+                {billing.region && billing.region+ ', '}
+                {billing.country}
+               </p>
               </center>
               : ''}
           </CardBody>
@@ -82,7 +89,6 @@ class BillingInfo extends Component {
       </div>
     )
   }
-
   loadHeader = (billing) => {
     return (
       <CardHeader>

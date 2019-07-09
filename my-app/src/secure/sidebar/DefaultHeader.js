@@ -91,6 +91,7 @@ const DefaultHeader = (props) => {
           <DropdownMenu right style={{ right: 'auto' }}>
             <DropdownItem header tag="div" className="text-center"><strong> Settings</strong></DropdownItem>
             <DropdownItem><Link to="/billing/address" ><FaUserEdit style={{ color: "blue", marginRight: 15 }} />Billing Address</Link> </DropdownItem>
+            <DropdownItem><Link to="/billing/paymentHistory" ><FaUserEdit style={{ color: "blue", marginRight: 15 }} />Payment History</Link> </DropdownItem>
             <DropdownItem onClick={e => toggleDanger(e)} ><FaPowerOff style={{ color: "red", marginRight: 15 }} />Logout</DropdownItem>
           </DropdownMenu>
         </AppHeaderDropdown>
