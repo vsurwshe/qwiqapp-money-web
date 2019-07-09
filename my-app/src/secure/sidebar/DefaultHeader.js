@@ -69,7 +69,7 @@ const DefaultHeader = (props) => {
         </ModalFooter>
       </Modal>)
   }
- 
+  
   return (
     <React.Fragment>
       <AppSidebarToggler className="d-lg-none" display="md" mobile />
@@ -83,9 +83,7 @@ const DefaultHeader = (props) => {
       <Nav className="d-md-down-none" navbar />
       <Nav className="ml-auto" navbar>
         {!icon ? <FaSync style={styles} data-toggle="tooltip" boundary="scrollParent" data-placement="bottom" title="Refresh" size={25}
-          onClick={refreshButton} /> : 
-          <i className="fa fa-refresh fa-spin " style={{color: "rgb(34, 139, 34)", overflowX: "auto", marginRight:20 }}></i>
-          } 
+          onClick={refreshButton} /> : "" } 
         <AppHeaderDropdown direction="down">
           <DropdownToggle nav>
              <b>{userName}</b>&nbsp;<FaAngleDown size={18} style={{ color: "darkblue", marginRight: 25 }} /> 

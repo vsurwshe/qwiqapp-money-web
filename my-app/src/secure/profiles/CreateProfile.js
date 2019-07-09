@@ -10,7 +10,6 @@ import ProfileInfoTable from './ProfileInfoTable';
 class CreateProfile extends Component {
   state = {
     name: '',
-    userToken: '',
     color: '',
     content: '',
     profileCreated: false,
@@ -48,7 +47,6 @@ class CreateProfile extends Component {
 
   componentDidMount = async () => {
     await this.setState({ action: Store.getUser().action });
-    this.setState({ userToken: Store.getAppUserAccessToken() });
   }
   handleSubmit = e => {
     e.preventDefault();
