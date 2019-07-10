@@ -19,13 +19,13 @@ import EditCategory from "../secure/categories/EditCategory";
 import UserApi from "../services/UserApi";
 import ProfileApi from "../services/ProfileApi";
 import CreateProfile from "../secure/profiles/CreateProfile";
-import Bills from "../secure/bills/Bills"
-import BillingInfo from "../secure/billingAddress/BillingInfo";
-import EditBillingAddress from "../secure/billingAddress/EditBillingAddress";
-import DefaultHeader from "../secure/sidebar/DefaultHeader";
-import SetProfile from "../secure/profiles/SetProfile"
-import PaymentHistory from '../secure/payment/PaymentHistory';
-import MakePayment from '../secure/payment/MakePayment';
+import Bills from "../secure/bills/Bills";
+import SetProfile from "../secure/profiles/SetProfile";
+import DefaultHeader from "../secure/sidebar/DefaultHeader"
+import BillingInfo from "../secure/billing/address/BillingInfo";
+import EditBillingAddress from "../secure/billing/address/EditBillingAddress";
+import PaymentHistory from '../secure/billing/payment/PaymentHistory';
+import MakePayment from '../secure/billing/payment/MakePayment';
 import GeneralApi from "../services/GeneralApi";
 
 const DefaultFooter = React.lazy(() => import("../secure/sidebar/DefaultFooter"));

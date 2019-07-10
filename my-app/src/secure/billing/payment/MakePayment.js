@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { FormGroup, Label, Input } from 'reactstrap';
 import { Card, CardBody, CardHeader, Col } from 'reactstrap';
 import Script from 'react-load-script';
-import Config from '../../data/Config';
-import Store from "../../data/Store";
-import BillingAddressApi from '../../services/BillingAddressApi';
+import Config from '../../../data/Config';
+import Store from "../../../data/Store";
+import BillingAddressApi from '../../../services/BillingAddressApi';
 import PaymentSuccessMessage from './PaymentSuccessMessage';
 
 

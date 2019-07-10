@@ -2,7 +2,7 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
 import {Card,CardBody,Button} from 'reactstrap';
-import logo from './asserts/images/payment-success.png';
+import logo from './images/payment-success.png';
 
 const  PaymentSuccessMessage = (props) => {
     return (
@@ -21,5 +21,5 @@ const  PaymentSuccessMessage = (props) => {
         </Card>
     </div>
     )
-    }
+}
     export default PaymentSuccessMessage;

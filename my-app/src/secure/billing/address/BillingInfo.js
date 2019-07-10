@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { Alert } from 'reactstrap';
 import { Card, CardBody, CardHeader, Button } from 'reactstrap';
-import BillingAddressApi from '../../services/BillingAddressApi';
+import BillingAddressApi from '../../../services/BillingAddressApi';
 import EditBillingAddress from './EditBillingAddress';
 
 let emptyBillingAddress = {
