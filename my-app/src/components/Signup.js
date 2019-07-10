@@ -15,7 +15,6 @@ class Signup extends React.Component {
     name: '',
     email: '',
     password: '',
-    adminToken: '',
     flag: true,
     color: '',
     content: '',

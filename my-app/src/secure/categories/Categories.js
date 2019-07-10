@@ -38,8 +38,7 @@ class Categories extends Component {
 
   setProfileId = async () => {
     if (Store.getProfile() !== null && Store.getProfile().length !== 0) {
-      var iterator = Store.getProfile().values();
-      await this.setState({ profileId: iterator.next().value.id });
+      await this.setState({ profileId: Store.getProfile().id });
       this.getCategory();
     }
   }

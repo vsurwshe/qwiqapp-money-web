@@ -20,9 +20,10 @@ import UserApi from "../services/UserApi";
 import ProfileApi from "../services/ProfileApi";
 import CreateProfile from "../secure/profiles/CreateProfile";
 import Bills from "../secure/bills/Bills"
-import DefaultHeader from "../secure/sidebar/DefaultHeader"
 import BillingInfo from "../secure/billingAddress/BillingInfo";
 import EditBillingAddress from "../secure/billingAddress/EditBillingAddress";
+import DefaultHeader from "../secure/sidebar/DefaultHeader";
+import SetProfile from "../secure/profiles/SetProfile"
 
 const DefaultFooter = React.lazy(() => import("../secure/sidebar/DefaultFooter"));
 
@@ -31,7 +32,7 @@ class Main extends Component {
     super(props);
     this.state = {
       flag: false,
-      profiles: [],
+      profileNames: [],
       user: []
     }
   }
@@ -42,11 +43,17 @@ class Main extends Component {
     }
   }
 
-  successCallProfiles = async (json) => {
-    if (json.length === 0 || json === null) {
-      console.log("Tehre is No Profile");
+  successCallProfiles = async (profiles) => {
+    let profileSet;
+    if (profiles.length === 0 || profiles === null) {
+      console.log("There is No Profile");
     } else {
-      await Store.saveUserProfiles(json)
+      await Store.saveUserProfiles(profiles);
+      if(Store.getSelectedValue()=== 'false'){
+        await Store.saveProfile(profiles[0])
+      }
+      profileSet = await profiles.map(profile=>{return {name:profile.name,url: "/profiles/"+profile.id, icon: "cui-user"}})
+      await this.setState({profileNames : profileSet})
       this.forceUpdate();
     }
     this.getUser();
@@ -86,10 +93,10 @@ class Main extends Component {
       <Switch>
         <PrivateRoute path="/dashboard" component={Dashboard} />
         <PrivateRoute path="/verify" component={SignupVerify} />
-        <PrivateRoute path="/profiles" component={Profiles} />
-        <PrivateRoute path="/createProfile" component={CreateProfile} />
+        <PrivateRoute exact path="/profiles" component={Profiles} />
+        <PrivateRoute exact path ="/createProfile" component={CreateProfile} />
+        <PrivateRoute exact path="/profiles/:id" component={SetProfile} />
         <PrivateRoute path="/listBills" component={Bills} />
-        <PrivateRoute exact path="/createProfile" component={CreateProfile} />
         <PrivateRoute exact path="/billing/address" component={BillingInfo} />
         <PrivateRoute exact path="/billing/address/add" component={EditBillingAddress} />
         <PrivateRoute path="/label/labels" component={Lables} />
@@ -142,10 +149,12 @@ class Main extends Component {
 
   //This method calls the inbuilt SideBar Component acc to condition
   loadSideBar = () => {
-    return (
+    //added currently profiels into sidebar items json array 
+    const sideNavbarProfileItems={items:this.state.profileNames.concat(item.items)}
+    return(
       <AppSidebar fixed display="sm">
         <Suspense>
-          {Store.getProfile() !== null && !this.state.flag ? <AppSidebarNav navConfig={navigation} {...this.props} /> : <AppSidebarNav navConfig={item} {...this.props} />}
+           { Store.getProfile() !== null && !this.state.flag  ?  <AppSidebarNav navConfig={navigation} {...this.props} /> : <AppSidebarNav navConfig={sideNavbarProfileItems}  {...this.props} />  }
         </Suspense>
       </AppSidebar>);
   }

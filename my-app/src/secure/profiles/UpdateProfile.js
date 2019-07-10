@@ -3,6 +3,7 @@ import { Button, Card, Col, Input, Alert, CardHeader, FormGroup } from "reactstr
 import ProfileApi from "../../services/ProfileApi";
 import Profiles from "./Profiles";
 import Config from "../../data/Config";
+import Store from "../../data/Store";
 
 class UpdateProfile extends Component {
   constructor(props) {
@@ -22,6 +23,11 @@ class UpdateProfile extends Component {
   };
 
   successCall = () => {
+    let storeProfile;
+    if(this.state.id === Store.getProfile().id){
+      storeProfile = Store.getUserProfiles().filter(profile => profile.id === this.state.id)
+      Store.saveProfile(storeProfile[0])
+    }
     this.callAlertTimer("success", "Profile Updated Succesfully!");
   }
 
@@ -30,22 +36,17 @@ class UpdateProfile extends Component {
   };
 
   callAlertTimer = (color, content) => {
-    this.setState({ color: color, content: content });
+    this.setState({ color, content });
     setTimeout(() => {
       this.setState({ name: '', color: '', updateSuccess: true });
-      window.location.href = "/dashboard";
+      window.location.href = "/profiles";      
     }, Config.notificationMillis);
   };
-  cancelUpdateProfile = () => {
-    this.setState({ cancelUpdateProfile: true });
-  }
+  
   render() {
     const { name, color, content, updateSuccess, cancelUpdateProfile } = this.state;
-    if (cancelUpdateProfile) {
-      return <Profiles />
-    } else {
-      return <div>{updateSuccess ? <Profiles /> : this.loadUpdateProfile(name, color, content)}</div>
-    }
+      return <div>{(updateSuccess || cancelUpdateProfile) ? <Profiles /> : this.loadUpdateProfile(name, color, content)}</div>
+
   }
   loadHeader = () => <CardHeader><strong>Profile</strong></CardHeader>
 
@@ -64,7 +65,7 @@ class UpdateProfile extends Component {
               </Col>
               <br />
               <Button color="success" disabled={!name} onClick={this.handleUpdate} >Update  </Button>&nbsp;&nbsp;&nbsp;
-              <Button active color="light" aria-pressed="true" onClick={this.cancelUpdateProfile}>Cancel</Button>
+              <Button active color="light" aria-pressed="true" onClick={()=>{this.setState({cancelUpdateProfile:true})}}>Cancel</Button>
             </FormGroup>
           </center>
         </Card>

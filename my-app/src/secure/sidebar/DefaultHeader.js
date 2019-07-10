@@ -4,7 +4,6 @@ import { Button, Nav, Modal, ModalHeader, ModalBody, ModalFooter, DropdownItem, 
 import { AppSidebarToggler, AppNavbarBrand, AppHeaderDropdown } from "@coreui/react";
 import { FaCaretDown, FaSync, FaCaretUp, FaUserTie, FaPowerOff, FaUserEdit, FaAngleDown, } from "react-icons/fa";
 import { AuthButton } from "../../App";
-import ProfileApi from "../../services/ProfileApi";
 import Config from "../../data/Config";
 import UserApi from '../../services/UserApi'
 import Store from "../../data/Store";
@@ -17,16 +16,15 @@ const DefaultHeader = (props) => {
   let [authButton, chnageAuthButton] = useState(false);
   let [userName, changeUsername] = useState("");
   let [icon, animatedIcon] = useState(false);
+  
   const toggle = (e) => {
     changeFlag(flag = !flag)
     props.onFlagChange()
   }
  
   const refreshButton = async () => {
-    await Store.clearLocalStorage();
-    callAlert()
-    changeProfleName(profileName = "Web Money")
- 
+    await Store.userDataClear();
+    callAlert();
   }
   let callAlert = () => {
     animatedIcon(icon=true);
@@ -39,17 +37,17 @@ const DefaultHeader = (props) => {
     chnageAuthButton(authButton = !authButton)
   }
  
-  const successCall = async (profiles) => {
-    if (profiles.length === 0 || profiles === null) {
+  const successCall = async () => {
+    if (Store.getProfile() === null) {
       changeProfleName(profileName = "Web Money");
     } else {
-      await Store.saveProfile(profiles)
-      changeProfleName(profileName = profiles.map(profile => profile.name).toString());
+      await changeProfleName(profileName = Store.getProfile().name);
     }
   }
   //TODO:  handle profile error message
   useEffect(() => {
-    new ProfileApi().getProfiles(successCall, (error) => { console.log(error) });
+      successCall();
+    // new ProfileApi().getProfiles(successCall, (error) => { console.log(error) });
     new UserApi().getUser(successGetUser, failGetUser);
   });
   const successGetUser = (user) => {
@@ -59,7 +57,7 @@ const DefaultHeader = (props) => {
   const failGetUser = (error) => {
     console.log("Error")
   };
- 
+  
   const loadAuthButton = () => {
     return (
       <Modal isOpen={authButton} toggle={toggleDanger} >
@@ -71,7 +69,7 @@ const DefaultHeader = (props) => {
         </ModalFooter>
       </Modal>)
   }
- 
+  
   return (
     <React.Fragment>
       <AppSidebarToggler className="d-lg-none" display="md" mobile />
@@ -85,9 +83,7 @@ const DefaultHeader = (props) => {
       <Nav className="d-md-down-none" navbar />
       <Nav className="ml-auto" navbar>
         {!icon ? <FaSync style={styles} data-toggle="tooltip" boundary="scrollParent" data-placement="bottom" title="Refresh" size={25}
-          onClick={refreshButton} /> : 
-          <i className="fa fa-refresh fa-spin " style={{color: "rgb(34, 139, 34)", overflowX: "auto", marginRight:20 }}></i>
-          } 
+          onClick={refreshButton} /> : "" } 
         <AppHeaderDropdown direction="down">
           <DropdownToggle nav>
              <b>{userName}</b>&nbsp;<FaAngleDown size={18} style={{ color: "darkblue", marginRight: 25 }} /> 
