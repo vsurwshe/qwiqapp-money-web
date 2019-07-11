@@ -185,7 +185,7 @@ class MakePayment extends Component {
           <Label check>
             <Input type="radio" name="radio1" value={item.amount} checked={this.state.selectedOption === item.amount}
               onChange={() => this.itemId(item.amount)} />{' '}
-            £{item.amount} {item.label} {item.summary}<br />
+             <b>{item.label}</b> - {item.summary}<br />
           </Label><br />
         </Col>
       </React.Fragment>)

@@ -5,7 +5,6 @@ import { AppSidebarToggler, AppNavbarBrand, AppHeaderDropdown } from "@coreui/re
 import { FaCaretDown, FaSync, FaCaretUp, FaUserTie, FaPowerOff, FaAngleDown, FaAddressCard, FaRegCalendarAlt } from "react-icons/fa";
 import { AuthButton } from "../../App";
 import Config from "../../data/Config";
-import UserApi from '../../services/UserApi'
 import Store from "../../data/Store";
 
 const DefaultHeader = (props) => {
@@ -47,16 +46,12 @@ const DefaultHeader = (props) => {
   //TODO:  handle profile error message
   useEffect(() => {
     successCall();
-    // new ProfileApi().getProfiles(successCall, (error) => { console.log(error) });
-    new UserApi().getUser(successGetUser, failGetUser);
+    getUserName();
   });
-  const successGetUser = (user) => {
-    changeUsername(userName = user.name)
-  };
-  //TODO: user failure message
-  const failGetUser = (error) => {
-    console.log("Error")
-  };
+
+  const getUserName =  () => {
+    changeUsername(userName = Store.getUser().name)
+  }
 
   const loadAuthButton = () => {
     return (
