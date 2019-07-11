@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { Alert } from 'reactstrap';
-import { Card, CardBody, CardHeader, Button } from 'reactstrap';
-import BillingAddressApi from '../../services/BillingAddressApi';
+import { Card, CardBody, CardHeader, Button, Alert} from 'reactstrap';
+import BillingAddressApi from '../../../services/BillingAddressApi';
 import EditBillingAddress from './EditBillingAddress';
 
 let emptyBillingAddress = {
@@ -69,20 +68,25 @@ class BillingInfo extends Component {
           </CardHeader>
           <CardBody>
             <Alert isOpen={visible} color="danger">Unable to process, Please try Again.... </Alert>
-            {billing !== null ?
+            {billing !== null &&
               <center className="text-sm-left">
-                <b>{billing.firstName} {billing.lastName}</b><br />
-                <span style={{color:"#50b4eb"}}>{billing.addressLine1}</span>, {billing.addressLine2} <br />
-                {billing.city}, {billing.postCode} <br />
-                {billing.region}, {billing.country}
+               <span><b>Address: </b></span><br/>
+              <p style={{paddingLeft:50}}  >
+              {billing.firstName} {billing.lastName}<br></br>               
+                {billing.addressLine1}
+                {billing.addressLine2 && ' '+billing.addressLine2+','} <br />
+                {billing.city && billing.city+', '} 
+                {billing.postCode && billing.postCode+','} <br />
+                {billing.region && billing.region+ ', '}
+                {billing.country}
+               </p>
               </center>
-              : ''}
+              }
           </CardBody>
         </Card>
       </div>
     )
   }
-
   loadHeader = (billing) => {
     return (
       <CardHeader>

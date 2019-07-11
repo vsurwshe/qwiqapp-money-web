@@ -2,9 +2,9 @@ import React, { Component } from "react";
 import { Redirect } from 'react-router';
 import { AvForm, AvField } from 'availity-reactstrap-validation';
 import { Alert, Button, Card, FormGroup, Col, Row } from "reactstrap";
-import BillingAddressApi from '../../services/BillingAddressApi';
-import GeneralApi from "../../services/GeneralApi";
-import Config from "../../data/Config";
+import BillingAddressApi from '../../../services/BillingAddressApi';
+import GeneralApi from "../../../services/GeneralApi";
+import Config from "../../../data/Config";
 
 class EditBillingAddress extends Component {
 

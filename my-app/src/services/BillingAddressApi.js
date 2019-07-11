@@ -9,6 +9,13 @@ class BillingAddressApi {
     getBillings(success, failure) {
         process(success, failure, "/billing/address", "GET")
     }
+    getBillingItems(success,failure){
+        process(success,failure,"/billing/items", "GET")
+      }
+      
+    getPaymentsHistory(success,failure){
+        process(success,failure,"/billing/payments","GET")
+      }
 }
 
 export default BillingAddressApi;

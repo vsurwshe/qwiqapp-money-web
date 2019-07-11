@@ -19,11 +19,14 @@ import EditCategory from "../secure/categories/EditCategory";
 import UserApi from "../services/UserApi";
 import ProfileApi from "../services/ProfileApi";
 import CreateProfile from "../secure/profiles/CreateProfile";
-import Bills from "../secure/bills/Bills"
-import BillingInfo from "../secure/billingAddress/BillingInfo";
-import EditBillingAddress from "../secure/billingAddress/EditBillingAddress";
-import DefaultHeader from "../secure/sidebar/DefaultHeader";
-import SetProfile from "../secure/profiles/SetProfile"
+import Bills from "../secure/bills/Bills";
+import SetProfile from "../secure/profiles/SetProfile";
+import DefaultHeader from "../secure/sidebar/DefaultHeader"
+import BillingInfo from "../secure/billing/address/BillingInfo";
+import EditBillingAddress from "../secure/billing/address/EditBillingAddress";
+import PaymentHistory from '../secure/billing/payment/PaymentHistory';
+import MakePayment from '../secure/billing/payment/MakePayment';
+import GeneralApi from "../services/GeneralApi";
 
 const DefaultFooter = React.lazy(() => import("../secure/sidebar/DefaultFooter"));
 
@@ -57,6 +60,7 @@ class Main extends Component {
       this.forceUpdate();
     }
     this.getUser();
+    new GeneralApi().settings((data) => {Store.saveSetting(data)}, (error)=>{console.log(error);});
   }
 
   getUser = () => {
@@ -93,12 +97,14 @@ class Main extends Component {
       <Switch>
         <PrivateRoute path="/dashboard" component={Dashboard} />
         <PrivateRoute path="/verify" component={SignupVerify} />
-        <PrivateRoute exact path="/profiles" component={Profiles} />
-        <PrivateRoute exact path ="/createProfile" component={CreateProfile} />
-        <PrivateRoute exact path="/profiles/:id" component={SetProfile} />
-        <PrivateRoute path="/listBills" component={Bills} />
-        <PrivateRoute exact path="/billing/address" component={BillingInfo} />
         <PrivateRoute exact path="/billing/address/add" component={EditBillingAddress} />
+        <PrivateRoute exact path="/billing/address" component={BillingInfo} /> 
+        <PrivateRoute exact path="/billing/addCredits" component={MakePayment} />
+        <PrivateRoute exact path="/billing/paymentHistory" component={PaymentHistory}/>
+        <PrivateRoute exact path ="/createProfile" component={CreateProfile} />
+        <PrivateRoute exact path="/profiles" component={Profiles} />
+        <PrivateRoute exact path="/profiles/:id" component={SetProfile} />     
+        <PrivateRoute path="/listBills" component={Bills} />
         <PrivateRoute path="/label/labels" component={Lables} />
         <PrivateRoute path="/label/createLabel" component={CreateLable} />
         <PrivateRoute path="/listCategories" component={Categories} />

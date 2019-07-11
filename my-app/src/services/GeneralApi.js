@@ -10,6 +10,9 @@ class GeneralApi {
   getCurrencyList(success, failure) {
     process(success, failure, "/currencies", "GET");
   }
+  settings(success, failure){
+    process(success, failure, "/settings", "GET");
+  }
 }
 
 export default GeneralApi;

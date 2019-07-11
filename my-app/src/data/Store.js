@@ -3,32 +3,16 @@ const DUMMY_KEY = 'dummy';
 const db = sessionStorage;
 
 const Store = {
-    storeLabels: function (categoriesJSON) {
-        this.storeJson("LABELS", categoriesJSON);
-    },
-
-    getLabels: function () {
-        return this.getJson("LABELS");
-    },
-
-    storeJson: function (keyName, jsonValue) {
-        db.setItem(keyName, JSON.stringify(jsonValue));
-    },
-
-    getJson: function (keyName) {
-        let jsonValue = db.getItem(keyName);
-        if (jsonValue != null) {
-            return JSON.parse(jsonValue);
-        } else {
-            return null;
-        }
-    },
-
+    
     //this Saves the AppUser Response
     saveAppUserAccessToken: function (token, refresh, expiry) {
         let appUser = { oauthToken: token, refreshToken: refresh, timeExpiry: expiry };
         db.setItem(USER_KEY, JSON.stringify(appUser));
         this.setSelectedValue(false)
+    },
+    getAppUserAccessToken: function () {
+        let appUser = this.getAppUser();
+        return this.getToken(appUser);
     },
 
     //this Saves The DummyUser Response
@@ -37,29 +21,19 @@ const Store = {
         db.setItem(DUMMY_KEY, JSON.stringify(dummyUser));
         this.setSelectedValue(false)
     },
-
+    getDummyUserAccessToken: function () {
+        let dummyUser = this.getDummyUser();
+        return this.getToken(dummyUser);
+    },
     //this is getting AppUser User Key
     getAppUser: function () {
         let user = db.getItem(USER_KEY);
         return JSON.parse(user);
     },
-
     //this is getting Dummy User Key
     getDummyUser: function () {
         let user = db.getItem(DUMMY_KEY);
         return JSON.parse(user);
-    },
-
-    //this is the getting the App User Access Token
-    getAppUserAccessToken: function () {
-        let appUser = this.getAppUser();
-        return this.getToken(appUser);
-    },
-
-    //this is getting the Dummy User Access Token
-    getDummyUserAccessToken: function () {
-        let dummyUser = this.getDummyUser();
-        return this.getToken(dummyUser);
     },
 
     //this is geting App User Refresh Token
@@ -118,7 +92,33 @@ const Store = {
         const categories = db.getItem("USERDATA")
         return JSON.parse(categories)
     },
+    // Setting Api for payapal payment transaction
+    saveSetting: function (jsonValue) {
+        db.setItem("SETTINGS", JSON.stringify(jsonValue));
+    },
 
+    getSetting: function (keyName) {
+        let jsonValue = db.getItem(keyName);
+        if (jsonValue != null) {
+            return JSON.parse(jsonValue);
+        } else {
+            return null;
+        }
+    },
+
+    storeJson: function (keyName, jsonValue) {
+        db.setItem(keyName, JSON.stringify(jsonValue));
+    },
+
+    getJson: function (keyName) {
+        let jsonValue = db.getItem(keyName);
+        if (jsonValue != null) {
+            return JSON.parse(jsonValue);
+        } else {
+            return null;
+        }
+    },
+    
     //this is save profiles in local storege
     saveUserProfiles: function (data) {
         db.setItem("PROFILES", JSON.stringify(data))
@@ -128,7 +128,6 @@ const Store = {
         const categories = db.getItem("PROFILES")
         return JSON.parse(categories)
     },
-
     //this saves selected profile in local storage
     saveProfile: function (data) {
         db.setItem("PROFILE", JSON.stringify(data))
@@ -137,13 +136,20 @@ const Store = {
     getProfile: function () {
         return JSON.parse(db.getItem("PROFILE"));
     },
-
-    setSelectedValue: function (data){
-        db.setItem("SELECTEDPROFILE",data)
+    setSelectedValue: function (data) {
+        db.setItem("SELECTEDPROFILE", data)
     },
-    getSelectedValue: function (){
+    getSelectedValue: function () {
         const selected = db.getItem("SELECTEDPROFILE")
         return selected
+    },
+    //lables
+    storeLabels: function (categoriesJSON) {
+        this.storeJson("LABELS", categoriesJSON);
+    },
+
+    getLabels: function () {
+        return this.getJson("LABELS");
     },
 
     //this is save categories in local storege
@@ -165,26 +171,26 @@ const Store = {
         const categories = db.getItem("BILL")
         return JSON.parse(categories)
     },
-    
+
     saveContacts: function (data) {
         db.setItem("CONTACTS", JSON.stringify(data))
     },
     getContacts: function () {
         const categories = db.getItem("CONTACTS")
         return JSON.parse(categories)
-    },   
+    },
 
     // Clears the Local Storage
-    clearLocalStorage: function(){
+    clearLocalStorage: function () {
         this.userDataClear()
         db.removeItem("PROFILES");
         db.removeItem("PROFILE");
         db.removeItem("SELECTEDPROFILE");
-        db.removeItem("USERDATA");   
+        db.removeItem("USERDATA");
     },
 
     // when refersh button call(userDataClear)
-    userDataClear:function(){
+    userDataClear: function () {
         db.removeItem("CATEGORIES");
         db.removeItem("LABELS");
         db.removeItem("CONTACTS");
