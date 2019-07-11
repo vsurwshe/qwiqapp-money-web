@@ -22,8 +22,8 @@ export default class ProfileInfoTable extends React.Component {
           <tr >
             <td style={featureColor}>Cost Per Month</td>
             <td><FaMinus /></td>
-            <td>$ 0.67</td>
-            <td>$ 0.99</td>
+            <td>£ 0.67</td>
+            <td>£ 0.99</td>
           </tr>
           <tr>
             <td style={featureColor}>Multi currency</td>
