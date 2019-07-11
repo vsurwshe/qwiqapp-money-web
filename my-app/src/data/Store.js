@@ -106,6 +106,19 @@ const Store = {
         }
     },
 
+    storeJson: function (keyName, jsonValue) {
+        db.setItem(keyName, JSON.stringify(jsonValue));
+    },
+
+    getJson: function (keyName) {
+        let jsonValue = db.getItem(keyName);
+        if (jsonValue != null) {
+            return JSON.parse(jsonValue);
+        } else {
+            return null;
+        }
+    },
+    
     //this is save profiles in local storege
     saveUserProfiles: function (data) {
         db.setItem("PROFILES", JSON.stringify(data))
