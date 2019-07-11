@@ -78,7 +78,7 @@ class PaymentHistory extends Component {
     let billPayments = paymentDetails.map((payment, key) => {
       return (<tr key={key}>
         <th style={{ color: "#6699ff" }}>{this.dateFormat(payment.created)}</th>
-        <th style={{ color: "#6699ff" }}>{payment.description.replace("Payment thank you.", "")}</th>
+        <th style={{ color: "#6699ff" }}>{payment.description}</th>
         <th>{this.getCurrencySymbol(payment.currency, currenciesSymbol)} {payment.amount}</th>
       </tr>
       )
