@@ -6,8 +6,10 @@ import Store from "../../../data/Store";
 import BillingAddressApi from '../../../services/BillingAddressApi';
 import PaymentSuccessMessage from './PaymentSuccessMessage';
 
+const PAYPAL_URL = 'https://www.paypal.com/sdk/js?'
 
-let paymentReferenceId = '';
+let paymentOrderID = '';
+
 class MakePayment extends Component {
   constructor(props) {
     super(props);
@@ -18,8 +20,8 @@ class MakePayment extends Component {
       scriptLoaded: false,
       scriptError: false,
       inputValue: 10,
-      getBillingItems: [],
-      selectedOption: 10,
+      billingItems: [],
+      selectedOption: 10
     };
 
     this.createPaypalOrder = this.createPaypalOrder.bind(this)
@@ -38,8 +40,8 @@ class MakePayment extends Component {
     this.setState({ cancelPayment: true })
   }
 
-  successCall = (getBillingItems) => {
-    this.setState({ getBillingItems })
+  successCall = (billingItems) => {
+    this.setState({ billingItems })
   };
 
   errorCall = (error) => {
@@ -56,7 +58,7 @@ class MakePayment extends Component {
   render() {
     const { paymentSuccess } = this.state
     if (paymentSuccess) {
-      return <PaymentSuccessMessage paymentReferenceId={paymentReferenceId} />
+      return <PaymentSuccessMessage paymentReferenceId={paymentOrderID} />
     } else {
       return <div>{this.loadMakePayment()}</div>
     }
@@ -98,7 +100,7 @@ class MakePayment extends Component {
     let value = this.state.inputValue;
     // Capture the funds from the transaction
     actions.order.capture().then(function (details) {
-      paymentReferenceId = data.orderID;
+      paymentOrderID = data.orderID;
       // Call your server to save the transaction
       fetch(paymentURL, {
         method: 'post',
@@ -132,14 +134,11 @@ class MakePayment extends Component {
     this.setState({ inputValue: e.target.value });
   }
   loadMakePayment = (data) => {
-    let userData = Store.getUser().action; //VERIFY_EMAIL
-    // TODO: remove 'clientIdFromSettings' dynamically retrive this value from <cloudBaseURL>/settings API
-    let params = ''; //THIS VALUE COMES FROM /settings API CALL    
-    params = Store.getSetting('SETTINGS').paypalParams;
-    let url = 'https://www.paypal.com/sdk/js?' + params;
+    let action = Store.getUser().action; //VERIFY_EMAIL
+    let url =  PAYPAL_URL + Store.getSetting('SETTINGS').paypalParams;
     return (
       <div className="animated fadeIn">
-        {userData === "ADD_CREDITS" || userData === "ADD_CREDITS_LOW" || userData === null ? this.loadPayPalButton(url) : this.loadVerifyMessage()}
+        { action === "ADD_CREDITS" || action === "ADD_CREDITS_LOW" || action === null ? this.loadPayPalButton(url) : this.loadVerifyMessage() }
       </div>
     )
   }
@@ -164,7 +163,7 @@ class MakePayment extends Component {
       <h4 style={{ paddingTop: 20 }}><center>Select any Payment Option</center></h4><br /><br />
       <div className="form-group">
         <FormGroup check>
-          {this.state.getBillingItems === undefined ? " " : this.state.getBillingItems.map((item, index) => {
+          {this.state.billingItems === undefined ? " " : this.state.billingItems.map((item, index) => {
             return this.loadRadioButtons(item, index)
           })}
         </FormGroup><br /><br />
