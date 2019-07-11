@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardBody, CardHeader, Table, Button, Label } from 'reactstrap';
 import Loader from 'react-loader-spinner';
-import BillingAddressApi from '../../../services/BillingAddressApi'
+import BillingAddressApi from '../../../services/BillingAddressApi';
 import GeneralApi from '../../../services/GeneralApi';
 import Config from '../../../data/Config';
 

@@ -2,41 +2,41 @@ import React, { useEffect, useState } from "react";
 import { withRouter, Link } from 'react-router-dom';
 import { Button, Nav, Modal, ModalHeader, ModalBody, ModalFooter, DropdownItem, DropdownMenu, DropdownToggle, } from "reactstrap";
 import { AppSidebarToggler, AppNavbarBrand, AppHeaderDropdown } from "@coreui/react";
-import { FaCaretDown, FaSync, FaCaretUp, FaUserTie, FaPowerOff, FaUserEdit, FaAngleDown, } from "react-icons/fa";
+import { FaCaretDown, FaSync, FaCaretUp, FaUserTie, FaPowerOff, FaAngleDown, FaAddressCard, FaRegCalendarAlt } from "react-icons/fa";
 import { AuthButton } from "../../App";
 import Config from "../../data/Config";
 import UserApi from '../../services/UserApi'
 import Store from "../../data/Store";
 
 const DefaultHeader = (props) => {
- 
+
   const styles = { paddingTop: '10px', marginRight: 10, marginBottom: 10, color: "#228B22" }
   let [profileName, changeProfleName] = useState("Web Money");
   let [flag, changeFlag] = useState(false);
   let [authButton, chnageAuthButton] = useState(false);
   let [userName, changeUsername] = useState("");
   let [icon, animatedIcon] = useState(false);
-  
+
   const toggle = (e) => {
     changeFlag(flag = !flag)
     props.onFlagChange()
   }
- 
+
   const refreshButton = async () => {
     await Store.userDataClear();
     callAlert();
   }
   let callAlert = () => {
-    animatedIcon(icon=true);
+    animatedIcon(icon = true);
     setTimeout(() => {
-      animatedIcon(icon=false);
+      animatedIcon(icon = false);
     }, Config.notificationMillis);
   }
- 
+
   const toggleDanger = () => {
     chnageAuthButton(authButton = !authButton)
   }
- 
+
   const successCall = async () => {
     if (Store.getProfile() === null) {
       changeProfleName(profileName = "Web Money");
@@ -46,7 +46,7 @@ const DefaultHeader = (props) => {
   }
   //TODO:  handle profile error message
   useEffect(() => {
-      successCall();
+    successCall();
     // new ProfileApi().getProfiles(successCall, (error) => { console.log(error) });
     new UserApi().getUser(successGetUser, failGetUser);
   });
@@ -57,7 +57,7 @@ const DefaultHeader = (props) => {
   const failGetUser = (error) => {
     console.log("Error")
   };
-  
+
   const loadAuthButton = () => {
     return (
       <Modal isOpen={authButton} toggle={toggleDanger} >
@@ -69,7 +69,7 @@ const DefaultHeader = (props) => {
         </ModalFooter>
       </Modal>)
   }
-  
+
   return (
     <React.Fragment>
       <AppSidebarToggler className="d-lg-none" display="md" mobile />
@@ -83,15 +83,15 @@ const DefaultHeader = (props) => {
       <Nav className="d-md-down-none" navbar />
       <Nav className="ml-auto" navbar>
         {!icon ? <FaSync style={styles} data-toggle="tooltip" boundary="scrollParent" data-placement="bottom" title="Refresh" size={25}
-          onClick={refreshButton} /> : "" } 
+          onClick={refreshButton} /> : ""}
         <AppHeaderDropdown direction="down">
           <DropdownToggle nav>
-             <b>{userName}</b>&nbsp;<FaAngleDown size={18} style={{ color: "darkblue", marginRight: 25 }} /> 
+            <b>{userName}</b>&nbsp;<FaAngleDown size={18} style={{ color: "darkblue", marginRight: 25 }} />
           </DropdownToggle>
           <DropdownMenu right style={{ right: 'auto' }}>
             <DropdownItem header tag="div" className="text-center"><strong> Settings</strong></DropdownItem>
-            <DropdownItem><Link to="/billing/address" ><FaUserEdit style={{ color: "blue", marginRight: 15 }} />Billing Address</Link> </DropdownItem>
-            <DropdownItem><Link to="/billing/paymentHistory" ><FaUserEdit style={{ color: "blue", marginRight: 15 }} />Payment History</Link> </DropdownItem>
+            <DropdownItem><Link to="/billing/address" ><FaAddressCard style={{ color: "#F16939", marginRight: 15 }} />Billing Address</Link> </DropdownItem>
+            <DropdownItem><Link to="/billing/paymentHistory" ><FaRegCalendarAlt style={{ color: "green", marginRight: 15 }} />Payment History</Link> </DropdownItem>
             <DropdownItem onClick={e => toggleDanger(e)} ><FaPowerOff style={{ color: "red", marginRight: 15 }} />Logout</DropdownItem>
           </DropdownMenu>
         </AppHeaderDropdown>

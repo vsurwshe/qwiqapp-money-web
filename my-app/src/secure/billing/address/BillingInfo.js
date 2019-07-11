@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { Alert } from 'reactstrap';
-import { Card, CardBody, CardHeader, Button } from 'reactstrap';
+import { Card, CardBody, CardHeader, Button, Alert} from 'reactstrap';
 import BillingAddressApi from '../../../services/BillingAddressApi';
 import EditBillingAddress from './EditBillingAddress';
 
@@ -73,10 +72,8 @@ class BillingInfo extends Component {
               <center className="text-sm-left">
                <span><b>Address: </b></span><br/>
               <p style={{paddingLeft:50}}  >
-              {billing.firstName} {billing.lastName}<br></br>
-                {/* <span style={{color:"#50b4eb"}}> */}
+              {billing.firstName} {billing.lastName}<br></br>               
                 {billing.addressLine1}
-                {/* </span>, */}
                 {billing.addressLine2 && ' '+billing.addressLine2+','} <br />
                 {billing.city && billing.city+', '} 
                 {billing.postCode && billing.postCode+','} <br />

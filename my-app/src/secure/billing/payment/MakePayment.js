@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { FormGroup, Label, Input } from 'reactstrap';
-import { Card, CardBody, CardHeader, Col } from 'reactstrap';
+import { Card, CardBody, CardHeader, Col, FormGroup, Label, Input  } from 'reactstrap';
 import Script from 'react-load-script';
 import Config from '../../../data/Config';
 import Store from "../../../data/Store";
@@ -48,15 +47,15 @@ class MakePayment extends Component {
   }
 
   callAlertTimer = () => {
-    
+
     setTimeout(() => {
-      this.setState({paymentSuccess: true, doubleClick: false });
-    }, 1500)
+      this.setState({ paymentSuccess: true, doubleClick: false });
+    }, Config.apiTimeoutMillis)
   };
 
   render() {
     const { paymentSuccess } = this.state
-   if (paymentSuccess) {
+    if (paymentSuccess) {
       return <PaymentSuccessMessage paymentReferenceId={paymentReferenceId} />
     } else {
       return <div>{this.loadMakePayment()}</div>
@@ -111,14 +110,14 @@ class MakePayment extends Component {
           orderId: data.orderID,
           amount: value
         })
-      }).catch(error=>{
+      }).catch(error => {
         return error.message;
       });
     });
     // TODO: Put Loader after Success pay 
     setTimeout(() => {
       return this.paymentSuccessMessage()
-    }, 2000)
+    }, Config.apiTimeoutMillis)
   }
 
   handleScriptLoad(obj) {
@@ -136,12 +135,12 @@ class MakePayment extends Component {
     let userData = Store.getUser().action; //VERIFY_EMAIL
     // TODO: remove 'clientIdFromSettings' dynamically retrive this value from <cloudBaseURL>/settings API
     let params = ''; //THIS VALUE COMES FROM /settings API CALL    
-     params = Store.getSetting('SETTINGS').paypalParams;
+    params = Store.getSetting('SETTINGS').paypalParams;
     let url = 'https://www.paypal.com/sdk/js?' + params;
     return (
-        <div className="animated fadeIn">
-          {userData === "ADD_CREDITS" || userData === "ADD_CREDITS_LOW" || userData === null ? this.loadPayPalButton(url) : this.loadVerifyMessage()}
-        </div>
+      <div className="animated fadeIn">
+        {userData === "ADD_CREDITS" || userData === "ADD_CREDITS_LOW" || userData === null ? this.loadPayPalButton(url) : this.loadVerifyMessage()}
+      </div>
     )
   }
 
@@ -154,11 +153,11 @@ class MakePayment extends Component {
       </Card>)
   }
 
-  loadPayPalButton = (url) => {
+  loadPayPalButton = (paypalURL) => {
     return (<Card>
       <CardHeader> <legend><b>BUY CREDITS</b></legend></CardHeader>
       <Script
-        url={url}
+        url={paypalURL}
         onCreate={this.handleScriptCreate.bind(this)}
         onError={this.handleScriptError.bind(this)}
         onLoad={this.handleScriptLoad.bind(this)} />
