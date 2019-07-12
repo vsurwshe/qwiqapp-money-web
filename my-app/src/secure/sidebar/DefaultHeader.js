@@ -6,6 +6,7 @@ import { FaCaretDown, FaSync, FaCaretUp, FaUserTie, FaPowerOff, FaAngleDown, FaA
 import { AuthButton } from "../../App";
 import Config from "../../data/Config";
 import Store from "../../data/Store";
+import UserApi from "../../services/UserApi";
 
 const DefaultHeader = (props) => {
 
@@ -46,15 +47,16 @@ const DefaultHeader = (props) => {
   //TODO:  handle profile error message
   useEffect(() => {
     successCall();
-    getUserName();
+    new UserApi().getUser(successGetUser, failGetUser);
   });
 
-  const getUserName = () => {
-    let user = Store.getUser();
-    if (user) {
-      changeUsername(userName = user.name)
-    }
-  }
+  const successGetUser = (user) => {
+    changeUsername(userName = user.name)
+  };
+  //TODO: user failure message
+  const failGetUser = (error) => {
+    console.log("Error")
+  };
 
   const loadAuthButton = () => {
     return (

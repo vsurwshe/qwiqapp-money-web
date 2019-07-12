@@ -123,7 +123,7 @@ class CreateProfile extends Component {
               <h5><b>CHOOSE PROFILE TYPES</b></h5>
               <Col >
                 <Alert color={color}>{this.state.content}</Alert>
-                {action !== "VERIFY_EMAIL" && this.createProfielTypes(profileTypesOptions)}
+                {action !== "VERIFY_EMAIL" && this.createProfileTypes(profileTypesOptions)}
                 {this.loadActionsButton(action, profileType)}<br /><br />
                 <h5><span onClick={this.profileViewTable} className="float-right" style={{ color: '#7E0462' }} ><u>{this.state.comparisionText}</u></span></h5>
               </Col>
@@ -134,13 +134,13 @@ class CreateProfile extends Component {
       </div>);
   }
 
-  createProfielTypes = (profileTypesOptions) => {
+  createProfileTypes = (profileTypesOptions) => {
     return (
       <Table>
         <thead>
           <tr>
             <th>Type</th>
-            <th>Profiel Type</th>
+            <th>Profile Type</th>
             <th>Cost</th>
             <th>Description</th>
           </tr>
@@ -156,7 +156,7 @@ class CreateProfile extends Component {
     let url = action === 'ADD_BILLING' ? "/billing/address" : '/billing/paymentHistory';
     if (action === "VERIFY_EMAIL") {
       return <Alert color="warning">Sorry you cannot Create Profile until you verify Your Email</Alert>
-    } else if (profileType > 0 && action !== null) {
+    } else if (profileType > 0  && action !== null) {
       return <>
         <Button color="info"><Link to={url} style={{ color: "black" }}> {action}</Link></Button>
         <Button active color="danger" style={{ marginLeft: 20 }} aria-pressed="true" onClick={this.cancelCreateProfile}>Cancel</Button>
