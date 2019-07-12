@@ -3,20 +3,19 @@ import Config from "../data/Config";
 import Store from "../data/Store";
 import LoginApi from "./LoginApi";
 
-class OtherProfileTypesApi {
-  
+class ProfileTypesApi {
   getProfileTypes(success, failure) {
-    process(success, failure, "/profile/types" , "GET");
-  } 
+    process(success, failure, "/profile/types", "GET");
+  }
 }
 
-export default OtherProfileTypesApi;
+export default ProfileTypesApi;
 
 async function process(success, failure, requestUrl, requestMethod, data) {
   let HTTP = httpCall(requestUrl, requestMethod);
   let promise;
   try {
-    promise = await HTTP.request() ;
+    promise = await HTTP.request();
     validResponse(promise, success, requestMethod)
   } catch (err) {
     AccessTokenError(err, failure, requestUrl, requestMethod, data, success);
@@ -33,7 +32,7 @@ let AccessTokenError = function (err, failure, requestUrl, requestMethod, data, 
 }
 
 let validResponse = async function (resp, successMethod) {
-    successMethod(resp.data);
+  successMethod(resp.data);
 };
 
 let errorResponse = function (error, failure) {

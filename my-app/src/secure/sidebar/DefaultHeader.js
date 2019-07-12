@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { withRouter, Link } from 'react-router-dom';
-import { Button, Nav, Modal, ModalHeader, ModalBody, ModalFooter, DropdownItem, DropdownMenu, DropdownToggle, } from "reactstrap";
 import { AppSidebarToggler, AppNavbarBrand, AppHeaderDropdown } from "@coreui/react";
-import { FaCaretDown, FaSync, FaCaretUp, FaUserTie, FaPowerOff, FaAngleDown, FaAddressCard, FaRegCalendarAlt, FaUserEdit, FaKey } from "react-icons/fa";
+import { Button, Nav, Modal, ModalHeader, ModalBody, ModalFooter, DropdownItem, DropdownMenu, DropdownToggle, } from "reactstrap";
+import { FaCaretDown, FaSync, FaCaretUp, FaUserTie, FaPowerOff, FaAngleDown, FaAddressCard, FaRegCalendarAlt } from "react-icons/fa";
 import { AuthButton } from "../../App";
 import Config from "../../data/Config";
 import Store from "../../data/Store";

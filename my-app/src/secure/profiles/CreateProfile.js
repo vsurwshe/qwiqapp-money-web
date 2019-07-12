@@ -6,7 +6,7 @@ import ProfileApi from "../../services/ProfileApi";
 import Profiles from "./Profiles";
 import Config from "../../data/Config";
 import ProfileInfoTable from './ProfileInfoTable';
-import OtherProfileTypesApi from "../../services/OtherProfileTypesApi";
+import ProfileTypesApi from "../../services/ProfileTypesApi";
 
 class CreateProfile extends Component {
   state = {
@@ -25,7 +25,7 @@ class CreateProfile extends Component {
 
   componentDidMount = () => {
     this.setState({ action: Store.getUser().action });
-    new OtherProfileTypesApi().getProfileTypes((profileTypes) => { this.setState({ profileTypes }) }, (error) => { console.log("error", error); })
+    new ProfileTypesApi().getProfileTypes((profileTypes) => { this.setState({ profileTypes }) }, (error) => { console.log("error", error); })
   }
 
   handleInput = e => {
@@ -61,7 +61,7 @@ class CreateProfile extends Component {
       this.callAlertTimer("danger", "First Please verify with the code sent to your Email.....")
     }
   };
-  
+
   successCall = () => {
     this.callAlertTimer("success", "New Profile Created!!");
   }
@@ -153,12 +153,13 @@ class CreateProfile extends Component {
   }
 
   loadActionsButton = (action, profileType) => {
+    let url = action === 'ADD_BILLING' ? "/billing/address" : '/billing/paymentHistory';
     if (action === "VERIFY_EMAIL") {
       return <Alert color="warning">Sorry you cannot Create Profile until you verify Your Email</Alert>
-    } else if ((action === "ADD_CREDITS" || action === "ADD_BILLING") && profileType > 0) {
+    } else if (profileType > 0 && action !== null) {
       return <>
-        <Link to="/billing/address" ><Button color="info" > {action} </Button> </Link>&nbsp;&nbsp;
-        <Button active color="light" aria-pressed="true" onClick={this.cancelCreateProfile}>Cancel</Button>
+        <Button color="info"><Link to={url} style={{ color: "black" }}> {action}</Link></Button>
+        <Button active color="danger" style={{ marginLeft: 20 }} aria-pressed="true" onClick={this.cancelCreateProfile}>Cancel</Button>
       </>
     } else {
       return this.loadProfile()
@@ -172,8 +173,8 @@ class CreateProfile extends Component {
         <Col sm="6">
           <Input name="name" value={name} type="text" placeholder="Enter Profile name" autoFocus={true} onChange={e => this.handleInput(e)} />
         </Col><br />
-        <Button color="success" disabled={!name} onClick={e => this.handleSubmit(e)} > {buttonText} </Button>&nbsp;&nbsp;
-        <Button active color="light" aria-pressed="true" onClick={this.cancelCreateProfile}>Cancel</Button>
+        <Button color="success" disabled={!name} onClick={e => this.handleSubmit(e)} > {buttonText} </Button>
+        <Button active color="light" style={{ marginLeft: 20 }} aria-pressed="true" onClick={this.cancelCreateProfile}>Cancel</Button>
       </>)
   }
 }
