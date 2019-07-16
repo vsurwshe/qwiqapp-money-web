@@ -8,6 +8,10 @@ class UserApi {
   getUser(success, failure) {
     process(success, failure, "/user", "GET")
   }
+  updateUser(success, failure, data) {
+    process(success, failure, "/user", "PUT", data)
+  }
+
 }
 export default UserApi;
 async function process(success, failure, requestUrl, requestMethod, data) {
