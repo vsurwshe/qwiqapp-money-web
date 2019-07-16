@@ -6,7 +6,6 @@ import { FaCaretDown, FaSync, FaCaretUp, FaUserTie, FaPowerOff, FaAngleDown, FaA
 import { AuthButton } from "../../App";
 import Config from "../../data/Config";
 import Store from "../../data/Store";
-import UserApi from "../../services/UserApi";
 
 const DefaultHeader = (props) => {
 
@@ -47,17 +46,15 @@ const DefaultHeader = (props) => {
   //TODO:  handle profile error message
   useEffect(() => {
     successCall();
-    new UserApi().getUser(successGetUser, failGetUser);
+    getUseName();
   });
 
-  const successGetUser = (user) => {
-    changeUsername(userName = user.name)
-  };
-  //TODO: user failure message
-  const failGetUser = (error) => {
-    console.log("Error")
-  };
-
+  const getUseName = () => {
+    let user = Store.getUser();
+    if (user) {
+      changeUsername(userName = user.name)
+    }
+  }; 
   const loadAuthButton = () => {
     return (
       <Modal isOpen={authButton} toggle={toggleDanger} >

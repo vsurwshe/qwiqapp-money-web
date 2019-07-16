@@ -49,9 +49,9 @@ class PaymentHistory extends Component {
   // this function calculating Dates diffrencess
   getDaysDiff = (initialDate, currentDate) => {
     var calculateForDay = 1000 * 60 * 60 * 24;
-    
+
     var calculateNumberOfDays = currentDate.getTime() - initialDate.getTime();
-    
+
     // Convert back to days and return
     return Math.round(calculateNumberOfDays / calculateForDay);
   }
@@ -76,9 +76,9 @@ class PaymentHistory extends Component {
   render() {
     const { paymentDetails, spinner, currenciesSymbol } = this.state;
     let billPayments = paymentDetails.map((payment, key) => {
-      return (<tr key={key}>
-        <th style={{ color: "#6699ff" }}>{this.dateFormat(payment.created)}</th>
-        <th style={{ color: "#6699ff" }}>{payment.description}</th>
+      return (<tr key={key} style={{textAlign:"left"}}>
+        <th>{this.dateFormat(payment.created)}</th>
+        <th >{payment.description}</th>
         <th>{this.getCurrencySymbol(payment.currency, currenciesSymbol)} {payment.amount}</th>
       </tr>
       )
@@ -148,9 +148,9 @@ class PaymentHistory extends Component {
   }
 
   loadPaymentsTable = (billPayments) => {
-    return (<Table striped  >
+    return (<Table striped  bordered >
       <thead>
-        <tr>
+        <tr style={{backgroundColor:"#8F50CD",color:"#FFFFFF"}}>
           <th>DATE</th>
           <th>DESCRIPTION</th>
           <th>AMOUNT</th>
@@ -175,21 +175,23 @@ class PaymentHistory extends Component {
 
   dateFormat = (paymentDate) => {
     let date = new Date(paymentDate).toDateString();
-    let datasss = date.substring(8, 10);
-    let temp = '';
-    if (datasss > 3 && datasss < 21)
-      temp = 'th';
-    switch (datasss % 10) {
-      case 1: temp = "st";
-        break;
-      case 2: temp = "nd";
-        break;
-      case 3: temp = "rd";
-        break;
-      default: temp = "th";
-        break;
+    let day = date.substring(8, 10);
+    let dateSuperTag = '';
+    if (day > 3 && day < 21) {
+      dateSuperTag = 'th';
+    } else {
+      switch (day % 10) {
+        case 1: dateSuperTag = "st";
+          break;
+        case 2: dateSuperTag = "nd";
+          break;
+        case 3: dateSuperTag = "rd";
+          break;
+        default: dateSuperTag = "th";
+          break;
+      }
     }
-    return datasss + temp + date.substring(3, 7) + " " + date.substring(11, 15);
+    return (<div>{day}<sup>{dateSuperTag}</sup> {date.substring(3, 7) + " " + date.substring(11, 15)}</div>);
   }
 }
 export default PaymentHistory;
