@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { withRouter, Link } from 'react-router-dom';
 import { Button, Nav, Modal, ModalHeader, ModalBody, ModalFooter, DropdownItem, DropdownMenu, DropdownToggle, } from "reactstrap";
 import { AppSidebarToggler, AppNavbarBrand, AppHeaderDropdown } from "@coreui/react";
-import { FaCaretDown, FaSync, FaCaretUp, FaUserTie, FaPowerOff, FaAngleDown, FaAddressCard, FaRegCalendarAlt, FaUserEdit } from "react-icons/fa";
+import { FaCaretDown, FaSync, FaCaretUp, FaUserTie, FaPowerOff, FaAngleDown, FaAddressCard, FaRegCalendarAlt, FaUserEdit, FaKey } from "react-icons/fa";
 import { AuthButton } from "../../App";
 import Config from "../../data/Config";
 import Store from "../../data/Store";
@@ -87,8 +87,8 @@ const DefaultHeader = (props) => {
             <DropdownItem header tag="div" className="text-center"><strong> Settings</strong></DropdownItem>
             <DropdownItem><Link to="/billing/address" ><FaAddressCard style={{ color: "#F16939", marginRight: 15 }} />Billing Address</Link> </DropdownItem>
             <DropdownItem><Link to="/billing/paymentHistory" ><FaRegCalendarAlt style={{ color: "green", marginRight: 15 }} />Payment History</Link> </DropdownItem>
-            <DropdownItem><Link to="/editUser" ><FaUserEdit style={{ color: "#101011", marginRight: 15 }} />Edit User</Link> </DropdownItem>
-            <DropdownItem><Link to="/changePassword" ><FaUserEdit style={{ color: "#101011", marginRight: 15 }} />Change Password</Link> </DropdownItem>
+            <DropdownItem><Link to="/editUser" ><FaUserEdit style={{ color: "#AB2504", marginRight: 15 }} />Edit User</Link> </DropdownItem>
+            <DropdownItem><Link to="/changePassword" ><FaKey style={{ color: "#101011", marginRight: 15 }} />Change Password</Link> </DropdownItem>
             <DropdownItem onClick={e => toggleDanger(e)} ><FaPowerOff style={{ color: "red", marginRight: 15 }} />Logout</DropdownItem>
           </DropdownMenu>
         </AppHeaderDropdown>

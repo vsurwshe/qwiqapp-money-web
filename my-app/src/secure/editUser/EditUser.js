@@ -5,6 +5,7 @@ import { AvForm, AvField } from 'availity-reactstrap-validation';
 import { Link } from 'react-router-dom'
 import UserApi from '../../services/UserApi';
 import Config from '../../data/Config';
+import Store from '../../data/Store';
 
 
 class EditUser extends Component {
@@ -12,37 +13,36 @@ class EditUser extends Component {
         super(props);
         this.state = { 
             updated: false,
-            user: ""
+            user: Store.getUser() ? Store.getUser() : ""
          }
     }
-
+    
     userUpdate = (event, error, values) =>{
         if (error.length === 0 ) {
             new UserApi().updateUser(this.updateSuccessCall, this.updateErrorCall, values);
-        }
+        } 
     }
 
     updateSuccessCall = (user) =>{
-        this.setState({ user, updated: true, content: "User Updated Succesfully " });
+        this.setState({ updated: true, content: "User Updated Succesfully !" });
     }
     updateErrorCall = (error) =>{
-        this.setState({ updated: true,content: "Something went wrong. Please Try Again. " });
+        this.setState({ updated: true,content: "Unable to process request, Please try Again.. " });
         console.log(error.message)
     }
     
     render() { 
-        const {updated} = this.state;
+        const {updated, content, user} = this.state;
         if (updated) {
-            return this.loadUpdateSuccess();
+            return this.loadUpdateSuccess(content);
         } else {
-            return this.loadEditUser();
+            return this.loadEditUser(user);
         }
     }
 
-    loadUpdateSuccess = () => {
-        const {user, content} = this.state
+    loadUpdateSuccess = (content) => {
         return (<Card>
-            <CardHeader>EDIT USER </CardHeader>
+            <CardHeader><b>EDIT USER </b></CardHeader>
             <CardBody><center>{content}</center> 
             {this.callReload()}
             </CardBody>
@@ -50,19 +50,23 @@ class EditUser extends Component {
     }
     callReload = () => {
         setTimeout(()=>{
-            window.location.reload()
+           window.location.reload()
         }, Config.apiTimeoutMillis)
     }
-    loadEditUser = () =>{
-        return ( <div>
-            <AvForm onSubmit={this.userUpdate} >
-                 <AvField name="email" type="email" label="Email" placeholder="Email" />
-                 <AvField name="name" type="text" label="User Name" placeholder="User Name" />
-                 <center>
-                 <Button color="success" >Update</Button>
-                 <Link to="/dashboard" style={{marginLeft: 10}} ><Button color="secondary" type="button" >Cancel</Button></Link>
-                 </center>
-            </AvForm></div> );
+    loadEditUser = (user) =>{
+        return ( <Card>
+            <CardHeader><b >EDIT USER</b></CardHeader>
+            <CardBody>
+                <AvForm onSubmit={this.userUpdate} >
+                    <AvField name="email" type="email" label="Email" placeholder="Email" value={user.email} required />
+                    <AvField name="name" type="text" label="User Name" placeholder="User Name" value={user.name} required/>
+                    <center>
+                    <Button color="success" >Update</Button>
+                    <Link to="/dashboard" style={{marginLeft: 10}} ><Button color="secondary" type="button" >Cancel</Button></Link>
+                    </center>
+                </AvForm>
+            </CardBody>
+            </Card> );
     }
 
 }
