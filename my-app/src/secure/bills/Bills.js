@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Button,Row, Col, Card, CardBody, Alert, Modal, ModalHeader, ModalBody, ModalFooter, Dropdown, DropdownToggle, Input,
+import { Button,Row, Col, Card, CardHeader, CardBody, Alert, Modal, ModalHeader, ModalBody, ModalFooter, Dropdown, DropdownToggle, Input,
          DropdownMenu, DropdownItem, ListGroupItem, ListGroup, InputGroup, InputGroupAddon, InputGroupText  } from "reactstrap";
 import { FaEllipsisV, FaSearch } from 'react-icons/fa';
 import Loader from 'react-loader-spinner'
@@ -193,16 +193,20 @@ class Bills extends Component {
   loadHeader = () => {
     return (
       <div style={{ paddingTop: 20, paddingRight: 10 }}  >
+        <CardHeader>
         <Row>
           <Col sm={3} ><strong style={{fontSize:20, marginLeft:20 }} >BILLS</strong></Col>
           <Col>
+         {this.state.bills.length!==0 &&         
             <InputGroup>
               <Input  placeholder="Search Bills....." onChange={this.searchSelected} />
               <InputGroupAddon addonType="append"> <InputGroupText><FaSearch /></InputGroupText></InputGroupAddon>
-            </InputGroup>
-          </Col>
+            </InputGroup>       
+         }
+         </Col>
           <Col sm={3}> <Button color="success" className="float-right" onClick={this.callCreateBill} > + Add </Button></Col>
         </Row>  
+        </CardHeader>
       </div>
     )
   }
