@@ -43,15 +43,15 @@ class EditUser extends Component {
     loadUpdateSuccess = (content) => {
         return (<Card>
             <CardHeader><b>EDIT USER </b></CardHeader>
-            <CardBody><center>{content}</center> 
+            <CardBody><center><b style={{color: "green"}}>{content}</b></center> 
             {this.callReload()}
             </CardBody>
         </Card>)
     }
     callReload = () => {
         setTimeout(()=>{
-           window.location.reload()
-        }, Config.apiTimeoutMillis)
+            window.location.href = "/dashboard";
+        }, Config.apiTimeoutMillis);
     }
     loadEditUser = (user) =>{
         return ( <Card>
@@ -61,8 +61,8 @@ class EditUser extends Component {
                     <AvField name="email" type="email" label="Email" placeholder="Email" value={user.email} required />
                     <AvField name="name" type="text" label="User Name" placeholder="User Name" value={user.name} required/>
                     <center>
-                    <Button color="success" >Update</Button>
-                    <Link to="/dashboard" style={{marginLeft: 10}} ><Button color="secondary" type="button" >Cancel</Button></Link>
+                        <Button color="success" >Update</Button>
+                        <Link to="/dashboard" style={{marginLeft: 10}} ><Button color="secondary" type="button" >Cancel</Button></Link>
                     </center>
                 </AvForm>
             </CardBody>

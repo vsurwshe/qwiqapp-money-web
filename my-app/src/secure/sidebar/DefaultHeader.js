@@ -50,7 +50,10 @@ const DefaultHeader = (props) => {
   });
 
   const getUserName =  () => {
-    changeUsername(userName = Store.getUser().name)
+    let user = Store.getUser();
+    if (user) {
+      changeUsername(userName = user.name)
+    }
   }
 
   const loadAuthButton = () => {

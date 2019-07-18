@@ -34,13 +34,11 @@ let AccessTokenError = function (err, failure, requestUrl, requestMethod, data, 
     if (err.request.status === 0) {
       errorResponse(err, failure)
     } else if (err.response.status === 403 || err.response.status === 401) {
-      console.log(err.response["data"].error)
       if (err.response["data"].error.debugMessage) {
         errorResponse("Wrong password supplied.", failure)
       } else {
         new LoginApi().refresh(() => { process(success, failure, requestUrl, requestMethod, data) }, errorResponse(err, failure))
       }
-        // 
     }  else { errorResponse(err, failure) }
 }
 let validResponse = function (resp, successMethod) {
