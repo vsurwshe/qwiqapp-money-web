@@ -49,7 +49,7 @@ const DefaultHeader = (props) => {
     getUserName();
   });
 
-  const getUserName =  () => {
+  const getUserName = () => {
     let user = Store.getUser();
     if (user) {
       changeUsername(userName = user.name)
