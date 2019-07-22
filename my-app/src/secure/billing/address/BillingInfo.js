@@ -69,18 +69,19 @@ class BillingInfo extends Component {
           <CardBody>
             <Alert isOpen={visible} color="danger">Unable to process, Please try Again.... </Alert>
             {billing !== null &&
-              <center className="text-sm-left">
-               <span><b>Address: </b></span><br/>
-              <p style={{paddingLeft:50}}  >
-              {billing.firstName} {billing.lastName}<br></br>               
-                {billing.addressLine1}
-                {billing.addressLine2 && ' '+billing.addressLine2+','} <br />
+                <CardBody>
+                <center className="text-sm-left">
+                <b>{billing.firstName} {billing.lastName}</b><br></br>
+              <p >
+                {billing.addressLine1+', '}
+                {billing.addressLine2 && billing.addressLine2+','} <br />
                 {billing.city && billing.city+', '} 
-                {billing.postCode && billing.postCode+','} <br />
-                {billing.region && billing.region+ ', '}
-                {billing.country}
+                {billing.region && billing.region+ ', '} 
+                {(billing.city && billing.region && (<br />))}
+                {billing.country} {billing.postCode && " - "+billing.postCode}
                </p>
               </center>
+                </CardBody>
               }
           </CardBody>
         </Card>
