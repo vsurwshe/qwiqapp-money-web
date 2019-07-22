@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { withRouter, Link } from 'react-router-dom';
 import { AppSidebarToggler, AppNavbarBrand, AppHeaderDropdown } from "@coreui/react";
 import { Button, Nav, Modal, ModalHeader, ModalBody, ModalFooter, DropdownItem, DropdownMenu, DropdownToggle, } from "reactstrap";
-import { FaCaretDown, FaSync, FaCaretUp, FaKey,FaUserEdit,FaUserTie, FaPowerOff, FaAngleDown, FaAddressCard, FaRegCalendarAlt } from "react-icons/fa";
+import { FaCaretDown, FaSync, FaCaretUp, FaKey, FaUserEdit, FaUserTie, FaPowerOff, FaAngleDown, FaAddressCard, FaRegCalendarAlt } from "react-icons/fa";
 import { AuthButton } from "../../App";
 import Config from "../../data/Config";
 import Store from "../../data/Store";
@@ -54,7 +54,7 @@ const DefaultHeader = (props) => {
     if (user) {
       changeUsername(userName = user.name)
     }
-  }; 
+  };
   const loadAuthButton = () => {
     return (
       <Modal isOpen={authButton} toggle={toggleDanger} >
