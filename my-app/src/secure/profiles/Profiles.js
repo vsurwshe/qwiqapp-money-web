@@ -5,11 +5,10 @@ import UpdateProfile from "./UpdateProfile";
 import CreateProfile from "./CreateProfile";
 import DeleteProfile from "./DeleteProfile";
 import {Redirect} from 'react-router';
-import { FaPen, FaTrashAlt } from 'react-icons/fa';
 import ProfileApi from "../../services/ProfileApi";
 import { DeleteModel } from "../utility/DeleteModel";
 import { ProfileEmptyMessage } from "../utility/ProfileEmptyMessage";
-import { Container, Button, Card, CardBody, Col, Row, CardHeader, Alert } from "reactstrap";
+import { Container, Button, Card, CardBody, Table, CardHeader, Alert } from "reactstrap";
 
 /**
  * Display list of profiles,Manage profile like (update, delete)
@@ -29,7 +28,7 @@ class Profiles extends Component {
       danger: false,
       spinner: false,
       visible: false,
-      selectProfile: false
+      selectProfile: false,
     };
   }
 
@@ -85,7 +84,7 @@ class Profiles extends Component {
 
   loadHeader = () => {
     return (
-      <CardHeader><strong>PROFILES</strong>
+      <CardHeader style={{paddingBottom:"20px"}} ><strong>PROFILES</strong>
         <Button color="success" className="float-right" onClick={this.callCreateProfile}> + Create Profile </Button>
       </CardHeader>)
   }
@@ -98,7 +97,8 @@ class Profiles extends Component {
             {this.loadHeader()}
             <CardBody>
               {this.state.visible && <Alert color="danger">Unable to Process your Request, please try Again...</Alert>}
-              <Loader type="TailSpin" color="#2E86C1" height={60} width={60} /></CardBody>
+              <Loader type="TailSpin" color="#2E86C1" height={60} width={60} />
+            </CardBody>
           </center>
         </Card>
       </div>)
@@ -108,18 +108,23 @@ class Profiles extends Component {
   showProfile = (profiles) => {
     return (
       <div className="animated fadeIn">
-        <Card>
           {this.loadHeader()}
           <CardBody>
-            <Row>
-              <Col sm="12" md={{ size: 6, offset: 3 }}>
-                {profiles.map((profile,key) => {
+            <Table bordered > 
+              <thead>
+                <tr style={{backgroundColor:"#DEE9F2  ",color:'#000000'}}>
+                  <th >Profile Name</th>
+                  <th>Profile Type </th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody style={{paddingBottom:"20px"}}>
+              {profiles.map((profile,key) => {
                   return this.loadSingleProfile(profile, key);
                 })}
-              </Col>
-            </Row>
+              </tbody>
+            </Table>
           </CardBody>
-        </Card>
       </div>)
   }
 
@@ -130,14 +135,41 @@ class Profiles extends Component {
   //this method load the single profile
   loadSingleProfile = (profile, key) => {
     return (
-      <div key={key} style={{ padding: 10 }} >
-        <b onClick={() => { this.selectProfile(profile.id) }} ><Avatar name={profile.name.charAt(0)} size="40" round={true} /> &nbsp;&nbsp;{profile.name}</b>
-        <FaTrashAlt onClick={() => { this.setState({ id: profile.id }); this.toggleDanger() }} className="float-right" style={{ marginLeft: "20px", color: 'red', marginTop: "15px" }} />
-        <FaPen size={14} className="float-right" style={{ marginLeft: "20px", color: '#4385ef', marginTop: "15px" }} onClick={() => { this.updateProfile(profile.id, profile.name) }} />
-      </div>);
+      <tr key={key} >
+        <td><b onClick={() => { this.selectProfile(profile.id) }} ><Avatar name={profile.name.charAt(0)} size="40" round={true} /> &nbsp;&nbsp;{profile.name}</b> </td>
+        <td style = {{paddingTop:18}}>{this.loadProfileType(profile.type)} </td>
+        <td>
+          <Button style={{backgroundColor:"#43A432",color:"#F0F3F4"}} onClick={() => { this.updateProfile(profile.id, profile.name) }}>Update</Button> 
+         
+          <Button color="danger" onClick={() => { this.setState({ id: profile.id }); this.toggleDanger() }} style={{marginLeft:10}} >Delete</Button>
+          {/* <FaPen size={14} style={{ color: '#4385ef', marginTop: "15px" }} onClick={() => { this.updateProfile(profile.id, profile.name) }} />
+          <FaTrashAlt onClick={() => { this.setState({ id: profile.id }); this.toggleDanger() }}  style={{ marginLeft:20, color: 'red', marginTop: "15px" }} /> */}
+        </td>
+      </tr>
+    );
   }
 
-  //this method call the delete model
+  loadProfileType = (type) => {
+    let profileType = "";
+    switch (type) {
+      case 1: profileType = "Basic Profile";
+        break;
+      case 2: profileType = "Premium Profile";
+        break;
+      case 3: profileType = "Free Business Profile";
+        break;
+        case 4: profileType = "Business Profile";
+        break;
+      case 5: profileType = "CRM Profile";
+        break;
+      case 6: profileType = "Business + CRM Profile";
+        break;
+      default: profileType = "Free Profile";
+        break;
+    }
+    return profileType;
+  }
+  // delete model
   loadDeleteProfile = () => {
     return (
       <DeleteModel danger={this.state.danger} headerMessage="Delete Profile" bodyMessage="Are You Sure Want to Delete Profile?"

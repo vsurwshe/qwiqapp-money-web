@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Button, Row, Col, Card, CardBody, Alert, Input, InputGroup, InputGroupAddon, InputGroupText, ListGroupItem, ListGroup, Collapse } from "reactstrap";
+import { Button, Row, Col, Card, CardBody, CardHeader, Alert, Input, InputGroup, InputGroupAddon, InputGroupText, ListGroupItem, ListGroup, Collapse } from "reactstrap";
 import { FaPaperclip, FaUserCircle, FaSearch } from 'react-icons/fa';
 import Loader from 'react-loader-spinner'
 import UpdateContact from "./UpdateContact";
@@ -57,11 +57,11 @@ class Contacts extends Component {
     new ContactApi().getContacts(this.successCall, this.errorCall, this.state.profileId);
   }
 
-  successCall = (contactJson) => {
-    if (contactJson === []) {
+  successCall = (contacts) => {
+    if (contacts === []) {
       this.setState({ contacts: [0] })
     } else {
-      this.setState({ contacts: contactJson, spinner: true })
+      this.setState({ contacts, spinner: true })
       this.loadCollapse();
     }
   };
@@ -182,20 +182,24 @@ class Contacts extends Component {
 
   loadHeader = () => {
     return (
-      <Row style={{ padding: "20px 20px 0px 20px" }}>
-        <Col sm={3}>
-          <strong style={{ fontSize: 24 }}>Contacts </strong>
-        </Col>
-        <Col className="shadow p-0 mb-3 bg-white rounded">
-          <InputGroup >
-            <Input type="search" className="float-right" onChange={this.searchHandler} value={this.state.searchContact} placeholder="Search Contacts..." />
-            <InputGroupAddon addonType="append"><InputGroupText className="dark"><FaSearch /></InputGroupText></InputGroupAddon>
-          </InputGroup>
-        </Col>
-        <Col sm={2}>
-          <Button color="success" className="float-right" onClick={this.callCreateContact}> + ADD </Button>
-        </Col>
-      </Row>
+      <CardHeader>
+        <Row style={{ padding: "20px 20px 0px 20px" }}>
+          <Col sm={3}>
+            <strong style={{ fontSize: 24 }}>Contacts </strong>
+          </Col>
+          <Col >
+            {this.state.contacts.length !== 0 &&
+              <InputGroup >
+                <Input type="search" className="float-right" onChange={this.searchHandler} value={this.state.searchContact} placeholder="Search Contacts..." />
+                <InputGroupAddon addonType="append"><InputGroupText className="dark"><FaSearch /></InputGroupText></InputGroupAddon>
+              </InputGroup>
+            }
+          </Col>
+          <Col sm={2}>
+            <Button color="success" className="float-right" onClick={this.callCreateContact}> + ADD </Button>
+          </Col>
+        </Row>
+      </CardHeader>
     )
   }
 
@@ -282,7 +286,7 @@ class Contacts extends Component {
   setContactID = contact => {
     this.setState({ contactId: contact.id });
   }
-  
+
   showAttachments(contactId, contact) {
     return (
       <div style={{ paddingLeft: 29, paddingTop: 10 }}>

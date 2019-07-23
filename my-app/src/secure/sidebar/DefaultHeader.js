@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { withRouter, Link } from 'react-router-dom';
-import { Button, Nav, Modal, ModalHeader, ModalBody, ModalFooter, DropdownItem, DropdownMenu, DropdownToggle, } from "reactstrap";
 import { AppSidebarToggler, AppNavbarBrand, AppHeaderDropdown } from "@coreui/react";
-import { FaCaretDown, FaSync, FaCaretUp, FaUserTie, FaPowerOff, FaAngleDown, FaAddressCard, FaRegCalendarAlt, FaUserEdit, FaKey } from "react-icons/fa";
+import { Button, Nav, Modal, ModalHeader, ModalBody, ModalFooter, DropdownItem, DropdownMenu, DropdownToggle, } from "reactstrap";
+import { FaCaretDown, FaSync, FaCaretUp, FaKey, FaUserEdit, FaUserTie, FaPowerOff, FaAngleDown, FaAddressCard, FaRegCalendarAlt } from "react-icons/fa";
 import { AuthButton } from "../../App";
 import Config from "../../data/Config";
 import Store from "../../data/Store";
@@ -46,16 +46,15 @@ const DefaultHeader = (props) => {
   //TODO:  handle profile error message
   useEffect(() => {
     successCall();
-    getUserName();
+    getUseName();
   });
 
-  const getUserName = () => {
+  const getUseName = () => {
     let user = Store.getUser();
     if (user) {
       changeUsername(userName = user.name)
     }
-  }
-
+  };
   const loadAuthButton = () => {
     return (
       <Modal isOpen={authButton} toggle={toggleDanger} >

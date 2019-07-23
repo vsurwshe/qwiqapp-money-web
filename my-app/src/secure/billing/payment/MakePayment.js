@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Card, CardBody, CardHeader, Col, FormGroup, Label, Input  } from 'reactstrap';
+import { Card, CardBody, CardHeader, Col, FormGroup, Label, Input, Button } from 'reactstrap';
+import {Link} from 'react-router-dom';
 import Script from 'react-load-script';
 import Config from '../../../data/Config';
 import Store from "../../../data/Store";
@@ -134,11 +135,15 @@ class MakePayment extends Component {
     this.setState({ inputValue: e.target.value });
   }
   loadMakePayment = (data) => {
-    let action = Store.getUser().action; //VERIFY_EMAIL
+    let action = Store.getUser().action; 
     let url =  PAYPAL_URL + Store.getSetting('SETTINGS').paypalParams;
     return (
       <div className="animated fadeIn">
-        { action === "ADD_CREDITS" || action === "ADD_CREDITS_LOW" || action === null ? this.loadPayPalButton(url) : this.loadVerifyMessage() }
+        {/* { action === "ADD_CREDITS" || action === "ADD_CREDITS_LOW" || action === null ? this.loadPayPalButton(url) : this.loadVerifyMessage() } */}
+        {/* { action !== "ADD_BILLING" ? this.loadPayPalButton(url) : this.loadVerifyMessage() } */}
+       { action !== "VERIFY_EMAIL"
+               ? (action !== "ADD_BILLING" ? this.loadPayPalButton(url) : this.loadAddBillingAddress(action))
+               : this.loadVerifyMessage() }
       </div>
     )
   }
@@ -148,6 +153,30 @@ class MakePayment extends Component {
       <Card>
         <CardBody>
           <center><b>You are not verified yet. Please, Verify Your Email</b></center>
+        </CardBody>
+      </Card>)
+  }
+
+  loadAddBillingAddress = (action) => {
+    let emptyBillingAddress = {
+      addressLine1: '',
+      addressLine2: '',
+      city: '',
+      company: '',
+      country: '',
+      firstName: '',
+      lastName: '',
+      postCode: '',
+      region: ''
+    }
+    return (
+      <Card>
+        <CardBody>
+          <center><b>You have not added your Billing Address yet. Please, Add Billing Address.</b><br /><br />
+              <Button color="info">
+                <Link to={{pathname: "/billing/address/add", state: {updateBill: emptyBillingAddress }}} style={{color:"black"}} > {action} </Link>
+              </Button>
+          </center>
         </CardBody>
       </Card>)
   }
