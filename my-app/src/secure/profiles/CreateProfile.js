@@ -156,7 +156,7 @@ class CreateProfile extends Component {
     let url = action === 'ADD_BILLING' ? "/billing/address" : '/billing/paymentHistory';
     if (action === "VERIFY_EMAIL") {
       return <Alert color="warning">Sorry you cannot Create Profile until you verify Your Email</Alert>
-    } else if (profileType > 0 && action === 'ADD_BILLING') {
+    } else if (profileType !== 0 && profileType !== 3 && action ) {
       return <>
         <Button color="info"><Link to={url} style={{ color: "black" }}> {action}</Link></Button>
         <Button active color="danger" style={{ marginLeft: 20 }} aria-pressed="true" onClick={this.cancelCreateProfile}>Cancel</Button>
