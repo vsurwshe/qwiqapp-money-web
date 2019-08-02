@@ -5,13 +5,13 @@ import Store from "../data/Store";
 
 class GeneralApi {
   getCountrylist(success, failure) {
-    process(success, failure, "/countries", "GET");
+    process(success, failure, "/general/countries", "GET");
   };
   getCurrencyList(success, failure) {
-    process(success, failure, "/currencies", "GET");
+    process(success, failure, "/general/currencies", "GET");
   }
   settings(success, failure){
-    process(success, failure, "/settings", "GET");
+    process(success, failure, "/general/settings", "GET");
   }
 }
 
