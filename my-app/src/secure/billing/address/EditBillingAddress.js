@@ -2,9 +2,11 @@ import React, { Component } from "react";
 import { Redirect } from 'react-router';
 import { AvForm, AvField } from 'availity-reactstrap-validation';
 import { Alert, Button, Card, FormGroup, Col, Row } from "reactstrap";
+import UserApi from '../../../services/UserApi';
 import BillingAddressApi from '../../../services/BillingAddressApi';
 import GeneralApi from "../../../services/GeneralApi";
 import Config from "../../../data/Config";
+import Store from "../../../data/Store";
 
 class EditBillingAddress extends Component {
 
@@ -56,7 +58,11 @@ class EditBillingAddress extends Component {
 
   //this method call when lables created successfully
   successCreate = () => {
+    let user = Store.getUser();
     this.callAlertTimer("success", "Saved Billing Address");
+    if (user.action === "ADD_BILLING") {
+      new UserApi().getUser((response)=>Store.saveUser(response), (error)=>{console.log(error)});
+    }
   }
 
   //this handle the error response the when api calling
