@@ -122,8 +122,8 @@ class Bills extends Component {
   }
 
   //this method for the load Update Compoents
-  updateBill = ubill => {
-   this.setState({ updateBill : true, rebill : ubill })
+  updateBill = rebill => {
+   this.setState({ updateBill : true, rebill })
   };
 
   //this method for the load delete Components
@@ -168,7 +168,7 @@ class Bills extends Component {
     } else if (createBill) {
       return ( <CreateBill pid={profileId} label={labels} categories={categories} contacts={contacts} />)
     }else if (updateBill) {
-      return(<UpdateBill pid={profileId} bill={rebill} lables={labels} categories={categories} contacts={contacts} />)
+     return(<UpdateBill pid={profileId} bill={rebill} lables={labels} categories={categories} contacts={contacts} />)
     }else if(deleteBill) {
       return ( <DeleteBill id={id}  pid={profileId}/> )
     }else{

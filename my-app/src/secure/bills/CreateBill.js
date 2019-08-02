@@ -46,20 +46,18 @@ cancelCreateBill=()=>{
     if (categoryOption === null){
       this.callAlertTimer("warning", "Please Select Category...");
     } else if (errors.length === 0) { 
-        let billDateCal = new Date(values.bill_Date);
-        let dueDateCal = new Date(values.due_Date);
-        if ((dueDateCal-billDateCal)/(1000*60*60*24)>=0) {
-          let dueDate, billDate;
-          let billYear =values.bill_Date.split("-")[0];
+        if ((new Date(values.dueDays)-new Date(values.billDate))/(1000*60*60*24)>=0) {
+          let dueDaysValue, billDateValue;
+          let billYear =values.billDate.split("-")[0];
           if (billYear <1900) {
             this.callAlertTimer("danger", "Unsupported 'BillDate', Select a date after year 1900. Ex: 24/08/1995!!");
           } else {
             // bill date formate Year+Month+Day
-          billDate = values.bill_Date.split("-")[0]+values.bill_Date.split("-")[1]+values.bill_Date.split("-")[2];
+          billDateValue = values.billDate.split("-")[0]+values.billDate.split("-")[1]+values.billDate.split("-")[2];
           //due Date formate Year+Month+Day
-          dueDate = values.due_Date.split("-")[0]+values.due_Date.split("-")[1]+values.due_Date.split("-")[2];
-          const newData = {...values, "billDate":billDate, "dueDate":dueDate, "categoryId":categoryOption.value, "contactId":contactOption.value ,"labelIds":labelOption===[] ? '': labelOption.map(opt=>{return opt.value})}
-          this.handlePostData(event, newData); 
+          dueDaysValue = values.dueDays.split("-")[0]+values.dueDays.split("-")[1]+values.dueDays.split("-")[2];
+          const newData = {...values, "billDate":billDateValue, "dueDays":dueDaysValue, "categoryId":categoryOption.value, "contactId":contactOption.value ,"labelIds":labelOption===[] ? '': labelOption.map(opt=>{return opt.value})}
+           this.handlePostData(event, newData); 
           }
         } else{
           this.callAlertTimer("danger", "Due Date should be greater than or equal to Bill Date");
@@ -70,8 +68,6 @@ cancelCreateBill=()=>{
   //this method handle the Post method from user`
   handlePostData = async (e, data) => {
     e.persist();
-    delete data.bill_Date;
-    delete data.due_Date;
     this.setState({doubleClick:true})
     await new BillApi().createBill(this.successCreate, this.errorCall, this.state.profileId, data);
   };
@@ -141,10 +137,10 @@ cancelCreateBill=()=>{
               </Row>
               <br />
               <Row>
-                <Col><AvField name="bill_Date" label="Bill Date" value={this.state.userBillDate} type="date" errorMessage="Invalid Date" validate={{ date: { format: 'dd/MM/yyyy' }, 
+                <Col><AvField name="billDate" label="Bill Date" value={this.state.userBillDate} type="date" errorMessage="Invalid Date" validate={{ date: { format: 'dd/MM/yyyy' }, 
                       dateRange: {format: 'YYYY/MM/DD', start: {value: '1900/01/01'}, end: {value: '9999/12/31'}}, 
                       required: { value: true } }} /></Col>
-                <Col><AvField name="due_Date" label="Due Date" value={this.state.userDueDate} type="date" errorMessage="Invalid Date" validate={{ date: { format: 'yyyy/MM/dd' },
+                <Col><AvField name="dueDays" label="Due Days" value={this.state.userDueDate} type="date" errorMessage="Invalid Date" validate={{ date: { format: 'yyyy/MM/dd' },
                       dateRange: {format: 'YYYY/MM/DD', start: {value: '1900/01/01'}, end: {value: '9999/12/31'}}, required: { value: true } }} /></Col>
               </Row>
               <Row>

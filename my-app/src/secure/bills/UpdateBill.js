@@ -51,17 +51,17 @@ class UpdateBill extends Component {
   handleSubmitValue = (event, errors, values) => {
     const { labelOption, categoryOption, categoryOptionUpdate, labelOptionUpdate ,contactOptionUpdate,contactOption} = this.state
     if (errors.length === 0) {
-      let bill_DateCal = new Date(values.bill_Date)
-      let dueDateCal = new Date(values.due_Date)
+      let bill_DateCal = new Date(values.billDate)
+      let dueDateCal = new Date(values.dueDays)
       let diffDate = (dueDateCal - bill_DateCal)/(1000*60*60*24);
       if (diffDate >= 0) {
-        if (values.bill_Date.split("-")[0]<1900) {
+        if (values.billDate.split("-")[0]<1900) {
          this.setState({ alertColor: "danger", content: "Unsupported 'BillDate', Select a date after year 1900. Ex: 24/08/1995!!"}); 
         } else {
-          let billDate = values.bill_Date.split("-")[0] + values.bill_Date.split("-")[1] + values.bill_Date.split("-")[2];
-          let dueDate = values.due_Date.split("-")[0] + values.due_Date.split("-")[1] + values.due_Date.split("-")[2];
+          let billDate = values.billDate.split("-")[0] + values.billDate.split("-")[1] + values.billDate.split("-")[2];
+          let dueDays = values.dueDays.split("-")[0] + values.dueDays.split("-")[1] + values.dueDays.split("-")[2];
             const newData = {
-              ...values, "billDate": billDate, "dueDate": dueDate, "categoryId": categoryOptionUpdate ? categoryOption.value :
+              ...values, "billDate": billDate, "dueDays": dueDays, "categoryId": categoryOptionUpdate ? categoryOption.value :
                 categoryOption,"contactId": contactOptionUpdate ? contactOption.value :
                 contactOption, "labelIds": labelOption === null || labelOption === [] ? [] : (labelOptionUpdate ? labelOption.map(opt => { return opt.value }) : labelOption), "version": this.props.bill.version
             }
@@ -153,10 +153,10 @@ class UpdateBill extends Component {
               </Row>
               <br />
               <Row>
-                <Col><AvField name="bill_Date" label="Bill Date" value={this.loadDateFormat(bill.billDate)} type="date"  errorMessage="Invalid Date" validate={{ date: { format: 'yyyy/MM/dd' },
+                <Col><AvField name="billDate" label="Bill Date" value={this.loadDateFormat(bill.billDate)} type="date"  errorMessage="Invalid Date" validate={{ date: { format: 'yyyy/MM/dd' },
                   dateRange: {format: 'YYYY/MM/DD', start: {value: '1900/01/01'}, end: {value: '9999/12/31'}},
                   required: { value: true } }} /></Col>
-                <Col><AvField name="due_Date" label="Due Date" value={this.loadDateFormat(bill.dueDate)} type="date"  max="9999/12/30" errorMessage="Invalid Date" validate={{ date: { format: 'yyyy/MM/dd' },
+                <Col><AvField name="dueDays" label="Due Date" value={this.loadDateFormat(bill.dueDays)} type="date"  max="9999/12/30" errorMessage="Invalid Date" validate={{ date: { format: 'yyyy/MM/dd' },
                       dateRange: {format: 'YYYY/MM/DD', start: {value: '1900/01/01'}, end: {value: '9999/12/31'}}, required: { value: true } }} /></Col>
               </Row>
               <Row>
