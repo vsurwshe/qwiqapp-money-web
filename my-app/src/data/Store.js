@@ -89,8 +89,8 @@ const Store = {
     },
     //Gets User Details
     getUser: function () {
-        const categories = db.getItem("USERDATA")
-        return JSON.parse(categories)
+        const user = db.getItem("USERDATA")
+        return JSON.parse(user)
     },
     // Setting Api for payapal payment transaction
     saveSetting: function (jsonValue) {
@@ -134,7 +134,11 @@ const Store = {
     },
     //gets selected profile from local storage
     getProfile: function () {
-        return JSON.parse(db.getItem("PROFILE"));
+        let profile = db.getItem("PROFILE")
+        if (profile!=="undefined") {
+            return JSON.parse(profile);
+         }
+         return null;
     },
     setSelectedValue: function (data) {
         db.setItem("SELECTEDPROFILE", data)

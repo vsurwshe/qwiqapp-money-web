@@ -4,7 +4,7 @@ import { Card, CardBody, Button } from 'reactstrap';
 import logo from './images/payment-success.png';
 
 const PaymentSuccessMessage = (props) => {
-    if (props.paymentReferenceId) {
+    if (props.paymentReferenceId && (props.response === 202 ||  props.response === 200) ) {
         return (<div>
             <Card> <CardBody>
                 <center><br /><br />
@@ -20,11 +20,12 @@ const PaymentSuccessMessage = (props) => {
         return (<div>
             <Card> <CardBody>
                 <center><br />
-                    <b> Something went wrong, Your payment is failed. Please Try Again</b>
+                    <b style={{color: '#EA182B'}}> Oops ..! Something went wrong, Your payment is failed. <br/> 
+                        Any money deducted from your account will be refunded within 3-5 working days.
+                    </b>
                 </center>
             </CardBody> </Card>
         </div> )
     }
-
 }
 export default PaymentSuccessMessage;

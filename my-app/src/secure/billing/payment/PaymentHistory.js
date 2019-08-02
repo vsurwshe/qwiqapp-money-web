@@ -30,36 +30,12 @@ class PaymentHistory extends Component {
   }
   //This Method is called for Api's Success Call
   successCall = async paymentDetails => {
-    await this.setState({ paymentDetails, spinner: true });
-    if (paymentDetails.length !== 0) {
-      this.calculateCurrentBal(paymentDetails);
-    }
-  }
-
-  // this function calculateing CurrentBalnce 
-  calculateCurrentBal = (paymentDetails) => {
-    let totalAmt = 0;
-    paymentDetails.map((payment, key) => {
-      return totalAmt = totalAmt + payment.amount;
-    });
-    let dayDiif = this.getDaysDiff(new Date(paymentDetails[paymentDetails.length - 1].created), new Date())
-    this.setState({ currentTotalBalance: (totalAmt - (dayDiif * 1)) })
-  }
-
-  // this function calculating Dates diffrencess
-  getDaysDiff = (initialDate, currentDate) => {
-    var calculateForDay = 1000 * 60 * 60 * 24;
-
-    var calculateNumberOfDays = currentDate.getTime() - initialDate.getTime();
-
-    // Convert back to days and return
-    return Math.round(calculateNumberOfDays / calculateForDay);
+    await this.setState({ paymentDetails: paymentDetails.payments, currentTotalBalance: paymentDetails.balance, spinner: true });
   }
 
   getCurrency = currency => {
     this.setState({ currenciesSymbol: currency })
   }
-
 
   //Method that shows API's Error Call
   errorCall = error => {
@@ -75,22 +51,23 @@ class PaymentHistory extends Component {
 
   render() {
     const { paymentDetails, spinner, currenciesSymbol } = this.state;
-    let billPayments = paymentDetails.map((payment, key) => {
-      return (<tr key={key} style={{textAlign:"left"}}>
-        <th>{this.dateFormat(payment.created)}</th>
-        <th >{payment.description}</th>
-        <th>{this.getCurrencySymbol(payment.currency, currenciesSymbol)} {payment.amount}</th>
-      </tr>
-      )
-    });
-
-    if (paymentDetails.length === 0) {
+    
+    
+    if (paymentDetails.length=== 0 ) {
       if (!spinner) {
-        return this.loadSpinner();
+        return this.loadSpinner()
       } else {
         return this.loadPayHistoryEmpty();
       }
     } else {
+      let billPayments = paymentDetails.map((payment, key) => {
+        return (<tr key={key} style={{textAlign:"left"}}>
+          <th>{this.dateFormat(payment.created)}</th>
+          <th >{payment.description}</th>
+          <th>{this.getCurrencySymbol(payment.currency, currenciesSymbol)} {payment.amount}</th>
+        </tr>
+        )
+      });
       return <div>{this.displayPaymentsList(billPayments)}</div>
     }
   }
@@ -138,7 +115,7 @@ class PaymentHistory extends Component {
       <Card>
         <CardHeader>
           <Label><b>PAYMENT HISTORY </b> <br /><b>Current Balance: £ </b>{this.state.currentTotalBalance} </Label>
-          <Link to="/billing/addCredits"> <Button color="success" className="float-right" onClick={this.addBillingPayment}> + Add Credits </Button></Link>
+          <Link to="/billing/addCredits"> <Button color="success" className="float-right" > + Add Credits </Button></Link>
         </CardHeader>
         <CardBody style={{ textAlign: "center" }}>
           {this.loadPaymentsTable(billPayments)}
