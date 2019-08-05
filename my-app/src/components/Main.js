@@ -30,6 +30,8 @@ import ChangePassword from "../secure/editUser/ChangePassword";
 import ForgotPassword from '../components/ForgotPassword';
 import Invoice from "../secure/billing/Invoice";
 
+import  {REACT_APP_BACKGROUNG_COLOUR} from '../environmnet';
+
 const DefaultFooter = React.lazy(() => import("../secure/sidebar/DefaultFooter"));
 
 class Main extends Component {
@@ -129,11 +131,11 @@ class Main extends Component {
   loadSecureRoutes = () => {
     const { user } = this.state
     return (
-      <div className="app ">
+      <div className="app "  style={{ backgroundColor:REACT_APP_BACKGROUNG_COLOUR }}>
         {this.loadHeader()}
         <div className="app-body">
           {this.loadSideBar()}
-          <main className="main" style={{ backgroundColor: "#FFFFFF" }}>
+          <main className="main" >
             {this.loadNotification(user)}
             <Container fluid>
               <Suspense fallback={this.loading()}>{this.loadRoutes()}</Suspense>

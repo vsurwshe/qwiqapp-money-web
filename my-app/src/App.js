@@ -3,10 +3,14 @@ import { withRouter } from "react-router-dom";
 import Store from "./data/Store";
 import Main from "./components/Main";
 import { Button } from 'reactstrap';
+import {BASE_URL} from './environmnet';
 
 const App = () => {
   return (
-    <div> <Main /> </div>
+    <>   
+    <p>{BASE_URL}</p>
+    <Main /> 
+     </>
   );
 };
 
