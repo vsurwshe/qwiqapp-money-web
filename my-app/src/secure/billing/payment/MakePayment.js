@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Card, CardBody, CardHeader, Col, FormGroup, Label, Input, Button } from 'reactstrap';
+import { Card, CardBody, CardHeader, Col, FormGroup, Label, Input, Button, Alert, Container } from 'reactstrap';
+
 import {Link} from 'react-router-dom';
 import Script from 'react-load-script';
 import Config from '../../../data/Config';
@@ -22,12 +23,10 @@ class MakePayment extends Component {
       scriptLoaded: false,
       scriptError: false,
       billingItems: [],
-      selectedItem: {
-        code: "B", // default radio button active 
-        amount: 10, 
-      },
+      selectedItem: {},
       paymentResponse:'',
-      loader: true
+      loader: true,
+      visible: false
     };
 
     this.createPaypalOrder = this.createPaypalOrder.bind(this)
@@ -39,7 +38,7 @@ class MakePayment extends Component {
   }
 
   successCall = (billingItems) => {
-    this.setState({ billingItems, loader: false })
+    this.setState({ billingItems, loader: false})
   };
 
   errorCall = (error) => { this.setState({ loader: false }); console.log(error); }
@@ -89,17 +88,21 @@ class MakePayment extends Component {
 
   createPaypalOrder(data, actions) {
     // Set up the transaction
-    return actions.order.create({
-      purchase_units: [{
-        amount: {
-          value: this.state.selectedItem.amount
-        }
-      }]
-    });
+    if(this.state.selectedItem.amount){
+      return actions.order.create({
+        purchase_units: [{
+          amount: {
+            value: this.state.selectedItem.amount
+          }
+        }]
+      });
+    } else{
+      this.setState({visible:true})
+    }
   }
 
   itemId = (amount, code) => {
-    this.setState({ selectedItem: {amount,code}})
+    this.setState({ selectedItem: {amount,code}, visible: false})
   }
 
   paymentSuccessMessage = (paymentResponse) => {
@@ -198,8 +201,10 @@ class MakePayment extends Component {
         onCreate={this.handleScriptCreate.bind(this)}
         onError={this.handleScriptError.bind(this)}
         onLoad={this.handleScriptLoad.bind(this)} />
-      <h4 style={{ paddingTop: 20 }}><center>Select any Payment Option</center></h4><br /><br />
+      <h4 style={{ paddingTop: 20 }}><center>Select any Payment Option</center></h4><br />
       <div className="form-group">
+        
+        <center><CardBody><Container><Alert isOpen={this.state.visible} color="warning"><b style={{color:'#072567'}}>Please Select your Payment option to continue</b></Alert></Container></CardBody></center>
         <FormGroup check>
           {this.state.billingItems === undefined ? " " : this.state.billingItems.map((item, index) => {
             return this.loadRadioButtons(item, index)
