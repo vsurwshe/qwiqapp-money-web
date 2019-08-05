@@ -28,40 +28,24 @@ class CreateBill extends Component {
      };
   }
   componentDidMount=()=>{
-  new GeneralApi().getCurrencyList(this.successCurrency, this.failureCurrency)
+    new GeneralApi().getCurrencyList(this.successCurrency, this.failureCurrency)
   }
-  successCurrency = jsonArray =>{
-    this.setState({ currencies: jsonArray });
-  }
-  failureCurrency = err =>{
-    console.log(err);
-  }
+  successCurrency = currencies =>{ this.setState({ currencies }); }
 
-cancelCreateBill=()=>{
-  this.setState({cancelCreateBill:true})
-}
+  failureCurrency = err =>{ console.log(err); }
+
+  cancelCreateBill=()=>{ this.setState({cancelCreateBill:true}) }
+
   //this method handle form submitons values and errors
   handleSubmitValue = (event, errors, values) => {
-    const { labelOption, categoryOption ,contactOption} = this.state 
+    const { labelOption, categoryOption ,contactOption} = this.state  
     if (categoryOption === null){
       this.callAlertTimer("warning", "Please Select Category...");
     } else if (errors.length === 0) { 
-        if ((new Date(values.dueDays)-new Date(values.billDate))/(1000*60*60*24)>=0) {
-          let dueDaysValue, billDateValue;
-          let billYear =values.billDate.split("-")[0];
-          if (billYear <1900) {
-            this.callAlertTimer("danger", "Unsupported 'BillDate', Select a date after year 1900. Ex: 24/08/1995!!");
-          } else {
-            // bill date formate Year+Month+Day
-          billDateValue = values.billDate.split("-")[0]+values.billDate.split("-")[1]+values.billDate.split("-")[2];
-          //due Date formate Year+Month+Day
-          dueDaysValue = values.dueDays.split("-")[0]+values.dueDays.split("-")[1]+values.dueDays.split("-")[2];
-          const newData = {...values, "billDate":billDateValue, "dueDays":dueDaysValue, "categoryId":categoryOption.value, "contactId":contactOption.value ,"labelIds":labelOption===[] ? '': labelOption.map(opt=>{return opt.value})}
-           this.handlePostData(event, newData); 
-          }
-        } else{
-          this.callAlertTimer("danger", "Due Date should be greater than or equal to Bill Date");
-        }
+      let billDateValue;
+      billDateValue = values.billDate.split("-")[0]+values.billDate.split("-")[1]+values.billDate.split("-")[2];
+      const newData = {...values, "billDate":billDateValue, "categoryId":categoryOption.value, "contactId":contactOption.value ,"labelIds":labelOption===[] ? '': labelOption.map(opt=>{return opt.value})}
+      this.handlePostData(event, newData); 
     }
   }
 
@@ -91,15 +75,15 @@ cancelCreateBill=()=>{
   };
 
   render() {
-    const { alertColor, content, categories,cancelCreateBill, contacts,billCreated } = this.state;
-    if(cancelCreateBill){
+    const { alertColor, content, categories, cancelCreateBill, contacts, billCreated } = this.state;
+    if (cancelCreateBill) {
       return <Bills/>
-    }else{
-    return <div>{billCreated ? <Bills /> : this.selectLabels(alertColor, content, categories,contacts)}</div>
+    } else {
+      return <div>{billCreated ? <Bills /> : this.selectLabels(alertColor, content, categories, contacts)}</div>
+    }
   }
-}
   
-  selectLabels = (alertColor, content, categories,contacts) =>{
+  selectLabels = (alertColor, content, categories, contacts) =>{
     return this.loadCreatingBill(alertColor, this.state.labels, content, categories,contacts);
   }
   
@@ -140,8 +124,7 @@ cancelCreateBill=()=>{
                 <Col><AvField name="billDate" label="Bill Date" value={this.state.userBillDate} type="date" errorMessage="Invalid Date" validate={{ date: { format: 'dd/MM/yyyy' }, 
                       dateRange: {format: 'YYYY/MM/DD', start: {value: '1900/01/01'}, end: {value: '9999/12/31'}}, 
                       required: { value: true } }} /></Col>
-                <Col><AvField name="dueDays" label="Due Days" value={this.state.userDueDate} type="date" errorMessage="Invalid Date" validate={{ date: { format: 'yyyy/MM/dd' },
-                      dateRange: {format: 'YYYY/MM/DD', start: {value: '1900/01/01'}, end: {value: '9999/12/31'}}, required: { value: true } }} /></Col>
+                <Col><AvField name="dueDays" label="Due Days" value={this.state.userDueDate} type="number" errorMessage="Invalid Days" /></Col>
               </Row>
               <Row>
                 <Col>

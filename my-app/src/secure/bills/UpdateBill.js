@@ -49,31 +49,14 @@ class UpdateBill extends Component {
 
   //this method handle form submission values and errors
   handleSubmitValue = (event, errors, values) => {
-    const { labelOption, categoryOption, categoryOptionUpdate, labelOptionUpdate ,contactOptionUpdate,contactOption} = this.state
+    const { labelOption, categoryOption, categoryOptionUpdate, labelOptionUpdate, contactOptionUpdate, contactOption } = this.state
     if (errors.length === 0) {
-      let bill_DateCal = new Date(values.billDate)
-      let dueDateCal = new Date(values.dueDays)
-      let diffDate = (dueDateCal - bill_DateCal)/(1000*60*60*24);
-      if (diffDate >= 0) {
-        if (values.billDate.split("-")[0]<1900) {
-         this.setState({ alertColor: "danger", content: "Unsupported 'BillDate', Select a date after year 1900. Ex: 24/08/1995!!"}); 
-        } else {
-          let billDate = values.billDate.split("-")[0] + values.billDate.split("-")[1] + values.billDate.split("-")[2];
-          let dueDays = values.dueDays.split("-")[0] + values.dueDays.split("-")[1] + values.dueDays.split("-")[2];
-            const newData = {
-              ...values, "billDate": billDate, "dueDays": dueDays, "categoryId": categoryOptionUpdate ? categoryOption.value :
-                categoryOption,"contactId": contactOptionUpdate ? contactOption.value :
-                contactOption, "labelIds": labelOption === null || labelOption === [] ? [] : (labelOptionUpdate ? labelOption.map(opt => { return opt.value }) : labelOption), "version": this.props.bill.version
-            }
-            this.handleUpdate(event, newData);
-        }
-       
-      } else {
-        this.setState({ alertColor: "danger", content: "Unsupported Bill Date it should not be more than Due Date. Ex: Bill Date: 24/08/1995  && Due Date: 26/08/1995" });
-        setTimeout(()=>{
-          this.setState({ content: "", alertColor: "" });
-        }, Config.notificationMillis)
-      }
+        let billDate = values.billDate.split("-")[0] + values.billDate.split("-")[1] + values.billDate.split("-")[2];
+        const newData = { ...values, "billDate": billDate, "categoryId": categoryOptionUpdate ? categoryOption.value : categoryOption,
+          "contactId": contactOptionUpdate ? contactOption.value : contactOption, 
+          "labelIds": labelOption === null || labelOption === [] ? [] : (labelOptionUpdate ? labelOption.map(opt => { return opt.value }) : labelOption), "version": this.props.bill.version
+        } 
+      this.handleUpdate(event, newData);
     }
   }
 
@@ -156,8 +139,7 @@ class UpdateBill extends Component {
                 <Col><AvField name="billDate" label="Bill Date" value={this.loadDateFormat(bill.billDate)} type="date"  errorMessage="Invalid Date" validate={{ date: { format: 'yyyy/MM/dd' },
                   dateRange: {format: 'YYYY/MM/DD', start: {value: '1900/01/01'}, end: {value: '9999/12/31'}},
                   required: { value: true } }} /></Col>
-                <Col><AvField name="dueDays" label="Due Date" value={this.loadDateFormat(bill.dueDays)} type="date"  max="9999/12/30" errorMessage="Invalid Date" validate={{ date: { format: 'yyyy/MM/dd' },
-                      dateRange: {format: 'YYYY/MM/DD', start: {value: '1900/01/01'}, end: {value: '9999/12/31'}}, required: { value: true } }} /></Col>
+                <Col><AvField name="dueDays" label="Due Days" value={bill.dueDays} type="number"  errorMessage="Invalid days" /></Col>
               </Row>
               <Row>
                 <Col><label >Description/Notes</label>

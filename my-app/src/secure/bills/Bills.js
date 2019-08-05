@@ -192,7 +192,6 @@ class Bills extends Component {
 
   loadHeader = () => {
     return (
-      <div style={{ paddingTop: 20, paddingRight: 10 }}  >
         <CardHeader>
         <Row>
           <Col sm={3} ><strong style={{fontSize:20, marginLeft:20 }} >BILLS</strong></Col>
@@ -207,7 +206,6 @@ class Bills extends Component {
           <Col sm={3}> <Button color="success" className="float-right" onClick={this.callCreateBill} > + Add </Button></Col>
         </Row>  
         </CardHeader>
-      </div>
     )
   }
   
@@ -265,8 +263,8 @@ class Bills extends Component {
               <strong style={{ paddingTop: 5 }}><center>{this.dateFormat(bill.billDate)}</center></strong>
             </Col>
             <Col sm={8}>
-              <Row style={{ paddingLeft: 10 }}>{bill.description}</Row>
-              <Row style={{ paddingLeft: 10, fontStyle: "oblique", color: bill.categoryName.color}}>{bill.categoryName.name}</Row>
+              <Row style={{ paddingLeft: 10, color:'#000000'}}>{bill.description}</Row>
+              <Row style={{ paddingLeft: 10, fontStyle: "oblique", color: bill.categoryName.color}}><b>{bill.categoryName.name}</b></Row>
             </Col>
             <Col style={{ marginTop: 10 }} className="float-right">
               <b style={{ color: "#F80505" }}>

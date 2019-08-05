@@ -183,7 +183,7 @@ class Contacts extends Component {
   loadHeader = () => {
     return (
       <CardHeader>
-        <Row style={{ padding: "20px 20px 0px 20px" }}>
+        <Row style={{ padding: "0px 20px 0px 20px" }}>
           <Col sm={3}>
             <strong style={{ fontSize: 24 }}>Contacts </strong>
           </Col>
