@@ -1,6 +1,6 @@
 const USER_KEY = 'user';
 const DUMMY_KEY = 'dummy';
-const db = sessionStorage;
+const db = localStorage;
 
 const Store = {
     

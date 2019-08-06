@@ -6,69 +6,67 @@ import BillingAddressApi from '../../../services/BillingAddressApi';
 import GeneralApi from '../../../services/GeneralApi';
 import Config from '../../../data/Config';
 
-
 class PaymentHistory extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      paymentDetails: [],
+      payment_history: [],
       toggle: false,
       accordion: [],
-      currenciesSymbol: [],
+      currencies: [],
       spinner: false,
       search: '',
-      color: undefined,
-      content: undefined,
-      data: '',
-      currentTotalBalance: '',
+      alertColor: '',
+      alertMessage: '',
+      total_balance: '',
     };
   }
 
   componentDidMount = () => {
     new BillingAddressApi().getPaymentsHistory(this.successCall, this.errorCall)
-    new GeneralApi().getCurrencyList(this.getCurrency, this.errorCall);
+    new GeneralApi().getCurrencyList(this.successCall, this.errorCall);
   }
-  //This Method is called for Api's Success Call
-  successCall = async paymentDetails => {
-    await this.setState({ paymentDetails: paymentDetails.payments, currentTotalBalance: paymentDetails.balance, spinner: true });
+ 
+  successCall = async (response)=> {    
+    if(response.payments) {
+        //    response form all Payments & Total Balance  
+        await this.setState({ payment_history: response.payments,
+                              total_balance: response.balance, spinner: true });
+    } else {
+        this.setState({ currencies: response }) //response to all Currencies  
+    }
   }
 
-  getCurrency = currency => {
-    this.setState({ currenciesSymbol: currency })
-  }
-
-  //Method that shows API's Error Call
+  // Response API Error 
   errorCall = error => {
     this.callAlertTimer('danger', 'Unable to Process Request, Please Try Again')
   }
 
-  callAlertTimer = (color, content) => {
-    this.setState({ color, content });
+  callAlertTimer = (alertColor, alertMessage) => {
+    this.setState({ alertColor, alertMessage });
     setTimeout(() => {
-      this.setState({ color: "", content: "" });
+      this.setState({ alertColor: "", alertMessage: "" });
     }, Config.apiTimeoutMillis)
   }
 
   render() {
-    const { paymentDetails, spinner, currenciesSymbol } = this.state;
-    
-    
-    if (paymentDetails.length=== 0 ) {
+    const { payment_history, spinner, currencies } = this.state;
+    if (payment_history.length=== 0 ) {
       if (!spinner) {
         return this.loadSpinner()
       } else {
-        return this.loadPayHistoryEmpty();
+        return this.paymentHistoryIsEmpty();
       }
     } else {
-      let billPayments = paymentDetails.map((payment, key) => {
+      let payments = payment_history.map((payment, key) => {
         return (<tr key={key} style={{textAlign:"left"}}>
-          <th>{this.dateFormat(payment.created)}</th>
+          <th>{this.customeDateFormat(payment.created)}</th>
           <th >{payment.description}</th>
-          <th>{this.getCurrencySymbol(payment.currency, currenciesSymbol)} {payment.amount}</th>
+          <th>{this.showCurrenySymbol(payment.currency, currencies)} {payment.amount}</th>
         </tr>
         )
       });
-      return <div>{this.displayPaymentsList(billPayments)}</div>
+      return <div>{this.displayPaymentHistory(payments)}</div>
     }
   }
 
@@ -94,7 +92,7 @@ class PaymentHistory extends Component {
     );
   }
 
-  loadPayHistoryEmpty = () => {
+  paymentHistoryIsEmpty = () => {
     return (
       <div>
         <Card>
@@ -110,64 +108,65 @@ class PaymentHistory extends Component {
   }
 
   // TODO: define static current Balance.
-  displayPaymentsList = (billPayments) => {
+  displayPaymentHistory = (payments) => {
     return (
       <Card>
         <CardHeader>
-          <Label><b>PAYMENT HISTORY </b> <br /><b>Current Balance: £ </b>{this.state.currentTotalBalance} </Label>
+          <Label><b>PAYMENT HISTORY </b> <br /><b>Current Balance: £ </b>{this.state.total_balance} </Label>
           <Link to="/billing/addCredits"> <Button color="success" className="float-right" > + Add Credits </Button></Link>
         </CardHeader>
         <CardBody style={{ textAlign: "center" }}>
-          {this.loadPaymentsTable(billPayments)}
+          {this.paymentHistoryTable(payments)}
         </CardBody>
       </Card>
     );
   }
 
-  loadPaymentsTable = (billPayments) => {
+  paymentHistoryTable = (payments) => {
     return (<Table striped  bordered >
       <thead>
-        <tr style={{backgroundColor:"#8F50CD",color:"#FFFFFF"}}>
+        <tr style={{backgroundColor:"#8F50CD",alertColor:"#FFFFFF"}}>
           <th>DATE</th>
           <th>DESCRIPTION</th>
           <th>AMOUNT</th>
         </tr>
       </thead>
       <tbody>
-        {billPayments}
+        {payments}
       </tbody>
-    </Table>)
+    </Table>
+    )
   }
 
-  getCurrencySymbol = (paymentCurrency, currenciesSymbol) => {
-    let data = '';
-    currenciesSymbol.map(currency => {
+  showCurrenySymbol = (paymentCurrency, currencies) => {
+    let currency_symbol = '';
+    currencies.map(currency => {
       if (paymentCurrency === currency.code) {
-        data = currency.symbol;
+        currency_symbol = currency.symbol;
       }
       return 0;
     });
-    return data;
+    return currency_symbol;
   }
 
-  dateFormat = (paymentDate) => {
+  customeDateFormat = (paymentDate) => {
     let date = new Date(paymentDate).toDateString();
     let day = date.substring(8, 10);
     let dateSuperTag = '';
     if (day > 3 && day < 21) {
       dateSuperTag = 'th';
-    } else {
-      switch (day % 10) {
-        case 1: dateSuperTag = "st";
-          break;
-        case 2: dateSuperTag = "nd";
-          break;
-        case 3: dateSuperTag = "rd";
-          break;
-        default: dateSuperTag = "th";
-          break;
+      } else {
+        switch (day % 10) {
+          case 1: dateSuperTag = "st";
+            break;
+          case 2: dateSuperTag = "nd";
+            break;
+          case 3: dateSuperTag = "rd";
+            break;
+          default: dateSuperTag = "th";
+            break;
+        }
       }
-    }
     return (<div>{day}<sup>{dateSuperTag}</sup> {date.substring(3, 7) + " " + date.substring(11, 15)}</div>);
   }
 }

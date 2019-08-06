@@ -2,28 +2,41 @@ import React from 'react';
 import { Table } from 'reactstrap';
 import { FaCheck, FaMinus } from "react-icons/fa";
 
+import ProfileTypesApi from '../../services/ProfileTypesApi'
+
 const green = { color: '#008000' }
 const red = { color: '#FF0000' }
 
 export default class ProfileInfoTable extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      profileTypes: []
+    }
+  }
+  componentDidMount = () => {
+    new ProfileTypesApi().getProfileTypes((profileTypes) => {console.log(profileTypes); this.setState({ profileTypes }) }, (error) => { console.log("error", error); })
+  }
   render() {
     var featureColor = { color: '#330561', fontWeight: 'bold', textAlign: 'left' }
+    let profileTypeCost= this.state.profileTypes.map(profile=>{
+     return <td key={profile.type}>{profile.cost}</td>
+            });
+       let profileTypeName= this.state.profileTypes.map(profile=>{
+              return <td key={profile.type}><b>{profile.name}</b></td>
+                     });
     return (
       <Table size="sm" hover striped bordered responsive >
         <thead>
           <tr align="center" style={{ color: '#7E0462' }}>
             <th></th>
-            <th>Free Version</th>
-            <th>Basic Version</th>
-            <th>Premium Version</th>
+            {profileTypeName}
           </tr>
         </thead>
         <tbody align="center" >
           <tr >
             <td style={featureColor}>Cost Per Month</td>
-            <td><FaMinus /></td>
-            <td>£ 0.99</td>
-            <td>£ 3.99</td>
+            {profileTypeCost}
           </tr>
           <tr>
             <td style={featureColor}>Multi currency</td>

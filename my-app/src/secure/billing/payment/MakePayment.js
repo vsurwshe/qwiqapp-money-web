@@ -1,24 +1,33 @@
 import React, { Component } from 'react';
 import { Card, CardBody, CardHeader, Col, FormGroup, Label, Input, Button, Alert, Container } from 'reactstrap';
-
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Script from 'react-load-script';
 import Config from '../../../data/Config';
 import Store from "../../../data/Store";
 import BillingAddressApi from '../../../services/BillingAddressApi';
 import PaymentSuccessMessage from './PaymentSuccessMessage';
 import UserApi from '../../../services/UserApi';
-import {ReUseComponents} from '../../utility/ReUseComponents'
+import { ReUseComponents } from '../../utility/ReUseComponents'
 
 const PAYPAL_URL = 'https://www.paypal.com/sdk/js?'
 
 let paymentOrderID = '';
-
+let billingAddressFields = {
+  addressLine1: '',
+  addressLine2: '',
+  city: '',
+  company: '',
+  country: '',
+  firstName: '',
+  lastName: '',
+  postCode: '',
+  region: ''
+}
 class MakePayment extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      doubleClick: false,
+      disableDoubleCilck: false,
       paymentSuccess: false,
       scriptLoaded: false,
       scriptError: false,
@@ -26,7 +35,8 @@ class MakePayment extends Component {
       selectedItem: {},
       paymentResponse:'',
       loader: true,
-      visible: false
+      showAlert: false,
+      error_message: ''
     };
 
     this.createPaypalOrder = this.createPaypalOrder.bind(this)
@@ -41,11 +51,14 @@ class MakePayment extends Component {
     this.setState({ billingItems, loader: false})
   };
 
-  errorCall = (error) => { this.setState({ loader: false }); console.log(error); }
+  errorCall = (error) => {
+    // console.log(error)
+    this.setState({ loader: false, error_message: error}); 
+  }
 
   callAlertTimer = (message) => {
     setTimeout(() => {
-      this.setState({ paymentSuccess: true, doubleClick: false });
+      this.setState({ paymentSuccess: true, disableDoubleCilck: false });
     }, Config.apiTimeoutMillis)
   };
 
@@ -65,15 +78,28 @@ class MakePayment extends Component {
   }
 
   loadBillingItemError =()=>{
+    const {status, message} = this.state.error_message;
+    let link, buttonText;
+    if (status && status === 500) {
+      link = "/billing/address/add"
+      buttonText = "Add Billing Address"
+    } else {
+      link = "/verify"
+      buttonText = "Verify Email"
+    }
+    
     return(
       <Card>
         <CardHeader><strong>Make Payment</strong></CardHeader>
         <center >
-          <CardBody><h4><b style={{color:'red'}}>Sorry for the inconvenience caused. Please try later... </b></h4></CardBody>
+          <CardBody><h4><b style={{color:'red'}}>{message} <br /><br />
+          <Link to={{pathname: link, state: {updateBill: billingAddressFields }}} style={{color:"black"}} > <Button color="info"> {buttonText} </Button> </Link>
+          </b></h4></CardBody>
         </center>
       </Card>
     )
   }
+
   updateInputValue(evt) {
     this.setState({ selectedItem:{code: evt.target.value }});
   }
@@ -97,12 +123,12 @@ class MakePayment extends Component {
         }]
       });
     } else{
-      this.setState({visible:true})
+      this.setState({ showAlert:true })
     }
   }
 
   itemId = (amount, code) => {
-    this.setState({ selectedItem: {amount,code}, visible: false})
+    this.setState({ selectedItem: {amount,code}, showAlert: false})
   }
 
   paymentSuccessMessage = (paymentResponse) => {
@@ -170,23 +196,13 @@ class MakePayment extends Component {
   }
 
   loadAddBillingAddress = (action) => {
-    let emptyBillingAddress = {
-      addressLine1: '',
-      addressLine2: '',
-      city: '',
-      company: '',
-      country: '',
-      firstName: '',
-      lastName: '',
-      postCode: '',
-      region: ''
-    }
+    
     return (
       <Card>
         <CardBody>
           <center><b>You have not added your Billing Address yet. Please, Add Billing Address.</b><br /><br />
               <Button color="info">
-                <Link to={{pathname: "/billing/address/add", state: {updateBill: emptyBillingAddress }}} style={{color:"black"}} > {action} </Link>
+                <Link to={{pathname: "/billing/address/add", state: {updateBill: billingAddressFields }}} style={{color:"black"}} > {action} </Link>
               </Button>
           </center>
         </CardBody>
@@ -203,8 +219,7 @@ class MakePayment extends Component {
         onLoad={this.handleScriptLoad.bind(this)} />
       <h4 style={{ paddingTop: 20 }}><center>Select any Payment Option</center></h4><br />
       <div className="form-group">
-        
-        <center><CardBody><Container><Alert isOpen={this.state.visible} color="warning"><b style={{color:'#072567'}}>Please Select your Payment option to continue</b></Alert></Container></CardBody></center>
+        <center><CardBody><Container><Alert isOpen={this.state.showAlert} color="warning"><b style={{color:'#072567'}}>Please Select your Payment option to continue</b></Alert></Container></CardBody></center>
         <FormGroup check>
           {this.state.billingItems === undefined ? " " : this.state.billingItems.map((item, index) => {
             return this.loadRadioButtons(item, index)
