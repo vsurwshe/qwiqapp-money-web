@@ -5,15 +5,16 @@ import Loader from 'react-loader-spinner';
 import BillingAddressApi from '../../../services/BillingAddressApi';
 import GeneralApi from '../../../services/GeneralApi';
 import Config from '../../../data/Config';
+import '../payment/style.css'
 
 class PaymentHistory extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      payment_history: [],
+      payments: [],
       toggle: false,
       accordion: [],
-      currencies: [],
+      currency: [],
       spinner: false,
       search: '',
       alertColor: '',
@@ -27,13 +28,12 @@ class PaymentHistory extends Component {
     new GeneralApi().getCurrencyList(this.successCall, this.errorCall);
   }
  
-  successCall = async (response)=> {    
-    if(response.payments) {
-        //    response form all Payments & Total Balance  
-        await this.setState({ payment_history: response.payments,
-                              total_balance: response.balance, spinner: true });
+  successCall = async (response)=> {
+    if(response.payments) {  //    response form all Payments & Total Balance  
+        await this.setState({ payments: response.payments,
+               total_balance: response.balance, spinner: true });
     } else {
-        this.setState({ currencies: response }) //response to all Currencies  
+        this.setState({ currency: response }) //response to all Currencies  
     }
   }
 
@@ -50,23 +50,23 @@ class PaymentHistory extends Component {
   }
 
   render() {
-    const { payment_history, spinner, currencies } = this.state;
-    if (payment_history.length=== 0 ) {
+    const { payments, spinner, currency } = this.state;
+    if (payments.length=== 0 ) {
       if (!spinner) {
         return this.loadSpinner()
       } else {
         return this.paymentHistoryIsEmpty();
       }
     } else {
-      let payments = payment_history.map((payment, key) => {
-        return (<tr key={key} style={{textAlign:"left"}}>
+      let paymentsList = payments.map((payment, key) => {
+        return (<tr key={key} className="row-text-align">
           <th>{this.customeDateFormat(payment.created)}</th>
           <th >{payment.description}</th>
-          <th>{this.showCurrenySymbol(payment.currency, currencies)} {payment.amount}</th>
+          <th>{this.showCurrenySymbol(payment.currency, currency)} {payment.amount}</th>
         </tr>
         )
       });
-      return <div>{this.displayPaymentHistory(payments)}</div>
+      return <div>{this.displayPaymentHistory(paymentsList)}</div>
     }
   }
 
@@ -76,8 +76,8 @@ class PaymentHistory extends Component {
         <Card>
           {this.loadHeader()}
           <br /><br /><br /><br /><br />
-          <center style={{ paddingTop: '20px' }}>
-            <CardBody><Loader type="TailSpin" color="#2E86C1" height={60} width={60} /></CardBody>
+          <center className="padding-top" >
+            <CardBody><Loader type="TailSpin" className="loader-color" height={60} width={60} /></CardBody>
           </center>
         </Card>
       </div>)
@@ -108,39 +108,40 @@ class PaymentHistory extends Component {
   }
 
   // TODO: define static current Balance.
-  displayPaymentHistory = (payments) => {
+  displayPaymentHistory = (paymentsList) => {
     return (
       <Card>
         <CardHeader>
-          <Label><b>PAYMENT HISTORY </b> <br /><b>Current Balance: £ </b>{this.state.total_balance} </Label>
+          <Label><b>Current Balance: £ </b>{this.state.total_balance} </Label>
           <Link to="/billing/addCredits"> <Button color="success" className="float-right" > + Add Credits </Button></Link>
         </CardHeader>
         <CardBody style={{ textAlign: "center" }}>
-          {this.paymentHistoryTable(payments)}
+          {this.paymentHistoryTable(paymentsList)}
         </CardBody>
       </Card>
     );
   }
 
-  paymentHistoryTable = (payments) => {
-    return (<Table striped  bordered >
+  paymentHistoryTable = (paymentsList) => {
+    return (<><b>PAYMENT HISTORY </b> <br /><br />
+    <Table striped  bordered >
       <thead>
-        <tr style={{backgroundColor:"#8F50CD",alertColor:"#FFFFFF"}}>
+        <tr className="table-header-color" >
           <th>DATE</th>
           <th>DESCRIPTION</th>
           <th>AMOUNT</th>
         </tr>
       </thead>
       <tbody>
-        {payments}
+        {paymentsList}
       </tbody>
-    </Table>
+    </Table></>
     )
   }
 
-  showCurrenySymbol = (paymentCurrency, currencies) => {
+  showCurrenySymbol = (paymentCurrency, currency) => {
     let currency_symbol = '';
-    currencies.map(currency => {
+    currency.map(currency => {
       if (paymentCurrency === currency.code) {
         currency_symbol = currency.symbol;
       }
@@ -153,6 +154,9 @@ class PaymentHistory extends Component {
     let date = new Date(paymentDate).toDateString();
     let day = date.substring(8, 10);
     let dateSuperTag = '';
+    if (day<10) {
+      day = date.substring(9, 10);
+    }
     if (day > 3 && day < 21) {
       dateSuperTag = 'th';
       } else {
@@ -167,7 +171,7 @@ class PaymentHistory extends Component {
             break;
         }
       }
-    return (<div>{day}<sup>{dateSuperTag}</sup> {date.substring(3, 7) + " " + date.substring(11, 15)}</div>);
+    return (<div>{date.substring(0, 3)} {day}<sup>{dateSuperTag}</sup> {date.substring(3, 7) + " " + date.substring(11, 15)}</div>);
   }
 }
 export default PaymentHistory;

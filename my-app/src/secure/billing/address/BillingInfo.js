@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Card, CardBody, CardHeader, Button, Alert} from 'reactstrap';
 import BillingAddressApi from '../../../services/BillingAddressApi';
 import EditBillingAddress from './EditBillingAddress';
+import '../payment/style.css';
 
 let emptyBillingAddress = {
   addressLine1: '',
@@ -101,7 +102,7 @@ class BillingInfo extends Component {
       <div className="animated fadeIn">
         <Card>
           {this.loadHeader(billing)}
-          <center style={{ paddingTop: '20px' }}>
+          <center className="padding-top" >
             <CardBody> <b>No Billing Address added, Please Add Now...</b></CardBody>
           </center>
         </Card>

@@ -1,6 +1,25 @@
-.message{
+.message {
     color: #EA182B
 }
-.routerLink{
+.warning-message {
+    color: #072567
+}
+.router-link {
     color: aliceblue
+}
+.link {
+    color: black
+}
+.row-text-align { text-align:left }
+.padding-top { padding-top: 20px }
+.loader-color {color: #2E86C1}
+.table-header-color {
+    background-color:#DEE9F2;
+    color:'#000000'
+}
+
+.placeholder-style {
+    color: #000000;
+    font-size: 1.0em;
+    font-weight: bold
 }

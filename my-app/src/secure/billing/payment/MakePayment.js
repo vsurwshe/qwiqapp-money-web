@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Card, CardBody, CardHeader, Col, FormGroup, Label, Input, Button, Alert, Container } from 'reactstrap';
+import { Card, CardBody, CardHeader, Col, FormGroup, Label, Input, Button, Alert } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import Script from 'react-load-script';
 import Config from '../../../data/Config';
@@ -7,7 +7,8 @@ import Store from "../../../data/Store";
 import BillingAddressApi from '../../../services/BillingAddressApi';
 import PaymentSuccessMessage from './PaymentSuccessMessage';
 import UserApi from '../../../services/UserApi';
-import { ReUseComponents } from '../../utility/ReUseComponents'
+import { ReUseComponents } from '../../utility/ReUseComponents';
+import './style.css'
 
 const PAYPAL_URL = 'https://www.paypal.com/sdk/js?'
 
@@ -52,7 +53,6 @@ class MakePayment extends Component {
   };
 
   errorCall = (error) => {
-    // console.log(error)
     this.setState({ loader: false, error_message: error}); 
   }
 
@@ -92,8 +92,8 @@ class MakePayment extends Component {
       <Card>
         <CardHeader><strong>Make Payment</strong></CardHeader>
         <center >
-          <CardBody><h4><b style={{color:'red'}}>{message} <br /><br />
-          <Link to={{pathname: link, state: {updateBill: billingAddressFields }}} style={{color:"black"}} > <Button color="info"> {buttonText} </Button> </Link>
+          <CardBody><h4><b className="message">{message} <br /><br />
+          <Link to={{pathname: link, state: {updateBill: billingAddressFields }}} className="link" > <Button color="info"> {buttonText} </Button> </Link>
           </b></h4></CardBody>
         </center>
       </Card>
@@ -202,7 +202,7 @@ class MakePayment extends Component {
         <CardBody>
           <center><b>You have not added your Billing Address yet. Please, Add Billing Address.</b><br /><br />
               <Button color="info">
-                <Link to={{pathname: "/billing/address/add", state: {updateBill: billingAddressFields }}} style={{color:"black"}} > {action} </Link>
+                <Link to={{pathname: "/billing/address/add", state: {updateBill: billingAddressFields }}} className="link"  > {action} </Link>
               </Button>
           </center>
         </CardBody>
@@ -217,9 +217,11 @@ class MakePayment extends Component {
         onCreate={this.handleScriptCreate.bind(this)}
         onError={this.handleScriptError.bind(this)}
         onLoad={this.handleScriptLoad.bind(this)} />
-      <h4 style={{ paddingTop: 20 }}><center>Select any Payment Option</center></h4><br />
-      <div className="form-group">
-        <center><CardBody><Container><Alert isOpen={this.state.showAlert} color="warning"><b style={{color:'#072567'}}>Please Select your Payment option to continue</b></Alert></Container></CardBody></center>
+      <h4 className= "padding-top" ><center>Select a payment option</center></h4><br />
+      <div className="form-group"> 
+        <center>
+          {this.state.showAlert && <Alert color="warning"><b className="warning-message" >Please Select your Payment option to continue</b></Alert>}
+         </center>
         <FormGroup check>
           {this.state.billingItems === undefined ? " " : this.state.billingItems.map((item, index) => {
             return this.loadRadioButtons(item, index)

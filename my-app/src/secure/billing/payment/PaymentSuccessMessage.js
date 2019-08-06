@@ -22,7 +22,7 @@ const PaymentSuccessMessage = (props) => {
             <Card> <CardBody>
                 <center><br />
                     <b className="message"> Oops ..! Something went wrong, Your payment is failed. <br/> 
-                        Any money deducted from your account will be refunded within 3-5 working days.
+                        Any money deducted from your account, will be refunded within 3-5 working days.
                     </b>
                 </center>
             </CardBody> </Card>

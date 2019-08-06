@@ -7,6 +7,7 @@ import BillingAddressApi from '../../../services/BillingAddressApi';
 import GeneralApi from "../../../services/GeneralApi";
 import Config from "../../../data/Config";
 import Store from "../../../data/Store";
+import '../payment/style.css';
 
 class EditBillingAddress extends Component {
 
@@ -100,12 +101,12 @@ class EditBillingAddress extends Component {
     return (
       <div className="animated fadeIn" >
         <Card>
-          <h4 style={{ paddingTop: 20 }}><b><center> BILLING ADDRESS</center></b></h4>
+          <h4 className="padding-top"><b><center> BILLING ADDRESS</center></b></h4>
           <Col sm="12" md={{ size: 8, offset: 2 }} style={placeholderStyle}>
             <Alert color={alertColor}>{content}</Alert>
             <AvForm onSubmit={this.handleSubmitValue}>
               <Row>
-                <Col><AvField name="firstName" placeholder="First Name" style={placeholderStyle} value={updateBill.firstName} required /></Col>
+                <Col><AvField name="firstName" placeholder="First Name" className="placeholder-style" value={updateBill.firstName} required /></Col>
                 <Col><AvField name="lastName" placeholder="Last Name" style={placeholderStyle} value={updateBill.lastName} /></Col>
                 <Col><AvField name="company" placeholder="Organization" style={placeholderStyle} value={updateBill.company} validate={{ pattern: { value: '^[a-zA-Z0-9_.-]*' } }} required /></Col>
               </Row>
