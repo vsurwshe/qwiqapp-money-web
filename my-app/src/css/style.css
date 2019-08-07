@@ -1,0 +1,35 @@
+/* ============ Bils styles Start=========*/
+.strong-text {
+    font-size:20px;
+    margin-left:20px;
+} 
+.loader-color {
+    color: #2E86C1;
+}
+.padding-top {
+    padding-top: 20px
+}
+.date-format { 
+    background-color: #054FF8;
+    color: #FFFFFF;
+    padding-top: 10px
+}
+.row-text-style {
+    padding-left: 10px;
+    font-style: oblique;
+}
+.item-color {
+    color: #000000;
+}
+.amount-color {
+    color: #F80505;
+}
+.column-text {
+    margin-top: 10px
+}
+.dropdown-align {
+    margin-top: 7px;
+    float: right
+}
+.delete-model-padding { padding-top: 20% }
+/* ========================= Bills style End ==============  */

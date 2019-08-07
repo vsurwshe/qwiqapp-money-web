@@ -13,7 +13,7 @@ class CreateBill extends Component {
     super(props);
     this.state = {
       labels: props.label,
-      contacts:props.contacts,
+      contacts: props.contacts,
       categories : props.categories, 
       billCreated : false,
       profileId : props.pid,
@@ -27,16 +27,16 @@ class CreateBill extends Component {
       doubleClick:false
      };
   }
-  componentDidMount=()=>{
+  componentDidMount= () =>{
     new GeneralApi().getCurrencyList(this.successCurrency, this.failureCurrency)
   }
-  successCurrency = currencies =>{ this.setState({ currencies }); }
+  successCurrency = (currencies) =>{ this.setState({ currencies }); }
 
-  failureCurrency = err =>{ console.log(err); }
+  failureCurrency = (err) =>{ console.log(err); }
 
-  cancelCreateBill=()=>{ this.setState({cancelCreateBill:true}) }
+  cancelCreateBill= () =>{ this.setState({cancelCreateBill:true}) }
 
-  //this method handle form submitons values and errors
+  //this method handle form submit values and errors
   handleSubmitValue = (event, errors, values) => {
     const { labelOption, categoryOption ,contactOption} = this.state  
     if (categoryOption === null){
@@ -56,7 +56,7 @@ class CreateBill extends Component {
     await new BillApi().createBill(this.successCreate, this.errorCall, this.state.profileId, data);
   };
 
-  //this method call when lables created successfully
+  //this method call when labels created successfully
   successCreate = () => {
     this.callAlertTimer("success", "New Bill Created....");
   }
@@ -87,7 +87,7 @@ class CreateBill extends Component {
     return this.loadCreatingBill(alertColor, this.state.labels, content, categories,contacts);
   }
   
-  //this Method Call when Label Creation in porceess.
+  //this Method Call when Label Creation in process.
   loadCreatingBill = (alertColor, labels, content, categories,contacts) => {
     return (
       <div className="animated fadeIn" >
@@ -124,17 +124,17 @@ class CreateBill extends Component {
                 <Col><AvField name="billDate" label="Bill Date" value={this.state.userBillDate} type="date" errorMessage="Invalid Date" validate={{ date: { format: 'dd/MM/yyyy' }, 
                       dateRange: {format: 'YYYY/MM/DD', start: {value: '1900/01/01'}, end: {value: '9999/12/31'}}, 
                       required: { value: true } }} /></Col>
-                <Col><AvField name="dueDays" label="Due Days" value={this.state.userDueDate} type="number" errorMessage="Invalid Days" /></Col>
+                <Col><AvField name="dueDays" label="Due Days" placeholder="Due_Days     example: 10" value={this.state.userDueDate} type="number" errorMessage="Invalid Days" /></Col>
               </Row>
               <Row>
                 <Col>
                 <label >Description/Notes</label>
-                 <AvField name="description" type="text" list="colors" errorMessage="Invalid Notes" placeholder="Enter Notes " /></Col>
+                 <AvField name="description" type="text" list="colors" placeholder="Enter Description Ex: Recharge" errorMessage="Invalid Notes" /></Col>
               </Row>
               <Row>
                 <Col>
                 <label >Select Labels</label>
-                <Select isMulti options={Data.labels(labels)} styles={Data.colourStyles} placeholder="Select Lables " onChange={this.labelSelected} /></Col>
+                <Select isMulti options={Data.labels(labels)} styles={Data.colourStyles} placeholder="Select Labels " onChange={this.labelSelected} /></Col>
               </Row><br />
               <Row>
                 <Col>

@@ -12,6 +12,7 @@ import LabelApi from "../../services/LabelApi";
 import DeleteBill from "./DeleteBill";
 import ContactApi from '../../services/ContactApi';
 import { ProfileEmptyMessage } from "../utility/ProfileEmptyMessage";
+import '../../css/style.css'
 
 class Bills extends Component {
   constructor(props) {
@@ -22,10 +23,10 @@ class Bills extends Component {
       categories: [],
       collapse: [],
       contacts:[],
-      rebill: [],
-      createBill: false,
-      updateBill: false,
-      deleteBill: false,
+      updateBill: [],
+      createBillRequest: false,
+      updateBillRequest: false,
+      deleteBillRequest: false,
       visible: false,
       dropdownOpen: [],
       hoverAccord : [],
@@ -54,7 +55,7 @@ class Bills extends Component {
    new CategoryApi().getCategories(this.successCallCategory, this.errorCall, this.state.profileId); 
   }
   
-   //this method seting Categories when api given successfull Response
+   // Categories response
    successCallCategory = async categories => {
     if (categories === []) {
       this.setState({ categories : [0] })
@@ -64,17 +65,23 @@ class Bills extends Component {
     }
   };
 
-  //this method sets bills when api given successfull Response
+  // bills response
   successCallBill = async bill => {
     if (bill === []) {
       this.setState({ bills: [0] })
     } else {
-      await this.bills(bill);
+      await this.billsWithcategoryNameColor(bill);
       this.loadCollapse();
     }
   };
-  
-  callCreateBill = () => {this.setState({ createBill : true })}
+ // category name color append to bills
+  billsWithcategoryNameColor = (bills) =>{
+     const prevState = bills;
+    const state = prevState.map((bill, index) => {
+        return {...bill, categoryName: this.displayCategoryName(bill.categoryId)}
+    });
+    this.setState({bills : state});
+  }
 
   loadCollapse = async () =>{
     await this.state.bills.map(labels => {return this.setState(prevState => ({
@@ -85,8 +92,7 @@ class Bills extends Component {
     new LabelApi().getSublabels(this.successCallLabel, this.errorCall, this.state.profileId);
   }
 
-  //this method seting label when api given successfull Response
-  successCallLabel = async label => {
+  successCallLabel = async (label) => {
     this.setState({spinner: true})
      if (label === []) {
       this.setState({ labels : [0] })
@@ -95,98 +101,88 @@ class Bills extends Component {
       new ContactApi().getContacts(this.successCallContact, this.errorCall, this.state.profileId);
     }
   };
-  successCallContact = async contacts => {
+
+  successCallContact = async (contacts) => {
     this.setState({spinner: true})
      if (contacts === []) {
       this.setState({ contacts : [0] })
     } else {
       await this.setState({contacts});
-      
     }
   };
 
-
-  bills = (bills) =>{
-    const prevState = bills;
-    const state = prevState.map((x, index) => {
-        return {...x, categoryName: this.displayCategoryName(x.categoryId)}
-    });
-    this.setState({bills : state});
-  }
-
-  errorCall = err => { this.setState({ visible : true }) }
+  errorCall = (err) => { this.setState({ visible : true }) }
 
   //this toggle for Delete Model
   toggleDanger = () => {
     this.setState({danger : !this.state.danger});
   }
 
-  //this method for the load Update Compoents
-  updateBill = rebill => {
-   this.setState({ updateBill : true, rebill })
+  createBillAction = () => {this.setState({ createBillRequest : true })}
+
+  updateBillAction = updateBill => {
+   this.setState({ updateBillRequest : true, updateBill })
   };
 
-  //this method for the load delete Components
-  deleteBill = () => {
-   this.setState({ deleteBill : true })
+  deleteBillAction = () => {
+   this.setState({ deleteBillRequest : true })
   };
 
-  //this method toggel Bills tab
-  toggleAccordion = (tab) => {
+  //this method toggle Bills tabIndex
+  toggleAccordion = (tabIndex) => {
     const prevState = this.state.accordion;
-    const state = prevState.map((x, index) => tab === index ? !x : false);
+    const state = prevState.map((value, index) => tabIndex === index ? !value : false);
     this.setState({accordion : state});
   }
 
-  toggleDropDown = (tab) => {
+  toggleDropDown = (tabIndex) => {
     const prevState = this.state.dropdownOpen;
-    const state = prevState.map((x, index) => tab === index ? !x : false);
+    const state = prevState.map((value, index) => tabIndex === index ? !value : false);
     this.setState({dropdownOpen : state});
   }
   
-  hoverAccordion = (hKey) => {
+  hoverAccordion = (keyIndex) => {
     const prevState = this.state.hoverAccord;
-    const state = prevState.map((x,index)=> hKey===index? !x : false );
+    const state = prevState.map((value,index)=> keyIndex===index? !value : false );
     this.setState({ hoverAccord : state });
   }
-  onHover = (e,hKey) =>{
+  onHover = (e, keyIndex) =>{
     this.setState({ onHover : true });
-    this.hoverAccordion(hKey)
+    this.hoverAccordion(keyIndex)
   }
 
-  onHoverOff = (e,hKey) =>{
+  onHoverOff = (e, keyIndex) =>{
     this.setState({ onHover : false });
-    this.hoverAccordion(hKey)
+    this.hoverAccordion(keyIndex)
   }
 
   render() {
-    const { bills, createBill, updateBill, id, deleteBill, visible, profileId, rebill, spinner, labels, categories,contacts} = this.state;
-    if (profileId===null || profileId=== undefined || profileId==="") {
+    const { bills, createBillRequest, updateBillRequest, id, deleteBillRequest, visible, profileId, updateBill, spinner, labels, categories,contacts} = this.state;
+    if (!profileId) {
       return <ProfileEmptyMessage/>
-    } else if (bills.length === 0 && !createBill ) {
-      return <div>{!spinner ? this.loadLoader() : bills.length === 0 && !createBill ? this.loadNotBill() : ""}</div>
-    } else if (createBill) {
+    } else if (bills.length === 0 && !createBillRequest ) {
+      return <div>{!spinner ? this.loadLoader() : bills.length === 0 && !createBillRequest ? this.emptyBills() : ""}</div>
+    } else if (createBillRequest) {
       return ( <CreateBill pid={profileId} label={labels} categories={categories} contacts={contacts} />)
-    }else if (updateBill) {
-     return(<UpdateBill pid={profileId} bill={rebill} lables={labels} categories={categories} contacts={contacts} />)
-    }else if(deleteBill) {
+    }else if (updateBillRequest) {
+     return(<UpdateBill pid={profileId} bill={updateBill} lables={labels} categories={categories} contacts={contacts} />)
+    }else if(deleteBillRequest) {
       return ( <DeleteBill id={id}  pid={profileId}/> )
     }else{
-      return <div>{this.loadShowBill(visible, bills)}{this.loadDeleteBill()}</div>
+      return <div>{this.displatAllBills(visible, bills)}{this.deleteBill()}</div>
     }
   }
 
   searchSelected = (e) =>{
     this.setState({ selectedOption : e.target.value });
-    if(this.state.selectedOption!==null){
-      this.setState({searchName:true});
+    if(this.state.selectedOption){
+      this.setState({searchName: true});
     }
   }
   
-  searchingFor = (term) =>{
-    return function(x){
-        //return (x.description.toLowerCase()+x.amount+x.categoryName.name.toLowerCase()).includes(term.toLowerCase())
-        return ((x.description.toLowerCase()+x.amount+x.categoryName.name.toLowerCase()).includes(term.toLowerCase()))|| !term
+  searchingFor = (searchTerm) =>{
+    return function(bill){
+        return ((bill.description.toLowerCase()+bill.amount+bill.categoryName.name.toLowerCase()).includes(searchTerm.toLowerCase()))|| !searchTerm
     }
   }
 
@@ -194,7 +190,7 @@ class Bills extends Component {
     return (
         <CardHeader>
         <Row>
-          <Col sm={3} ><strong style={{fontSize:20, marginLeft:20 }} >BILLS</strong></Col>
+          <Col sm={3} ><strong className="strong-text" >BILLS</strong></Col>
           <Col>
          {this.state.bills.length!==0 &&         
             <InputGroup>
@@ -203,75 +199,72 @@ class Bills extends Component {
             </InputGroup>       
          }
          </Col>
-          <Col sm={3}> <Button color="success" className="float-right" onClick={this.callCreateBill} > + Add </Button></Col>
+          <Col sm={3}> <Button color="success" className="float-right" onClick={this.createBillAction} > + Add </Button></Col>
         </Row>  
         </CardHeader>
     )
   }
   
-  //this method loads the spinner
   loadLoader = () =>{
     return( 
       <div className="animated fadeIn">
         <Card>
          {this.loadHeader()}
-          <center style={{paddingTop:'20px'}}>
-            <CardBody><Loader type="TailSpin" color="#2E86C1" height={60} width={60}/></CardBody>
+          <center className="padding-top" >
+            <CardBody><Loader type="TailSpin" className="loader-color" height={60} width={60}/></CardBody>
           </center>
         </Card>
       </div>)
   }
-
-  //This method is called when there are no Bills.
-  loadNotBill = () => {
+  // when bills is empty. 
+  emptyBills = () => {
     return (
       <div className="animated fadeIn">
         <Card>
          {this.loadHeader()}
-          <center style={{paddingTop:'20px'}}>
+          <center className="padding-top" >
             <CardBody><h5><b>You haven't created any Bills yet... </b></h5><br/></CardBody>
           </center>
         </Card>
     </div>)
   }
 
-  //This method Displays all the Bills one by one
-  loadShowBill = (visible, bills) => {
+  // Displays all the Bills one by one
+  displatAllBills = (visible, bills) => {
     return (
       <div className="animated fadeIn">
         <Card>
           {this.loadHeader()}
           <div style={{margin:30, paddingLeft:50}}>
             <h6><Alert isOpen={visible} color="danger">Unable to Process Request, Please try Again....</Alert></h6>
-            {/* {bills.filter(this.searchingFor(this.state.selectedOption)).map((bill, key) => {return this.loadSingleBill(bill, key); })}</div> */}
-             { this.state.searchName?bills.filter(this.searchingFor(this.state.selectedOption)).map((bill, key) => {return this.loadSingleBill(bill, key); }) 
-               : bills.map((bill, key) => {return this.loadSingleBill(bill, key); })
+             { this.state.searchName ? bills.filter(this.searchingFor(this.state.selectedOption)).map((bill, key) => {return this.getOneByOneBill(bill, key); }) 
+               : bills.map((bill, key) => {return this.getOneByOneBill(bill, key); })
               }
               </div>
         </Card>
       </div>)
   }
 
-  //Show the Single Bill 
-  loadSingleBill = (bill, ukey) =>{
+  // Show the Single Bill 
+  getOneByOneBill = (bill, key) =>{
     const styles = { margin : 6 }
     return (
-      <ListGroup flush key={ukey} className="animated fadeIn" onPointerEnter={(e) => this.onHover(e, ukey)} onPointerLeave={(e) => this.onHoverOff(e, ukey)}>
+      <ListGroup flush key={key} className="animated fadeIn" onPointerEnter={(e) => this.onHover(e, key)} onPointerLeave={(e) => this.onHoverOff(e, key)}>
         <ListGroupItem action>
           <Row>
-            <Col sm={{ size: 'auto', offset: 0 }} lg={1} style={{ backgroundColor: "#054FF8", color: "#FFFFFF", paddingTop: 10 }}>
+            <Col sm={{ size: 'auto', offset: 0 }} lg={1} className="date-format" >
               <strong style={{ paddingTop: 5 }}><center>{this.dateFormat(bill.billDate)}</center></strong>
             </Col>
             <Col sm={8}>
-              <Row style={{ paddingLeft: 10, color:'#000000'}}>{bill.description}</Row>
-              <Row style={{ paddingLeft: 10, fontStyle: "oblique", color: bill.categoryName.color}}><b>{bill.categoryName.name}</b></Row>
+              <Row className="row-text-style item-color">{bill.description}</Row>
+              <Row style={{ color: bill.categoryName.color }} className="row-text-style" ><b>{bill.categoryName.name}</b></Row>
             </Col>
-            <Col style={{ marginTop: 10 }} className="float-right">
-              <b style={{ color: "#F80505" }}>
-              {new Intl.NumberFormat('en-US', { style: 'currency', currency: bill.currency}).format( bill.amount)}
+            <Col className="float-right column-text ">
+              <b className="amount-color">
+                {new Intl.NumberFormat('en-US', { style: 'currency', currency: bill.currency}).format( bill.amount)}
               </b>
             </Col>
-            <Col>{this.state.onHover && this.state.hoverAccord[ukey] ? this.loadDropDown(bill, ukey, styles) : ''}</Col>
+            <Col>{this.state.onHover && this.state.hoverAccord[key] ? this.loadDropDown(bill, key, styles) : ''}</Col>
           </Row>
         </ListGroupItem>
       </ListGroup>)
@@ -285,12 +278,6 @@ class Bills extends Component {
     var date = new Date(year, month, day);
     const finalDate = new Intl.DateTimeFormat('en-gb', {  month: 'short',  weekday: 'short',  day: '2-digit' }).format(date);
     return finalDate;
-  }
-
-  searchingCat = (term) =>{
-    return function(x){
-      return x.name.includes(term)|| !term
-    }
   }
 
   displayCategoryName = (cid) => {
@@ -314,27 +301,27 @@ class Bills extends Component {
   }
   
  //this Method loads Browser DropDown
- loadDropDown = (bill, ukey, styles) =>{
+ loadDropDown = (bill, key, styles) =>{
     return (
-      <Dropdown isOpen={this.state.dropdownOpen[ukey]} style={{marginTop: 7, float: "right" }} toggle={() => { this.toggleDropDown(ukey); }} size="sm">
-        <DropdownToggle tag="span" onClick={() => { this.toggleDropDown(ukey); }} data-toggle="dropdown" aria-expanded={this.state.dropdownOpen[ukey]}>
+      <Dropdown isOpen={this.state.dropdownOpen[key]} className="dropdown-align" toggle={() => { this.toggleDropDown(key); }} size="sm">
+        <DropdownToggle tag="span" onClick={() => { this.toggleDropDown(key); }} data-toggle="dropdown" aria-expanded={this.state.dropdownOpen[key]}>
           <FaEllipsisV style={styles}/>
         </DropdownToggle>
         <DropdownMenu>
-          <DropdownItem onClick={() => { this.updateBill(bill) }}> Update </DropdownItem>
+          <DropdownItem onClick={() => { this.updateBillAction(bill) }}> Update </DropdownItem>
           <DropdownItem onClick={() => { this.setState({ id: bill.id }); this.toggleDanger(); }}> Delete</DropdownItem>
         </DropdownMenu>
       </Dropdown>);
  }
 
  //this method calls the delete model
- loadDeleteBill = () => {
+ deleteBill = () => {
   return (
-    <Modal isOpen={this.state.danger} toggle={this.toggleDanger} style={{paddingTop: "20%"}} backdrop={true}>
+    <Modal isOpen={this.state.danger} toggle={this.toggleDanger} className="delete-model-padding" backdrop={true}>
      <ModalHeader toggle={this.toggleDanger}>Delete Bill</ModalHeader>
      <ModalBody> Are you Sure want to Delete This Bill ? </ModalBody>
      <ModalFooter>
-       <Button color="danger" onClick={this.deleteBill}>Delete</Button>
+       <Button color="danger" onClick={this.deleteBillAction}>Delete</Button>
        <Button color="secondary" onClick={this.toggleDanger}>Cancel</Button>
      </ModalFooter>
    </Modal>)

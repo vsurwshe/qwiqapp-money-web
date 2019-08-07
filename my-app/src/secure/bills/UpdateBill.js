@@ -19,13 +19,13 @@ class UpdateBill extends Component {
       profileId: props.pid,
       labels: props.lables,
       categories: props.categories,
-      contacts:props.contacts,
+      contacts: props.contacts,
       bill: props.bill,
       labelOption: props.bill.labelIds,
       categoryOptionUpdate: false,
       labelOptionUpdate: false,
-      contactOptionUpdate:false,
-      contactOption:props.bill.coontactId,
+      contactOptionUpdate: false,
+      contactOption: props.bill.coontactId,
       categoryOption: props.bill.categoryId,
       currencies: [],
       userAmount: props.bill.amount,
@@ -139,7 +139,7 @@ class UpdateBill extends Component {
                 <Col><AvField name="billDate" label="Bill Date" value={this.loadDateFormat(bill.billDate)} type="date"  errorMessage="Invalid Date" validate={{ date: { format: 'yyyy/MM/dd' },
                   dateRange: {format: 'YYYY/MM/DD', start: {value: '1900/01/01'}, end: {value: '9999/12/31'}},
                   required: { value: true } }} /></Col>
-                <Col><AvField name="dueDays" label="Due Days" value={bill.dueDays} type="number"  errorMessage="Invalid days" /></Col>
+                <Col><AvField name="dueDays" label="Due Days" value={bill.dueDays} type="number" placeholder="Due_Days   Ex: 10" errorMessage="Invalid days" /></Col>
               </Row>
               <Row>
                 <Col><label >Description/Notes</label>
