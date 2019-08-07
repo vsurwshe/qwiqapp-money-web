@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardBody, Button } from 'reactstrap';
 import logo from './images/payment-success.png';
-import './style.css';
+import '../../../css/CssStyles.css';
 
 const PaymentSuccessMessage = (props) => {
     if (props.paymentReferenceId && (props.response === 202 ||  props.response === 200) ) {

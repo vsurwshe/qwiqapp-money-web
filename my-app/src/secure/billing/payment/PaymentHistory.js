@@ -5,7 +5,7 @@ import Loader from 'react-loader-spinner';
 import BillingAddressApi from '../../../services/BillingAddressApi';
 import GeneralApi from '../../../services/GeneralApi';
 import Config from '../../../data/Config';
-import '../payment/style.css'
+import '../../../css/CssStyles.css'
 
 class PaymentHistory extends Component {
   constructor(props) {
@@ -171,7 +171,7 @@ class PaymentHistory extends Component {
             break;
         }
       }
-    return (<div>{date.substring(0, 3)} {day}<sup>{dateSuperTag}</sup> {date.substring(3, 7) + " " + date.substring(11, 15)}</div>);
+    return (<div>{date.substring(0, 3)}, {day}<sup>{dateSuperTag}</sup> {date.substring(3, 7) + " " + date.substring(11, 15)}</div>);
   }
 }
 export default PaymentHistory;

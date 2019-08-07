@@ -8,7 +8,7 @@ import BillingAddressApi from '../../../services/BillingAddressApi';
 import PaymentSuccessMessage from './PaymentSuccessMessage';
 import UserApi from '../../../services/UserApi';
 import { ReUseComponents } from '../../utility/ReUseComponents';
-import './style.css'
+import '../../../css/CssStyles.css'
 
 const PAYPAL_URL = 'https://www.paypal.com/sdk/js?'
 
@@ -62,6 +62,18 @@ class MakePayment extends Component {
     }, Config.apiTimeoutMillis)
   };
 
+  updateInputValue(evt) {
+    this.setState({ selectedItem:{code: evt.target.value }});
+  }
+
+  handleScriptCreate() {
+    this.setState({ scriptLoaded: false })
+  }
+
+  handleScriptError() {
+    this.setState({ scriptError: true })
+  }
+
   render() {
     const { paymentSuccess, paymentResponse, loader, billingItems } = this.state
     if (billingItems.length === 0) {
@@ -100,18 +112,7 @@ class MakePayment extends Component {
     )
   }
 
-  updateInputValue(evt) {
-    this.setState({ selectedItem:{code: evt.target.value }});
-  }
-
-  handleScriptCreate() {
-    this.setState({ scriptLoaded: false })
-  }
-
-  handleScriptError() {
-    this.setState({ scriptError: true })
-  }
-
+  
   createPaypalOrder(data, actions) {
     // Set up the transaction
     if(this.state.selectedItem.amount){
@@ -175,38 +176,12 @@ class MakePayment extends Component {
   }
 
   loadMakePayment = (data) => {
-    let action = Store.getUser().action; 
     let url =  PAYPAL_URL + Store.getSetting('SETTINGS').paypalParams;
     return (
       <div className="animated fadeIn">
-       { action !== "VERIFY_EMAIL"
-               ? (action !== "ADD_BILLING" ? this.loadPayPalButton(url) : this.loadAddBillingAddress(action))
-               : this.loadVerifyMessage() }
+       { this.loadPayPalButton(url)}
       </div>
     )
-  }
-
-  loadVerifyMessage = () => {
-    return (
-      <Card>
-        <CardBody>
-          <center><b>You are not verified yet. Please, Verify Your Email</b></center>
-        </CardBody>
-      </Card>)
-  }
-
-  loadAddBillingAddress = (action) => {
-    
-    return (
-      <Card>
-        <CardBody>
-          <center><b>You have not added your Billing Address yet. Please, Add Billing Address.</b><br /><br />
-              <Button color="info">
-                <Link to={{pathname: "/billing/address/add", state: {updateBill: billingAddressFields }}} className="link"  > {action} </Link>
-              </Button>
-          </center>
-        </CardBody>
-      </Card>)
   }
 
   loadPayPalButton = (paypalURL) => {
