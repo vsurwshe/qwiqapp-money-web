@@ -27,7 +27,6 @@ async function process(success, failure, Uurl, Umethod, data) {
         data === null ? promise = await HTTP.request() : promise = await HTTP.request({ data });
         validResponse(promise, success)
     } catch (err) {
-        errorResponse(err, failure)
         AccessTokenError(err, failure, Uurl, Umethod, data, success);
     }
 }
@@ -53,10 +52,16 @@ let validResponse = function (resp, successMethod) {
         }
     }
 };
-
-let errorResponse = function (error, failure) {
-    if (failure != null) {
-        failure(error);
+let errorResponse = async function (error, failure) {
+    let err = error.response;
+    if (err.status === 500 || err.status === 400) {
+        let data = {
+            status: err.status,
+            message: err.data.error.debugMessage
+           }
+        failure(data);
+    } else {
+       failure(error);
     }
 };
 

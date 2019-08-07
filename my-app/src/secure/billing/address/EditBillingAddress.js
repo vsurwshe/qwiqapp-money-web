@@ -2,9 +2,12 @@ import React, { Component } from "react";
 import { Redirect } from 'react-router';
 import { AvForm, AvField } from 'availity-reactstrap-validation';
 import { Alert, Button, Card, FormGroup, Col, Row } from "reactstrap";
+import UserApi from '../../../services/UserApi';
 import BillingAddressApi from '../../../services/BillingAddressApi';
 import GeneralApi from "../../../services/GeneralApi";
 import Config from "../../../data/Config";
+import Store from "../../../data/Store";
+import '../../../css/CssStyles.css';
 
 class EditBillingAddress extends Component {
 
@@ -56,7 +59,11 @@ class EditBillingAddress extends Component {
 
   //this method call when lables created successfully
   successCreate = () => {
+    let user = Store.getUser();
     this.callAlertTimer("success", "Saved Billing Address");
+    if (user.action === "ADD_BILLING") {
+      new UserApi().getUser((response)=>Store.saveUser(response), (error)=>{console.log(error)});
+    }
   }
 
   //this handle the error response the when api calling
@@ -94,12 +101,12 @@ class EditBillingAddress extends Component {
     return (
       <div className="animated fadeIn" >
         <Card>
-          <h4 style={{ paddingTop: 20 }}><b><center> BILLING ADDRESS</center></b></h4>
+          <h4 className="padding-top"><b><center> BILLING ADDRESS</center></b></h4>
           <Col sm="12" md={{ size: 8, offset: 2 }} style={placeholderStyle}>
             <Alert color={alertColor}>{content}</Alert>
             <AvForm onSubmit={this.handleSubmitValue}>
               <Row>
-                <Col><AvField name="firstName" placeholder="First Name" style={placeholderStyle} value={updateBill.firstName} required /></Col>
+                <Col><AvField name="firstName" placeholder="First Name" className="placeholder-style" value={updateBill.firstName} required /></Col>
                 <Col><AvField name="lastName" placeholder="Last Name" style={placeholderStyle} value={updateBill.lastName} /></Col>
                 <Col><AvField name="company" placeholder="Organization" style={placeholderStyle} value={updateBill.company} validate={{ pattern: { value: '^[a-zA-Z0-9_.-]*' } }} required /></Col>
               </Row>

@@ -5,93 +5,68 @@ import Loader from 'react-loader-spinner';
 import BillingAddressApi from '../../../services/BillingAddressApi';
 import GeneralApi from '../../../services/GeneralApi';
 import Config from '../../../data/Config';
-
+import '../../../css/CssStyles.css'
 
 class PaymentHistory extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      paymentDetails: [],
+      payments: [],
       toggle: false,
       accordion: [],
-      currenciesSymbol: [],
+      currency: [],
       spinner: false,
       search: '',
-      color: undefined,
-      content: undefined,
-      data: '',
-      currentTotalBalance: '',
+      alertColor: '',
+      alertMessage: '',
+      total_balance: '',
     };
   }
 
   componentDidMount = () => {
     new BillingAddressApi().getPaymentsHistory(this.successCall, this.errorCall)
-    new GeneralApi().getCurrencyList(this.getCurrency, this.errorCall);
+    new GeneralApi().getCurrencyList(this.successCall, this.errorCall);
   }
-  //This Method is called for Api's Success Call
-  successCall = async paymentDetails => {
-    await this.setState({ paymentDetails, spinner: true });
-    if (paymentDetails.length !== 0) {
-      this.calculateCurrentBal(paymentDetails);
+ 
+  successCall = async (response)=> {
+    if(response.payments) {  //    response form all Payments & Total Balance  
+        await this.setState({ payments: response.payments,
+               total_balance: response.balance, spinner: true });
+    } else {
+        this.setState({ currency: response }) //response to all Currencies  
     }
   }
 
-  // this function calculateing CurrentBalnce 
-  calculateCurrentBal = (paymentDetails) => {
-    let totalAmt = 0;
-    paymentDetails.map((payment, key) => {
-      return totalAmt = totalAmt + payment.amount;
-    });
-    let dayDiif = this.getDaysDiff(new Date(paymentDetails[paymentDetails.length - 1].created), new Date())
-    this.setState({ currentTotalBalance: (totalAmt - (dayDiif * 1)) })
-  }
-
-  // this function calculating Dates diffrencess
-  getDaysDiff = (initialDate, currentDate) => {
-    var calculateForDay = 1000 * 60 * 60 * 24;
-
-    var calculateNumberOfDays = currentDate.getTime() - initialDate.getTime();
-
-    // Convert back to days and return
-    return Math.round(calculateNumberOfDays / calculateForDay);
-  }
-
-  getCurrency = currency => {
-    this.setState({ currenciesSymbol: currency })
-  }
-
-
-  //Method that shows API's Error Call
+  // Response API Error 
   errorCall = error => {
     this.callAlertTimer('danger', 'Unable to Process Request, Please Try Again')
   }
 
-  callAlertTimer = (color, content) => {
-    this.setState({ color, content });
+  callAlertTimer = (alertColor, alertMessage) => {
+    this.setState({ alertColor, alertMessage });
     setTimeout(() => {
-      this.setState({ color: "", content: "" });
+      this.setState({ alertColor: "", alertMessage: "" });
     }, Config.apiTimeoutMillis)
   }
 
   render() {
-    const { paymentDetails, spinner, currenciesSymbol } = this.state;
-    let billPayments = paymentDetails.map((payment, key) => {
-      return (<tr key={key} style={{textAlign:"left"}}>
-        <th>{this.dateFormat(payment.created)}</th>
-        <th >{payment.description}</th>
-        <th>{this.getCurrencySymbol(payment.currency, currenciesSymbol)} {payment.amount}</th>
-      </tr>
-      )
-    });
-
-    if (paymentDetails.length === 0) {
+    const { payments, spinner, currency } = this.state;
+    if (payments.length=== 0 ) {
       if (!spinner) {
-        return this.loadSpinner();
+        return this.loadSpinner()
       } else {
-        return this.loadPayHistoryEmpty();
+        return this.paymentHistoryIsEmpty();
       }
     } else {
-      return <div>{this.displayPaymentsList(billPayments)}</div>
+      let paymentsList = payments.map((payment, key) => {
+        return (<tr key={key} className="row-text-align">
+          <th>{this.customeDateFormat(payment.created)}</th>
+          <th >{payment.description}</th>
+          <th>{this.showCurrenySymbol(payment.currency, currency)} {payment.amount}</th>
+        </tr>
+        )
+      });
+      return <div>{this.displayPaymentHistory(paymentsList)}</div>
     }
   }
 
@@ -101,8 +76,8 @@ class PaymentHistory extends Component {
         <Card>
           {this.loadHeader()}
           <br /><br /><br /><br /><br />
-          <center style={{ paddingTop: '20px' }}>
-            <CardBody><Loader type="TailSpin" color="#2E86C1" height={60} width={60} /></CardBody>
+          <center className="padding-top" >
+            <CardBody><Loader type="TailSpin" className="loader-color" height={60} width={60} /></CardBody>
           </center>
         </Card>
       </div>)
@@ -117,7 +92,7 @@ class PaymentHistory extends Component {
     );
   }
 
-  loadPayHistoryEmpty = () => {
+  paymentHistoryIsEmpty = () => {
     return (
       <div>
         <Card>
@@ -133,65 +108,70 @@ class PaymentHistory extends Component {
   }
 
   // TODO: define static current Balance.
-  displayPaymentsList = (billPayments) => {
+  displayPaymentHistory = (paymentsList) => {
     return (
       <Card>
         <CardHeader>
-          <Label><b>PAYMENT HISTORY </b> <br /><b>Current Balance: £ </b>{this.state.currentTotalBalance} </Label>
-          <Link to="/billing/addCredits"> <Button color="success" className="float-right" onClick={this.addBillingPayment}> + Add Credits </Button></Link>
+          <Label><b>Current Balance: £ </b>{this.state.total_balance} </Label>
+          <Link to="/billing/addCredits"> <Button color="success" className="float-right" > + Add Credits </Button></Link>
         </CardHeader>
         <CardBody style={{ textAlign: "center" }}>
-          {this.loadPaymentsTable(billPayments)}
+          {this.paymentHistoryTable(paymentsList)}
         </CardBody>
       </Card>
     );
   }
 
-  loadPaymentsTable = (billPayments) => {
-    return (<Table striped  bordered >
+  paymentHistoryTable = (paymentsList) => {
+    return (<><b>PAYMENT HISTORY </b> <br /><br />
+    <Table striped  bordered >
       <thead>
-        <tr style={{backgroundColor:"#8F50CD",color:"#FFFFFF"}}>
+        <tr className="table-header-color" >
           <th>DATE</th>
           <th>DESCRIPTION</th>
           <th>AMOUNT</th>
         </tr>
       </thead>
       <tbody>
-        {billPayments}
+        {paymentsList}
       </tbody>
-    </Table>)
+    </Table></>
+    )
   }
 
-  getCurrencySymbol = (paymentCurrency, currenciesSymbol) => {
-    let data = '';
-    currenciesSymbol.map(currency => {
+  showCurrenySymbol = (paymentCurrency, currency) => {
+    let currency_symbol = '';
+    currency.map(currency => {
       if (paymentCurrency === currency.code) {
-        data = currency.symbol;
+        currency_symbol = currency.symbol;
       }
       return 0;
     });
-    return data;
+    return currency_symbol;
   }
 
-  dateFormat = (paymentDate) => {
+  customeDateFormat = (paymentDate) => {
     let date = new Date(paymentDate).toDateString();
     let day = date.substring(8, 10);
     let dateSuperTag = '';
+    if (day<10) {
+      day = date.substring(9, 10);
+    }
     if (day > 3 && day < 21) {
       dateSuperTag = 'th';
-    } else {
-      switch (day % 10) {
-        case 1: dateSuperTag = "st";
-          break;
-        case 2: dateSuperTag = "nd";
-          break;
-        case 3: dateSuperTag = "rd";
-          break;
-        default: dateSuperTag = "th";
-          break;
+      } else {
+        switch (day % 10) {
+          case 1: dateSuperTag = "st";
+            break;
+          case 2: dateSuperTag = "nd";
+            break;
+          case 3: dateSuperTag = "rd";
+            break;
+          default: dateSuperTag = "th";
+            break;
+        }
       }
-    }
-    return (<div>{day}<sup>{dateSuperTag}</sup> {date.substring(3, 7) + " " + date.substring(11, 15)}</div>);
+    return (<div>{date.substring(0, 3)}, {day}<sup>{dateSuperTag}</sup> {date.substring(3, 7) + " " + date.substring(11, 15)}</div>);
   }
 }
 export default PaymentHistory;

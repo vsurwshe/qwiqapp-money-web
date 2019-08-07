@@ -1,28 +1,43 @@
 import React, { Component } from 'react';
-import { Card, CardBody, CardHeader, Col, FormGroup, Label, Input, Button } from 'reactstrap';
-import {Link} from 'react-router-dom';
+import { Card, CardBody, CardHeader, Col, FormGroup, Label, Input, Button, Alert } from 'reactstrap';
+import { Link } from 'react-router-dom';
 import Script from 'react-load-script';
 import Config from '../../../data/Config';
 import Store from "../../../data/Store";
 import BillingAddressApi from '../../../services/BillingAddressApi';
 import PaymentSuccessMessage from './PaymentSuccessMessage';
+import UserApi from '../../../services/UserApi';
+import { ReUseComponents } from '../../utility/ReUseComponents';
+import '../../../css/CssStyles.css'
 
 const PAYPAL_URL = 'https://www.paypal.com/sdk/js?'
 
 let paymentOrderID = '';
-
+let billingAddressFields = {
+  addressLine1: '',
+  addressLine2: '',
+  city: '',
+  company: '',
+  country: '',
+  firstName: '',
+  lastName: '',
+  postCode: '',
+  region: ''
+}
 class MakePayment extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      doubleClick: false,
-      cancelPayment: false,
+      disableDoubleCilck: false,
       paymentSuccess: false,
       scriptLoaded: false,
       scriptError: false,
-      inputValue: 10,
       billingItems: [],
-      selectedOption: 10
+      selectedItem: {},
+      paymentResponse:'',
+      loader: true,
+      showAlert: false,
+      error_message: ''
     };
 
     this.createPaypalOrder = this.createPaypalOrder.bind(this)
@@ -30,43 +45,25 @@ class MakePayment extends Component {
   }
 
   componentDidMount = async () => {
-    await new BillingAddressApi().getBillingItems(this.successCall, this.failureCall);
-  }
-
-  onSiteChanged = (e) => {
-    this.setState({ selectedOption: e.currentTarget.value });
-  }
-
-  cancelPayment = () => {
-    this.setState({ cancelPayment: true })
+    await new BillingAddressApi().getBillingItems(this.successCall, this.errorCall);
   }
 
   successCall = (billingItems) => {
-    this.setState({ billingItems })
+    this.setState({ billingItems, loader: false})
   };
 
   errorCall = (error) => {
-    this.callAlertTimer("danger", "Unable to Process, Please try again...");
+    this.setState({ loader: false, error_message: error}); 
   }
 
-  callAlertTimer = () => {
-
+  callAlertTimer = (message) => {
     setTimeout(() => {
-      this.setState({ paymentSuccess: true, doubleClick: false });
+      this.setState({ paymentSuccess: true, disableDoubleCilck: false });
     }, Config.apiTimeoutMillis)
   };
 
-  render() {
-    const { paymentSuccess } = this.state
-    if (paymentSuccess) {
-      return <PaymentSuccessMessage paymentReferenceId={paymentOrderID} />
-    } else {
-      return <div>{this.loadMakePayment()}</div>
-    }
-  }
-
   updateInputValue(evt) {
-    this.setState({ inputValue: evt.target.value });
+    this.setState({ selectedItem:{code: evt.target.value }});
   }
 
   handleScriptCreate() {
@@ -77,33 +74,73 @@ class MakePayment extends Component {
     this.setState({ scriptError: true })
   }
 
+  render() {
+    const { paymentSuccess, paymentResponse, loader, billingItems } = this.state
+    if (billingItems.length === 0) {
+      if (loader) {
+        return ReUseComponents.loadSpinner("MakePayment")
+      } else {
+        return this.loadBillingItemError();
+      }
+    } else if (paymentSuccess) {
+      return <PaymentSuccessMessage paymentReferenceId={paymentOrderID} response = {paymentResponse}/>
+    } else {
+      return <div>{this.loadMakePayment()}</div>
+    }
+  }
+
+  loadBillingItemError =()=>{
+    const {status, message} = this.state.error_message;
+    let link, buttonText;
+    if (status && status === 500) {
+      link = "/billing/address/add"
+      buttonText = "Add Billing Address"
+    } else {
+      link = "/verify"
+      buttonText = "Verify Email"
+    }
+    
+    return(
+      <Card>
+        <CardHeader><strong>Make Payment</strong></CardHeader>
+        <center >
+          <CardBody><h4><b className="message">{message} <br /><br />
+          <Link to={{pathname: link, state: {updateBill: billingAddressFields }}} className="link" > <Button color="info"> {buttonText} </Button> </Link>
+          </b></h4></CardBody>
+        </center>
+      </Card>
+    )
+  }
+
+  
   createPaypalOrder(data, actions) {
     // Set up the transaction
-    return actions.order.create({
-      purchase_units: [{
-        amount: {
-          value: this.state.inputValue
-        }
-      }]
-    });
+    if(this.state.selectedItem.amount){
+      return actions.order.create({
+        purchase_units: [{
+          amount: {
+            value: this.state.selectedItem.amount
+          }
+        }]
+      });
+    } else{
+      this.setState({ showAlert:true })
+    }
   }
 
-  itemId = (amount) => {
-    this.setState({ selectedOption: amount, inputValue: amount })
+  itemId = (amount, code) => {
+    this.setState({ selectedItem: {amount,code}, showAlert: false})
   }
 
-  paymentSuccessMessage = () => {
-    this.setState({ paymentSuccess: true });
+  paymentSuccessMessage = (paymentResponse) => {
+    new UserApi().getUser(user=>Store.saveUser(user), error=>console.log(error));
+    this.setState({ paymentSuccess: true, paymentResponse });
   }
 
-  paypalOnApprove(data, actions) {
-    let paymentURL = Config.cloudBaseURL + "/billing/paypal-completed"
-    let value = this.state.inputValue;
-    // Capture the funds from the transaction
-    actions.order.capture().then(function (details) {
+  savePaymentDetailsToApi = (data, actions, paymentURL, code) =>{
+    return actions.order.capture().then(function (details) {
       paymentOrderID = data.orderID;
-      // Call your server to save the transaction
-      fetch(paymentURL, {
+      return fetch(paymentURL, {
         method: 'post',
         headers: {
           'content-type': 'application/json',
@@ -111,16 +148,23 @@ class MakePayment extends Component {
         },
         body: JSON.stringify({
           orderId: data.orderID,
-          amount: value
+          code: code
         })
+      }).then(response => {
+        return response.status;
       }).catch(error => {
-        return error.message;
+        return error.status;
       });
-    });
-    // TODO: Put Loader after Success pay 
-    setTimeout(() => {
-      return this.paymentSuccessMessage()
-    }, Config.apiTimeoutMillis)
+  });
+  }
+
+  paypalOnApprove = async (data, actions) =>{
+    let paymentURL = Config.cloudBaseURL + "/billing/paypal-completed"
+    let code = this.state.selectedItem.code;
+    let response = await this.savePaymentDetailsToApi(data, actions, paymentURL, code);
+    if(response){
+      this.paymentSuccessMessage(response)
+    }
   }
 
   handleScriptLoad(obj) {
@@ -131,54 +175,13 @@ class MakePayment extends Component {
     this.setState({ scriptLoaded: true })
   }
 
-  onChange = (e) => {
-    this.setState({ inputValue: e.target.value });
-  }
   loadMakePayment = (data) => {
-    let action = Store.getUser().action; 
     let url =  PAYPAL_URL + Store.getSetting('SETTINGS').paypalParams;
     return (
       <div className="animated fadeIn">
-        {/* { action === "ADD_CREDITS" || action === "ADD_CREDITS_LOW" || action === null ? this.loadPayPalButton(url) : this.loadVerifyMessage() } */}
-        {/* { action !== "ADD_BILLING" ? this.loadPayPalButton(url) : this.loadVerifyMessage() } */}
-       { action !== "VERIFY_EMAIL"
-               ? (action !== "ADD_BILLING" ? this.loadPayPalButton(url) : this.loadAddBillingAddress(action))
-               : this.loadVerifyMessage() }
+       { this.loadPayPalButton(url)}
       </div>
     )
-  }
-
-  loadVerifyMessage = () => {
-    return (
-      <Card>
-        <CardBody>
-          <center><b>You are not verified yet. Please, Verify Your Email</b></center>
-        </CardBody>
-      </Card>)
-  }
-
-  loadAddBillingAddress = (action) => {
-    let emptyBillingAddress = {
-      addressLine1: '',
-      addressLine2: '',
-      city: '',
-      company: '',
-      country: '',
-      firstName: '',
-      lastName: '',
-      postCode: '',
-      region: ''
-    }
-    return (
-      <Card>
-        <CardBody>
-          <center><b>You have not added your Billing Address yet. Please, Add Billing Address.</b><br /><br />
-              <Button color="info">
-                <Link to={{pathname: "/billing/address/add", state: {updateBill: emptyBillingAddress }}} style={{color:"black"}} > {action} </Link>
-              </Button>
-          </center>
-        </CardBody>
-      </Card>)
   }
 
   loadPayPalButton = (paypalURL) => {
@@ -189,8 +192,11 @@ class MakePayment extends Component {
         onCreate={this.handleScriptCreate.bind(this)}
         onError={this.handleScriptError.bind(this)}
         onLoad={this.handleScriptLoad.bind(this)} />
-      <h4 style={{ paddingTop: 20 }}><center>Select any Payment Option</center></h4><br /><br />
-      <div className="form-group">
+      <h4 className= "padding-top" ><center>Select a payment option</center></h4><br />
+      <div className="form-group"> 
+        <center>
+          {this.state.showAlert && <Alert color="warning"><b className="warning-message" >Please Select your Payment option to continue</b></Alert>}
+         </center>
         <FormGroup check>
           {this.state.billingItems === undefined ? " " : this.state.billingItems.map((item, index) => {
             return this.loadRadioButtons(item, index)
@@ -211,8 +217,8 @@ class MakePayment extends Component {
       <React.Fragment key={index}>
         <Col sm="12" md={{ size: 6, offset: 3 }}>
           <Label check>
-            <Input type="radio" name="radio1" value={item.amount} checked={this.state.selectedOption === item.amount}
-              onChange={() => this.itemId(item.amount)} />{' '}
+            <Input type="radio" name="radio1" value={item.amount} checked={this.state.selectedItem.code === item.code}
+              onChange={() => this.itemId(item.amount, item.code)} />{' '}
              <b>{item.label}</b> - {item.summary}<br />
           </Label><br />
         </Col>
