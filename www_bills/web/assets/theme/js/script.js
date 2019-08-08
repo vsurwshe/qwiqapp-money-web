@@ -967,20 +967,20 @@
                 if (!$iscollapsing.hasClass('collapsing')) {
                     if ($id.indexOf('toggle') != -1){
                         if ($(this).hasClass('collapsed')) {
-                            $(this).find('span.sign').removeClass('mbri-arrow-down').addClass('mbri-arrow-up'); 
+                            $(this).find('span.sign').removeClass('blrm-arrow-down').addClass('blrm-arrow-up'); 
                         }
                         else{
-                            $(this).find('span.sign').removeClass('mbri-arrow-up').addClass('mbri-arrow-down'); 
+                            $(this).find('span.sign').removeClass('blrm-arrow-up').addClass('blrm-arrow-down'); 
                         }
                     }
                     else if ($id.indexOf('accordion')!=-1) {
                         var $accordion =  $(this).closest('.accordionStyles ');
                     
                         $accordion.children('.card').each(function() {
-                            $(this).find('span.sign').removeClass('mbri-arrow-up').addClass('mbri-arrow-down'); 
+                            $(this).find('span.sign').removeClass('blrm-arrow-up').addClass('blrm-arrow-down'); 
                         });
                         if ($(this).hasClass('collapsed')) {
-                            $(this).find('span.sign').removeClass('mbri-arrow-down').addClass('mbri-arrow-up'); 
+                            $(this).find('span.sign').removeClass('blrm-arrow-down').addClass('blrm-arrow-up'); 
                         }
                     }
                 }
