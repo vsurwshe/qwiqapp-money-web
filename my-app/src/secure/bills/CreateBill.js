@@ -13,7 +13,7 @@ class CreateBill extends Component {
     super(props);
     this.state = {
       labels: props.label,
-      contacts:props.contacts,
+      contacts: props.contacts,
       categories : props.categories, 
       billCreated : false,
       profileId : props.pid,
@@ -27,56 +27,36 @@ class CreateBill extends Component {
       doubleClick:false
      };
   }
-  componentDidMount=()=>{
-  new GeneralApi().getCurrencyList(this.successCurrency, this.failureCurrency)
+  componentDidMount= () =>{
+    new GeneralApi().getCurrencyList(this.successCurrency, this.failureCurrency)
   }
-  successCurrency = jsonArray =>{
-    this.setState({ currencies: jsonArray });
-  }
-  failureCurrency = err =>{
-    console.log(err);
-  }
+  successCurrency = (currencies) =>{ this.setState({ currencies }); }
 
-cancelCreateBill=()=>{
-  this.setState({cancelCreateBill:true})
-}
-  //this method handle form submitons values and errors
+  failureCurrency = (err) =>{ console.log(err); }
+
+  cancelCreateBill= () =>{ this.setState({cancelCreateBill:true}) }
+
+  //this method handle form submit values and errors
   handleSubmitValue = (event, errors, values) => {
-    const { labelOption, categoryOption ,contactOption} = this.state 
+    const { labelOption, categoryOption ,contactOption} = this.state  
     if (categoryOption === null){
       this.callAlertTimer("warning", "Please Select Category...");
     } else if (errors.length === 0) { 
-        let billDateCal = new Date(values.bill_Date);
-        let dueDateCal = new Date(values.due_Date);
-        if ((dueDateCal-billDateCal)/(1000*60*60*24)>=0) {
-          let dueDate, billDate;
-          let billYear =values.bill_Date.split("-")[0];
-          if (billYear <1900) {
-            this.callAlertTimer("danger", "Unsupported 'BillDate', Select a date after year 1900. Ex: 24/08/1995!!");
-          } else {
-            // bill date formate Year+Month+Day
-          billDate = values.bill_Date.split("-")[0]+values.bill_Date.split("-")[1]+values.bill_Date.split("-")[2];
-          //due Date formate Year+Month+Day
-          dueDate = values.due_Date.split("-")[0]+values.due_Date.split("-")[1]+values.due_Date.split("-")[2];
-          const newData = {...values, "billDate":billDate, "dueDate":dueDate, "categoryId":categoryOption.value, "contactId":contactOption.value ,"labelIds":labelOption===[] ? '': labelOption.map(opt=>{return opt.value})}
-          this.handlePostData(event, newData); 
-          }
-        } else{
-          this.callAlertTimer("danger", "Due Date should be greater than or equal to Bill Date");
-        }
+      let billDateValue;
+      billDateValue = values.billDate.split("-")[0]+values.billDate.split("-")[1]+values.billDate.split("-")[2];
+      const newData = {...values, "billDate":billDateValue, "categoryId":categoryOption.value, "contactId":contactOption.value ,"labelIds":labelOption===[] ? '': labelOption.map(opt=>{return opt.value})}
+      this.handlePostData(event, newData); 
     }
   }
 
   //this method handle the Post method from user`
   handlePostData = async (e, data) => {
     e.persist();
-    delete data.bill_Date;
-    delete data.due_Date;
     this.setState({doubleClick:true})
     await new BillApi().createBill(this.successCreate, this.errorCall, this.state.profileId, data);
   };
 
-  //this method call when lables created successfully
+  //this method call when labels created successfully
   successCreate = () => {
     this.callAlertTimer("success", "New Bill Created....");
   }
@@ -95,20 +75,19 @@ cancelCreateBill=()=>{
   };
 
   render() {
-    const { alertColor, content, categories,cancelCreateBill, contacts,billCreated } = this.state;
-    if(cancelCreateBill){
+    const { alertColor, content, categories, cancelCreateBill, contacts, billCreated } = this.state;
+    if (cancelCreateBill) {
       return <Bills/>
-    }else{
-    return <div>{billCreated ? <Bills /> : this.selectLabels(alertColor, content, categories,contacts)}</div>
-  }
-}
-  
-  selectLabels = (alertColor, content, categories,contacts) =>{
-    return this.loadCreatingBill(alertColor, this.state.labels, content, categories,contacts);
+    } else {
+      return <div>{billCreated ? <Bills /> : this.selectLabels(alertColor, content, categories, contacts)}</div>
+    }
   }
   
-  //this Method Call when Label Creation in porceess.
-  loadCreatingBill = (alertColor, labels, content, categories,contacts) => {
+  selectLabels = (alertColor, content, categories, contacts) =>{
+    return this.billFormField(alertColor, this.state.labels, content, categories,contacts);
+  }
+  
+  billFormField = (alertColor, labels, content, categories,contacts) => {
     return (
       <div className="animated fadeIn" >
         <Card>
@@ -131,34 +110,36 @@ cancelCreateBill=()=>{
               </Row>
               <Row>
                 <Col>
-                  <AvField name="tax" id="tax" placeholder="tax"  value='0' label="Tax" type="text" errorMessage="Invalid amount" validate={{ required: { value: true }, pattern: { value: '^[0-9]+$' } }} required/>
+                  <AvField name="tax" id="tax" placeholder="Ex: 2"  value='0' label="Tax" type="text" errorMessage="Invalid amount" validate={{ required: { value: true }, pattern: { value: '^[0-9]+$' } }} required/>
                 </Col>
               </Row>
               <Row>
                 <Col> 
+                {/* Categories loading in select options filed */}
                 <label >Category</label>
                 <Select options={Data.categories(categories)} styles={Data.singleStyles} placeholder="Select Categories " onChange={this.categorySelected} required /></Col>
               </Row>
               <br />
               <Row>
-                <Col><AvField name="bill_Date" label="Bill Date" value={this.state.userBillDate} type="date" errorMessage="Invalid Date" validate={{ date: { format: 'dd/MM/yyyy' }, 
+                <Col><AvField name="billDate" label="Bill Date" value={this.state.userBillDate} type="date" errorMessage="Invalid Date" validate={{ date: { format: 'dd/MM/yyyy' }, 
                       dateRange: {format: 'YYYY/MM/DD', start: {value: '1900/01/01'}, end: {value: '9999/12/31'}}, 
                       required: { value: true } }} /></Col>
-                <Col><AvField name="due_Date" label="Due Date" value={this.state.userDueDate} type="date" errorMessage="Invalid Date" validate={{ date: { format: 'yyyy/MM/dd' },
-                      dateRange: {format: 'YYYY/MM/DD', start: {value: '1900/01/01'}, end: {value: '9999/12/31'}}, required: { value: true } }} /></Col>
+                <Col><AvField name="dueDays" label="Due Days" placeholder="No.of Days" value={this.state.userDueDate} type="number" errorMessage="Invalid Days" /></Col>
               </Row>
               <Row>
                 <Col>
                 <label >Description/Notes</label>
-                 <AvField name="description" type="text" list="colors" errorMessage="Invalid Notes" placeholder="Enter Notes " /></Col>
+                 <AvField name="description" type="text" list="colors" placeholder="Ex: Recharge" errorMessage="Invalid Notes" /></Col>
               </Row>
               <Row>
                 <Col>
+               {/* Labels loading in select options filed */}
                 <label >Select Labels</label>
-                <Select isMulti options={Data.labels(labels)} styles={Data.colourStyles} placeholder="Select Lables " onChange={this.labelSelected} /></Col>
+                <Select isMulti options={Data.labels(labels)} styles={Data.colourStyles} placeholder="Select Labels " onChange={this.labelSelected} /></Col>
               </Row><br />
               <Row>
                 <Col>
+                 {/* Contacts loading in select options filed */}
                 <label >Contact Name</label>
                   <Select options={Data.contacts(contacts)}  placeholder="Select Contact " onChange={this.contactSelected} /></Col>
               </Row><br />
