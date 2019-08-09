@@ -21,17 +21,14 @@ class DeleteBill extends Component {
     new BillApi().deleteBill(this.successCall, this.errorCall, this.state.profileId, this.state.id);
   };
 
-  //this method called when the delete api called and successfully Executed.
   successCall = () => {
     this.callAlertTimer("success","Bill Deleted Successfully....");
   };
   
-  //This method shows API Error if there's any 
   errorCall = () => {
     this.callAlertTimer("danger","Something went wrong, Please Try Again...  ");
   };
 
-  //This method show the alert message
   callAlertTimer = (color, content) => {
     this.setState({ color, content });
     setTimeout(() => {this.setState({ color: "", content:"", labelDeleted: true });}, Config.notificationMillis);
@@ -39,11 +36,10 @@ class DeleteBill extends Component {
 
   render() {
     const { labelDeleted, content, color } = this.state;
-    return <div>{labelDeleted ? <Bills /> : this.loadDeleting(color, content)}</div>
+    return <div>{labelDeleted ? <Bills /> : this.deleteBill(color, content)}</div>
   }
 
-  //This Method Call while Deletion is in Process.
-  loadDeleting = (color, content) =>{
+  deleteBill = (color, content) =>{
     return (
       <div className="animated fadeIn">
         <Card>

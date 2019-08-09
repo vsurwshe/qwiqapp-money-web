@@ -1,35 +1,68 @@
+.text-color {
+    color: #EA182B
+}
+.warning-message {
+    color: #072567
+}
+.router-link {
+    color: aliceblue
+}
+.text-link {
+    color: black
+}
+
+.loader-color {
+    color: #2E86C1
+}
+.row-text-align { 
+    text-align:left 
+}
+.padding-top { 
+    padding-top: 20px 
+}
+
+.table-header-color {
+    background-color:#DEE9F2;
+    color:#000000;
+}
+.placeholder-style {
+    color: #000000;
+    font-size: 1.0em;
+    font-weight: bold
+}
+
 /* ============ Bils styles Start=========*/
+.row-text-bill {
+    padding-left: 10px;
+    font-style: oblique;
+}
 .strong-text {
     font-size:20px;
     margin-left:20px;
 } 
-.loader-color {
-    color: #2E86C1;
-}
-.padding-top {
-    padding-top: 20px
-}
 .date-format { 
     background-color: #054FF8;
     color: #FFFFFF;
     padding-top: 10px
 }
-.row-text-style {
-    padding-left: 10px;
-    font-style: oblique;
-}
-.item-color {
-    color: #000000;
-}
-.amount-color {
-    color: #F80505;
-}
 .column-text {
     margin-top: 10px
 }
-.dropdown-align {
+dropdown-align {
     margin-top: 7px;
     float: right
 }
-.delete-model-padding { padding-top: 20% }
-/* ========================= Bills style End ==============  */
+.delete-model-padding {
+     padding-top: 20%
+     }
+.header-search{
+    margin:30;
+    padding-left:50
+}
+.date-formate{
+    padding-top: 5px;
+}
+.padding-left {
+    padding-left: 20px
+}
+/* ============ End Bils styles=========*/

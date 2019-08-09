@@ -8,7 +8,7 @@ import BillingAddressApi from '../../../services/BillingAddressApi';
 import PaymentSuccessMessage from './PaymentSuccessMessage';
 import UserApi from '../../../services/UserApi';
 import { ReUseComponents } from '../../utility/ReUseComponents';
-import '../../../css/CssStyles.css'
+import '../../../css/style.css'
 
 const PAYPAL_URL = 'https://www.paypal.com/sdk/js?'
 
@@ -104,8 +104,8 @@ class MakePayment extends Component {
       <Card>
         <CardHeader><strong>Make Payment</strong></CardHeader>
         <center >
-          <CardBody><h4><b className="message">{message} <br /><br />
-          <Link to={{pathname: link, state: {updateBill: billingAddressFields }}} className="link" > <Button color="info"> {buttonText} </Button> </Link>
+          <CardBody><h4><b className="text-color">{message} <br /><br />
+          <Link to={{pathname: link, state: {updateBill: billingAddressFields }}} className="text-link" > <Button color="info"> {buttonText} </Button> </Link>
           </b></h4></CardBody>
         </center>
       </Card>
@@ -195,7 +195,8 @@ class MakePayment extends Component {
       <h4 className= "padding-top" ><center>Select a payment option</center></h4><br />
       <div className="form-group"> 
         <center>
-          {this.state.showAlert && <Alert color="warning"><b className="warning-message" >Please Select your Payment option to continue</b></Alert>}
+          {this.state.showAlert && <Alert color="warning"><b className="warning-
+          " >Please Select your Payment option to continue</b></Alert>}
          </center>
         <FormGroup check>
           {this.state.billingItems === undefined ? " " : this.state.billingItems.map((item, index) => {

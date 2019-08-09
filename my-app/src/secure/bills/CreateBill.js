@@ -84,11 +84,10 @@ class CreateBill extends Component {
   }
   
   selectLabels = (alertColor, content, categories, contacts) =>{
-    return this.loadCreatingBill(alertColor, this.state.labels, content, categories,contacts);
+    return this.billFormField(alertColor, this.state.labels, content, categories,contacts);
   }
   
-  //this Method Call when Label Creation in process.
-  loadCreatingBill = (alertColor, labels, content, categories,contacts) => {
+  billFormField = (alertColor, labels, content, categories,contacts) => {
     return (
       <div className="animated fadeIn" >
         <Card>
@@ -111,11 +110,12 @@ class CreateBill extends Component {
               </Row>
               <Row>
                 <Col>
-                  <AvField name="tax" id="tax" placeholder="tax"  value='0' label="Tax" type="text" errorMessage="Invalid amount" validate={{ required: { value: true }, pattern: { value: '^[0-9]+$' } }} required/>
+                  <AvField name="tax" id="tax" placeholder="Ex: 2"  value='0' label="Tax" type="text" errorMessage="Invalid amount" validate={{ required: { value: true }, pattern: { value: '^[0-9]+$' } }} required/>
                 </Col>
               </Row>
               <Row>
                 <Col> 
+                {/* Categories loading in select options filed */}
                 <label >Category</label>
                 <Select options={Data.categories(categories)} styles={Data.singleStyles} placeholder="Select Categories " onChange={this.categorySelected} required /></Col>
               </Row>
@@ -124,20 +124,22 @@ class CreateBill extends Component {
                 <Col><AvField name="billDate" label="Bill Date" value={this.state.userBillDate} type="date" errorMessage="Invalid Date" validate={{ date: { format: 'dd/MM/yyyy' }, 
                       dateRange: {format: 'YYYY/MM/DD', start: {value: '1900/01/01'}, end: {value: '9999/12/31'}}, 
                       required: { value: true } }} /></Col>
-                <Col><AvField name="dueDays" label="Due Days" placeholder="Due_Days     example: 10" value={this.state.userDueDate} type="number" errorMessage="Invalid Days" /></Col>
+                <Col><AvField name="dueDays" label="Due Days" placeholder="No.of Days" value={this.state.userDueDate} type="number" errorMessage="Invalid Days" /></Col>
               </Row>
               <Row>
                 <Col>
                 <label >Description/Notes</label>
-                 <AvField name="description" type="text" list="colors" placeholder="Enter Description Ex: Recharge" errorMessage="Invalid Notes" /></Col>
+                 <AvField name="description" type="text" list="colors" placeholder="Ex: Recharge" errorMessage="Invalid Notes" /></Col>
               </Row>
               <Row>
                 <Col>
+               {/* Labels loading in select options filed */}
                 <label >Select Labels</label>
                 <Select isMulti options={Data.labels(labels)} styles={Data.colourStyles} placeholder="Select Labels " onChange={this.labelSelected} /></Col>
               </Row><br />
               <Row>
                 <Col>
+                 {/* Contacts loading in select options filed */}
                 <label >Contact Name</label>
                   <Select options={Data.contacts(contacts)}  placeholder="Select Contact " onChange={this.contactSelected} /></Col>
               </Row><br />

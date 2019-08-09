@@ -34,7 +34,6 @@ class UpdateBill extends Component {
   }
 
   componentDidMount = async () => {
-    // await Data.currencies().then(data => { this.setState({ currencies: data }) })
     new GeneralApi().getCurrencyList(this.successCurrency, this.failureCurrency)
   }
   successCurrency = currencies =>{
@@ -47,7 +46,7 @@ class UpdateBill extends Component {
     this.setState({ cancelUpdateBill: true })
   }
 
-  //this method handle form submission values and errors
+  // handle form submission values and errors
   handleSubmitValue = (event, errors, values) => {
     const { labelOption, categoryOption, categoryOptionUpdate, labelOptionUpdate, contactOptionUpdate, contactOption } = this.state
     if (errors.length === 0) {
@@ -64,17 +63,17 @@ class UpdateBill extends Component {
     new BillApi().updateBill(this.successCall, this.errorCall, data, this.state.profileId, this.props.bill.id)
   };
 
-  //This method called when Bill is Successfully updated
+  // updated bill
   successCall = json => {
     this.callAlertTimer("success", "Bill Updated Successfully... ");
   };
 
-  //This method shows the Api Error messages if any
+  // updated bill Error messages
   errorCall = err => {
     this.callAlertTimer("danger", "Unable to process request, Please Try Again... ");
   };
 
-  //this method shows the response messages for user
+  // shows the response messages for user
   callAlertTimer = (alertColor, content) => {
     this.setState({ alertColor, content });
     setTimeout(() => {
@@ -97,14 +96,14 @@ class UpdateBill extends Component {
     if (cancelUpdateBill) {
       return <Bills />
     } else {
-      return <div>{updateSuccess ? <Lables /> : this.loadUpdatingLabel(alertColor, content, labels, categories, bill,contacts)}</div>
+      return <div>{updateSuccess ? <Lables /> : this.updateFormFiled(alertColor, content, labels, categories, bill,contacts)}</div>
     }
   }
   
   loadHeader = () => <CardHeader><strong>Update Bill</strong></CardHeader>
 
-  //this method call when updating profile
-  loadUpdatingLabel = (alertColor, content, labels, categories, bill,contacts) => {
+  // when updating Form
+  updateFormFiled = (alertColor, content, labels, categories, bill,contacts) => {
     return (
       <div className="animated fadeIn" >
         <Card>
@@ -127,7 +126,7 @@ class UpdateBill extends Component {
               </Row>
               <Row>
                 <Col>
-                  <AvField name="tax" id="tax" value={bill.tax+''} placeholder="tax" label="Tax" type="text" errorMessage="Invalid amount" validate={{ required: { value: true }, pattern: { value: '^[0-9]+$' } }} required />
+                  <AvField name="tax" id="tax" value={bill.tax+''} placeholder="Ex: 2" label="Tax" type="text" errorMessage="Invalid amount" validate={{ required: { value: true }, pattern: { value: '^[0-9]+$' } }} required />
                 </Col>
               </Row>
               <Row>
@@ -139,11 +138,11 @@ class UpdateBill extends Component {
                 <Col><AvField name="billDate" label="Bill Date" value={this.loadDateFormat(bill.billDate)} type="date"  errorMessage="Invalid Date" validate={{ date: { format: 'yyyy/MM/dd' },
                   dateRange: {format: 'YYYY/MM/DD', start: {value: '1900/01/01'}, end: {value: '9999/12/31'}},
                   required: { value: true } }} /></Col>
-                <Col><AvField name="dueDays" label="Due Days" value={bill.dueDays} type="number" placeholder="Due_Days   Ex: 10" errorMessage="Invalid days" /></Col>
+                <Col><AvField name="dueDays" label="Due Days" value={bill.dueDays} type="number" placeholder="No.of Days" errorMessage="Invalid days" /></Col>
               </Row>
               <Row>
                 <Col><label >Description/Notes</label>
-                  <AvField name="description" type="text" value={bill.description} list="colors" errorMessage="Invalid Notes" placeholder="Enter Notes " /></Col>
+                  <AvField name="description" type="text" value={bill.description} list="colors" errorMessage="Invalid Notes" placeholder="Ex: Recharge " /></Col>
               </Row>
               <Row>
                 <Col><label >Select Labels</label>

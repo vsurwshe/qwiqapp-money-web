@@ -7,7 +7,7 @@ import BillingAddressApi from '../../../services/BillingAddressApi';
 import GeneralApi from "../../../services/GeneralApi";
 import Config from "../../../data/Config";
 import Store from "../../../data/Store";
-import '../../../css/CssStyles.css';
+import '../../../css/style.css';
 
 class EditBillingAddress extends Component {
 
