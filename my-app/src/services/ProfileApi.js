@@ -27,7 +27,7 @@ class ProfileApi {
 
 export default ProfileApi;
 
-async function process(success, failure, requestUrl, requestMethod, data, deleteId) {
+async function process(success, failure, requestUrl, requestMethod, data, deleteId, reload) {
   let HTTP = httpCall(requestUrl, requestMethod);
   let promise;
   try {
@@ -39,16 +39,20 @@ async function process(success, failure, requestUrl, requestMethod, data, delete
     }
     validResponse(promise, success, requestMethod, deleteId)
   } catch (err) {
-    AccessTokenError(err, failure, requestUrl, requestMethod, data, success);
+    AccessTokenError(err, failure, requestUrl, requestMethod, data, success, reload);
   }
 }
 
 //this method solve the Expire Token Problem.
-let AccessTokenError = function (err, failure, requestUrl, requestMethod, data, success) {
+let AccessTokenError = function (err, failure, requestUrl, requestMethod, data, success, reload) {
   if (err.request.status === 0) {
     errorResponse(err, failure)
   } else if (err.response.status === 403 || err.response.status === 401) {
-    new LoginApi().refresh(() => { process(success, failure, requestUrl, requestMethod, data) }, errorResponse(err, failure))
+    if (!reload) {
+      new LoginApi().refresh(() => { process(success, failure, requestUrl, requestMethod, data, "reload") }, errorResponse(err, failure))
+    } else {
+      errorResponse(err, failure)
+    }
   } else { errorResponse(err, failure) }
 }
 

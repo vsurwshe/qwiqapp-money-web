@@ -27,7 +27,7 @@ class ContactApi {
 
 export default ContactApi;
 
-async function process(success, failure, Uurl, Umethod, profileId, data) {
+async function process(success, failure, Uurl, Umethod, profileId, data, reload) {
   let HTTP = httpCall(Uurl, Umethod);
   let promise;
   try {
@@ -44,17 +44,21 @@ async function process(success, failure, Uurl, Umethod, profileId, data) {
       }
     }
   } catch (err) {
-    AccessTokenError(profileId, err, failure, Uurl, Umethod, data, success);
+    AccessTokenError(profileId, err, failure, Uurl, Umethod, data, success, reload);
   }
 }
 
 //this method slove the Exprie Token Problem.
-let AccessTokenError = function (profileId, err, failure, Uurl, Umethod, data, success) {
+let AccessTokenError = function (profileId, err, failure, Uurl, Umethod, data, success, reload) {
   if (err.request.status === 0) {
     new ContactApi().getSublabels(success, failure, profileId, "True");
   } else if (err.response.status === 403 || err.response.status === 401) {
-    new LoginApi().refresh(() => { process(success, failure, Uurl, Umethod, data) }, errorResponse(err, failure))
-  } else { errorResponse(err, failure) }
+    if (!reload) {
+      new LoginApi().refresh(() => { process(success, failure, Uurl, Umethod, data) }, errorResponse(err, failure));
+    } else {
+      errorResponse(err, failure);
+    }
+  } else { errorResponse(err, failure); }
 }
 
 let validResponse = function (resp, successMethod) {

@@ -31,7 +31,7 @@ class BillApi {
 
 export default BillApi;
 
-async function process(success, failure, Uurl, Umethod, profileId, data) {
+async function process(success, failure, Uurl, Umethod, profileId, data, reload) {
   let HTTP = httpCall(Uurl, Umethod);
   let promise;
   try {
@@ -49,19 +49,22 @@ async function process(success, failure, Uurl, Umethod, profileId, data) {
   
   //TODO: handle user error   
   catch (err) {
-    console.log(err);
-    AccessTokenError(profileId, err, failure, Uurl, Umethod, data, success);
+    AccessTokenError(profileId, err, failure, Uurl, Umethod, data, success, reload);
   }
 }
 
 //this method slove the Exprie Token Problem.
-let AccessTokenError = function (profileId, err, failure, Uurl, Umethod, data, success) {
+let AccessTokenError = function (profileId, err, failure, Uurl, Umethod, data, success, reload) {
   if (err.request.status === 0) {
     new BillApi().getBills(success, failure, profileId, "True");
   } else if (err.response.status === 403 || err.response.status === 401) {
-    new LoginApi().refresh(() => {
-      process(success, failure, Uurl, Umethod, profileId, data)
-    }, errorResponse(err, failure))
+    if (!reload) {
+      new LoginApi().refresh(() => {
+        process(success, failure, Uurl, Umethod, profileId, data, "restrict")
+      }, errorResponse(err, failure))
+    } else {
+      errorResponse(err, failure)
+    }
   } else {
     errorResponse(err, failure)
   }

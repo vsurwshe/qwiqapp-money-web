@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Button, Input, Card, CardBody, CardHeader, Col, Alert, Table, Tooltip, FormGroup, Label } from "reactstrap";
 import Store from "../../data/Store";
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router-dom';
 import ProfileApi from "../../services/ProfileApi";
 import Profiles from "./Profiles";
 import Config from "../../data/Config";
@@ -25,8 +25,12 @@ class CreateProfile extends Component {
   };
 
   componentDidMount = () => {
+    let user = Store.getUser();
     this.setState({ action: Store.getUser().action });
     new ProfileTypesApi().getProfileTypes((profileTypes) => { this.setState({ profileTypes }) }, (error) => { console.log("error", error); })
+    if (user) {
+      this.setState({ action: user.action });
+    }
   }
 
   handleInput = e => {
@@ -171,6 +175,7 @@ class CreateProfile extends Component {
   loadProfile = () => {
     const { name, buttonText } = this.state
     return <>
+    ReUseComponents.
       <FormGroup row>
         <Label sm={2}>Profile Name :</Label>
         <Col sm={8}>

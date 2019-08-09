@@ -19,22 +19,26 @@ class GeneralApi {
 
 export default GeneralApi;
 
-async function process(successCall, failureCall, requestUrl, requestMethod) {
+async function process(successCall, failureCall, requestUrl, requestMethod, reload) {
   let HTTP = httpCall(requestUrl, requestMethod);
   let promise
   try {
     promise = await HTTP.request();
     successResponse(promise, successCall)
   } catch (error) {
-    AccessTokenError(error, successCall, failureCall, requestUrl, requestMethod);
+    AccessTokenError(error, successCall, failureCall, requestUrl, requestMethod, reload);
   }
 }
 
-function AccessTokenError(err, success, failure, Uurl, Umethod) {
+function AccessTokenError(err, success, failure, Uurl, Umethod, reload) {
   if (err.request.status === 0) {
     errorResponse(err, failure)
   } else if (err.response.status === 401 || err.response.status === 403) {
-    new LoginApi().refresh(() => process(success, failure, Uurl, Umethod), errorResponse(err, failure))
+    if (!reload) {
+      new LoginApi().refresh(() => process(success, failure, Uurl, Umethod, "reload"), errorResponse(err, failure))
+    } else {
+      errorResponse(err, failure);
+    }
   } else {
     errorResponse(err, failure)
   }

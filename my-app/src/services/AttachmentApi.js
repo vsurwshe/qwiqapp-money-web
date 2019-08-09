@@ -30,7 +30,7 @@ class AttachmentApi {
 
 export default AttachmentApi;
 
-async function process(success, failure, Uurl, Umethod, data) {
+async function process(success, failure, Uurl, Umethod, data, reload) {
   let HTTP = httpCall(Uurl, Umethod);
   let promise;
   try {
@@ -40,16 +40,20 @@ async function process(success, failure, Uurl, Umethod, data) {
     if (error.request.status === 0) {
       errorResponse(error.response, failure)
     } else {
-      AccessTokenError(error, failure, Uurl, Umethod, data, success)
+      AccessTokenError(error, failure, Uurl, Umethod, data, success,reload)
     }
   }
 }
 
-let AccessTokenError = (err, failure, Uurl, Umethod, data, success) => {
+let AccessTokenError = (err, failure, Uurl, Umethod, data, success, reload) => {
   if (err.request.status === 0) {
     errorResponse(err, failure)
   } else if (err.response.status === 401 || err.response.status === 403) {
-    new LoginApi().refresh(() => process(success, failure, Uurl, Umethod, data), errorResponse(err, failure))
+    if (!reload) {
+      new LoginApi().refresh(() => process(success, failure, Uurl, Umethod, data, "ristrict"), errorResponse(err, failure))  
+    } else {
+      errorResponse(err, failure)
+    }
   } else {
     errorResponse(err, failure)
   }
