@@ -32,7 +32,7 @@ class DeleteCategory extends Component {
     this.setState({ color, content });
     setTimeout(() => {
       this.setState({ categoryDeleted: true });
-      window.location.reload()
+      // window.location.reload()
     }, Config.notificationMillis);
   };
 
