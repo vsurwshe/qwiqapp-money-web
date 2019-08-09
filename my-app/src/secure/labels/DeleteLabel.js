@@ -11,6 +11,7 @@ class DeleteLabel extends Component {
       id: this.props.id,
       labelDeleted: false,
       content: "Deleting Label.....",
+      color: "blue",
       profileId: this.props.pid
     };
   }
@@ -20,24 +21,23 @@ class DeleteLabel extends Component {
   };
 
   successCall = () => {
-    this.callAlertTimer("Label Deleted Successfully....");
+    this.callAlertTimer("success", "Label Deleted Successfully....");
   };
 
   errorCall = () => {
-    this.callAlertTimer("Unable to Process Request, Please Try Again...  ");
+    this.callAlertTimer("danger", "Unable to Process Request, Please Try Again...  ");
   };
 
   //this  method show the on page alert
-  callAlertTimer = (content) => {
-    this.setState({ content });
+  callAlertTimer = (color,content) => {
     setTimeout(() => {
-      this.setState({ content: "", labelDeleted: true });
+      this.setState({ color, content, labelDeleted: true });
     }, Config.notificationMillis);
   };
 
   render() {
-    const { labelDeleted, content } = this.state;
-    return <div>{labelDeleted ? <Lables /> : ReUseComponents.loadDeleting("Label", content)}</div>
+    const { labelDeleted, content, color } = this.state;
+    return <div>{labelDeleted ? <Lables color={color} content={content} visible={true} /> : ReUseComponents.loadDeleting("Label", content, color)}</div>
   }
 }
 

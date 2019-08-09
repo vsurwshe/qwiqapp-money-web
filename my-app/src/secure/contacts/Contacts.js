@@ -47,7 +47,7 @@ class Contacts extends Component {
   }
 
   setProfileId = async () => {
-    if (Store.getProfile() != null && Store.getProfile().length !== 0) {
+    if (Store.getProfile()) {
       await this.setState({ profileId: Store.getProfile().id });
       this.getContacts();
     }
@@ -150,8 +150,9 @@ class Contacts extends Component {
     document.body.style.backgroundColor = color;
   }
   render() {
+    let profile = Store.getProfile();
     const { contacts, singleContact, createContact, updateContact, deleteContact, addAttachRequest, contactId, visible, profileId, spinner, labels } = this.state
-    if (Store.getProfile() && Store.getProfile().length !== 0) {
+    if (profile) {
       if (contacts.length === 0 && !createContact) {
         return <div>{contacts.length === 0 && !createContact && !spinner ? this.loadSpinner() : this.loadContactEmpty()}</div>
       } else if (createContact) {

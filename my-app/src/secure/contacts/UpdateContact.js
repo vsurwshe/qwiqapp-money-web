@@ -10,7 +10,7 @@ import Data from '../../data/SelectData';
 import Config from "../../data/Config";
 // import '../../../public/';
 
-const nameAndOrorganization = (value, field) => {
+const nameOrOrganization = (value, field) => {
   console.log(field);
   if (field.name === "" && field.organization === "") {
     return `You need to provide ${field.name}`
@@ -139,8 +139,8 @@ class UpdateContact extends Component {
         {alertColor === "#000000" ? "" : <Alert color={alertColor}>{message}</Alert>}
         <AvForm ref={refId => this.form = refId} onSubmit={this.handleUpdate}>
           <Row>
-            <Col><AvField name="name" placeholder="Name" value={contact.name} validate={{ myValidation: nameAndOrorganization }} onChange={this.validateOrganization} /> </Col>
-            <Col><AvField name="organization" placeholder="Organization " value={contact.organization} validate={{ myValidation: nameAndOrorganization }} onChange={this.validateOrganization} /></Col>
+            <Col><AvField name="name" placeholder="Name" value={contact.name} validate={{ myValidation: nameOrOrganization }} onChange={this.validateOrganization} /> </Col>
+            <Col><AvField name="organization" placeholder="Organization " value={contact.organization} validate={{ myValidation: nameOrOrganization }} onChange={this.validateOrganization} /></Col>
           </Row>
           <Row>
             <Col><AvField name="phone" placeholder="Phone Number" value={contact.phone} validate={{ pattern: { value: '^[0-9*+-]+$' } }} errorMessage="Please enter valid phone number" required /></Col>

@@ -8,7 +8,7 @@ import Config from "../../data/Config";
 import GeneralApi from "../../services/GeneralApi";
 import Data from '../../data/SelectData';
 
-const nameAndOrorganization = (value, field) => {
+const nameOrOrganization = (value, field) => {
   if (!field.name && !field.organization) {
     return 'You need to provide either name / organization'
   }
@@ -125,8 +125,8 @@ class CreateContact extends Component {
         <center><h5>Create Contact</h5></center><br />
         <AvForm ref={refId => this.form = refId} onSubmit={this.handleSubmit}>
           <Row>
-            <Col><AvField name="name" placeholder="Name" validate={{ myValidation: nameAndOrorganization }} onChange={this.validateOrganization} /></Col>
-            <Col><AvField name="organization" placeholder="Organization" validate={{ myValidation: nameAndOrorganization }} onChange={this.validateName} /></Col>
+            <Col><AvField name="name" placeholder="Name" validate={{ myValidation: nameOrOrganization }} onChange={this.validateOrganization} /></Col>
+            <Col><AvField name="organization" placeholder="Organization" validate={{ myValidation: nameOrOrganization }} onChange={this.validateName} /></Col>
           </Row>
           <Row>
             <Col><AvField name="phone" placeholder="Phone Number" validate={{ pattern: { value: '^[0-9*+-]+$' } }} errorMessage="Please enter valid Phone number" required /></Col>

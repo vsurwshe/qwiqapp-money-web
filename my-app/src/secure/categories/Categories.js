@@ -35,7 +35,7 @@ class Categories extends Component {
   }
 
   setProfileId = async () => {
-    if (Store.getProfile() !== null && Store.getProfile().length !== 0) {
+    if (Store.getProfile()) {
       await this.setState({ profileId: Store.getProfile().id });
       this.getCategory();
     }
@@ -103,7 +103,7 @@ class Categories extends Component {
     if (this.state.visible) {
       setTimeout(() => {
         this.setState({ visible: false });
-      }, Config.notificationMillis);
+      }, Config.apiTimeoutMillis)
     }
   };
 

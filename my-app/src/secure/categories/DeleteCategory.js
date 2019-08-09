@@ -21,9 +21,7 @@ class DeleteCategory extends Component {
   };
 
   successCall = () => {
-    setTimeout(() => {
-      this.setState({ categoryDeleted: true })
-    }, Config.notificationMillis)
+    this.callAlertTimer('success', 'Category deleted Successfully !!');
   };
 
   errorCall = () => {
@@ -34,7 +32,7 @@ class DeleteCategory extends Component {
     this.setState({ color, content });
     setTimeout(() => {
       this.setState({ categoryDeleted: true });
-      window.location.reload()
+      // window.location.reload()
     }, Config.notificationMillis);
   };
 

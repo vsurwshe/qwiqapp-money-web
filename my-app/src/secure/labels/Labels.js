@@ -9,6 +9,7 @@ import Store from "../../data/Store";
 import { ProfileEmptyMessage } from "../utility/ProfileEmptyMessage";
 import { ReUseComponents } from "../utility/ReUseComponents";
 import { DeleteModel } from "../utility/DeleteModel";
+import Config from "../../data/Config";
 
 class Lables extends Component {
   constructor(props) {
@@ -19,7 +20,7 @@ class Lables extends Component {
       id: 0,
       name: "",
       createLabel: false,
-      visible: false,
+      visible: props.visible,
       updateLabel: false,
       deleteLabel: false,
       profileId:"",
@@ -36,7 +37,7 @@ class Lables extends Component {
   }
 
   setProfileId = async () => {
-    if (Store.getProfile() !== null && Store.getProfile().length !== 0) {
+    if (Store.getProfile()) {
       await this.setState({ profileId: Store.getProfile().id });
       this.getLabels();
     }
@@ -75,8 +76,7 @@ class Lables extends Component {
   }
 
 
-  errorCall = err =>  { this.setState({ visible: true }) }
-
+  errorCall = err =>  this.setState({ visible: true }) 
 
   loadCollapse = () => {
     this.state.labels.map(lables => {
@@ -119,15 +119,15 @@ class Lables extends Component {
     const { labels, createLabel, updateLabel, id, deleteLabel, visible, profileId, requiredLabel, spinner, search } = this.state
     let profile = Store.getProfile()
     if (!profile ) {
-      return (<ProfileEmptyMessage />)
-    } else if (labels.length === 0 && !createLabel) {
-      return <div>{labels.length === 0 && !createLabel && !spinner
+      return <ProfileEmptyMessage />
+    } else if (!labels.length && !createLabel) {
+      return <div>{!labels.length && !createLabel && !spinner
         ? this.loadSpinner()
         : this.loadNotLabel()}</div>
     } else if (createLabel) {
-      return (<CreateLabel pid={profileId} label={labels} />)
+      return <CreateLabel pid={profileId} label={labels} />
     } else if (updateLabel) {
-      return (<UpdateLabel pid={profileId} label={requiredLabel} lables={labels} />)
+      return <UpdateLabel pid={profileId} label={requiredLabel} lables={labels} />
     } else if (deleteLabel) {
       return <DeleteLabel id={id} pid={profileId} />
     } else {
@@ -166,9 +166,21 @@ class Lables extends Component {
     </div>)
   }
 
+  callAlertTimer = () => {
+    if (this.state.visible) {
+      setTimeout(() => {
+        this.setState({ visible: false });
+      }, Config.apiTimeoutMillis)
+    }
+  };
+
   loadShowLabel = (visible, labels, search) => {
+    const color = this.props.color;
+    if (color) {
+      this.callAlertTimer()
+    }
     return ReUseComponents.loadItems(labels, this.setSearch, search, this.callCreateLabel, visible, this.toggleAccordion, this.state.accordion, this.setLabelId, this.toggleDanger, this.updateLabel,
-      this.state.dropdownOpen, this.toggleDropDown);
+      this.state.dropdownOpen, this.toggleDropDown, color, this.props.content );
   }
 
   loadDeleteLabel = () => {

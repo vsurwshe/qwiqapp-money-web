@@ -37,7 +37,7 @@ class DeleteContact extends Component {
   render() {
     const { contactDeleted, content, color } = this.state;
     return <div>{contactDeleted ? <Contacts color={color} content={content} visible={true} />
-      : ReUseComponents.loadDeleting("", "Deleting Contact......")}</div>
+      : ReUseComponents.loadDeleting("Contact", content, color)}</div>
   }
 }
 

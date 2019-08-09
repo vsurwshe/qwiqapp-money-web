@@ -6,27 +6,26 @@ import { FaEllipsisV, FaSearch, FaTrashAlt, FaPen, FaAngleDown } from 'react-ico
 
 export const ReUseComponents = {
 
-  //Shows Deleting in process Message
-  loadDeleting: function (strongHeaderMsg, content) {
+  loadDeleting: function (headerMsg, bodyMessage, color) {
     return (
       <div className="animated fadeIn">
         <Card>
-          {strongHeaderMsg === "" ? "" : this.loadHeader(strongHeaderMsg)}
+          {headerMsg === "" ? "" : this.loadHeader(headerMsg)}
           <CardBody>
             <center>
-            <Loader type="TailSpin" color="#2E86C1" height={60} width={60} />
-            <br/><br/>
-             {content}
-             </center>
+             <Loader type="TailSpin" color={color} height={60} width={60} />
+             <br/><br/>
+              {bodyMessage}
+              </center>
           </CardBody>
         </Card>
       </div>)
   },
 
   // Shows Header
-  loadHeader: function (strongMessage) {
+  loadHeader: function (headerMessage) {
     return (<div style={{ padding: 10 }}>
-      <center><strong> {strongMessage} </strong></center>
+      <center><strong> {headerMessage} </strong></center>
     </div>)
   },
 
@@ -98,7 +97,7 @@ export const ReUseComponents = {
             </Row>
           </CardHeader>
           <div style={{ margin: 10, paddingLeft: 50 }}>
-            <Alert isOpen={visible} color={color === undefined || content === undefined ? '' : color}>{content}</Alert>
+            {visible && <Alert color={color}>{content}</Alert>}
             {items.filter(this.searchingFor(search)).map((singleItem, key) => { return this.loadSingleItem(singleItem, key, toggleAccordion, accordion, setItemId, toggleDanger, handleUpdate, stateDrodownAccord, dropDownAccordion) })} </div>
         </Card>
       </div>)
