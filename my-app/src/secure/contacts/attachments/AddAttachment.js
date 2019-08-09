@@ -75,7 +75,7 @@ class AddAttachment extends Component {
     return (
       <Card>
         {ReUseComponents.loadHeader("Add Attachment")}
-        <FormGroup> <br></br>
+        <FormGroup> 
           <center>
             <Col sm={6}><Alert color={this.state.color} >{this.state.content}</Alert></Col>
             <input type="file" onChange={e => this.handleInput(e)} /> <br /><br />

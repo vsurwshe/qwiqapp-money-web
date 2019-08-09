@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { Card, CardBody, CardHeader, Button, Alert} from 'reactstrap';
+import { Card, CardBody, CardHeader, Button, Alert } from 'reactstrap';
 import BillingAddressApi from '../../../services/BillingAddressApi';
 import EditBillingAddress from './EditBillingAddress';
 import '../../../css/style.css';
@@ -69,21 +69,21 @@ class BillingInfo extends Component {
           </CardHeader>
           <CardBody>
             <Alert isOpen={visible} color="danger">Unable to process, Please try Again.... </Alert>
-            {billing !== null &&
-                <CardBody>
+            {billing &&
+              <CardBody>
                 <center className="text-sm-left">
-                <b>{billing.firstName} {billing.lastName}</b><br></br>
-              <p >
-                {billing.addressLine1+', '}
-                {billing.addressLine2 && billing.addressLine2+','} <br />
-                {billing.city && billing.city+', '} 
-                {billing.region && billing.region+ ', '} 
-                {(billing.city && billing.region && (<br />))}
-                {billing.country} {billing.postCode && " - "+billing.postCode}
-               </p>
-              </center>
-                </CardBody>
-              }
+                  <b>{(billing.firstName && billing.lastName) ? billing.firstName + " " + billing.lastName : billing.company}</b><br />
+                  <p>
+                    {billing.addressLine1 + ', '}
+                    {billing.addressLine2 && billing.addressLine2 + ','} <br />
+                    {billing.city && billing.city + ', '}
+                    {billing.region && billing.region + ', '}
+                    {(billing.city && billing.region && (<br />))}
+                    {billing.country} {billing.postCode && " - " + billing.postCode}
+                  </p>
+                </center>
+              </CardBody>
+            }
           </CardBody>
         </Card>
       </div>
