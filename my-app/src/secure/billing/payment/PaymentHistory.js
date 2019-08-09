@@ -51,7 +51,7 @@ class PaymentHistory extends Component {
 
   render() {
     const { payments, spinner, currency } = this.state;
-    if (payments.length=== 0 ) {
+    if (!payments.length) {
       if (!spinner) {
         return this.loadSpinner()
       } else {

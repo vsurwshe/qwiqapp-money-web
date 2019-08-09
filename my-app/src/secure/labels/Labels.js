@@ -26,8 +26,6 @@ class Lables extends Component {
       accordion: [],
       danger: false,
       dropdownOpen: [],
-      onHover: false,
-      hoverAccord: [],
       spinner: false,
       search: ''
     };
@@ -68,10 +66,10 @@ class Lables extends Component {
   }
 
   displaySubLabelName = (labels) => {
-    if(labels.subLabels !== null){
+    if(labels.subLabels){
       const name= labels.subLabels.map(sub=>sub.name);
       return name;
-    }else{
+    } else {
       return null;
     }
   }
@@ -84,7 +82,6 @@ class Lables extends Component {
     this.state.labels.map(lables => {
       return this.setState(prevState => ({
         accordion: [...prevState.accordion, false],
-        hoverAccord: [...prevState.hoverAccord, false],
         dropdownOpen: [...prevState.dropdownOpen, false]
       }))
     });
@@ -114,28 +111,14 @@ class Lables extends Component {
     this.setState({ dropdownOpen: state });
   }
 
-  hoverAccordion = (hKey) => {
-    const prevState = this.state.hoverAccord;
-    const state = prevState.map((x, index) => hKey === index ? !x : false);
-    this.setState({ hoverAccord: state });
-  }
-  onHover = (e, hKey) => {
-    this.setState({ onHover: true });
-    this.hoverAccordion(hKey)
-  }
-
-  onHoverOff = (e, hKey) => {
-    this.setState({ onHover: false });
-    this.hoverAccordion(hKey)
-  }
-
-  setSearch = e => { this.setState({ search: e.target.value }) }
-  setLabelId = (labels) => { this.setState({ id: labels.id }) }
-  callCreateLabel = () => { this.setState({ createLabel: true }) }
+  setSearch = e =>  this.setState({ search: e.target.value }) 
+  setLabelId = (labels) => this.setState({ id: labels.id }) 
+  callCreateLabel = () =>  this.setState({ createLabel: true }) 
 
   render() {
     const { labels, createLabel, updateLabel, id, deleteLabel, visible, profileId, requiredLabel, spinner, search } = this.state
-    if (Store.getProfile() === null || Store.getProfile().length === 0) {
+    let profile = Store.getProfile()
+    if (!profile ) {
       return (<ProfileEmptyMessage />)
     } else if (labels.length === 0 && !createLabel) {
       return <div>{labels.length === 0 && !createLabel && !spinner

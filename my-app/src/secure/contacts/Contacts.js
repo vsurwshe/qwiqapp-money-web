@@ -184,11 +184,10 @@ class Contacts extends Component {
     return <CardHeader>
       <Row style={{ padding: "0px 20px 0px 20px" }}>
         <Col sm={3}>
-          <strong style={{ fontSize: 24 }}>Contacts </strong>
+          <strong style={{ fontSize: 24 }}>Contacts </strong> 
         </Col>
         <Col >
-          {this.state.contacts.length &&
-            <InputGroup >
+          {this.state.contacts.length !== 0 && <InputGroup >
               <Input type="search" className="float-right" onChange={this.searchHandler} value={this.state.searchContact} placeholder="Search Contacts..." />
               <InputGroupAddon addonType="append"><InputGroupText className="dark"><FaSearch /></InputGroupText></InputGroupAddon>
             </InputGroup>

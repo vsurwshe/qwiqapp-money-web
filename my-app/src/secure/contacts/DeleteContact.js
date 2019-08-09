@@ -9,7 +9,7 @@ class DeleteContact extends Component {
     super(props);
     this.state = {
       contactId: props.contactId,
-      labelDeleted: false,
+      contactDeleted: false,
       color: "warning",
       content: "Deleting Label.....",
       profileId: props.profileId
@@ -24,20 +24,20 @@ class DeleteContact extends Component {
   };
 
   errorCall = () => {
-    this.callAlertTimer("danger", "Something went wrong, Please Try Again...  ");
+    this.callAlertTimer("danger", "Unable to handle the request, Please Try Again...  ");
   };
 
   callAlertTimer = (color, content) => {
     this.setState({ color, content });
     setTimeout(() => {
-      this.setState({ labelDeleted: true });
+      this.setState({ contactDeleted: true });
     }, Config.notificationMillis)
   };
 
   render() {
-    const { labelDeleted, content, color } = this.state;
-    return <div>{labelDeleted ? <Contacts color={color} content={content} visible={true} />
-      : ReUseComponents.loadDeleting("", "", "Delete Contact", "Contact Deleting")}</div>
+    const { contactDeleted, content, color } = this.state;
+    return <div>{contactDeleted ? <Contacts color={color} content={content} visible={true} />
+      : ReUseComponents.loadDeleting("", "Deleting Contact......")}</div>
   }
 }
 

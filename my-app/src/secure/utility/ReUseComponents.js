@@ -7,13 +7,17 @@ import { FaEllipsisV, FaSearch, FaTrashAlt, FaPen, FaAngleDown } from 'react-ico
 export const ReUseComponents = {
 
   //Shows Deleting in process Message
-  loadDeleting: function (strongHeaderMsg, bodyMessage, color, content) {
+  loadDeleting: function (strongHeaderMsg, content) {
     return (
       <div className="animated fadeIn">
         <Card>
           {strongHeaderMsg === "" ? "" : this.loadHeader(strongHeaderMsg)}
           <CardBody>
-            <Col sm="12" md={{ size: 5, offset: 4 }}> {color === "" ? bodyMessage : <Alert color={color}> {content} </Alert>} </Col>
+            <center>
+            <Loader type="TailSpin" color="#2E86C1" height={60} width={60} />
+            <br/><br/>
+             {content}
+             </center>
           </CardBody>
         </Card>
       </div>)
