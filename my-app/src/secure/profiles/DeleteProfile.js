@@ -20,7 +20,7 @@ class DeleteProfile extends Component {
   };
 
   successCall = () => {
-    this.callAlertTimer("success", "Profile Deleted Successfully!  ");
+    this.callAlertTimer("Profile Deleted Successfully!  ");
   };
 
   errorCall = () => {

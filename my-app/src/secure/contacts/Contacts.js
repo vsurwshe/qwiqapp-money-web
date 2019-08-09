@@ -190,7 +190,7 @@ class Contacts extends Component {
     return <CardHeader>
       <Row style={{ padding: "0px 20px 0px 20px" }}>
         <Col sm={3}>
-          <strong style={{ fontSize: 24 }}>Contacts </strong>
+          <strong style={{ fontSize: 24 }}>Contacts </strong> 
         </Col>
         <Col>
           {this.state.contacts.length !== 0 && <InputGroup >

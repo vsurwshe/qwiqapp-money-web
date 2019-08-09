@@ -21,11 +21,11 @@ class DeleteLabel extends Component {
   };
 
   successCall = () => {
-    this.callAlertTimer("success", "Label Deleted Successfully....");
+    this.callAlertTimer("Label Deleted Successfully....");
   };
 
   errorCall = () => {
-    this.callAlertTimer("danger", "Unable to Process Request, Please Try Again...  ");
+    this.callAlertTimer("Unable to Process Request, Please Try Again...  ");
   };
 
   //this  method show the on page alert
