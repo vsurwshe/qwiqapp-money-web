@@ -61,6 +61,8 @@ let validResponse = async function (resp, successMethod, requestMethod,deleteId)
         await Store.userDataClear();
       } 
     }else if(requestMethod === "POST"){
+       Store.setSelectedValue(true);
+      await Store.userDataClear();
       await Store.saveProfile(resp.data)
     }
     successMethod(resp.data);
