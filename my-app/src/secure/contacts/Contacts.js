@@ -13,7 +13,7 @@ import { DeleteModel } from "../utility/DeleteModel";
 import { ProfileEmptyMessage } from "../utility/ProfileEmptyMessage";
 import { ReUseComponents } from "../utility/ReUseComponents";
 import ContactApi from "../../services/ContactApi";
-import '../../css/style.css'
+import '../../css/style.css';
 
 
 class Contacts extends Component {
@@ -256,7 +256,7 @@ class Contacts extends Component {
         <Row>
           <Col onClick={() => { this.attachDropDown(contactKey) }}>
             {this.displayName(contact, styles)}
-            <FaPaperclip style={{ color: '#34aec1', marginTop: 0, marginLeft: 10 }} onClick={() => this.attachDropDown(contactKey, contact.id)} />
+            <FaPaperclip className="faPaperclip" onClick={() => this.attachDropDown(contactKey, contact.id)} />
           </Col>
           <Col lg={1} sm={1} md={1} xl={1} >{this.state.onHover && this.state.hoverAccord[contactKey] ? this.loadDropDown(contact, contactKey) : ''}</Col>
         </Row>

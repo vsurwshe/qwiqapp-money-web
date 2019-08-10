@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Card, CardBody, Button } from 'reactstrap';
 import logo from './images/payment-success.png';
 import Store from '../../../data/Store';
-import '../../../css/style.css';
+import '../../../';
 
 let user = Store.getUser()
 
