@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Button, Input, Card, CardBody, CardHeader, Col, Alert, Table } from "reactstrap";
+import { Button, Input, Card, CardBody, CardHeader, Col, Alert, Table, Tooltip, FormGroup, Label } from "reactstrap";
 import Store from "../../data/Store";
 import { Link } from 'react-router-dom'
 import ProfileApi from "../../services/ProfileApi";
@@ -21,6 +21,7 @@ class CreateProfile extends Component {
     action: '',
     comparisionText: "View Feature Comparision",
     profileTypes: [],
+    tooltipOpen: false
   };
 
   componentDidMount = () => {
@@ -50,6 +51,11 @@ class CreateProfile extends Component {
     this.setState({ cancelCreateProfile: true });
   }
 
+  toggle = () => {
+    this.setState({
+      tooltipOpen: !this.state.tooltipOpen
+    });
+  }
 
   handleSubmit = e => {
     e.preventDefault();
@@ -170,9 +176,13 @@ class CreateProfile extends Component {
     const { name, buttonText } = this.state
     return (
       <>
-        <Col sm="6">
-          <Input name="name" value={name} type="text" placeholder="Enter Profile name" autoFocus={true} onChange={e => this.handleInput(e)} />
-        </Col><br />
+       <FormGroup row>
+          <Label sm={2}>Profile Name :</Label>
+          <Col sm={8}>
+          <Input name="name" value={name} type="text" placeholder="Enter Profile name" autoFocus={true} onChange={e => this.handleInput(e)} id="tool-tip"/>
+          <Tooltip target="tool-tip" isOpen={this.state.tooltipOpen} placement="right" toggle={this.toggle}>Profile Name</Tooltip>
+          </Col>
+        </FormGroup>
         <Button color="success" disabled={!name} onClick={e => this.handleSubmit(e)} > {buttonText} </Button>
         <Button active color="light" style={{ marginLeft: 20 }} aria-pressed="true" onClick={this.cancelCreateProfile}>Cancel</Button>
       </>)
