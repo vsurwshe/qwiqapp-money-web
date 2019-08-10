@@ -175,7 +175,6 @@ class CreateProfile extends Component {
   loadProfile = () => {
     const { name, buttonText } = this.state
     return <>
-    ReUseComponents.
       <FormGroup row>
         <Label sm={2}>Profile Name :</Label>
         <Col sm={8}>
