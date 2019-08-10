@@ -5,7 +5,7 @@ import Loader from 'react-loader-spinner';
 import BillingAddressApi from '../../../services/BillingAddressApi';
 import GeneralApi from '../../../services/GeneralApi';
 import Config from '../../../data/Config';
-import '../../../css/style.css'
+import '../../../components/css/style.css';
 
 class PaymentHistory extends Component {
   constructor(props) {
@@ -60,9 +60,9 @@ class PaymentHistory extends Component {
     } else {
       let paymentsList = payments.map((payment, key) => {
         return (<tr key={key} className="row-text-align">
-          <th>{this.customeDateFormat(payment.created)}</th>
-          <th >{payment.description}</th>
-          <th>{this.showCurrenySymbol(payment.currency, currency)} {payment.amount}</th>
+          <td>{this.customeDateFormat(payment.created)}</td>
+          <td >{payment.description}</td>
+          <td>{this.showCurrenySymbol(payment.currency, currency)} {payment.amount}</td>
         </tr>
         )
       });
@@ -115,7 +115,7 @@ class PaymentHistory extends Component {
           <Label><b>Current Balance: £ </b>{this.state.total_balance} </Label>
           <Link to="/billing/addCredits"> <Button color="success" className="float-right" > + Add Credits </Button></Link>
         </CardHeader>
-        <CardBody style={{ textAlign: "center" }}>
+        <CardBody className="card-align">
           {this.paymentHistoryTable(paymentsList)}
         </CardBody>
       </Card>

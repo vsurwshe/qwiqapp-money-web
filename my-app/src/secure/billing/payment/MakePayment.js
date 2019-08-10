@@ -8,7 +8,7 @@ import BillingAddressApi from '../../../services/BillingAddressApi';
 import PaymentSuccessMessage from './PaymentSuccessMessage';
 import UserApi from '../../../services/UserApi';
 import { ReUseComponents } from '../../utility/ReUseComponents';
-import '../../../css/style.css'
+import '../../../components/css/style.css';
 
 const PAYPAL_URL = 'https://www.paypal.com/sdk/js?'
 

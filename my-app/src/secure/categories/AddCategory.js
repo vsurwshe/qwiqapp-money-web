@@ -5,6 +5,8 @@ import Store from "../../data/Store";
 import CategoryApi from "../../services/CategoryApi";
 import Categories from "./Categories";
 import Config from "../../data/Config";
+import '../../components/css/style.css'
+
 
 class AddCategory extends Component {
   constructor(props) {
@@ -92,7 +94,7 @@ class AddCategory extends Component {
   loadAddingCategory = () => {
     const { alertColor, content, doubleClick,collapse,categories } = this.state
     return (
-      <Card style={{ width: "100%" }}>
+      <Card className="card-width">
         <CardHeader><strong>Category</strong></CardHeader><br />
         <Col sm="12" md={{ size: 5, offset: 4 }}>
             <Alert color={alertColor} >{content}</Alert>

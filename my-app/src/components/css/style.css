@@ -20,7 +20,12 @@
 .padding-top { 
     padding-top: 20px 
 }
-
+.card-align{
+    text-align: "center"
+}
+.card-width{
+    width: "100%" 
+}
 .table-header-color {
     background-color:#DEE9F2;
     color:#000000;
@@ -66,3 +71,30 @@ dropdown-align {
     padding-left: 20px
 }
 /* ============ End Bils styles=========*/
+/* ============ start Category styles=========*/
+.update-category{
+    font-weight: 'bold';
+     color: '#000000'
+}
+.link-text{
+    text-decoration: 'none'
+}
+.option-select{
+    color:"#008000";
+    font-weight:"bold"
+}
+/* ============ End Category styles=========*/
+/* ============ start Contacts styles=========*/
+.faPaperclip{
+    color:"#34aec1";
+    margin-top: 5;
+    margin-left: 10;
+    size:17 
+}
+.attachments{
+    padding-left: 29;
+    padding-top: 10;
+    color: black
+
+}
+/* ============ End Contacts styles=========*/

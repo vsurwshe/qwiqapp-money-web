@@ -14,7 +14,7 @@ import LabelApi from "../../services/LabelApi";
 import DeleteBill from "./DeleteBill";
 import ContactApi from '../../services/ContactApi';
 import { ProfileEmptyMessage } from "../utility/ProfileEmptyMessage";
-import '../../css/style.css'
+import '../../components/css/style.css';
 
 class Bills extends Component {
   constructor(props) {
@@ -192,7 +192,7 @@ class Bills extends Component {
       <Row>
         <Col sm={3} ><strong className="strong-text" >BILLS</strong></Col>
         <Col>
-          {this.state.bills.length &&
+          {this.state.bills.length !== 0 &&
             <InputGroup>
               <Input placeholder="Search Bills....." onChange={this.searchSelected} />
               <InputGroupAddon addonType="append"> <InputGroupText><FaSearch /></InputGroupText></InputGroupAddon>
@@ -286,7 +286,7 @@ class Bills extends Component {
             }
           });
         }
-        return 0
+        return 0;
       })
       return data;
     } else {

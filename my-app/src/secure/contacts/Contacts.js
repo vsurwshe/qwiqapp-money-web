@@ -13,6 +13,8 @@ import { DeleteModel } from "../utility/DeleteModel";
 import { ProfileEmptyMessage } from "../utility/ProfileEmptyMessage";
 import { ReUseComponents } from "../utility/ReUseComponents";
 import ContactApi from "../../services/ContactApi";
+import '../../components/css/style.css'
+
 
 class Contacts extends Component {
   constructor(props) {
@@ -188,7 +190,7 @@ class Contacts extends Component {
           <strong style={{ fontSize: 24 }}>Contacts </strong> 
         </Col>
         <Col >
-          {this.state.contacts.length !== 0 && <InputGroup >
+          {this.state.contacts.length  && <InputGroup >
               <Input type="search" className="float-right" onChange={this.searchHandler} value={this.state.searchContact} placeholder="Search Contacts..." />
               <InputGroupAddon addonType="append"><InputGroupText className="dark"><FaSearch /></InputGroupText></InputGroupAddon>
             </InputGroup>
@@ -205,7 +207,7 @@ class Contacts extends Component {
     return <div className="animated fadeIn">
       <Card>
         {this.loadHeader()}
-        <center style={{ paddingTop: '20px' }}>
+        <center className="padding-top">
           <CardBody><Loader type="Ball-Triangle" color="#2E86C1" height={80} width={80} /></CardBody>
         </center>
       </Card>
@@ -216,7 +218,7 @@ class Contacts extends Component {
     return <div className="animated fadeIn">
       <Card>
         {this.loadHeader()}
-        <center style={{ paddingTop: '20px' }}>
+        <center className="padding-top">
           <CardBody><h5><b>You haven't created any Contacts yet... </b></h5> </CardBody>
         </center>
       </Card>
@@ -251,7 +253,7 @@ class Contacts extends Component {
         <Row>
           <Col onClick={() => { this.attachDropDown(contactKey) }}>
             {this.displayName(contact, styles)}
-            <FaPaperclip color="#34aec1" style={{ marginTop: 5, marginLeft: 10 }} size={17} onClick={() => this.attachDropDown(contactKey, contact.id)} />
+            <FaPaperclip className="faPaperclip" onClick={() => this.attachDropDown(contactKey, contact.id)} />
           </Col>
           <Col lg={1} sm={1} md={1} xl={1} >{this.state.onHover && this.state.hoverAccord[contactKey] ? this.loadDropDown(contact, contactKey) : ''}</Col>
         </Row>
@@ -262,7 +264,7 @@ class Contacts extends Component {
 
   displayName = (contact, styles) => {
     return <span style={{ styles }} ><FaUserCircle size={20} style={{ color: '#020e57' }} />{" "}&nbsp;
-        <b style={{ color: '#000000' }}>{contact.name ? (contact.name.length > 20 ? contact.name.slice(0, 20) + "..." : contact.name) :
+        <b className="text-link">{contact.name ? (contact.name.length > 20 ? contact.name.slice(0, 20) + "..." : contact.name) :
         (contact.organization.length > 20 ? contact.organization.slice(0, 20) + "..." : contact.organization)}
       </b>
       <Attachments profileId={this.state.profileId} contactId={contact.id} getCount={true} />
@@ -283,8 +285,8 @@ class Contacts extends Component {
   }
 
   showAttachments(contactId, contact) {
-    return <div style={{ paddingLeft: 29, paddingTop: 10 }}>
-      <span style={{ color: '#000000' }}>
+    return <div className="attachments">
+      <span>
         <b>Email: </b>{contact.email}<br />
         <b>Phone: </b>{contact.phone}<br />
       </span>

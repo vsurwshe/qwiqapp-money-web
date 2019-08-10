@@ -100,11 +100,11 @@ class CreateProfile extends Component {
     const { color, profileCreated, cancelCreateProfile, action, profileType, profileInfoTable, profileTypes } = this.state
     const profileTypesOptions = profileTypes.map(proTypes => {
       return (<tr key={proTypes.type}>
-        <th> <Input type="radio" name="radio1" value={proTypes.type} checked={proTypes.type === profileType}
-          onChange={() => this.selectProfileType(proTypes.type)} />{' '}</th>
-        <th>{proTypes.name}</th>
-        <th>{proTypes.cost}</th>
-        <th>{proTypes.description}</th>
+        <td> <Input type="radio" name="radio1" value={proTypes.type} checked={proTypes.type === profileType}
+          onChange={() => this.selectProfileType(proTypes.type)} />{' '}</td>
+        <td>{proTypes.name}</td>
+        <td>{proTypes.cost}</td>
+        <td>{proTypes.description}</td>
       </tr>)
     })
     return <div>

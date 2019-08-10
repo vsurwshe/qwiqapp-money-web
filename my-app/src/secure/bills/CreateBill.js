@@ -7,6 +7,7 @@ import Bills from "./Bills";
 import Data from '../../data/SelectData'
 import Config from "../../data/Config";
 import GeneralApi from "../../services/GeneralApi";
+import '../../components/css/style.css'
 
 class CreateBill extends Component {
   constructor(props) {
@@ -91,7 +92,7 @@ class CreateBill extends Component {
     return (
       <div className="animated fadeIn" >
         <Card>
-          <h4 style={{ paddingTop: 20 }}><b><center>CREATE BILL</center></b></h4>
+          <h4 className="padding-top"><b><center>CREATE BILL</center></b></h4>
           <Col sm="12" md={{ size: 7, offset: 3 }}>
             <Alert color={alertColor}>{content}</Alert>
             <AvForm onSubmit={this.handleSubmitValue}>

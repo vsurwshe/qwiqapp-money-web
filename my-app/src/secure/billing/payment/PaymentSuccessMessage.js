@@ -2,8 +2,8 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardBody, Button } from 'reactstrap';
 import logo from './images/payment-success.png';
-import '../../../css/CssStyles.css';
 import Store from '../../../data/Store';
+import '../../../components/css/style.css';
 
 let user = Store.getUser()
 const PaymentSuccessMessage = (props) => {
