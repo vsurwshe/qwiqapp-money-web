@@ -40,46 +40,46 @@ class ChangePassword extends Component {
         this.setState({ color, content });
         if (color === 'success') {
             setTimeout(() => {
-               this.setState({redirectTo: true});
+                this.setState({ redirectTo: true });
             }, Config.apiTimeoutMillis)
         }
     }
+
     render() {
-        const { color, content,  } = this.state;
-        return this.loadChangePassword(color, content, )
+        const { color, content, } = this.state;
+        return this.loadChangePassword(color, content)
     }
 
     loadChangePassword = (color, content) => {
         return (
             <Card>
-             <CardHeader><b>CHANGE PASSWORD</b></CardHeader>
-             <CardBody>
-               {color === "success" ? <><Alert color={color}>{content}</Alert>
-               {this.state.redirectTo && <Redirect to="/dashboard" style={{ marginLeft: 10 }} ></Redirect> }
-                 </>: <>
-                {(color !== "success" || color) && <Alert color={color}>{content}</Alert>}
-                <AvForm onSubmit={this.updatePassword} >
-                   <AvField name="old" type= "password" label="Old Password" errorMessage="Enter Correct Password" placeholder="Enter Old Password" value={color === "danger" && ""} required />
-                   <AvField name="new" type= "password" label="New Password" errorMessage="New Password Required" placeholder="Enter  New Password" required />
-                   <center>
-                       <Button color="success"  disabled={this.state.doubleClick}>Update</Button>
-                       <Link to="/dashboard" style={{ marginLeft: 10 }} ><Button color="secondary" type="button" >Cancel</Button></Link>
-                   </center>
-                </AvForm></>
-               }
-           </CardBody>
-         </Card>
+                <CardHeader><b>CHANGE PASSWORD</b></CardHeader>
+                <CardBody>
+                    {color === "success" ? <><Alert color={color}>{content}</Alert>
+                        {this.state.redirectTo && <Redirect to="/dashboard" style={{ marginLeft: 10 }} ></Redirect>}
+                    </> : <>
+                            {(color !== "success" || color) && <Alert color={color}>{content}</Alert>}
+                            <AvForm onSubmit={this.updatePassword} >
+                                <AvField name="old" type="password" label="Old Password" errorMessage="Enter Correct Password" placeholder="Enter Old Password" value={color === "danger" && ""} required />
+                                <AvField name="new" type="password" label="New Password" errorMessage="New Password Required" placeholder="Enter  New Password" required />
+                                <center>
+                                    <Button color="success" disabled={this.state.doubleClick}>Update</Button>
+                                    <Link to="/dashboard" style={{ marginLeft: 10 }} ><Button color="secondary" type="button" >Cancel</Button></Link>
+                                </center>
+                            </AvForm></>
+                    }
+                </CardBody>
+            </Card>
         );
-       
     }
-   
+
     loadResponse = (content) => {
-        return (<Card>
+        return <Card>
             <CardHeader><b>CHANGE PASSWORD</b></CardHeader>
             <CardBody>
                 <center style={{ color: 'green' }}>{content} <br /><br />
-            </center> </CardBody>
-        </Card>)
+                </center> </CardBody>
+        </Card>
     }
 }
 

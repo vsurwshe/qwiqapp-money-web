@@ -2,22 +2,24 @@ import Axios from "axios";
 import Store from "../data/Store";
 import LoginApi from "./LoginApi";
 import Config from "../data/Config";
+
 class BillingAddressApi {
     createBillingAddress(success, failure, data) {
         process(success, failure, "/billing/address", "POST", data)
     }
+
     getBillings(success, failure) {
         process(success, failure, "/billing/address", "GET")
     }
-    getBillingItems(success,failure){
-        process(success,failure,"/billing/items", "GET")
-      }
-      
-    getPaymentsHistory(success,failure){
-        process(success,failure,"/billing/payments","GET")
-      }
-}
 
+    getBillingItems(success, failure) {
+        process(success, failure, "/billing/items", "GET")
+    }
+
+    getPaymentsHistory(success, failure) {
+        process(success, failure, "/billing/payments", "GET")
+    }
+}
 export default BillingAddressApi;
 
 async function process(success, failure, Uurl, Umethod, data) {
@@ -52,16 +54,17 @@ let validResponse = function (resp, successMethod) {
         }
     }
 };
+
 let errorResponse = async function (error, failure) {
     let err = error.response;
     if (err.status === 500 || err.status === 400) {
         let data = {
             status: err.status,
             message: err.data.error.debugMessage
-           }
+        }
         failure(data);
     } else {
-       failure(error);
+        failure(error);
     }
 };
 

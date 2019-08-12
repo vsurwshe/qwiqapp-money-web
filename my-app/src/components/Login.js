@@ -25,11 +25,13 @@ class Login extends Component {
   handleEvent = event => {
     this.setState({ [event.target.name]: event.target.value });
   };
+
   handleEnter = event => {
     if (event.key === "Enter" && event.keyCode === 0) {
       this.handleButton();
     }
   };
+
   handleButton = event => {
     const { email, password } = this.state;
     if (email === '' || password === '') {
@@ -62,10 +64,7 @@ class Login extends Component {
   }
 
   callAlertTimer(color, content) {
-    this.setState({
-      color: color,
-      content: content
-    });
+    this.setState({ color: color, content: content });
     this.resetData();
     setTimeout(() => this.setState({ color: '', content: '' }), Config.notificationMillis);
   }

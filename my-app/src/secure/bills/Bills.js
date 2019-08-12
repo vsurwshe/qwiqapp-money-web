@@ -1,5 +1,6 @@
 import React, { Component } from "react";
-import {Button, Row, Col, Card, CardHeader, CardBody, Alert, Modal, ModalHeader, ModalBody, ModalFooter, Dropdown, DropdownToggle, Input,
+import {
+  Button, Row, Col, Card, CardHeader, CardBody, Alert, Modal, ModalHeader, ModalBody, ModalFooter, Dropdown, DropdownToggle, Input,
   DropdownMenu, DropdownItem, ListGroupItem, ListGroup, InputGroup, InputGroupAddon, InputGroupText
 } from "reactstrap";
 import { FaEllipsisV, FaSearch } from 'react-icons/fa';
@@ -22,7 +23,6 @@ class Bills extends Component {
       bills: [],
       labels: [],
       categories: [],
-      collapse: [],
       contacts: [],
       updateBill: [],
       createBillRequest: false,
@@ -75,6 +75,7 @@ class Bills extends Component {
       this.loadCollapse();
     }
   };
+
   // category name color append to bills
   billsWithcategoryNameColor = (bills) => {
     const prevState = bills;
@@ -149,6 +150,7 @@ class Bills extends Component {
     const state = prevState.map((value, index) => keyIndex === index ? !value : false);
     this.setState({ hoverAccord: state });
   }
+
   onHover = (e, keyIndex) => {
     this.setState({ onHover: true });
     this.hoverAccordion(keyIndex)

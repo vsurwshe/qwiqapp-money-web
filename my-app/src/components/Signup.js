@@ -38,7 +38,7 @@ class Signup extends React.Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const data = {  name: this.state.name,  email: this.state.email,  password: this.state.password };
+    const data = { name: this.state.name, email: this.state.email, password: this.state.password };
     if (this.state.name === '') {
       this.callAlertTimer("danger", "Name should not be empty")
     } else if (this.state.password.length > 5) {
@@ -71,13 +71,13 @@ class Signup extends React.Component {
   //this prints onscreen alert
   callAlertTimer = (color, content) => {
     this.setState({ color, content });
-    if(color==="success"){
+    if (color === "success") {
       setTimeout(async () => {
         await this.setState({ color: '', content: '', flag: false })
         new LoginApi().login(this.state.email, this.state.password, this.loginSuccessCall, this.errorCall)
       }, Config.apiTimeoutMillis)
     }
-    
+
   };
 
   loginSuccessCall = () => {
@@ -119,7 +119,20 @@ class Signup extends React.Component {
     const align = { textAlign: "left" }
     const { emailState, passwordState } = this.state.validate
     const { name, email, password, content, color, flag, emailAlert } = this.state
-    if (flag) {
+    if (Store.isAppUserLoggedIn()) {
+      return (
+        <div>
+          <Container style={{ padding: 20 }} classmail="App">
+            <h3>
+              You have already Signedup with WebMoney. Go to
+              <Link to="/dashboard"> Dashboard </Link>
+            </h3>
+            <br />
+          </Container>
+        </div>
+      );
+    }
+    else if (flag) {
       return <div>{this.loadSignupComponent(requiredLabel, align, emailState, passwordState, name, email, password, content, color, emailAlert)}</div>
     } else {
       return (

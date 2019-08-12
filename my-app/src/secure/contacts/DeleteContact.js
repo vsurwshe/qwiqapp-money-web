@@ -15,6 +15,7 @@ class DeleteContact extends Component {
       profileId: props.profileId
     };
   }
+
   componentDidMount = () => {
     new ContactApi().deleteContact(this.successCall, this.errorCall, this.state.profileId, this.state.contactId);
   };
@@ -36,7 +37,7 @@ class DeleteContact extends Component {
   render() {
     const { contactDeleted, content, color } = this.state;
     return <div>{contactDeleted ? <Contacts color={color} content={content} visible={true} />
-      : ReUseComponents.loadDeleting("Contact", content, color)}</div>
+      : ReUseComponents.loadDeleting("Contacts", content, color)}</div>
   }
 }
 

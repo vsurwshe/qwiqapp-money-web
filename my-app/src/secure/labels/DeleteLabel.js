@@ -29,7 +29,7 @@ class DeleteLabel extends Component {
   };
 
   //this  method show the on page alert
-  callAlertTimer = (color,content) => {
+  callAlertTimer = (color, content) => {
     setTimeout(() => {
       this.setState({ color, content, labelDeleted: true });
     }, Config.notificationMillis);
@@ -37,7 +37,7 @@ class DeleteLabel extends Component {
 
   render() {
     const { labelDeleted, content, color } = this.state;
-    return <div>{labelDeleted ? <Lables color={color} content={content} visible={true} /> : ReUseComponents.loadDeleting("Label", content, color)}</div>
+    return <div>{labelDeleted ? <Lables color={color} content={content} visible={true} /> : ReUseComponents.loadDeleting("Labels", content, color)}</div>
   }
 }
 

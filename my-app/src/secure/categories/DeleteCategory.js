@@ -38,7 +38,7 @@ class DeleteCategory extends Component {
   render() {
     const { categoryDeleted, color, content } = this.state;
     return categoryDeleted ? <Categories color={color} content={content} visible={true} />
-      : ReUseComponents.loadDeleting("CATEGORIES",content,color)
+      : ReUseComponents.loadDeleting("CATEGORIES", content, color)
   }
 }
 

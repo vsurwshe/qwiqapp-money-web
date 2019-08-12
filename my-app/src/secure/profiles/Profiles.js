@@ -4,7 +4,7 @@ import Loader from 'react-loader-spinner'
 import UpdateProfile from "./UpdateProfile";
 import CreateProfile from "./CreateProfile";
 import DeleteProfile from "./DeleteProfile";
-import {Redirect} from 'react-router';
+import { Redirect } from 'react-router';
 import ProfileApi from "../../services/ProfileApi";
 import { DeleteModel } from "../utility/DeleteModel";
 import { ProfileEmptyMessage } from "../utility/ProfileEmptyMessage";
@@ -59,9 +59,7 @@ class Profiles extends Component {
   }
 
   toggleDanger = () => {
-    this.setState({
-      danger: !this.state.danger,
-    });
+    this.setState({ danger: !this.state.danger });
   }
 
   render() {
@@ -69,8 +67,8 @@ class Profiles extends Component {
     if (profiles.length === 0 && !createProfile) {
       return <div>{profiles.length === 0 && !createProfile && !spinner ? this.loadSpinner() : <ProfileEmptyMessage />}</div>
     } else if (selectProfile) {
-      let url = "/profiles/" + id     
-      return (<Container> <Redirect push to={url} /></Container>)     
+      let url = "/profiles/" + id
+      return (<Container> <Redirect push to={url} /></Container>)
     } else if (createProfile) {
       return (<Container> <CreateProfile /> </Container>)
     } else if (updateProfile) {
@@ -84,7 +82,7 @@ class Profiles extends Component {
 
   loadHeader = () => {
     return (
-      <CardHeader style={{paddingBottom:"20px"}} ><strong>PROFILES</strong>
+      <CardHeader style={{ paddingBottom: "20px" }} ><strong>PROFILES</strong>
         <Button color="success" className="float-right" onClick={this.callCreateProfile}> + Create Profile </Button>
       </CardHeader>)
   }
@@ -108,23 +106,23 @@ class Profiles extends Component {
   showProfile = (profiles) => {
     return (
       <div className="animated fadeIn">
-          {this.loadHeader()}
-          <CardBody>
-            <Table bordered > 
-              <thead>
-                <tr style={{backgroundColor:"#DEE9F2  ",color:'#000000'}}>
-                  <th >Profile Name</th>
-                  <th>Profile Type </th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody style={{paddingBottom:"20px"}}>
-              {profiles.map((profile,key) => {
-                  return this.loadSingleProfile(profile, key);
-                })}
-              </tbody>
-            </Table>
-          </CardBody>
+        {this.loadHeader()}
+        <CardBody>
+          <Table bordered >
+            <thead>
+              <tr style={{ backgroundColor: "#DEE9F2  ", color: '#000000' }}>
+                <th >Profile Name</th>
+                <th>Profile Type </th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody style={{ paddingBottom: "20px" }}>
+              {profiles.map((profile, key) => {
+                return this.loadSingleProfile(profile, key);
+              })}
+            </tbody>
+          </Table>
+        </CardBody>
       </div>)
   }
 
@@ -137,11 +135,10 @@ class Profiles extends Component {
     return (
       <tr key={key} >
         <td><b onClick={() => { this.selectProfile(profile.id) }} ><Avatar name={profile.name.charAt(0)} size="40" round={true} /> &nbsp;&nbsp;{profile.name}</b> </td>
-        <td style = {{paddingTop:18}}>{this.loadProfileType(profile.type)} </td>
+        <td style={{ paddingTop: 18 }}>{this.loadProfileType(profile.type)} </td>
         <td>
-          <Button style={{backgroundColor:"#43A432",color:"#F0F3F4"}} onClick={() => { this.updateProfile(profile.id, profile.name) }}>Update</Button> 
-         
-          <Button color="danger" onClick={() => { this.setState({ id: profile.id }); this.toggleDanger() }} style={{marginLeft:10}} >Delete</Button>
+          <Button style={{ backgroundColor: "#43A432", color: "#F0F3F4" }} onClick={() => { this.updateProfile(profile.id, profile.name) }}>Update</Button>
+          <Button color="danger" onClick={() => { this.setState({ id: profile.id }); this.toggleDanger() }} style={{ marginLeft: 10 }} >Delete</Button>
           {/* <FaPen size={14} style={{ color: '#4385ef', marginTop: "15px" }} onClick={() => { this.updateProfile(profile.id, profile.name) }} />
           <FaTrashAlt onClick={() => { this.setState({ id: profile.id }); this.toggleDanger() }}  style={{ marginLeft:20, color: 'red', marginTop: "15px" }} /> */}
         </td>
@@ -158,7 +155,7 @@ class Profiles extends Component {
         break;
       case 3: profileType = "Free Business Profile";
         break;
-        case 4: profileType = "Business Profile";
+      case 4: profileType = "Business Profile";
         break;
       case 5: profileType = "CRM Profile";
         break;
@@ -169,6 +166,7 @@ class Profiles extends Component {
     }
     return profileType;
   }
+
   // delete model
   loadDeleteProfile = () => {
     return (

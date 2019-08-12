@@ -27,6 +27,7 @@ class LabelApi {
   updateLabel(success, failure, data, pid, lid) {
     process(success, failure, pid + "/labels/" + lid, "PUT", pid, data);
   }
+
   //This Method Delete the lables
   deleteLabel(success, failure, pid, lid) {
     process(success, failure, pid + "/labels/" + lid, "DELETE", pid);

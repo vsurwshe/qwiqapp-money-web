@@ -7,10 +7,12 @@ class GeneralApi {
   getCountrylist(success, failure) {
     process(success, failure, "/general/countries", "GET");
   };
+
   getCurrencyList(success, failure) {
     process(success, failure, "/general/currencies", "GET");
   }
-  settings(success, failure){
+
+  settings(success, failure) {
     process(success, failure, "/general/settings", "GET");
   }
 }
@@ -37,16 +39,19 @@ function AccessTokenError(err, success, failure, Uurl, Umethod) {
     errorResponse(err, failure)
   }
 }
+
 let errorResponse = function (error, failure) {
   if (failure != null) {
     failure(error);
   }
 };
+
 let successResponse = function (response, successCall) {
   if (successCall != null) {
     successCall(response.data);
   }
 };
+
 function httpCall(url, method) {
   let instance = Axios.create({
     baseURL: Config.cloudBaseURL,

@@ -17,6 +17,7 @@ class UpdateProfile extends Component {
       cancelUpdateProfile: false,
     };
   }
+
   handleUpdate = () => {
     let data = { name: this.state.name };
     new ProfileApi().updateProfile(this.successCall, this.errorCall, data, this.state.id);
@@ -24,7 +25,7 @@ class UpdateProfile extends Component {
 
   successCall = () => {
     let storeProfile;
-    if(this.state.id === Store.getProfile().id){
+    if (this.state.id === Store.getProfile().id) {
       storeProfile = Store.getUserProfiles().filter(profile => profile.id === this.state.id)
       Store.saveProfile(storeProfile[0])
     }
@@ -39,15 +40,15 @@ class UpdateProfile extends Component {
     this.setState({ color, content });
     setTimeout(() => {
       this.setState({ name: '', color: '', updateSuccess: true });
-      window.location.href = "/profiles";      
+      window.location.href = "/profiles";
     }, Config.notificationMillis);
   };
-  
+
   render() {
     const { name, color, content, updateSuccess, cancelUpdateProfile } = this.state;
-      return <div>{(updateSuccess || cancelUpdateProfile) ? <Profiles /> : this.loadUpdateProfile(name, color, content)}</div>
-
+    return <div>{(updateSuccess || cancelUpdateProfile) ? <Profiles /> : this.loadUpdateProfile(name, color, content)}</div>
   }
+
   loadHeader = () => <CardHeader><strong>Profile</strong></CardHeader>
 
   // when updating profile
@@ -65,7 +66,7 @@ class UpdateProfile extends Component {
               </Col>
               <br />
               <Button color="success" disabled={!name} onClick={this.handleUpdate} >Update  </Button>&nbsp;&nbsp;&nbsp;
-              <Button active color="light" aria-pressed="true" onClick={()=>{this.setState({cancelUpdateProfile:true})}}>Cancel</Button>
+              <Button active color="light" aria-pressed="true" onClick={() => { this.setState({ cancelUpdateProfile: true }) }}>Cancel</Button>
             </FormGroup>
           </center>
         </Card>

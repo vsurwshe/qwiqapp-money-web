@@ -3,13 +3,14 @@ const DUMMY_KEY = 'dummy';
 const db = localStorage;
 
 const Store = {
-    
+
     //this Saves the AppUser Response
     saveAppUserAccessToken: function (token, refresh, expiry) {
         let appUser = { oauthToken: token, refreshToken: refresh, timeExpiry: expiry };
         db.setItem(USER_KEY, JSON.stringify(appUser));
         this.setSelectedValue(false)
     },
+    
     getAppUserAccessToken: function () {
         let appUser = this.getAppUser();
         return this.getToken(appUser);
@@ -30,6 +31,7 @@ const Store = {
         let user = db.getItem(USER_KEY);
         return JSON.parse(user);
     },
+
     //this is getting Dummy User Key
     getDummyUser: function () {
         let user = db.getItem(DUMMY_KEY);
@@ -83,15 +85,18 @@ const Store = {
     clearDummyAccessToken: function () {
         db.removeItem(DUMMY_KEY);
     },
+
     //Store User Details
     saveUser: function (data) {
         db.setItem("USERDATA", JSON.stringify(data))
     },
+
     //Gets User Details
     getUser: function () {
         const user = db.getItem("USERDATA")
         return JSON.parse(user)
     },
+
     // Setting Api for payapal payment transaction
     saveSetting: function (jsonValue) {
         db.setItem("SETTINGS", JSON.stringify(jsonValue));
@@ -118,31 +123,36 @@ const Store = {
             return null;
         }
     },
-    
+
     //this is save profiles in local storege
     saveUserProfiles: function (data) {
         db.setItem("PROFILES", JSON.stringify(data))
     },
+
     //this is get profiles form local storege
     getUserProfiles: function () {
         const categories = db.getItem("PROFILES")
         return JSON.parse(categories)
     },
+
     //this saves selected profile in local storage
     saveProfile: function (data) {
         db.setItem("PROFILE", JSON.stringify(data))
     },
+
     //gets selected profile from local storage
     getProfile: function () {
         let profile = db.getItem("PROFILE")
-        if (profile!=="undefined") {
+        if (profile !== "undefined") {
             return JSON.parse(profile);
-         }
-         return null;
+        }
+        return null;
     },
+
     setSelectedValue: function (data) {
         db.setItem("SELECTEDPROFILE", data)
     },
+
     getSelectedValue: function () {
         const selected = db.getItem("SELECTEDPROFILE")
         return selected
@@ -160,6 +170,7 @@ const Store = {
     saveCategories: function (data) {
         db.setItem("CATEGORIES", JSON.stringify(data))
     },
+
     //this is get categories form local storege
     getCategories: function () {
         const categories = db.getItem("CATEGORIES")
@@ -170,6 +181,7 @@ const Store = {
     saveBills: function (data) {
         db.setItem("BILL", JSON.stringify(data))
     },
+
     //this is get bills form local storege
     getBills: function () {
         const categories = db.getItem("BILL")
@@ -179,6 +191,7 @@ const Store = {
     saveContacts: function (data) {
         db.setItem("CONTACTS", JSON.stringify(data))
     },
+
     getContacts: function () {
         const categories = db.getItem("CONTACTS")
         return JSON.parse(categories)

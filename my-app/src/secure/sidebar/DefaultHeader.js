@@ -25,6 +25,7 @@ const DefaultHeader = (props) => {
     await Store.userDataClear();
     callAlert();
   }
+
   let callAlert = () => {
     animatedIcon(icon = true);
     setTimeout(() => {
@@ -55,6 +56,7 @@ const DefaultHeader = (props) => {
       changeUsername(userName = user.name)
     }
   };
+
   const loadAuthButton = () => {
     return (
       <Modal isOpen={authButton} toggle={toggleDanger} >

@@ -1,7 +1,6 @@
 import React from 'react';
 import { Table } from 'reactstrap';
 import { FaCheck, FaMinus } from "react-icons/fa";
-
 import ProfileTypesApi from '../../services/ProfileTypesApi'
 
 const green = { color: '#008000' }

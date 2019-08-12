@@ -1,15 +1,18 @@
 import Axios from "axios";
 import Store from "../data/Store";
 import LoginApi from "./LoginApi";
+
 class BillApi {
   //This Method Create Bill
   createBill(success, failure, pid, data) {
     process(success, failure, pid + "/bills", "POST", pid, data);
   }
+
   //This Method Get All Bills
   getBills(success, failure, pid, value) {
     Store.getBills() === null || value === "True" ? process(success, failure, pid + "/bills", "GET") : success(Store.getBills());
   }
+
   //This Method Get Bill By ID
   getBillById(success, failure, pid, billId) {
     process(success, failure, pid + "/bills/" + billId, "GET");
@@ -19,6 +22,7 @@ class BillApi {
   updateBill(success, failure, data, pid, billId) {
     process(success, failure, pid + "/bills/" + billId, "PUT", pid, data);
   }
+
   //This Method Delete Bill
   deleteBill(success, failure, pid, billId) {
     process(success, failure, pid + "/bills/" + billId, "DELETE", pid);
@@ -41,7 +45,8 @@ async function process(success, failure, Uurl, Umethod, profileId, data) {
       new BillApi().getBills(success, failure, profileId, "True");
       validResponse(promise, success)
     }
-  } 
+  }
+  
   //TODO: handle user error   
   catch (err) {
     console.log(err);

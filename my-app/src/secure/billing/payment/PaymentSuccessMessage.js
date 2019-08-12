@@ -6,10 +6,11 @@ import Store from '../../../data/Store';
 import '../../../css/style.css';
 
 let user = Store.getUser()
+
 const PaymentSuccessMessage = (props) => {
     const date = new Date();
     if (props.paymentReferenceId && (props.response === 202 || props.response === 200)) {
-        return (<div>
+        return <div>
             <Card> <CardBody>
                 <center><br /><br />
                     <img src={logo} alt="logo" width="110" height="100" /><br /><br /><br />
@@ -19,9 +20,9 @@ const PaymentSuccessMessage = (props) => {
                     <h3 ><Link className="routerLink" to="/billing/paymentHistory"><Button color="primary">View Payment History</Button></Link></h3>
                 </center>
             </CardBody> </Card>
-        </div>)
+        </div>
     } else {
-        return (<div>
+        return <div>
             <Card> <CardBody>
                 <center><br />
                     <b className="message"> Oops ..! Something went wrong, Your payment is failed. <br />
@@ -32,7 +33,7 @@ const PaymentSuccessMessage = (props) => {
                     </b>
                 </center>
             </CardBody> </Card>
-        </div>)
+        </div>
     }
 }
 export default PaymentSuccessMessage;

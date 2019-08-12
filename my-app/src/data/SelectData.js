@@ -28,10 +28,10 @@ const Data = {
     multiValue: (styles, { data }) => {
       const color = chroma(data.color);
       //if (color === null || color !== null) {
-        return {
-          ...styles,
-          backgroundColor: color.alpha(0.1).css(),
-        };
+      return {
+        ...styles,
+        backgroundColor: color.alpha(0.1).css(),
+      };
       //}
     },
 
@@ -108,14 +108,13 @@ const Data = {
     })
     return options;
   },
+
   contacts: function (contacts) {
     const options = [];
     contacts.map(contact => {
       return options.push({ value: contact.id, label: <b>{contact.name}</b> })
     })
-
     return options
   }
-
 }
 export default Data;

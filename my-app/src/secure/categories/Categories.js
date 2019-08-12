@@ -51,19 +51,19 @@ class Categories extends Component {
     this.loadCollapse();
   }
 
-  categoriesSet = (categories) =>{
+  categoriesSet = (categories) => {
     const prevState = categories;
     const state = prevState.map((x, index) => {
-        return {...x, childName: this.displaySubCategoryName(x)}
+      return { ...x, childName: this.displaySubCategoryName(x) }
     });
-    this.setState({categories : state});
+    this.setState({ categories: state });
   }
 
   displaySubCategoryName = (categories) => {
-    if(categories.subCategories !==null){
-      const name= categories.subCategories.map(sub=>sub.name);
+    if (categories.subCategories !== null) {
+      const name = categories.subCategories.map(sub => sub.name);
       return name;
-    }else{
+    } else {
       return null;
     }
   }
@@ -120,9 +120,9 @@ class Categories extends Component {
   }
 
   render() {
-    const {requiredCategory, createCategory, updateCategory, deleteCategory, profileId, categoryId, visible, spinner, search,categories } = this.state;
+    const { requiredCategory, createCategory, updateCategory, deleteCategory, profileId, categoryId, visible, spinner, search, categories } = this.state;
     let profile = Store.getProfile()
-    if (!profile ) {
+    if (!profile) {
       return <ProfileEmptyMessage />
     } else if (categories.length === 0 && !spinner) {
       return ReUseComponents.loadSpinner("Categories : " + categories.length)

@@ -21,13 +21,13 @@ class ProfileApi {
   }
 
   deleteProfile(success, failure, uid) {
-    process(success, failure, "/profiles/" + uid, "DELETE",null,uid);
+    process(success, failure, "/profiles/" + uid, "DELETE", null, uid);
   }
 }
 
 export default ProfileApi;
 
-async function process(success, failure, requestUrl, requestMethod, data,deleteId) {
+async function process(success, failure, requestUrl, requestMethod, data, deleteId) {
   let HTTP = httpCall(requestUrl, requestMethod);
   let promise;
   try {
@@ -37,7 +37,7 @@ async function process(success, failure, requestUrl, requestMethod, data,deleteI
     } else {
       await new ProfileApi().getProfiles(success, failure, "True");
     }
-    validResponse(promise, success, requestMethod,deleteId)
+    validResponse(promise, success, requestMethod, deleteId)
   } catch (err) {
     AccessTokenError(err, failure, requestUrl, requestMethod, data, success);
   }
@@ -52,16 +52,16 @@ let AccessTokenError = function (err, failure, requestUrl, requestMethod, data, 
   } else { errorResponse(err, failure) }
 }
 
-let validResponse = async function (resp, successMethod, requestMethod,deleteId) {
+let validResponse = async function (resp, successMethod, requestMethod, deleteId) {
   if (successMethod != null) {
     if (requestMethod === "DELETE") {
-      if(Store.getProfile().id===deleteId){
+      if (Store.getProfile().id === deleteId) {
         await Store.saveProfile(null);
         Store.setSelectedValue(false);
         await Store.userDataClear();
-      } 
-    }else if(requestMethod === "POST"){
-       Store.setSelectedValue(true);
+      }
+    } else if (requestMethod === "POST") {
+      Store.setSelectedValue(true);
       await Store.userDataClear();
       await Store.saveProfile(resp.data)
     }

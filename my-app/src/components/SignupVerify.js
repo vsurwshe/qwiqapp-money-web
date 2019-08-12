@@ -34,13 +34,13 @@ class SignupVerify extends Component {
 
   callAlertTimer = (color, content) => {
     this.setState({ color, content })
-    if(color === "success"){
+    if (color === "success") {
       setTimeout(() => {
         this.setState({ color: '', content: '', redirect: true })
         window.location.href = "/profiles";
       }, Config.notificationMillis)
     }
-    
+
   }
 
   render() {
@@ -64,7 +64,7 @@ class SignupVerify extends Component {
               <Col sm="6">
                 <Alert color={color}>{content}</Alert>
                 <AvForm onSubmit={this.handleSubmit}>
-                <AvField type="number" name="code" placeholder="Enter Code sent to your Email" value={color==="danger" && ""} required errorMessage="Please Enter Valid 6-digit Code"></AvField>
+                  <AvField type="number" name="code" placeholder="Enter Code sent to your Email" value={color === "danger" && ""} required errorMessage="Please Enter Valid 6-digit Code"></AvField>
                   <Button color="info" >Verify</Button> &nbsp;&nbsp;&nbsp;
                   <Link to="/profiles"><Button type="button">Cancel</Button></Link>
                 </AvForm>

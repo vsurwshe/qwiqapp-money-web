@@ -93,31 +93,31 @@ class AddCategory extends Component {
   }
 
   loadAddingCategory = () => {
-    const { alertColor, content, doubleClick,collapse,categories } = this.state
+    const { alertColor, content, doubleClick, collapse, categories } = this.state
     return (
       <Card className="card-width">
         <CardHeader><strong>Category</strong></CardHeader><br />
         <Col sm="12" md={{ size: 5, offset: 4 }}>
-            <Alert color={alertColor} >{content}</Alert>
-            <h5><b>CREATE CATEGORY</b></h5><br />
-            <AvForm onSubmit={this.handleSubmitValue}>
-              <AvField name="name" type="text" errorMessage="Category Name Required" placeholder="Enter Category name" required />
-              <AvField name="color" type="color" list="colors" placeholder="Enter Category Color" />
-              <FormGroup check className="checkbox">
-                <Input className="form-check-input" type="checkbox" onClick={this.toggle} value=" " />
-                <Label check className="form-check-label" htmlFor="checkbox1"> &nbsp;Nest Category under </Label>
-              </FormGroup><br />
-              <Collapse isOpen={collapse}>
-                <Input type="select" name="parentId" id="exampleSelect" onChange={e => { this.handleInput(e) }}>
-                 {categories.map((category, key) => { return <option key={key} value={category.id}>{category.name}</option> })}
-                </Input>
-              </Collapse><br />
-              <FormGroup>
-                <Button color="info" disabled={doubleClick} > Save </Button> &nbsp;&nbsp;
+          <Alert color={alertColor} >{content}</Alert>
+          <h5><b>CREATE CATEGORY</b></h5><br />
+          <AvForm onSubmit={this.handleSubmitValue}>
+            <AvField name="name" type="text" errorMessage="Category Name Required" placeholder="Enter Category name" required />
+            <AvField name="color" type="color" list="colors" placeholder="Enter Category Color" />
+            <FormGroup check className="checkbox">
+              <Input className="form-check-input" type="checkbox" onClick={this.toggle} value=" " />
+              <Label check className="form-check-label" htmlFor="checkbox1"> &nbsp;Nest Category under </Label>
+            </FormGroup><br />
+            <Collapse isOpen={collapse}>
+              <Input type="select" name="parentId" id="exampleSelect" onChange={e => { this.handleInput(e) }}>
+                {categories.map((category, key) => { return <option key={key} value={category.id}>{category.name}</option> })}
+              </Input>
+            </Collapse><br />
+            <FormGroup>
+              <Button color="info" disabled={doubleClick} > Save </Button> &nbsp;&nbsp;
                <Button active color="light" type="button" aria-pressed="true" onClick={this.cancelAddCategory}  >Cancel</Button>
-              </FormGroup>
-            </AvForm>
-          </Col>
+            </FormGroup>
+          </AvForm>
+        </Col>
       </Card>)
   }
 }

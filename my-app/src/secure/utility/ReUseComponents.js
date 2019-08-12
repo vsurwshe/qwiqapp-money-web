@@ -14,10 +14,10 @@ export const ReUseComponents = {
           {headerMsg === "" ? "" : this.loadHeader(headerMsg)}
           <CardBody>
             <center>
-             <Loader type="TailSpin" color={color} height={60} width={60} />
-             <br/><br/>
+              <Loader type="TailSpin" color={color} height={60} width={60} />
+              <br /><br />
               {bodyMessage}
-              </center>
+            </center>
           </CardBody>
         </Card>
       </div>)
@@ -46,11 +46,11 @@ export const ReUseComponents = {
   //Searches Items based on user given SearchTerm
   searchingFor: function (searchTerm) {
     return function (item) {
-      let subItemName ='' ;
-      if(item.childName !== null){
-        subItemName = subItemName+ item.childName.map(item => item )
+      let subItemName = '';
+      if (item.childName !== null) {
+        subItemName = subItemName + item.childName.map(item => item)
       }
-      return (item.name.toLowerCase()+subItemName.toLowerCase()).includes(searchTerm.toLowerCase()) ||!searchTerm
+      return (item.name.toLowerCase() + subItemName.toLowerCase()).includes(searchTerm.toLowerCase()) || !searchTerm
     }
   },
 
@@ -68,14 +68,14 @@ export const ReUseComponents = {
     </Dropdown>);
   },
 
-  loadHeaderWithSearch: function (headerMessage, items, setSearch, placeHolder, addItem){
-    return (<CardHeader>
+  loadHeaderWithSearch: function (headerMessage, items, setSearch, placeHolder, addItem) {
+    return <CardHeader>
       <Row form>
         <Col md={3} className="marigin-top" >
-          <strong>{items ? headerMessage +" : "+ items.length : headerMessage}</strong>
+          <strong>{items ? headerMessage + " : " + items.length : headerMessage}</strong>
           {/* <strong>{headerMessage} : {items.length}</strong> */}
         </Col>
-          <Col md={7} className="shadow p-0 mb-3 bg-white rounded">
+        <Col md={7} className="shadow p-0 mb-3 bg-white rounded">
           <InputGroup>
             <Input type="search" className="float-right" style={{ width: '20%' }} onChange={e => setSearch(e)} placeholder={placeHolder} />
             <InputGroupAddon addonType="append">
@@ -87,7 +87,7 @@ export const ReUseComponents = {
           <Button color="success" className="float-right" onClick={addItem}> + ADD </Button>
         </Col>
       </Row>
-    </CardHeader>);
+    </CardHeader>
   },
 
   //This method Shows Categories/labels as Items
@@ -143,20 +143,20 @@ export const ReUseComponents = {
 
   //This method displays Items's Name with Avatar and AngleDown for SubItems
   loadAvatar: function (singleItem, ukey, ellipsisText2, toggleAccordion) {
-    return (<>
+    return <>
       <Avatar name={singleItem.name.charAt(0)} color={singleItem.color === null ? '#000000' : singleItem.color} size="40" square={true} />
       <div style={ellipsisText2}>&nbsp;&nbsp;{singleItem.name}
-        {(singleItem.subCategories || singleItem.subLabels) && <span><FaAngleDown style={{ marginLeft: 8 }} onClick={() => { toggleAccordion(ukey) }} /></span> }
+        {(singleItem.subCategories || singleItem.subLabels) && <span><FaAngleDown style={{ marginLeft: 8 }} onClick={() => { toggleAccordion(ukey) }} /></span>}
       </div>
     </>
-    )
   },
 
   //This method displays subItems 
   loadCollapse: function (singleItem, ukey, accordion, setItemId, toggleDanger, handleUpdate, subItemCss, ellipsisText1, ellipsisText2, toggleAccordion) {
     return (
       <Collapse isOpen={accordion[ukey]}>
-        {(singleItem.subCategories || singleItem.subLabels) && singleItem.subCategories.map((subCategory, subKey) => { return this.loadSubItem(subCategory, subKey, subItemCss, ellipsisText1, ellipsisText2, setItemId, toggleDanger, handleUpdate, toggleAccordion) }) }
+        {singleItem.subCategories ? (singleItem.subCategories ? singleItem.subCategories.map((subCategory, subKey) => { return this.loadSubItem(subCategory, subKey, subItemCss, ellipsisText1, ellipsisText2, setItemId, toggleDanger, handleUpdate, toggleAccordion) }) : "")
+          : (singleItem.subLabels ? (singleItem.subLabels  ? singleItem.subLabels.map((subLabel, subKey) => { return this.loadSubItem(subLabel, subKey, subItemCss, ellipsisText1, ellipsisText2, setItemId, toggleDanger, handleUpdate, toggleAccordion) }) : "") : "")}
       </Collapse>
     )
   },

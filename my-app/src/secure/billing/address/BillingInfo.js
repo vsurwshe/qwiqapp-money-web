@@ -16,6 +16,7 @@ let emptyBillingAddress = {
   postCode: '',
   region: ''
 }
+
 class BillingInfo extends Component {
   state = {
     billing: [],
@@ -41,7 +42,7 @@ class BillingInfo extends Component {
     this.setState({ visible: true })
   }
 
-  EditBillingAddress = () => {
+  editBillingAddress = () => {
     this.setState({ addBilling: true, spinner: true });
   }
 
@@ -89,11 +90,12 @@ class BillingInfo extends Component {
       </div>
     )
   }
+
   loadHeader = (billing) => {
     return (
       <CardHeader>
         <strong>Billing Address</strong>
-        <Link to={{ pathname: "/billing/address/add", state: { updateBill: billing } }}><Button color="success" className="float-right" onClick={this.EditBillingAddress}> + Billing Address</Button></Link>
+        <Link to={{ pathname: "/billing/address/add", state: { updateBill: billing } }}><Button color="success" className="float-right" onClick={this.editBillingAddress}> + Billing Address</Button></Link>
       </CardHeader>);
   }
 

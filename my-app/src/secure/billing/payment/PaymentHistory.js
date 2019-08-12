@@ -27,13 +27,15 @@ class PaymentHistory extends Component {
     new BillingAddressApi().getPaymentsHistory(this.successCall, this.errorCall)
     new GeneralApi().getCurrencyList(this.successCall, this.errorCall);
   }
- 
-  successCall = async (response)=> {
-    if(response.payments) {  //    response form all Payments & Total Balance  
-        await this.setState({ payments: response.payments,
-               total_balance: response.balance, spinner: true });
+
+  successCall = async (response) => {
+    if (response.payments) {  //    response form all Payments & Total Balance  
+      await this.setState({
+        payments: response.payments,
+        total_balance: response.balance, spinner: true
+      });
     } else {
-        this.setState({ currency: response }) //response to all Currencies  
+      this.setState({ currency: response }) //response to all Currencies  
     }
   }
 
@@ -123,20 +125,19 @@ class PaymentHistory extends Component {
   }
 
   paymentHistoryTable = (paymentsList) => {
-    return (<><b>PAYMENT HISTORY </b> <br /><br />
-    <Table striped  bordered >
-      <thead>
-        <tr className="table-header-color" >
-          <th>DATE</th>
-          <th>DESCRIPTION</th>
-          <th>AMOUNT</th>
-        </tr>
-      </thead>
-      <tbody>
-        {paymentsList}
-      </tbody>
-    </Table></>
-    )
+    return <><b>PAYMENT HISTORY </b> <br /><br />
+      <Table striped bordered >
+        <thead>
+          <tr className="table-header-color" >
+            <th>DATE</th>
+            <th>DESCRIPTION</th>
+            <th>AMOUNT</th>
+          </tr>
+        </thead>
+        <tbody>
+          {paymentsList}
+        </tbody>
+      </Table></>
   }
 
   showCurrenySymbol = (paymentCurrency, currency) => {
@@ -154,24 +155,24 @@ class PaymentHistory extends Component {
     let date = new Date(paymentDate).toDateString();
     let day = date.substring(8, 10);
     let dateSuperTag = '';
-    if (day<10) {
+    if (day < 10) {
       day = date.substring(9, 10);
     }
     if (day > 3 && day < 21) {
       dateSuperTag = 'th';
-      } else {
-        switch (day % 10) {
-          case 1: dateSuperTag = "st";
-            break;
-          case 2: dateSuperTag = "nd";
-            break;
-          case 3: dateSuperTag = "rd";
-            break;
-          default: dateSuperTag = "th";
-            break;
-        }
+    } else {
+      switch (day % 10) {
+        case 1: dateSuperTag = "st";
+          break;
+        case 2: dateSuperTag = "nd";
+          break;
+        case 3: dateSuperTag = "rd";
+          break;
+        default: dateSuperTag = "th";
+          break;
       }
-    return (<div>{date.substring(0, 3)}, {day}<sup>{dateSuperTag}</sup> {date.substring(3, 7) + " " + date.substring(11, 15)}</div>);
+    }
+    return <div>{date.substring(0, 3)}, {day}<sup>{dateSuperTag}</sup> {date.substring(3, 7) + " " + date.substring(11, 15)}</div>;
   }
 }
 export default PaymentHistory;

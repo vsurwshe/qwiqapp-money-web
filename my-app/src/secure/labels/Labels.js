@@ -23,7 +23,7 @@ class Lables extends Component {
       visible: props.visible,
       updateLabel: false,
       deleteLabel: false,
-      profileId:"",
+      profileId: "",
       accordion: [],
       danger: false,
       dropdownOpen: [],
@@ -45,8 +45,7 @@ class Lables extends Component {
 
   getLabels = () => {
     new LabelApi().getSublabels(this.successCall, this.errorCall, this.state.profileId);
-   }
-
+  }
 
   successCall = async labels => {
     if (labels === []) {
@@ -58,25 +57,24 @@ class Lables extends Component {
     }
   };
 
-  labelsSet = (labels) =>{
+  labelsSet = (labels) => {
     const prevState = labels;
     const state = prevState.map((x, index) => {
-        return {...x, childName: this.displaySubLabelName(x)}
+      return { ...x, childName: this.displaySubLabelName(x) }
     });
-    this.setState({labels : state});
+    this.setState({ labels: state });
   }
 
   displaySubLabelName = (labels) => {
-    if(labels.subLabels){
-      const name= labels.subLabels.map(sub=>sub.name);
+    if (labels.subLabels) {
+      const name = labels.subLabels.map(sub => sub.name);
       return name;
     } else {
       return null;
     }
   }
 
-
-  errorCall = err =>  this.setState({ visible: true }) 
+  errorCall = err => this.setState({ visible: true })
 
   loadCollapse = () => {
     this.state.labels.map(lables => {
@@ -111,14 +109,14 @@ class Lables extends Component {
     this.setState({ dropdownOpen: state });
   }
 
-  setSearch = e =>  this.setState({ search: e.target.value }) 
-  setLabelId = (labels) => this.setState({ id: labels.id }) 
-  callCreateLabel = () =>  this.setState({ createLabel: true }) 
+  setSearch = e => this.setState({ search: e.target.value })
+  setLabelId = (labels) => this.setState({ id: labels.id })
+  callCreateLabel = () => this.setState({ createLabel: true })
 
   render() {
     const { labels, createLabel, updateLabel, id, deleteLabel, visible, profileId, requiredLabel, spinner, search } = this.state
     let profile = Store.getProfile()
-    if (!profile ) {
+    if (!profile) {
       return <ProfileEmptyMessage />
     } else if (!labels.length && !createLabel) {
       return <div>{!labels.length && !createLabel && !spinner
@@ -136,11 +134,10 @@ class Lables extends Component {
   }
 
   loadHeader = () => {
-    return (
-      <CardHeader>
-        <strong>Labels</strong>
-        <Button color="success" className="float-right" onClick={this.callCreateLabel}> + Create Label </Button>
-      </CardHeader>);
+    return <CardHeader>
+      <strong>Labels</strong>
+      <Button color="success" className="float-right" onClick={this.callCreateLabel}> + Create Label </Button>
+    </CardHeader>;
   }
 
   loadSpinner = () => {
@@ -156,14 +153,14 @@ class Lables extends Component {
   }
 
   loadNotLabel = () => {
-    return (<div className="animated fadeIn">
+    return <div className="animated fadeIn">
       <Card>
         {this.loadHeader()}
         <center style={{ paddingTop: '20px' }}>
           <CardBody> <h5><b>You haven't created any Lables yet... </b></h5><br /> </CardBody>
         </center>
       </Card>
-    </div>)
+    </div>
   }
 
   callAlertTimer = () => {
@@ -180,7 +177,7 @@ class Lables extends Component {
       this.callAlertTimer()
     }
     return ReUseComponents.loadItems(labels, this.setSearch, search, this.callCreateLabel, visible, this.toggleAccordion, this.state.accordion, this.setLabelId, this.toggleDanger, this.updateLabel,
-      this.state.dropdownOpen, this.toggleDropDown, color, this.props.content );
+      this.state.dropdownOpen, this.toggleDropDown, color, this.props.content);
   }
 
   loadDeleteLabel = () => {

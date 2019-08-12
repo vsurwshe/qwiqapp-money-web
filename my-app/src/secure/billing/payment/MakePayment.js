@@ -24,6 +24,7 @@ let billingAddressFields = {
   postCode: '',
   region: ''
 }
+
 class MakePayment extends Component {
   constructor(props) {
     super(props);
@@ -89,7 +90,7 @@ class MakePayment extends Component {
     }
   }
 
-  loadBillingItemError =()=>{
+  loadBillingItemError = () =>{
     const {status, message} = this.state.error_message;
     let link, buttonText;
     if (status && status === 500) {
@@ -98,8 +99,7 @@ class MakePayment extends Component {
     } else {
       link = "/verify"
       buttonText = "Verify Email"
-    }
-    
+    } 
     return(
       <Card>
         <CardHeader><strong>Make Payment</strong></CardHeader>
@@ -155,7 +155,7 @@ class MakePayment extends Component {
       }).catch(error => {
         return error.status;
       });
-  });
+    });
   }
 
   paypalOnApprove = async (data, actions) =>{
@@ -177,15 +177,11 @@ class MakePayment extends Component {
 
   loadMakePayment = (data) => {
     let url =  PAYPAL_URL + Store.getSetting('SETTINGS').paypalParams;
-    return (
-      <div className="animated fadeIn">
-       { this.loadPayPalButton(url)}
-      </div>
-    )
+    return <div className="animated fadeIn"> {this.loadPayPalButton(url)}</div>
   }
 
   loadPayPalButton = (paypalURL) => {
-    return (<Card>
+    return <Card>
       <CardHeader> <legend><b>BUY CREDITS</b></legend></CardHeader>
       <Script
         url={paypalURL}
@@ -210,7 +206,7 @@ class MakePayment extends Component {
           <div id="paypal-button-container"></div>
         </div>
       </center>
-    </Card>)
+    </Card>
   }
 
   loadRadioButtons = (item, index) => {

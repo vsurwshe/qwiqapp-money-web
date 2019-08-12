@@ -12,7 +12,7 @@ import Config from "../../data/Config";
 
 const nameOrOrganization = (value, field) => {
   if (field.name === "" && field.organization === "") {
-    return 'You need to provide Contact Name / Organization';
+    return 'You need to provide either Contact Name / Organization';
   }
   return true
 }
@@ -64,7 +64,7 @@ class UpdateContact extends Component {
   handleUpdate = (event, errors, values) => {
     const { profileId, contactId, selectedOption, labelUpdate, selectedCountry } = this.state
     if (errors.length === 0) {
-      if (profileId  | contactId || selectedCountry) {
+      if (profileId | contactId || selectedCountry) {
         this.setState({ doubleClick: true });
         var new_Values = { ...values, "country": selectedCountry, "labelIds": selectedOption === [] ? [] : (labelUpdate ? selectedOption.map(opt => { return opt.value }) : selectedOption), "version": this.state.contact.version }
         new ContactApi().updateContact(this.successCall, this.errorCall, new_Values, this.state.profileId, this.state.contactId)
@@ -142,9 +142,9 @@ class UpdateContact extends Component {
             <Col><AvField name="name" placeholder="Name" style={placeholderStyle} value={contact.name} validate={{ myValidation: nameOrOrganization }} onChange={this.validateOrganization} /> </Col>
             <Col><AvField name="organization" placeholder="Organization" style={placeholderStyle} value={contact.organization} validate={{ myValidation: nameOrOrganization }} onChange={this.validateOrganization} /></Col>
           </Row>
-          <Row>    
+          <Row>
             <Col>
-           <AvField name="phone" placeholder="Phone Number" value={contact.phone} style={placeholderStyle} validate={{ pattern: { value: '^[0-9*+-]+$' } }} errorMessage="Please enter valid phone number" required /></Col>
+              <AvField name="phone" placeholder="Phone Number" value={contact.phone} style={placeholderStyle} validate={{ pattern: { value: '^[0-9*+-]+$' } }} errorMessage="Please enter valid phone number" required /></Col>
             <Col><AvField name="email" type="text" placeholder="Your Email" style={placeholderStyle} validate={{ email: true }} value={contact.email} errorMessage="Please enter valid Email id" required /></Col>
           </Row>
           <Row>
