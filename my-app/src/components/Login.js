@@ -66,7 +66,9 @@ class Login extends Component {
   callAlertTimer(color, content) {
     this.setState({ color: color, content: content });
     this.resetData();
-    setTimeout(() => this.setState({ color: '', content: '' }), Config.notificationMillis);
+    if(color !== 'danger'){
+      setTimeout(() => this.setState({ color: '', content: '' }), Config.notificationMillis);
+    }
   }
 
   validateEmail = e => {
@@ -107,7 +109,7 @@ class Login extends Component {
                     <FormFeedback> Uh oh! Incorrect email. </FormFeedback>
                   </FormGroup>
                   <FormGroup>
-                    <Input type="password" name="password" onChange={(e) => { this.handleEvent(e) }}
+                    <Input type="password" name="password" onChange={(e) => { this.handleEvent(e);this.setState({ color:'', content:'' }) }}
                       onKeyPress={this.handleEnter} placeholder="Your Password" value={password} />
                   </FormGroup>
                   <Button color="info" onClick={this.handleButton}>Login</Button>

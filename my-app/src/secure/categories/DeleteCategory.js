@@ -29,8 +29,9 @@ class DeleteCategory extends Component {
   };
 
   callAlertTimer = (color, content) => {
+    this.setState({ color, content });
     setTimeout(() => {
-      this.setState({ color, content, categoryDeleted: true });
+      this.setState({ categoryDeleted: true });
       window.location.reload()
     }, Config.notificationMillis);
   };

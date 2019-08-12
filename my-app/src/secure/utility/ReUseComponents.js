@@ -16,7 +16,7 @@ export const ReUseComponents = {
             <center>
               <Loader type="TailSpin" color={color} height={60} width={60} />
               <br /><br />
-              {bodyMessage}
+              <h5 style={{color:'green'}}>{bodyMessage}</h5>
             </center>
           </CardBody>
         </Card>
