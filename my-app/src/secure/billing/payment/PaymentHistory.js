@@ -5,7 +5,7 @@ import Loader from 'react-loader-spinner';
 import BillingAddressApi from '../../../services/BillingAddressApi';
 import GeneralApi from '../../../services/GeneralApi';
 import Config from '../../../data/Config';
-import '../../../components/css/style.css';
+import '../../../css/style.css';
 
 class PaymentHistory extends Component {
   constructor(props) {

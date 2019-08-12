@@ -117,7 +117,6 @@ class Contacts extends Component {
     const state = prevState.map((x, index) => tab === index ? !x : false);
     this.setState({ dropdownOpen: state });
   }
-
   attachDropDown = (key, contactId) => {
     const prevState = this.state.attachDropdown;
     const state = prevState.map((x, index) => key === index ? !x : false);
@@ -170,7 +169,7 @@ class Contacts extends Component {
         return <AddAttachment contacId={contactId} profileId={profileId} />
       } else {
         return <div>{this.loadShowContact(visible, contacts)}{this.loadDeleteContact()}</div>
-      }
+      } 
     } else {
       return <ProfileEmptyMessage />
     }
@@ -256,7 +255,7 @@ class Contacts extends Component {
         <Row>
           <Col onClick={() => { this.attachDropDown(contactKey) }}>
             {this.displayName(contact, styles)}
-            <FaPaperclip className="faPaperclip" onClick={() => this.attachDropDown(contactKey, contact.id)} />
+            <FaPaperclip style={{color:'#34aec1',marginTop: 0, marginLeft: 10}} onClick={() => this.attachDropDown(contactKey, contact.id)} />
           </Col>
           <Col lg={1} sm={1} md={1} xl={1} >{this.state.onHover && this.state.hoverAccord[contactKey] ? this.loadDropDown(contact, contactKey) : ''}</Col>
         </Row>

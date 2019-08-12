@@ -7,7 +7,7 @@ import BillingAddressApi from '../../../services/BillingAddressApi';
 import GeneralApi from "../../../services/GeneralApi";
 import Config from "../../../data/Config";
 import Store from "../../../data/Store";
-import '../../../components/css/style.css';
+import '../../../css/style.css';
 
 const firstNameAndlastNameOrcompany = (value, field) => {
   if (!(field.firstName && field.lastName) && !field.company) {

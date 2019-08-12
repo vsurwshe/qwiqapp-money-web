@@ -8,7 +8,7 @@ import BillingAddressApi from '../../../services/BillingAddressApi';
 import PaymentSuccessMessage from './PaymentSuccessMessage';
 import UserApi from '../../../services/UserApi';
 import { ReUseComponents } from '../../utility/ReUseComponents';
-import '../../../components/css/style.css';
+import '../../../css/style.css';
 
 const PAYPAL_URL = 'https://www.paypal.com/sdk/js?'
 
@@ -133,7 +133,7 @@ class MakePayment extends Component {
   }
 
   paymentSuccessMessage = (paymentResponse) => {
-    new UserApi().getUser(user=>Store.saveUser(user), error=>console.log(error));
+    new UserApi().getUser(user=>Store.saveUser(user), error=>(error));
     this.setState({ paymentSuccess: true, paymentResponse });
   }
 

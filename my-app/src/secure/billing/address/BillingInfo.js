@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Card, CardBody, CardHeader, Button, Alert } from 'reactstrap';
 import BillingAddressApi from '../../../services/BillingAddressApi';
 import EditBillingAddress from './EditBillingAddress';
-import '../../../components/css/style.css';
+import '../../../css/style.css';
 
 let emptyBillingAddress = {
   addressLine1: '',
