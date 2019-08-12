@@ -108,6 +108,7 @@ const Data = {
     })
     return options;
   },
+
   contacts: function (contacts) {
     const options = [];
     contacts.map(contact => {
