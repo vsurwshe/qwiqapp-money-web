@@ -5,7 +5,7 @@ import Store from "../../data/Store";
 import CategoryApi from "../../services/CategoryApi";
 import Categories from "./Categories";
 import Config from "../../data/Config";
-import '../../components/css/style.css'
+import '../../css/style.css'
 
 
 class AddCategory extends Component {
@@ -68,6 +68,7 @@ class AddCategory extends Component {
     this.setState({ alertColor, content });
     setTimeout(() => {
       this.setState({ categoryCreated: true });
+      window.location.reload()
     }, Config.notificationMillis);
   };
 

@@ -10,8 +10,8 @@ class DeleteContact extends Component {
     this.state = {
       contactId: props.contactId,
       contactDeleted: false,
-      color: "warning",
-      content: "Deleting Label.....",
+      color: "green",
+      content: "Deleting Contact.....",
       profileId: props.profileId
     };
   }
@@ -28,9 +28,8 @@ class DeleteContact extends Component {
   };
 
   callAlertTimer = (color, content) => {
-    this.setState({ color, content });
     setTimeout(() => {
-      this.setState({ contactDeleted: true });
+      this.setState({ color, content, contactDeleted: true });
     }, Config.notificationMillis)
   };
 

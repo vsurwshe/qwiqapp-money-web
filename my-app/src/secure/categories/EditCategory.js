@@ -4,7 +4,7 @@ import { Button, Card, Col, Input, Alert, CardHeader, FormGroup, Label, Collapse
 import CategoryApi from '../../services/CategoryApi';
 import Categories from './Categories';
 import Config from '../../data/Config';
-import '../../components/css/style.css'
+import '../../css/style.css'
 
 
 let values;
@@ -63,6 +63,7 @@ class EditCategory extends Component {
     this.setState({ color, content });
     setTimeout(() => {
       this.setState({ updateSuccess: true });
+      window.location.reload()
     }, Config.notificationMillis);
   };
 

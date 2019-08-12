@@ -10,7 +10,7 @@ import Data from '../../data/SelectData';
 
 const nameOrOrganization = (value, field) => {
   if (!field.name && !field.organization) {
-    return 'You need to provide either name / organization'
+    return 'You need to provide either  Contact Name / Organization'
   }
   return true
 }

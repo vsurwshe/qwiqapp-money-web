@@ -30,7 +30,7 @@ class AddAttachment extends Component {
     const { profileId, contactId, file } = this.state;
     let reader = new FormData()
     reader.append('file', file);
-    if (profileId !== undefined || contactId !== undefined) {
+    if (profileId || contactId ) {
       this.setState({ doubleClick: false });
       new AttachmentApi().createAttachment(this.successCall, this.errorCall, profileId, contactId, reader)
     }

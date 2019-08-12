@@ -11,9 +11,8 @@ import Config from "../../data/Config";
 // import '../../../public/';
 
 const nameOrOrganization = (value, field) => {
-  console.log(field);
   if (field.name === "" && field.organization === "") {
-    return `You need to provide ${field.name}`
+    return 'You need to provide Contact Name / Organization';
   }
   return true
 }
@@ -65,7 +64,7 @@ class UpdateContact extends Component {
   handleUpdate = (event, errors, values) => {
     const { profileId, contactId, selectedOption, labelUpdate, selectedCountry } = this.state
     if (errors.length === 0) {
-      if (profileId !== undefined | contactId !== undefined || selectedCountry !== "") {
+      if (profileId  | contactId || selectedCountry) {
         this.setState({ doubleClick: true });
         var new_Values = { ...values, "country": selectedCountry, "labelIds": selectedOption === [] ? [] : (labelUpdate ? selectedOption.map(opt => { return opt.value }) : selectedOption), "version": this.state.contact.version }
         new ContactApi().updateContact(this.successCall, this.errorCall, new_Values, this.state.profileId, this.state.contactId)
@@ -133,25 +132,27 @@ class UpdateContact extends Component {
   loadHeader = () => <CardHeader><strong>UPDATE CONTACT</strong></CardHeader>
 
   updateContactForm = (contact, alertColor, message) => {
+    const placeholderStyle = { color: '#000000', fontSize: '1.0em', }
     return <Card>
       {this.loadHeader()}
       <CardBody>
         {alertColor === "#000000" ? "" : <Alert color={alertColor}>{message}</Alert>}
         <AvForm ref={refId => this.form = refId} onSubmit={this.handleUpdate}>
           <Row>
-            <Col><AvField name="name" placeholder="Name" value={contact.name} validate={{ myValidation: nameOrOrganization }} onChange={this.validateOrganization} /> </Col>
-            <Col><AvField name="organization" placeholder="Organization " value={contact.organization} validate={{ myValidation: nameOrOrganization }} onChange={this.validateOrganization} /></Col>
+            <Col><AvField name="name" placeholder="Name" style={placeholderStyle} value={contact.name} validate={{ myValidation: nameOrOrganization }} onChange={this.validateOrganization} /> </Col>
+            <Col><AvField name="organization" placeholder="Organization" style={placeholderStyle} value={contact.organization} validate={{ myValidation: nameOrOrganization }} onChange={this.validateOrganization} /></Col>
+          </Row>
+          <Row>    
+            <Col>
+           <AvField name="phone" placeholder="Phone Number" value={contact.phone} style={placeholderStyle} validate={{ pattern: { value: '^[0-9*+-]+$' } }} errorMessage="Please enter valid phone number" required /></Col>
+            <Col><AvField name="email" type="text" placeholder="Your Email" style={placeholderStyle} validate={{ email: true }} value={contact.email} errorMessage="Please enter valid Email id" required /></Col>
           </Row>
           <Row>
-            <Col><AvField name="phone" placeholder="Phone Number" value={contact.phone} validate={{ pattern: { value: '^[0-9*+-]+$' } }} errorMessage="Please enter valid phone number" required /></Col>
-            <Col><AvField name="email" type="text" placeholder="Your Email" validate={{ email: true }} value={contact.email} errorMessage="Please enter valid Email id" required /></Col>
+            <Col><AvField name="address1" placeholder="Address 1" style={placeholderStyle} value={contact.address1} /></Col>
+            <Col><AvField name="address2" placeholder="Address 2" style={placeholderStyle} value={contact.address2} /></Col>
           </Row>
           <Row>
-            <Col><AvField name="address1" placeholder="Address 1" value={contact.address1} /></Col>
-            <Col><AvField name="address2" placeholder="Address 2" value={contact.address2} /></Col>
-          </Row>
-          <Row>
-            <Col><AvField name="postcode" placeholder="Postal Code" value={contact.postcode} validate={{ pattern: { value: '^[0-9]{6}' } }} /></Col>
+            <Col><AvField name="postcode" placeholder="Postal Code" style={placeholderStyle} value={contact.postcode} validate={{ pattern: { value: '^[0-9]{6}' } }} /></Col>
             <Col><AvField name="state" placeholder="Your State" value={contact.state} /></Col>
             <Col>
               <Input type="select" onChange={e => this.handleCountrySelect(e)} value={this.state.selectedCountry}  >
@@ -199,7 +200,7 @@ class UpdateContact extends Component {
   }
 
   pushArray = (array, label, slabel) => {
-    slabel === undefined ? array.push({
+    !slabel ? array.push({
       value: label.id,
       label: label.name,
       color: label.color === null || label.color === "" ? "#000000" : label.color,

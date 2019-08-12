@@ -32,8 +32,8 @@ async function process(success, failure, Uurl, Umethod, profileId, data) {
   let promise;
     try {
       if (HTTP !== null) {
-        data === null || data === undefined ? promise = await HTTP.request() : promise = await HTTP.request({ data });
-        if (Umethod === "GET" && data === undefined ) {
+        !data  ? promise = await HTTP.request() : promise = await HTTP.request({ data });
+        if (Umethod === "GET" && !data ) {
           Store.saveContacts(promise.data);
           validResponse(promise, success)
         } else if(Umethod === "GET" && data === true){

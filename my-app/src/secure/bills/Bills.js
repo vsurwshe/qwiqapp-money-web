@@ -1,6 +1,5 @@
 import React, { Component } from "react";
-import {
-  Button, Row, Col, Card, CardHeader, CardBody, Alert, Modal, ModalHeader, ModalBody, ModalFooter, Dropdown, DropdownToggle, Input,
+import {Button, Row, Col, Card, CardHeader, CardBody, Alert, Modal, ModalHeader, ModalBody, ModalFooter, Dropdown, DropdownToggle, Input,
   DropdownMenu, DropdownItem, ListGroupItem, ListGroup, InputGroup, InputGroupAddon, InputGroupText
 } from "reactstrap";
 import { FaEllipsisV, FaSearch } from 'react-icons/fa';
@@ -14,7 +13,7 @@ import LabelApi from "../../services/LabelApi";
 import DeleteBill from "./DeleteBill";
 import ContactApi from '../../services/ContactApi';
 import { ProfileEmptyMessage } from "../utility/ProfileEmptyMessage";
-import '../../components/css/style.css';
+import '../../css/style.css';
 
 class Bills extends Component {
   constructor(props) {
@@ -47,7 +46,7 @@ class Bills extends Component {
   }
 
   setProfileId = async () => {
-    if (Store.getProfile() !== null && Store.getProfile().length !== 0) {
+    if (Store.getProfile()) {
       await this.setState({ profileId: Store.getProfile().id });
       this.getCategory();
     }
@@ -273,15 +272,15 @@ class Bills extends Component {
     return finalDate;
   }
 
-  displayCategoryName = (cid) => {
+  displayCategoryName = (categoryId) => {
     const { categories } = this.state;
-    var data = categories.filter(item => { return item.id === cid });
+    var data = categories.filter(item => { return item.id === categoryId });
     if (data.length === 0) {
-      categories.map(category => {
-        if (Array.isArray(category.subCategories)) {
-          category.subCategories.forEach(element => {
-            if (element.id === cid) {
-              data = { name: element.name, color: element.color === "" || element.color === null ? '#000000' : element.color };
+      categories.map(categoryArr => {
+        if (Array.isArray(categoryArr.subCategories)) {
+          categoryArr.subCategories.forEach(category => {
+            if (category.id === categoryId) {
+              data = { name: category.name, color: !category.color ? '#000000' : category.color };
               return data;
             }
           });
@@ -291,7 +290,7 @@ class Bills extends Component {
       return data;
     } else {
       for (const value of data)
-        return { name: value.name, color: value.color === '' || value.color === null ? '#000000' : value.color };
+        return { name: value.name, color: !value.color ? '#000000' : value.color };
     }
   }
 

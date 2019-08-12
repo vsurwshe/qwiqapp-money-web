@@ -138,7 +138,7 @@ class Lables extends Component {
   loadHeader = () => {
     return (
       <CardHeader>
-        <strong>Label</strong>
+        <strong>Labels</strong>
         <Button color="success" className="float-right" onClick={this.callCreateLabel}> + Create Label </Button>
       </CardHeader>);
   }

@@ -13,7 +13,7 @@ import { DeleteModel } from "../utility/DeleteModel";
 import { ProfileEmptyMessage } from "../utility/ProfileEmptyMessage";
 import { ReUseComponents } from "../utility/ReUseComponents";
 import ContactApi from "../../services/ContactApi";
-import '../../components/css/style.css'
+import '../../css/style.css'
 
 
 class Contacts extends Component {
@@ -117,40 +117,42 @@ class Contacts extends Component {
     const state = prevState.map((x, index) => tab === index ? !x : false);
     this.setState({ dropdownOpen: state });
   }
-  attachDropDown = (hKey, cId) => {
+  attachDropDown = (key, contactId) => {
     const prevState = this.state.attachDropdown;
-    const state = prevState.map((x, index) => hKey === index ? !x : false);
-    if (cId !== undefined) {
-      this.setState({ attachDropdown: state, contactId: cId });
+    const state = prevState.map((x, index) => key === index ? !x : false);
+    if (contactId) {
+      this.setState({ attachDropdown: state, contactId });
     } else {
       this.setState({ attachDropdown: state });
     }
   }
 
-  hoverAccordion = (hKey) => {
+  hoverAccordion = (key) => {
     const prevState = this.state.hoverAccord;
-    const state = prevState.map((x, index) => hKey === index ? !x : false);
+    const state = prevState.map((x, index) => key === index ? !x : false);
     this.setState({ hoverAccord: state });
   }
 
-  onHover = (e, hKey) => {
+  onHover = (e, key) => {
     this.setState({ onHover: true });
-    this.hoverAccordion(hKey)
+    this.hoverAccordion(key)
   }
 
-  onHoverOff = (e, hKey) => {
+  onHoverOff = (e, key) => {
     this.setState({ onHover: false });
-    this.hoverAccordion(hKey)
+    this.hoverAccordion(key)
   }
 
   addAttach = async (contactId, key) => {
     await this.setState({ contactId: contactId, addAttachRequest: true });
   }
+
   changeBg() {
     const { colors } = this.state;
     const color = colors[Math.floor(Math.random() * colors.length)];
     document.body.style.backgroundColor = color;
   }
+
   render() {
     let profile = Store.getProfile();
     const { contacts, singleContact, createContact, updateContact, deleteContact, addAttachRequest, contactId, visible, profileId, spinner, labels } = this.state
@@ -167,7 +169,7 @@ class Contacts extends Component {
         return <AddAttachment contacId={contactId} profileId={profileId} />
       } else {
         return <div>{this.loadShowContact(visible, contacts)}{this.loadDeleteContact()}</div>
-      }
+      } 
     } else {
       return <ProfileEmptyMessage />
     }
@@ -189,8 +191,8 @@ class Contacts extends Component {
         <Col sm={3}>
           <strong style={{ fontSize: 24 }}>Contacts </strong> 
         </Col>
-        <Col >
-          {this.state.contacts.length  && <InputGroup >
+        <Col>
+          { this.state.contacts.length !== 0 && <InputGroup >
               <Input type="search" className="float-right" onChange={this.searchHandler} value={this.state.searchContact} placeholder="Search Contacts..." />
               <InputGroupAddon addonType="append"><InputGroupText className="dark"><FaSearch /></InputGroupText></InputGroupAddon>
             </InputGroup>
@@ -238,8 +240,8 @@ class Contacts extends Component {
     return <div className="animated fadeIn">
       <Card>
         {this.loadHeader()}
-        <div style={{ marginBottom: 20 }}>
-          <h6><Alert isOpen={visible} color={this.props.color === undefined ? '' : this.props.color}>{this.props.content}</Alert></h6><br />
+        <div><br/>
+          <h6>{visible && <Alert isOpen={visible} color={this.props.color ? this.props.color : ""}>{this.props.content}</Alert>}</h6>
           {contacts.filter(this.searchingFor(this.state.searchContact)).map((contact, key) => { return this.loadSingleContact(contact, key) })}
         </div>
       </Card>
@@ -253,7 +255,7 @@ class Contacts extends Component {
         <Row>
           <Col onClick={() => { this.attachDropDown(contactKey) }}>
             {this.displayName(contact, styles)}
-            <FaPaperclip className="faPaperclip" onClick={() => this.attachDropDown(contactKey, contact.id)} />
+            <FaPaperclip style={{color:'#34aec1',marginTop: 0, marginLeft: 10}} onClick={() => this.attachDropDown(contactKey, contact.id)} />
           </Col>
           <Col lg={1} sm={1} md={1} xl={1} >{this.state.onHover && this.state.hoverAccord[contactKey] ? this.loadDropDown(contact, contactKey) : ''}</Col>
         </Row>

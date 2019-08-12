@@ -16,7 +16,7 @@ export default class ProfileInfoTable extends React.Component {
   }
 
   componentDidMount = () => {
-    new ProfileTypesApi().getProfileTypes((profileTypes) => { console.log(profileTypes); this.setState({ profileTypes }) }, (error) => { console.log("error", error); })
+    new ProfileTypesApi().getProfileTypes((profileTypes) => { this.setState({ profileTypes }) }, (error) => { console.log("error", error); })
   }
 
   render() {

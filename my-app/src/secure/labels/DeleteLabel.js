@@ -11,7 +11,7 @@ class DeleteLabel extends Component {
       id: this.props.id,
       labelDeleted: false,
       content: "Deleting Label.....",
-      color: "blue",
+      color: "green",
       profileId: this.props.pid
     };
   }

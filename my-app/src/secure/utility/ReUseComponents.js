@@ -3,6 +3,7 @@ import { Card, CardHeader, CardBody, Col, Alert, Dropdown, DropdownToggle, Dropd
 import Loader from 'react-loader-spinner';
 import Avatar from 'react-avatar';
 import { FaEllipsisV, FaSearch, FaTrashAlt, FaPen, FaAngleDown } from 'react-icons/fa';
+import '../../css/style.css';
 
 export const ReUseComponents = {
 
@@ -24,7 +25,7 @@ export const ReUseComponents = {
 
   // Shows Header
   loadHeader: function (headerMessage) {
-    return (<div style={{ padding: 10 }}>
+    return (<div className="padding">
       <center><strong> {headerMessage} </strong></center>
     </div>)
   },
@@ -35,8 +36,8 @@ export const ReUseComponents = {
       <div className="animated fadeIn">
         <Card>
           {this.loadHeader(headerMessage)}
-          <center style={{ paddingTop: '20px' }}>
-            <CardBody><Loader type="TailSpin" color="#2E86C1" height={60} width={60} /></CardBody>
+          <center className="padding-top">
+            <CardBody><Loader type="TailSpin" className="loader-color" height={60} width={60} /></CardBody>
           </center>
         </Card>
       </div>)
@@ -54,16 +55,39 @@ export const ReUseComponents = {
   },
 
   //This method loads Dropdown when Ellipsis is clicked to Update/Delete
+  // style={{ marginTop: 7 }} 
   loadDropDown: function (item, ukey, dropdownOpen, toggleDropDown, stateFun, toggleDanger, updateLabel) {
-    return (<Dropdown isOpen={dropdownOpen} style={{ marginTop: 7 }} toggle={() => { toggleDropDown(ukey); }} size="sm">
+    return (<Dropdown isOpen={dropdownOpen} className="marigin-top" toggle={() => { toggleDropDown(ukey); }} size="sm">
       <DropdownToggle tag="span" onClick={() => { toggleDropDown(ukey); }} data-toggle="dropdown" aria-expanded={dropdownOpen}>
-        <FaEllipsisV style={{ marginLeft: 10, marginRight: 10 }} />
+        <FaEllipsisV />
       </DropdownToggle>
       <DropdownMenu>
         <DropdownItem onClick={() => { updateLabel(item) }} > Update </DropdownItem>
         <DropdownItem onClick={() => { stateFun(item); toggleDanger(); }}> Delete</DropdownItem>
       </DropdownMenu>
     </Dropdown>);
+  },
+
+  loadHeaderWithSearch: function (headerMessage, items, setSearch, placeHolder, addItem){
+    return (<CardHeader>
+      <Row form>
+        <Col md={3} className="marigin-top" >
+          <strong>{items ? headerMessage +" : "+ items.length : headerMessage}</strong>
+          {/* <strong>{headerMessage} : {items.length}</strong> */}
+        </Col>
+          <Col md={7} className="shadow p-0 mb-3 bg-white rounded">
+          <InputGroup>
+            <Input type="search" className="float-right" style={{ width: '20%' }} onChange={e => setSearch(e)} placeholder={placeHolder} />
+            <InputGroupAddon addonType="append">
+              <InputGroupText className="dark"><FaSearch /></InputGroupText>
+            </InputGroupAddon>
+          </InputGroup>
+        </Col>
+        <Col md={2}>
+          <Button color="success" className="float-right" onClick={addItem}> + ADD </Button>
+        </Col>
+      </Row>
+    </CardHeader>);
   },
 
   //This method Shows Categories/labels as Items
@@ -78,25 +102,8 @@ export const ReUseComponents = {
     return (
       <div className="animated fadeIn">
         <Card>
-          <CardHeader style={{ padding: "10px 10px 0px 10px" }} >
-            <Row form>
-              <Col md={3} style={{ marginTop: "10px" }}>
-                <strong>{itemType} : {items.length}</strong>
-              </Col>
-              <Col md={7} className="shadow p-0 mb-3 bg-white rounded">
-                <InputGroup>
-                  <Input type="search" className="float-right" style={{ width: '20%' }} onChange={e => setSearch(e)} placeholder={placeHolder} />
-                  <InputGroupAddon addonType="append">
-                    <InputGroupText className="dark"><FaSearch /></InputGroupText>
-                  </InputGroupAddon>
-                </InputGroup>
-              </Col>
-              <Col md={2}>
-                <Button color="success" className="float-right" onClick={addItem}> + ADD </Button>
-              </Col>
-            </Row>
-          </CardHeader>
-          <div style={{ margin: 10, paddingLeft: 50 }}>
+          {this.loadHeaderWithSearch(itemType, items, setSearch, placeHolder, addItem)}
+          <div className="margin" >
             {visible && <Alert color={color}>{content}</Alert>}
             {items.filter(this.searchingFor(search)).map((singleItem, key) => { return this.loadSingleItem(singleItem, key, toggleAccordion, accordion, setItemId, toggleDanger, handleUpdate, stateDrodownAccord, dropDownAccordion) })} </div>
         </Card>
@@ -137,11 +144,9 @@ export const ReUseComponents = {
   //This method displays Items's Name with Avatar and AngleDown for SubItems
   loadAvatar: function (singleItem, ukey, ellipsisText2, toggleAccordion) {
     return (<>
-      <Avatar name={singleItem.name.charAt(0)} color={singleItem.color === null || singleItem.color === "" ? '#000000' : singleItem.color} size="40" square={true} />
+      <Avatar name={singleItem.name.charAt(0)} color={singleItem.color === null ? '#000000' : singleItem.color} size="40" square={true} />
       <div style={ellipsisText2}>&nbsp;&nbsp;{singleItem.name}
-        {singleItem.subCategories !== undefined
-          ? (singleItem.subCategories !== null ? <span><FaAngleDown style={{ marginLeft: 8 }} onClick={() => { toggleAccordion(ukey) }} /></span> : "")
-          : (singleItem.subLabels !== undefined ? (singleItem.subLabels !== null ? <span><FaAngleDown style={{ marginLeft: 8 }} onClick={() => { toggleAccordion(ukey) }} /></span> : "") : "")}
+        {(singleItem.subCategories || singleItem.subLabels) && <span><FaAngleDown style={{ marginLeft: 8 }} onClick={() => { toggleAccordion(ukey) }} /></span> }
       </div>
     </>
     )
@@ -151,8 +156,7 @@ export const ReUseComponents = {
   loadCollapse: function (singleItem, ukey, accordion, setItemId, toggleDanger, handleUpdate, subItemCss, ellipsisText1, ellipsisText2, toggleAccordion) {
     return (
       <Collapse isOpen={accordion[ukey]}>
-        {singleItem.subCategories !== undefined ? (singleItem.subCategories !== null ? singleItem.subCategories.map((subCategory, subKey) => { return this.loadSubItem(subCategory, subKey, subItemCss, ellipsisText1, ellipsisText2, setItemId, toggleDanger, handleUpdate, toggleAccordion) }) : "")
-          : (singleItem.subLabels !== undefined ? (singleItem.subLabels !== null ? singleItem.subLabels.map((subLabel, subKey) => { return this.loadSubItem(subLabel, subKey, subItemCss, ellipsisText1, ellipsisText2, setItemId, toggleDanger, handleUpdate, toggleAccordion) }) : "") : "")}
+        {(singleItem.subCategories || singleItem.subLabels) && singleItem.subCategories.map((subCategory, subKey) => { return this.loadSubItem(subCategory, subKey, subItemCss, ellipsisText1, ellipsisText2, setItemId, toggleDanger, handleUpdate, toggleAccordion) }) }
       </Collapse>
     )
   },
@@ -165,8 +169,8 @@ export const ReUseComponents = {
           <Col>
             {this.loadAvatar_DisplayName(subItem, key, ellipsisText1, ellipsisText2)}
           </Col>
-          <Col> <FaTrashAlt className="float-right" color="red" style={{ marginTop: 20, marginLeft: 10, marginRight: 20 }} onClick={() => { setItemId(subItem); toggleDanger() }} />
-            <FaPen size={12} className="float-right" color="blue" style={{ marginTop: 20 }} onClick={() => handleUpdate(subItem)} />
+          <Col> <FaTrashAlt className="float-right fa-trash-alt" onClick={() => { setItemId(subItem); toggleDanger() }} />
+            <FaPen size={12} className="float-right fa-pen" onClick={() => handleUpdate(subItem)} />
           </Col>
         </Row>
         <br />

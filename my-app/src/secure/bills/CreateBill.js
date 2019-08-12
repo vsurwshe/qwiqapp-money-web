@@ -7,7 +7,8 @@ import Bills from "./Bills";
 import Data from '../../data/SelectData'
 import Config from "../../data/Config";
 import GeneralApi from "../../services/GeneralApi";
-import '../../components/css/style.css'
+import '../../css/style.css'
+
 
 class CreateBill extends Component {
   constructor(props) {

@@ -8,7 +8,7 @@ import BillingAddressApi from '../../../services/BillingAddressApi';
 import PaymentSuccessMessage from './PaymentSuccessMessage';
 import UserApi from '../../../services/UserApi';
 import { ReUseComponents } from '../../utility/ReUseComponents';
-import '../../../components/css/style.css';
+import '../../../css/style.css';
 
 const PAYPAL_URL = 'https://www.paypal.com/sdk/js?'
 
@@ -133,7 +133,7 @@ class MakePayment extends Component {
   }
 
   paymentSuccessMessage = (paymentResponse) => {
-    new UserApi().getUser(user=>Store.saveUser(user), error=>console.log(error));
+    new UserApi().getUser(user=>Store.saveUser(user), error=>(error));
     this.setState({ paymentSuccess: true, paymentResponse });
   }
 
@@ -199,7 +199,7 @@ class MakePayment extends Component {
           " >Please Select your Payment option to continue</b></Alert>}
          </center>
         <FormGroup check>
-          {this.state.billingItems === undefined ? " " : this.state.billingItems.map((item, index) => {
+          {this.state.billingItems && this.state.billingItems.map((item, index) => {
             return this.loadRadioButtons(item, index)
           })}
         </FormGroup><br /><br />

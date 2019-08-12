@@ -10,12 +10,10 @@ import Store from "../data/Store";
 import SignupVerify from "../components/SignupVerify";
 import Profiles from "../secure/profiles/Profiles";
 import navigation, { item } from "../data/navigations";
-import CreateLable from "../secure/labels/Createlabel";
 import Lables from "../secure/labels/Labels";
 import Categories from "../secure/categories/Categories";
 import Contacts from "../secure/contacts/Contacts";
 import CreateContact from "../secure/contacts/CreateContact";
-import EditCategory from "../secure/categories/EditCategory";
 import UserApi from "../services/UserApi";
 import ProfileApi from "../services/ProfileApi";
 import CreateProfile from "../secure/profiles/CreateProfile";
@@ -110,9 +108,7 @@ class Main extends Component {
         <PrivateRoute exact path="/profiles/:id" component={SetProfile} />     
         <PrivateRoute path="/listBills" component={Bills} />
         <PrivateRoute path="/label/labels" component={Lables} />
-        <PrivateRoute path="/label/createLabel" component={CreateLable} />
         <PrivateRoute path="/listCategories" component={Categories} />
-        <PrivateRoute path="/categories/update" component={EditCategory} />
         <PrivateRoute exact path="/contact/createContact" component={CreateContact} />
         <PrivateRoute exact path="/contact/viewContacts" component={Contacts} />
         <Route path="/login" component={Login} />
