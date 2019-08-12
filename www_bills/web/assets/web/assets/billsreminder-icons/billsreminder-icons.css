@@ -1,17 +1,17 @@
 @font-face {
-  font-family: 'MobiriseIcons';
+  font-family: 'billsReminderIcons';
   src:  url('billsreminder-icons.eot-icons.eot?spat4u');
   src:  url('billsreminder-icons.eot?spat4u#iefix') format('embedded-opentype'),
     url('billsreminder-icons.ttf?spat4u') format('truetype'),
     url('billsreminder-icons.woff?spat4u') format('woff'),
-    url('billsreminder-icons.svg?spat4u#MobiriseIcons') format('svg');
+    url('billsreminder-icons.svg?spat4u#billsReminderIcons') format('svg');
   font-weight: normal;
   font-style: normal;
 }
 
 [class^="blrm-"], [class*=" blrm-"] {
   /* use !important to prevent issues with browser extensions that change fonts */
-  font-family: MobiriseIcons !important;
+  font-family: billsReminderIcons !important;
   speak: none;
   font-style: normal;
   font-weight: normal;
@@ -261,7 +261,7 @@
 .blrm-mobile2:before {
   content: "\e94e";
 }
-.blrm-mobirise:before {
+.blrm-billsreminder:before {
   content: "\e94f";
 }
 .blrm-more-horizontal:before {
