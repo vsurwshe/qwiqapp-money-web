@@ -133,7 +133,7 @@ class MakePayment extends Component {
   }
 
   paymentSuccessMessage = (paymentResponse) => {
-    new UserApi().getUser(user=>Store.saveUser(user), error=>(error));
+    new UserApi().getUser(user=>Store.saveUser(user), error=>console.log(error));
     this.setState({ paymentSuccess: true, paymentResponse });
   }
 
