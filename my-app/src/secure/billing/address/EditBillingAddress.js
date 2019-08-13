@@ -51,20 +51,10 @@ class EditBillingAddress extends Component {
 
   //this method handle form submitons values and errors
   handleSubmitValue = (event, errors, values) => {
-    const { updateBill } = this.state
     let newData = "";
     if (errors.length === 0) {
-      if (values.country || updateBill.country) {
-        if (values.country) {
-          newData = { ...values }
-        } else {
-          values.country = updateBill.country
-          newData = { ...values }
-        }
-        this.handlePostData(event, newData);
-      } else {
-        this.callAlertTimer("danger", "Country should not be empty")
-      }
+      newData = { ...values }
+      this.handlePostData(event, newData);
     }
   }
 
@@ -122,7 +112,7 @@ class EditBillingAddress extends Component {
             <Row>
               <Col><AvField name="firstName" placeholder="First Name" style={placeholderStyle} value={updateBill.firstName} validate={{ myValidation: firstNameAndlastNameOrcompany }} onChange={() => { this.validateCompany(); this.validateLastName() }} /></Col>
               <Col><AvField name="lastName" placeholder="Last Name" style={placeholderStyle} value={updateBill.lastName} validate={{ myValidation: firstNameAndlastNameOrcompany }} onChange={()=>{this.validateFirstName();this.validateCompany();} }/></Col>
-              <Col><AvField name="company" placeholder="Organization" style={placeholderStyle} value={updateBill.company} validate={{ myValidation: firstNameAndlastNameOrcompany }} onChange={this.validateFirstName} /></Col>
+              <Col><AvField name="company" placeholder="Organization" style={placeholderStyle} value={updateBill.company} validate={{ myValidation: firstNameAndlastNameOrcompany }} onChange={()=>{this.validateFirstName(); this.validateLastName();}} /></Col>
             </Row>
             <Row>
               <Col><AvField name="addressLine1" placeholder="Address 1" style={placeholderStyle} value={updateBill.addressLine1} errorMessage="Address should not be empty" helpMessage="H.No 1-1-1/1, xyz  street" required /></Col>
@@ -135,8 +125,8 @@ class EditBillingAddress extends Component {
             <Row>
               <Col><AvField name="region" placeholder="State" style={placeholderStyle} value={updateBill.region} /></Col>
               <Col>
-                <AvField style={placeholderStyle} type="select" id="country" name="country" errorMessage="Select Country" onClick={() => this.setState({ alertColor: "", content: "" })}>
-                  {this.selectOPtionCuntry(updateBill)}
+                <AvField style={placeholderStyle} type="select" id="country" name="country" value={updateBill.country} errorMessage="Select Country" onClick={() => this.setState({ alertColor: "", content: "" })} required >
+                  {this.selectCountry(updateBill)}
                   {this.state.countries.map((country, key) => { return <option key={key} value={country.code}>{country.name}</option> })}
                 </AvField>
               </Col>
@@ -154,12 +144,12 @@ class EditBillingAddress extends Component {
     </div>
   }
 
-  selectOPtionCuntry = (updateBill) => {
+  selectCountry = (updateBill) => {
     return <>
       {updateBill.country === "" ? <option value="">Select Country</option>
         : (this.state.countries.map((country, index) => {
           if (country.code === updateBill.country) {
-            return <option key={index} value={country.code}> {updateBill.country} </option>
+            return <option key={index} value={updateBill.country}> {country.name} </option>
           }
           return 0;
         }))

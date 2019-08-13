@@ -278,11 +278,11 @@ class Bills extends Component {
     const { categories } = this.state;
     var data = categories.filter(item => { return item.id === categoryId });
     if (data.length === 0) {
-      categories.map(categoryArr => {
-        if (Array.isArray(categoryArr.subCategories)) {
-          categoryArr.subCategories.forEach(category => {
-            if (category.id === categoryId) {
-              data = { name: category.name, color: !category.color ? '#000000' : category.color };
+      categories.map(category => {
+        if (Array.isArray(category.subCategories)) {
+          category.subCategories.forEach(subCategory => {
+            if (subCategory.id === categoryId) {
+              data = { name: subCategory.name, color: !subCategory.color ? '#000000' : subCategory.color };
               return data;
             }
           });
@@ -300,7 +300,7 @@ class Bills extends Component {
   loadDropDown = (bill, key) => {
     return <Dropdown isOpen={this.state.dropdownOpen[key]} className="dropdown-align" toggle={() => { this.toggleDropDown(key); }} size="sm">
       <DropdownToggle tag="span" onClick={() => { this.toggleDropDown(key); }} data-toggle="dropdown" aria-expanded={this.state.dropdownOpen[key]}>
-        <FaEllipsisV style={{ margin: 6 }} />
+        <FaEllipsisV />
       </DropdownToggle>
       <DropdownMenu>
         <DropdownItem onClick={() => { this.updateBillAction(bill) }}> Update </DropdownItem>
