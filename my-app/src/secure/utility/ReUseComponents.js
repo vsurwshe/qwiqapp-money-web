@@ -71,10 +71,10 @@ export const ReUseComponents = {
   loadHeaderWithSearch: function (headerMessage, items, setSearch, placeHolder, addItem) {
     return <CardHeader>
       <Row form>
-        <Col md={3} className="marigin-top" >
+        <Col className="marigin-top" >
           <strong>{items ? headerMessage + " : " + items.length : headerMessage}</strong>
-          {/* <strong>{headerMessage} : {items.length}</strong> */}
         </Col>
+        {(items && items.length) && 
         <Col md={7} className="shadow p-0 mb-3 bg-white rounded">
           <InputGroup>
             <Input type="search" className="float-right" style={{ width: '20%' }} onChange={e => setSearch(e)} placeholder={placeHolder} />
@@ -82,8 +82,8 @@ export const ReUseComponents = {
               <InputGroupText className="dark"><FaSearch /></InputGroupText>
             </InputGroupAddon>
           </InputGroup>
-        </Col>
-        <Col md={2}>
+        </Col> }
+        <Col >
           <Button color="success" className="float-right" onClick={addItem}> + ADD </Button>
         </Col>
       </Row>
@@ -144,7 +144,7 @@ export const ReUseComponents = {
   //This method displays Items's Name with Avatar and AngleDown for SubItems
   loadAvatar: function (singleItem, ukey, ellipsisText2, toggleAccordion) {
     return <>
-      <Avatar name={singleItem.name.charAt(0)} color={singleItem.color === null ? '#000000' : singleItem.color} size="40" square={true} />
+      <Avatar name={singleItem.name.charAt(0)} color={!singleItem.color ? '#000000' : singleItem.color} size="40" square={true} />
       <div style={ellipsisText2}>&nbsp;&nbsp;{singleItem.name}
         {(singleItem.subCategories || singleItem.subLabels) && <span><FaAngleDown style={{ marginLeft: 8 }} onClick={() => { toggleAccordion(ukey) }} /></span>}
       </div>

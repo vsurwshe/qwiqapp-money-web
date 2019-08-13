@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { AvForm, AvField } from 'availity-reactstrap-validation';
-import { Alert, Button, Card, FormGroup, Col, Row } from "reactstrap";
+import { Alert, Button, Card, FormGroup, Col, Row, Container } from "reactstrap";
 import Select from 'react-select';
 import BillApi from "../../services/BillApi";
 import Bills from "./Bills";
@@ -95,7 +95,9 @@ class CreateBill extends Component {
       <div className="animated fadeIn" >
         <Card>
           <h4 className="padding-top"><b><center>CREATE BILL</center></b></h4>
-          <Col sm="12" md={{ size: 7, offset: 3 }}>
+          <Container>
+          {/* <Col sm="12" md={{ size: 7, offset: 3 }}> */}
+          <Col>
             <Alert color={alertColor}>{content}</Alert>
             <AvForm onSubmit={this.handleSubmitValue}>
               <Row>
@@ -108,14 +110,13 @@ class CreateBill extends Component {
                     })}
                   </AvField>
                 </Col>
-                <Col sm={9}>
+                <Col sm={6}>
                   <AvField name="amount" id="amount" label="Amount" placeholder="Amount" type="number" errorMessage="Invalid amount"
                     validate={{ required: { value: true }, pattern: { value: '^([0-9]*[.])?[0-9]+$' } }} required />
                 </Col>
-              </Row>
-              <Row>
                 <Col>
-                  <AvField name="tax" id="tax" placeholder="Ex: 2" value='0' label="Tax" type="text" errorMessage="Invalid amount" validate={{ required: { value: true }, pattern: { value: '^[0-9]+$' } }} required />
+                  <AvField name="tax" id="tax" placeholder="Ex: 2" value='0' label="Tax" type="text" errorMessage="Invalid amount" 
+                    validate={{ required: { value: true }, pattern: { value: '^[0-9]+$' } }} required />
                 </Col>
               </Row>
               <Row>
@@ -156,6 +157,7 @@ class CreateBill extends Component {
               </FormGroup>
             </AvForm>
           </Col>
+          </Container>
         </Card>
       </div>);
   }
