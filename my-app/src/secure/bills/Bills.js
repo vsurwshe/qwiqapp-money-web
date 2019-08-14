@@ -12,7 +12,7 @@ import ContactApi from '../../services/ContactApi';
 import { ProfileEmptyMessage } from "../utility/ProfileEmptyMessage";
 import { DeleteModel } from "../utility/DeleteModel";
 import { ReUseComponents } from "../utility/ReUseComponents";
-import '../../../components/css/style.css';
+import '../../css/style.css';
 
 class Bills extends Component {
   constructor(props) {
