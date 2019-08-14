@@ -37,6 +37,10 @@ class SignupApi {
       process(success, failure, Config.cloudBaseURL + "/user/verify?code=" + code + "&type=EMAIL", "GET", "verify");
     }, Config.apiTimeoutMillis);
   }
+
+  resendVerifyCode(success,failure) {
+    process(success, failure, Config.cloudBaseURL + "/user/verify/resend?type=EMAIL", "GET","verify");
+  }
 }
 
 export default SignupApi;
