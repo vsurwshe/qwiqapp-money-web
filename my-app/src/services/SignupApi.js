@@ -20,7 +20,12 @@ class SignupApi {
   forgotPassword(success, failure, email) {
     process(success, failure, Config.cloudBaseURL + "/user/passwd/forgot?email=" + email, "GET")
   }
-  
+
+  // User Reset Password
+  resetPassword(success, failure, email, otp, newpwd) {
+    process(success, failure, Config.cloudBaseURL + "/user/passwd/reset?email=" + email + "&otp=" + otp + "&newpwd=" + newpwd, "PUT");
+  }
+
   //Checks Whether user already exists or not
   async existsUser(success, failure, userData) {
     this.getToken();
@@ -67,7 +72,9 @@ let process = function (success, failure, Uurl, Umethod, data) {
 let validResponse = function (resp, successMethod) { if (successMethod != null) { successMethod(resp.data); } };
 
 let errorResponse = function (error, failure) {
-  if (failure != null) { failure(error) }
+  if (failure != null) {
+    failure(error)
+  }
 };
 
 function httpCall(Uurl, Umethod, value) {

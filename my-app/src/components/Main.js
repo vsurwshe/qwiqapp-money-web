@@ -29,7 +29,7 @@ import EditUser from "../secure/editUser/EditUser";
 import ChangePassword from "../secure/editUser/ChangePassword";
 import ForgotPassword from '../components/ForgotPassword';
 import Invoice from "../secure/billing/Invoice";
-
+import ResetPassword from '../components/ResetPassword';
 
 const DefaultFooter = React.lazy(() => import("../secure/sidebar/DefaultFooter"));
 
@@ -120,6 +120,7 @@ class Main extends Component {
         <Route path="/login" component={Login} />
         <Route path="/signup" component={Signup} />
         <Route path="/passwd/forgot" component={ForgotPassword} />
+        <Route path="/passwd/reset" component={ResetPassword} />
         <Route exact path="/" component={Login} />
         <Route path="/home" component={Home} />
       </Switch>
