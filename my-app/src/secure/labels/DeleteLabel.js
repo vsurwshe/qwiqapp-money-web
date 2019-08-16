@@ -10,8 +10,8 @@ class DeleteLabel extends Component {
     this.state = {
       id: this.props.id,
       labelDeleted: false,
-      color: "",
       content: "Deleting Label.....",
+      color: "green",
       profileId: this.props.pid
     };
   }
@@ -30,15 +30,14 @@ class DeleteLabel extends Component {
 
   //this  method show the on page alert
   callAlertTimer = (color, content) => {
-    this.setState({ color: color, content: content });
     setTimeout(() => {
-      this.setState({ color: "", content: "", labelDeleted: true });
+      this.setState({ color, content, labelDeleted: true });
     }, Config.notificationMillis);
   };
 
   render() {
     const { labelDeleted, content, color } = this.state;
-    return <div>{labelDeleted ? <Lables /> : ReUseComponents.loadDeleting("Label", "", color, content)}</div>
+    return <div>{labelDeleted ? <Lables color={color} content={content} visible={true} /> : ReUseComponents.loadDeleting("Labels", content, color)}</div>
   }
 }
 

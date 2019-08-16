@@ -27,6 +27,7 @@ class LabelApi {
   updateLabel(success, failure, data, pid, lid) {
     process(success, failure, pid + "/labels/" + lid, "PUT", pid, data);
   }
+
   //This Method Delete the lables
   deleteLabel(success, failure, pid, lid) {
     process(success, failure, pid + "/labels/" + lid, "DELETE", pid);
@@ -35,7 +36,7 @@ class LabelApi {
 
 export default LabelApi;
 
-async function process(success, failure, Uurl, Umethod, profileId, data) {
+async function process(success, failure, Uurl, Umethod, profileId, data, reload) {
   let HTTP = httpCall(Uurl, Umethod);
   let promise;
   if (HTTP !== null) {
@@ -48,17 +49,21 @@ async function process(success, failure, Uurl, Umethod, profileId, data) {
       }
       validResponse(promise, success)
     } catch (err) {
-      AccessTokenError(profileId, err, failure, Uurl, Umethod, data, success);
+      AccessTokenError(profileId, err, failure, Uurl, Umethod, data, success, reload);
     }
   }
 }
 
 //this method slove the Exprie Token Problem.
-let AccessTokenError = function (profileId, err, failure, Uurl, Umethod, data, success) {
+let AccessTokenError = function (profileId, err, failure, Uurl, Umethod, data, success, reload) {
   if (err.request.status === 0) {
     new LabelApi().getSublabels(success, failure, profileId, "True");
   } else if (err.response.status === 403 || err.response.status === 401) {
-    new LoginApi().refresh(() => { process(success, failure, Uurl, Umethod, data) }, errorResponse(err, failure))
+    if (!reload) {
+      new LoginApi().refresh(() => { process(success, failure, Uurl, Umethod, data, "reload") }, errorResponse(err, failure))
+    } else {
+      errorResponse(err, failure)
+    }
   } else { errorResponse(err, failure) }
 }
 
@@ -77,7 +82,7 @@ let errorResponse = function (error, failure) {
 function httpCall(Uurl, Umethod) {
   let baseURL = Store.getProfile();
   let instance = null;
-  if (baseURL !== null || baseURL !== undefined || baseURL !== "") {
+  if (baseURL) {
     instance = Axios.create({
       baseURL: baseURL.url + "/profile/",
       method: Umethod,

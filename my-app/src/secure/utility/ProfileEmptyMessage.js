@@ -9,7 +9,7 @@ export const ProfileEmptyMessage = () => {
   }
 
   if (addProfile) {
-    return (<CreateProfile />)
+    return <CreateProfile />
   } else {
     return (
       <div className="animated fadeIn">
@@ -21,5 +21,4 @@ export const ProfileEmptyMessage = () => {
         </Card>
       </div>)
   }
-
 }

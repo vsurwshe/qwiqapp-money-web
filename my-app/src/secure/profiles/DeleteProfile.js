@@ -10,34 +10,33 @@ class DeleteProfile extends Component {
     this.state = {
       id: this.props.id,
       profileDeleted: false,
-      color: "warning",
-      content: "profile Deleting......"
+      color: "blue",
+      content: "Deleting profile ......"
     };
   }
-  
+
   componentDidMount = () => {
-    new ProfileApi().deleteProfile(this.successCall,this.errorCall,this.state.id );
+    new ProfileApi().deleteProfile(this.successCall, this.errorCall, this.state.id);
   };
 
   successCall = () => {
     this.callAlertTimer("success", "Profile Deleted Successfully!  ");
   };
-  
+
   errorCall = () => {
-    this.callAlertTimer("danger", "Unable to Process Request, Please Try Again!! ");
+    this.callAlertTimer("warning", "Unable to Process Request, Please Try Again!! ");
   };
-  
   callAlertTimer = (color, content) => {
-    this.setState({color,content});
+    this.setState({ color, content });
     setTimeout(() => {
-      this.setState({ color: "", content: "", profileDeleted: true });
-       window.location.reload();
+      this.setState({ profileDeleted: true });
+      window.location.reload();
     }, Config.apiTimeoutMillis);
   };
 
   render() {
     const { profileDeleted, content, color } = this.state;
-    return <div>{profileDeleted ?   <Profiles/> : ReUseComponents.loadDeleting("Profile", "", color, content)}</div>
+    return <div>{profileDeleted ? <Profiles /> : ReUseComponents.loadDeleting("Profile", content, color)}</div>
   }
 
 }

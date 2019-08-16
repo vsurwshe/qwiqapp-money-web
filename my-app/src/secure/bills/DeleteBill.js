@@ -8,12 +8,11 @@ class DeleteBill extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      id : props.id,
-      profileId : props.pid,
-      labelDeleted : false,
-      color : "warning",
-      content : "Deleting Bill.....",
-      
+      id: props.id,
+      profileId: props.pid,
+      labelDeleted: false,
+      color: "warning",
+      content: "Deleting Bill.....",
     };
   }
 
@@ -22,16 +21,16 @@ class DeleteBill extends Component {
   };
 
   successCall = () => {
-    this.callAlertTimer("success","Bill Deleted Successfully....");
+    this.callAlertTimer("success", "Bill Deleted Successfully....");
   };
-  
+
   errorCall = () => {
-    this.callAlertTimer("danger","Something went wrong, Please Try Again...  ");
+    this.callAlertTimer("danger", "Something went wrong, Please Try Again...  ");
   };
 
   callAlertTimer = (color, content) => {
     this.setState({ color, content });
-    setTimeout(() => {this.setState({ color: "", content:"", labelDeleted: true });}, Config.notificationMillis);
+    setTimeout(() => { this.setState({ color: "", content: "", labelDeleted: true }); }, Config.notificationMillis);
   };
 
   render() {
@@ -39,7 +38,7 @@ class DeleteBill extends Component {
     return <div>{labelDeleted ? <Bills /> : this.deleteBill(color, content)}</div>
   }
 
-  deleteBill = (color, content) =>{
+  deleteBill = (color, content) => {
     return (
       <div className="animated fadeIn">
         <Card>

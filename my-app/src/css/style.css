@@ -17,10 +17,24 @@
 .row-text-align { 
     text-align:left 
 }
+.padding{
+    padding: 10px
+}
 .padding-top { 
     padding-top: 20px 
 }
-
+.margin {
+    margin: 10px
+}
+.marigin-top { 
+    margin-top: 10px
+}
+.card-align{
+    text-align: "center"
+}
+.card-width{
+    width: "100%" 
+}
 .table-header-color {
     background-color:#DEE9F2;
     color:#000000;
@@ -66,3 +80,60 @@ dropdown-align {
     padding-left: 20px
 }
 /* ============ End Bils styles=========*/
+/* ============ start Category styles=========*/
+.update-category{
+    font-weight: 'bold';
+     color: '#000000'
+}
+.link-text{
+    text-decoration: 'none'
+}
+.option-select{
+    color:"#008000";
+    font-weight:"bold"
+}
+/* ============ End Category styles=========*/
+
+/* ============ start Contacts styles=========*/
+.faPaperclip{
+    color:"#34aec1";
+    margin-top: 5;
+    margin-left: 10;
+    size:17 
+}
+.attachments{
+    padding-left: 29;
+    padding-top: 10;
+    color: black
+
+}
+/* ============ End Contacts styles=========*/
+
+/* ========= Start Labels & Categories Styless ===========*/
+.ellipsisText1{
+    flex: 1;
+    display: "flex";
+    align-items: "center";
+    margin-left: '-10' 
+}
+.ellipsisText2{
+    flex: 1;
+    width: 100px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    padding-left: 10px;
+}
+.fa-trash-alt{
+    margin-top: 20px;
+    margin-left: 10px;
+    margin-right: 20px;
+    color: #EA182B
+}
+.fa-pen{
+    margin-top: 20px;
+    /* color: blue */
+    color: #2E86C1
+}
+/* ================== END  =================*/
+/* ============ End Contacts styles=========*/

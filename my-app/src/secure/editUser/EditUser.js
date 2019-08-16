@@ -18,12 +18,14 @@ class EditUser extends Component {
             doubleClick: false,
         }
     }
-    componentDidMount =() => {
+
+    componentDidMount = () => {
         let user = Store.getUser();
         if (user) {
             this.setState({ user });
         }
     }
+
     userUpdate = (event, error, values) => {
         if (error.length === 0) {
             this.setState({ doubleClick: true });
@@ -32,11 +34,11 @@ class EditUser extends Component {
     }
 
     updateSuccessCall = (user) => {
-        this.callReload("success","User Updated Succesfully !")
+        this.callReload("success", "User Updated Succesfully !")
     }
 
     updateErrorCall = (error) => {
-        this.callReload("danger","Unable to process request, Please try Again.. ")
+        this.callReload("danger", "Unable to process request, Please try Again.. ")
         this.setState({ doubleClick: !this.state.doubleClick });
     }
 
@@ -46,8 +48,8 @@ class EditUser extends Component {
     }
 
     callReload = (color, content) => {
-        this.setState({ color, content, updated : true})
-        if(color === 'success'){
+        this.setState({ color, content, updated: true })
+        if (color === 'success') {
             setTimeout(() => {
                 window.location.href = "/dashboard";
             }, Config.apiTimeoutMillis);
@@ -55,12 +57,11 @@ class EditUser extends Component {
     }
 
     loadEditUser = (user, color, content) => {
-        
-        return (<Card>
+        return <Card>
             <CardHeader><b >EDIT USER</b></CardHeader>
             <CardBody>
                 {/* {this.state.updated && <><Alert color="success">Updated successfully </Alert> {this.callReload()}</>} */}
-                <Alert color={color}>{content} </Alert> 
+                <Alert color={color}>{content} </Alert>
                 <AvForm onSubmit={this.userUpdate} >
                     <AvField name="email" type="email" label="Email" placeholder="Email" value={user.email} required />
                     <AvField name="name" type="text" label="User Name" placeholder="User Name" value={user.name} required />
@@ -70,7 +71,7 @@ class EditUser extends Component {
                     </center>
                 </AvForm>
             </CardBody>
-        </Card>);
+        </Card>;
     }
 }
 

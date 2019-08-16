@@ -1,9 +1,5 @@
 import React, { Component } from "react";
-import {
-  Button, Row, Col, Card, CardHeader, CardBody, Alert, Modal, ModalHeader, ModalBody, ModalFooter, Dropdown, DropdownToggle, Input,
-  DropdownMenu, DropdownItem, ListGroupItem, ListGroup, InputGroup, InputGroupAddon, InputGroupText
-} from "reactstrap";
-import { FaEllipsisV, FaSearch } from 'react-icons/fa';
+import { Row, Col, Card, CardBody, Alert, ListGroupItem, ListGroup } from "reactstrap";
 import Loader from 'react-loader-spinner'
 import UpdateBill from "./UpdateBill";
 import CreateBill from "./CreateBill";
@@ -14,7 +10,9 @@ import LabelApi from "../../services/LabelApi";
 import DeleteBill from "./DeleteBill";
 import ContactApi from '../../services/ContactApi';
 import { ProfileEmptyMessage } from "../utility/ProfileEmptyMessage";
-import '../../css/style.css'
+import { DeleteModel } from "../utility/DeleteModel";
+import { ReUseComponents } from "../utility/ReUseComponents";
+import '../../css/style.css';
 
 class Bills extends Component {
   constructor(props) {
@@ -23,7 +21,6 @@ class Bills extends Component {
       bills: [],
       labels: [],
       categories: [],
-      collapse: [],
       contacts: [],
       updateBill: [],
       createBillRequest: false,
@@ -47,7 +44,7 @@ class Bills extends Component {
   }
 
   setProfileId = async () => {
-    if (Store.getProfile() !== null && Store.getProfile().length !== 0) {
+    if (Store.getProfile()) {
       await this.setState({ profileId: Store.getProfile().id });
       this.getCategory();
     }
@@ -76,6 +73,7 @@ class Bills extends Component {
       this.loadCollapse();
     }
   };
+
   // category name color append to bills
   billsWithcategoryNameColor = (bills) => {
     const prevState = bills;
@@ -150,6 +148,7 @@ class Bills extends Component {
     const state = prevState.map((value, index) => keyIndex === index ? !value : false);
     this.setState({ hoverAccord: state });
   }
+
   onHover = (e, keyIndex) => {
     this.setState({ onHover: true });
     this.hoverAccordion(keyIndex)
@@ -159,7 +158,9 @@ class Bills extends Component {
     this.setState({ onHover: false });
     this.hoverAccordion(keyIndex)
   }
-
+  setBillId = (bill) => {
+    this.setState({ id: bill.id });
+  }
   render() {
     const { bills, createBillRequest, updateBillRequest, id, deleteBillRequest, visible, profileId, updateBill, spinner, labels, categories, contacts } = this.state;
     if (!profileId) {
@@ -188,20 +189,7 @@ class Bills extends Component {
   }
 
   loadHeader = () => {
-    return <CardHeader>
-      <Row>
-        <Col sm={3} ><strong className="strong-text" >BILLS</strong></Col>
-        <Col>
-          {this.state.bills.length &&
-            <InputGroup>
-              <Input placeholder="Search Bills....." onChange={this.searchSelected} />
-              <InputGroupAddon addonType="append"> <InputGroupText><FaSearch /></InputGroupText></InputGroupAddon>
-            </InputGroup>
-          }
-        </Col>
-        <Col sm={3}> <Button color="success" className="float-right" onClick={this.createBillAction} > + Add </Button></Col>
-      </Row>
-    </CardHeader>
+    return new ReUseComponents.loadHeaderWithSearch("BILLS","", this.searchSelected, "Search Bills.....", this.createBillAction);
   }
 
   loadLoader = () => {
@@ -218,13 +206,13 @@ class Bills extends Component {
   // when bills is empty. 
   emptyBills = () => {
     return <div className="animated fadeIn">
-      <Card>
-        {this.loadHeader()}
-        <center className="padding-top" >
-          <CardBody><h5><b>You haven't created any Bills yet... </b></h5><br /></CardBody>
-        </center>
-      </Card>
-    </div>
+    <Card>
+      {this.loadHeader()}
+      <center className="padding-top" >
+        <CardBody><h5><b>You haven't created any Bills yet... </b></h5><br /></CardBody>
+      </center>
+    </Card>
+  </div>
   }
 
   // Displays all the Bills one by one
@@ -273,51 +261,36 @@ class Bills extends Component {
     return finalDate;
   }
 
-  displayCategoryName = (cid) => {
+  displayCategoryName = (categoryId) => {
     const { categories } = this.state;
-    var data = categories.filter(item => { return item.id === cid });
+    var data = categories.filter(item => { return item.id === categoryId });
     if (data.length === 0) {
       categories.map(category => {
         if (Array.isArray(category.subCategories)) {
-          category.subCategories.forEach(element => {
-            if (element.id === cid) {
-              data = { name: element.name, color: element.color === "" || element.color === null ? '#000000' : element.color };
+          category.subCategories.forEach(subCategory => {
+            if (subCategory.id === categoryId) {
+              data = { name: subCategory.name, color: !subCategory.color ? '#000000' : subCategory.color };
               return data;
             }
           });
         }
-        return 0
+        return 0;
       })
       return data;
     } else {
       for (const value of data)
-        return { name: value.name, color: value.color === '' || value.color === null ? '#000000' : value.color };
+        return { name: value.name, color: !value.color ? '#000000' : value.color };
     }
   }
 
   //this Method loads Browser DropDown
   loadDropDown = (bill, key) => {
-    return <Dropdown isOpen={this.state.dropdownOpen[key]} className="dropdown-align" toggle={() => { this.toggleDropDown(key); }} size="sm">
-      <DropdownToggle tag="span" onClick={() => { this.toggleDropDown(key); }} data-toggle="dropdown" aria-expanded={this.state.dropdownOpen[key]}>
-        <FaEllipsisV style={{ margin: 6 }} />
-      </DropdownToggle>
-      <DropdownMenu>
-        <DropdownItem onClick={() => { this.updateBillAction(bill) }}> Update </DropdownItem>
-        <DropdownItem onClick={() => { this.setState({ id: bill.id }); this.toggleDanger(); }}> Delete</DropdownItem>
-      </DropdownMenu>
-    </Dropdown>
+    return new ReUseComponents.loadDropDown(bill, key, this.state.dropdownOpen[key], this.toggleDropDown, this.setBillId, this.toggleDanger, this.updateBillAction);
   }
-
+ 
   //this method calls the delete model
   deleteBillModel = () => {
-    return <Modal isOpen={this.state.danger} toggle={this.toggleDanger} className="delete-model-padding" backdrop={true}>
-      <ModalHeader toggle={this.toggleDanger}>Delete Bill</ModalHeader>
-      <ModalBody> Are you Sure want to Delete This Bill ? </ModalBody>
-      <ModalFooter>
-        <Button color="danger" onClick={this.deleteBillAction}>Delete</Button>
-        <Button color="secondary" onClick={this.toggleDanger}>Cancel</Button>
-      </ModalFooter>
-    </Modal>
+    return <DeleteModel danger={this.state.danger} toggleDanger={this.toggleDanger} headerMessage="Delete Bill" bodyMessage="Are you Sure want to Delete This Bill ?" delete={this.deleteBillAction} cancel={this.toggleDanger} />
   }
 }
 export default Bills;

@@ -4,6 +4,7 @@ import { AvForm, AvField } from 'availity-reactstrap-validation';
 import LabelApi from "../../services/LabelApi";
 import Lables from './Labels';
 import Config from "../../data/Config";
+
 class CreateLable extends Component {
   constructor(props) {
     super(props);
@@ -33,9 +34,11 @@ class CreateLable extends Component {
     if (errors.length === 0)
       this.handlePostData(event, values);
   }
+
   cancelCreateLabel = () => {
     this.setState({ cancelCreateLabel: true });
   }
+
   // handle the submission from user
   handlePostData = async (e, data) => {
     this.setState({ doubleClick: true });
@@ -43,6 +46,7 @@ class CreateLable extends Component {
     const newData = { ...data, "parentId": this.state.parentId }
     await new LabelApi().createLabel(this.successCreate, this.errorCall, this.state.profileId, newData);
   };
+
   // call when lables created successfully
   successCreate = (response) => {
     this.callAlertTimer("success", "New Label Created....");
@@ -58,6 +62,7 @@ class CreateLable extends Component {
       this.setState({ name: "", content: "", alertColor: "", labelCreated: true });
     }, Config.notificationMillis);
   };
+
   //this method makes true or false for the collapse
   toggle = () => {
     this.setState({ collapse: !this.state.collapse });
@@ -106,13 +111,13 @@ class CreateLable extends Component {
 
   //This Method Called When Sublables Makes Enable true.
   loadCollapse = () => {
-    const {collapse,labels}=this.state;
-    return (<Collapse isOpen={collapse}>
+    const { collapse, labels } = this.state;
+    return <Collapse isOpen={collapse}>
       <Input type="select" name="selectLg" id="selectLg" onChange={(event) => this.setState({ parentId: event.target.value })} bsSize="lg">
         <option value="null">Please select Parent Lables</option>
         {labels.length === 0 ? '' : labels.map((label, key) => { return (<option key={key} value={label.id}>{label.name}</option>) })}
       </Input>
-    </Collapse>);
+    </Collapse>;
   }
 }
 

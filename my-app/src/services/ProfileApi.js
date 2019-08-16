@@ -21,13 +21,13 @@ class ProfileApi {
   }
 
   deleteProfile(success, failure, uid) {
-    process(success, failure, "/profiles/" + uid, "DELETE",null,uid);
+    process(success, failure, "/profiles/" + uid, "DELETE", null, uid);
   }
 }
 
 export default ProfileApi;
 
-async function process(success, failure, requestUrl, requestMethod, data,deleteId) {
+async function process(success, failure, requestUrl, requestMethod, data, deleteId, reload) {
   let HTTP = httpCall(requestUrl, requestMethod);
   let promise;
   try {
@@ -37,30 +37,36 @@ async function process(success, failure, requestUrl, requestMethod, data,deleteI
     } else {
       await new ProfileApi().getProfiles(success, failure, "True");
     }
-    validResponse(promise, success, requestMethod,deleteId)
+    validResponse(promise, success, requestMethod, deleteId)
   } catch (err) {
-    AccessTokenError(err, failure, requestUrl, requestMethod, data, success);
+    AccessTokenError(err, failure, requestUrl, requestMethod, data, success, reload);
   }
 }
 
 //this method solve the Expire Token Problem.
-let AccessTokenError = function (err, failure, requestUrl, requestMethod, data, success) {
+let AccessTokenError = function (err, failure, requestUrl, requestMethod, data, success, reload) {
   if (err.request.status === 0) {
     errorResponse(err, failure)
   } else if (err.response.status === 403 || err.response.status === 401) {
-    new LoginApi().refresh(() => { process(success, failure, requestUrl, requestMethod, data) }, errorResponse(err, failure))
+    if (!reload) {
+      new LoginApi().refresh(() => { process(success, failure, requestUrl, requestMethod, data, "reload") }, errorResponse(err, failure))
+    } else {
+      errorResponse(err, failure)
+    }
   } else { errorResponse(err, failure) }
 }
 
-let validResponse = async function (resp, successMethod, requestMethod,deleteId) {
+let validResponse = async function (resp, successMethod, requestMethod, deleteId) {
   if (successMethod != null) {
     if (requestMethod === "DELETE") {
-      if(Store.getProfile().id===deleteId){
+      if (Store.getProfile().id === deleteId) {
         await Store.saveProfile(null);
         Store.setSelectedValue(false);
         await Store.userDataClear();
-      } 
-    }else if(requestMethod === "POST"){
+      }
+    } else if (requestMethod === "POST") {
+      Store.setSelectedValue(true);
+      await Store.userDataClear();
       await Store.saveProfile(resp.data)
     }
     successMethod(resp.data);

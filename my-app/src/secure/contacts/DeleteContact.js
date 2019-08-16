@@ -9,12 +9,13 @@ class DeleteContact extends Component {
     super(props);
     this.state = {
       contactId: props.contactId,
-      labelDeleted: false,
-      color: "warning",
-      content: "Deleting Label.....",
+      contactDeleted: false,
+      color: "green",
+      content: "Deleting Contact.....",
       profileId: props.profileId
     };
   }
+
   componentDidMount = () => {
     new ContactApi().deleteContact(this.successCall, this.errorCall, this.state.profileId, this.state.contactId);
   };
@@ -24,20 +25,19 @@ class DeleteContact extends Component {
   };
 
   errorCall = () => {
-    this.callAlertTimer("danger", "Something went wrong, Please Try Again...  ");
+    this.callAlertTimer("danger", "Unable to handle the request, Please Try Again...  ");
   };
 
   callAlertTimer = (color, content) => {
-    this.setState({ color, content });
     setTimeout(() => {
-      this.setState({ labelDeleted: true });
+      this.setState({ color, content, contactDeleted: true });
     }, Config.notificationMillis)
   };
 
   render() {
-    const { labelDeleted, content, color } = this.state;
-    return <div>{labelDeleted ? <Contacts color={color} content={content} visible={true} />
-      : ReUseComponents.loadDeleting("", "", "Delete Contact", "Contact Deleting")}</div>
+    const { contactDeleted, content, color } = this.state;
+    return <div>{contactDeleted ? <Contacts color={color} content={content} visible={true} />
+      : ReUseComponents.loadDeleting("Contacts", content, color)}</div>
   }
 }
 

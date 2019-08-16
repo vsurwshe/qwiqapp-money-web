@@ -14,7 +14,7 @@ class UpdateBill extends Component {
     super(props);
     this.state = {
       alertColor: "#000000",
-      content: '', 
+      content: '',
       updateSuccess: false,
       profileId: props.pid,
       labels: props.lables,
@@ -36,12 +36,15 @@ class UpdateBill extends Component {
   componentDidMount = async () => {
     new GeneralApi().getCurrencyList(this.successCurrency, this.failureCurrency)
   }
-  successCurrency = currencies =>{
+
+  successCurrency = currencies => {
     this.setState({ currencies });
   }
-  failureCurrency = err =>{
+
+  failureCurrency = err => {
     console.log(err);
   }
+
   cancelUpdateBill = () => {
     this.setState({ cancelUpdateBill: true })
   }
@@ -50,11 +53,12 @@ class UpdateBill extends Component {
   handleSubmitValue = (event, errors, values) => {
     const { labelOption, categoryOption, categoryOptionUpdate, labelOptionUpdate, contactOptionUpdate, contactOption } = this.state
     if (errors.length === 0) {
-        let billDate = values.billDate.split("-")[0] + values.billDate.split("-")[1] + values.billDate.split("-")[2];
-        const newData = { ...values, "billDate": billDate, "categoryId": categoryOptionUpdate ? categoryOption.value : categoryOption,
-          "contactId": contactOptionUpdate ? contactOption.value : contactOption, 
-          "labelIds": labelOption === null || labelOption === [] ? [] : (labelOptionUpdate ? labelOption.map(opt => { return opt.value }) : labelOption), "version": this.props.bill.version
-        } 
+      let billDate = values.billDate.split("-")[0] + values.billDate.split("-")[1] + values.billDate.split("-")[2];
+      const newData = {
+        ...values, "billDate": billDate, "categoryId": categoryOptionUpdate ? categoryOption.value : categoryOption,
+        "contactId": contactOptionUpdate ? contactOption.value : contactOption,
+        "labelIds": labelOption === null || labelOption === [] ? [] : (labelOptionUpdate ? labelOption.map(opt => { return opt.value }) : labelOption), "version": this.props.bill.version
+      }
       this.handleUpdate(event, newData);
     }
   }
@@ -88,22 +92,24 @@ class UpdateBill extends Component {
   categorySelected = (categoryOption) => {
     this.setState({ categoryOption, categoryOptionUpdate: true })
   }
+
   contactSelected = (contactOption) => {
     this.setState({ contactOption, contactOptionUpdate: true })
   }
+
   render() {
-    const { alertColor, content, updateSuccess, labels, categories, bill, cancelUpdateBill,contacts } = this.state;
+    const { alertColor, content, updateSuccess, labels, categories, bill, cancelUpdateBill, contacts } = this.state;
     if (cancelUpdateBill) {
       return <Bills />
     } else {
-      return <div>{updateSuccess ? <Lables /> : this.updateFormFiled(alertColor, content, labels, categories, bill,contacts)}</div>
+      return <div>{updateSuccess ? <Lables /> : this.updateFormFiled(alertColor, content, labels, categories, bill, contacts)}</div>
     }
   }
-  
+
   loadHeader = () => <CardHeader><strong>Update Bill</strong></CardHeader>
 
   // when updating Form
-  updateFormFiled = (alertColor, content, labels, categories, bill,contacts) => {
+  updateFormFiled = (alertColor, content, labels, categories, bill, contacts) => {
     return (
       <div className="animated fadeIn" >
         <Card>
@@ -115,7 +121,7 @@ class UpdateBill extends Component {
               <Row>
                 <Col sm={3}>
                   <AvField type="select" id="symbol" label="currency" value={bill.currency} name="currency" errorMessage="Select Currency" required>
-                  <option value="">Select</option>
+                    <option value="">Select</option>
                     {this.state.currencies.map((currencies, key) => { return <option key={key} value={currencies.code} h={currencies.symbol} symbol={currencies.symbol} >{currencies.symbol}</option> })}
                   </AvField>
                 </Col>
@@ -126,7 +132,7 @@ class UpdateBill extends Component {
               </Row>
               <Row>
                 <Col>
-                  <AvField name="tax" id="tax" value={bill.tax+''} placeholder="Ex: 2" label="Tax" type="text" errorMessage="Invalid amount" validate={{ required: { value: true }, pattern: { value: '^[0-9]+$' } }} required />
+                  <AvField name="tax" id="tax" value={bill.tax + ''} placeholder="Ex: 2" label="Tax" type="text" errorMessage="Invalid amount" validate={{ required: { value: true }, pattern: { value: '^[0-9]+$' } }} required />
                 </Col>
               </Row>
               <Row>
@@ -135,9 +141,11 @@ class UpdateBill extends Component {
               </Row>
               <br />
               <Row>
-                <Col><AvField name="billDate" label="Bill Date" value={this.loadDateFormat(bill.billDate)} type="date"  errorMessage="Invalid Date" validate={{ date: { format: 'yyyy/MM/dd' },
-                  dateRange: {format: 'YYYY/MM/DD', start: {value: '1900/01/01'}, end: {value: '9999/12/31'}},
-                  required: { value: true } }} /></Col>
+                <Col><AvField name="billDate" label="Bill Date" value={this.loadDateFormat(bill.billDate)} type="date" errorMessage="Invalid Date" validate={{
+                  date: { format: 'yyyy/MM/dd' },
+                  dateRange: { format: 'YYYY/MM/DD', start: { value: '1900/01/01' }, end: { value: '9999/12/31' } },
+                  required: { value: true }
+                }} /></Col>
                 <Col><AvField name="dueDays" label="Due Days" value={bill.dueDays} type="number" placeholder="No.of Days" errorMessage="Invalid days" /></Col>
               </Row>
               <Row>

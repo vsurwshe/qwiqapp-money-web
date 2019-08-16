@@ -2,7 +2,7 @@ import Store from '../../../data/Store';
 import AttachmentApi from '../../../services/AttachmentApi';
 
 const Attachment = {
-    DownloadAttachment: function(attachment) {
+    DownloadAttachment: function (attachment) {
         const url = Store.getProfile().url + "" + attachment.downloadLink;
         const filename = attachment.filename;
         return fetch(url, {
@@ -10,9 +10,9 @@ const Attachment = {
                 "content-type": "application/json",
                 Authorization: "Bearer " + Store.getAppUserAccessToken()
             }
-        }).then(function(response) {
+        }).then(function (response) {
             return response.blob();
-        }).then(function(myBlob) {
+        }).then(function (myBlob) {
             let objectURL = window.URL.createObjectURL(myBlob);
             let link = document.createElement("a");
             link.href = objectURL;
@@ -24,11 +24,11 @@ const Attachment = {
         })
     },
 
-    DeleteAttachment: function(success, error, proId, contId, attachId) {
+    DeleteAttachment: function (success, error, proId, contId, attachId) {
         new AttachmentApi().deleteAttachment(success, error, proId, contId, attachId);
     },
 
-    viewAttachment: function(attachment) {
+    viewAttachment: function (attachment) {
         const url = Store.getProfile().url + "" + attachment.viewLink;
         return fetch(url, {
             headers: {

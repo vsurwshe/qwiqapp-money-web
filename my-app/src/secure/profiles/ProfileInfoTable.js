@@ -1,7 +1,6 @@
 import React from 'react';
 import { Table } from 'reactstrap';
 import { FaCheck, FaMinus } from "react-icons/fa";
-
 import ProfileTypesApi from '../../services/ProfileTypesApi'
 
 const green = { color: '#008000' }
@@ -14,17 +13,15 @@ export default class ProfileInfoTable extends React.Component {
       profileTypes: []
     }
   }
+
   componentDidMount = () => {
-    new ProfileTypesApi().getProfileTypes((profileTypes) => {console.log(profileTypes); this.setState({ profileTypes }) }, (error) => { console.log("error", error); })
+    new ProfileTypesApi().getProfileTypes((profileTypes) => { this.setState({ profileTypes }) }, (error) => { console.log("error", error); })
   }
+
   render() {
     var featureColor = { color: '#330561', fontWeight: 'bold', textAlign: 'left' }
-    let profileTypeCost= this.state.profileTypes.map(profile=>{
-     return <td key={profile.type}>{profile.cost}</td>
-            });
-       let profileTypeName= this.state.profileTypes.map(profile=>{
-              return <td key={profile.type}><b>{profile.name}</b></td>
-                     });
+    let profileTypeCost = this.state.profileTypes.map(profile => { return <td key={profile.type}>{profile.cost}</td> });
+    let profileTypeName = this.state.profileTypes.map(profile => { return <td key={profile.type}><b>{profile.name}</b></td> });
     return (
       <Table size="sm" hover striped bordered responsive >
         <thead>

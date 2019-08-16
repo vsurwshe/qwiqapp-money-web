@@ -1,15 +1,18 @@
 import Axios from "axios";
 import Store from "../data/Store";
 import LoginApi from "./LoginApi";
+
 class BillApi {
   //This Method Create Bill
   createBill(success, failure, pid, data) {
     process(success, failure, pid + "/bills", "POST", pid, data);
   }
+
   //This Method Get All Bills
   getBills(success, failure, pid, value) {
     Store.getBills() === null || value === "True" ? process(success, failure, pid + "/bills", "GET") : success(Store.getBills());
   }
+
   //This Method Get Bill By ID
   getBillById(success, failure, pid, billId) {
     process(success, failure, pid + "/bills/" + billId, "GET");
@@ -19,6 +22,7 @@ class BillApi {
   updateBill(success, failure, data, pid, billId) {
     process(success, failure, pid + "/bills/" + billId, "PUT", pid, data);
   }
+
   //This Method Delete Bill
   deleteBill(success, failure, pid, billId) {
     process(success, failure, pid + "/bills/" + billId, "DELETE", pid);
@@ -27,7 +31,7 @@ class BillApi {
 
 export default BillApi;
 
-async function process(success, failure, Uurl, Umethod, profileId, data) {
+async function process(success, failure, Uurl, Umethod, profileId, data, reload) {
   let HTTP = httpCall(Uurl, Umethod);
   let promise;
   try {
@@ -41,22 +45,26 @@ async function process(success, failure, Uurl, Umethod, profileId, data) {
       new BillApi().getBills(success, failure, profileId, "True");
       validResponse(promise, success)
     }
-  } 
+  }
+  
   //TODO: handle user error   
   catch (err) {
-    console.log(err);
-    AccessTokenError(profileId, err, failure, Uurl, Umethod, data, success);
+    AccessTokenError(profileId, err, failure, Uurl, Umethod, data, success, reload);
   }
 }
 
 //this method slove the Exprie Token Problem.
-let AccessTokenError = function (profileId, err, failure, Uurl, Umethod, data, success) {
+let AccessTokenError = function (profileId, err, failure, Uurl, Umethod, data, success, reload) {
   if (err.request.status === 0) {
     new BillApi().getBills(success, failure, profileId, "True");
   } else if (err.response.status === 403 || err.response.status === 401) {
-    new LoginApi().refresh(() => {
-      process(success, failure, Uurl, Umethod, profileId, data)
-    }, errorResponse(err, failure))
+    if (!reload) {
+      new LoginApi().refresh(() => {
+        process(success, failure, Uurl, Umethod, profileId, data, "restrict")
+      }, errorResponse(err, failure))
+    } else {
+      errorResponse(err, failure)
+    }
   } else {
     errorResponse(err, failure)
   }

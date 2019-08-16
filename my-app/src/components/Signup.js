@@ -27,6 +27,11 @@ class Signup extends React.Component {
 
   //This method sets the input fields value into state variable
   handleInput = e => {
+    if(e.target.name==="email"){
+      this.validateEmail(e);
+    } else if(e.target.name==="password"){
+      this.validatePassword(e);
+    }
     this.setState({ [e.target.name]: e.target.value });
   };
 
@@ -38,8 +43,8 @@ class Signup extends React.Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    const data = {  name: this.state.name,  email: this.state.email,  password: this.state.password };
-    if (this.state.name === '') {
+    const data = { name: this.state.name, email: this.state.email, password: this.state.password };
+    if (!this.state.name) {
       this.callAlertTimer("danger", "Name should not be empty")
     } else if (this.state.password.length > 5) {
       new SignupApi().registerUser(this.successCall, this.errorCall, data);
@@ -71,13 +76,13 @@ class Signup extends React.Component {
   //this prints onscreen alert
   callAlertTimer = (color, content) => {
     this.setState({ color, content });
-    if(color==="success"){
+    if (color === "success") {
       setTimeout(async () => {
         await this.setState({ color: '', content: '', flag: false })
         new LoginApi().login(this.state.email, this.state.password, this.loginSuccessCall, this.errorCall)
       }, Config.apiTimeoutMillis)
     }
-    
+
   };
 
   loginSuccessCall = () => {
@@ -119,7 +124,20 @@ class Signup extends React.Component {
     const align = { textAlign: "left" }
     const { emailState, passwordState } = this.state.validate
     const { name, email, password, content, color, flag, emailAlert } = this.state
-    if (flag) {
+    if (Store.isAppUserLoggedIn()) {
+      return (
+        <div>
+          <Container style={{ padding: 20 }} classmail="App">
+            <h3>
+              You have already Signedup with WebMoney. Go to
+              <Link to="/dashboard"> Dashboard </Link>
+            </h3>
+            <br />
+          </Container>
+        </div>
+      );
+    }
+    else if (flag) {
       return <div>{this.loadSignupComponent(requiredLabel, align, emailState, passwordState, name, email, password, content, color, emailAlert)}</div>
     } else {
       return (
@@ -150,13 +168,13 @@ class Signup extends React.Component {
             <FormGroup style={align}>
               <Label style={{ align }} for="Email">Email <span style={requiredLabel}>*</span></Label>
               <Input name="email" type="email" placeholder="Your Email" value={email} valid={emailState === 'success'}
-                invalid={emailState === 'danger'} onChange={e => { this.handleInput(e); this.validateEmail(e) }} />
+                invalid={emailState === 'danger'} onChange={e => { this.handleInput(e)}} />
               <FormFeedback > {emailAlert ? "Email already Exists, try another Email..." : "Uh oh! Incorrect email"}
               </FormFeedback>
             </FormGroup>
             <FormGroup style={align}>
               <Label for="password">Password <span style={requiredLabel}>*</span></Label>
-              <Input name="password" type="password" placeholder="Your password" onChange={e => { this.handleInput(e); this.validatePassword(e) }}
+              <Input name="password" type="password" placeholder="Your password" onChange={e => { this.handleInput(e) }}
                 onKeyPress={this.handleEnter} disabled={!email || emailState === 'danger'} valid={passwordState === 'success'} invalid={passwordState === 'danger'} value={password} />
               <FormFeedback > Password length must be more then 5 characters </FormFeedback>
             </FormGroup>

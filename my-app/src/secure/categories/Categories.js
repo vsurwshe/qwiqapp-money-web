@@ -22,10 +22,8 @@ class Categories extends Component {
       updateCategory: false,
       deleteCategory: false,
       accordion: [],
-      hoverAccord: [],
       dropDownAccord: [],
       danger: false,
-      onHover: false,
       visible: props.visible,
       spinner: false,
       search: ''
@@ -37,7 +35,7 @@ class Categories extends Component {
   }
 
   setProfileId = async () => {
-    if (Store.getProfile() !== null && Store.getProfile().length !== 0) {
+    if (Store.getProfile()) {
       await this.setState({ profileId: Store.getProfile().id });
       this.getCategory();
     }
@@ -53,19 +51,19 @@ class Categories extends Component {
     this.loadCollapse();
   }
 
-  categoriesSet = (categories) =>{
+  categoriesSet = (categories) => {
     const prevState = categories;
     const state = prevState.map((x, index) => {
-        return {...x, childName: this.displaySubCategoryName(x)}
+      return { ...x, childName: this.displaySubCategoryName(x) }
     });
-    this.setState({categories : state});
+    this.setState({ categories: state });
   }
 
   displaySubCategoryName = (categories) => {
-    if(categories.subCategories !==null){
-      const name= categories.subCategories.map(sub=>sub.name);
+    if (categories.subCategories !== null) {
+      const name = categories.subCategories.map(sub => sub.name);
       return name;
-    }else{
+    } else {
       return null;
     }
   }
@@ -74,7 +72,6 @@ class Categories extends Component {
     this.state.categories.map(category => {
       return this.setState(prevState => ({
         accordion: [...prevState.accordion, false],
-        hoverAccord: [...prevState.hoverAccord, false],
         dropDownAccord: [...prevState.dropDownAccord, false]
       }))
     })
@@ -106,7 +103,7 @@ class Categories extends Component {
     if (this.state.visible) {
       setTimeout(() => {
         this.setState({ visible: false });
-      }, Config.notificationMillis);
+      }, Config.apiTimeoutMillis)
     }
   };
 
@@ -116,32 +113,17 @@ class Categories extends Component {
     this.setState({ accordion: state });
   }
 
-  hoverAccordion = (hKey) => {
-    const prevState = this.state.hoverAccord;
-    const state = prevState.map((x, index) => hKey === index ? !x : false);
-    this.setState({ hoverAccord: state });
-  }
-
   dropDownAccordion = (dKey) => {
     const prevStat = this.state.dropDownAccord;
     const state = prevStat.map((x, index) => dKey === index ? !x : false);
     this.setState({ dropDownAccord: state });
   }
 
-  onHover = (e, hKey) => {
-    this.setState({ onHover: true });
-    this.hoverAccordion(hKey)
-  }
-
-  onHoverOff = (e, hKey) => {
-    this.setState({ onHover: false });
-    this.hoverAccordion(hKey)
-  }
-
   render() {
-    const {requiredCategory, createCategory, updateCategory, deleteCategory, profileId, categoryId, visible, spinner, search,categories } = this.state;
-    if (Store.getProfile() === null || Store.getProfile().length === 0) {
-      return (<ProfileEmptyMessage />)
+    const { requiredCategory, createCategory, updateCategory, deleteCategory, profileId, categoryId, visible, spinner, search, categories } = this.state;
+    let profile = Store.getProfile()
+    if (!profile) {
+      return <ProfileEmptyMessage />
     } else if (categories.length === 0 && !spinner) {
       return ReUseComponents.loadSpinner("Categories : " + categories.length)
     } else if (createCategory) {
@@ -154,14 +136,14 @@ class Categories extends Component {
       return <div>{this.loadCategories(categories, visible, search)}{this.loadDeleteCategory()}</div>
     }
   }
+
   setSearch = e => {
-    // this.loadCollapse();
     this.setState({ search: e.target.value });
-    
   }
+
   loadCategories = (categories, visible, search) => {
     const color = this.props.color;
-    if (color !== '' || color !== undefined) {
+    if (color) {
       this.callAlertTimer()
     }
     return ReUseComponents.loadItems(categories, this.setSearch, search, this.callAddCategory, visible,
@@ -170,8 +152,8 @@ class Categories extends Component {
   }
 
   loadDeleteCategory = () => {
-    return (<DeleteModel danger={this.state.danger} headerMessage="Delete Category" bodyMessage="Are You Sure Want to Delete Category?"
-      toggleDanger={this.toggleDanger} delete={this.deleteCategory} cancel={this.toggleDanger} />);
+    return <DeleteModel danger={this.state.danger} headerMessage="Delete Category" bodyMessage="Are You Sure Want to Delete Category?"
+      toggleDanger={this.toggleDanger} delete={this.deleteCategory} cancel={this.toggleDanger} />
   }
 
   showDropdown = (category, uKey) => {

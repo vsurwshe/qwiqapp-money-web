@@ -18,7 +18,7 @@ class UserApi {
 }
 export default UserApi;
 
-async function process(success, failure, requestUrl, requestMethod, data) {
+async function process(success, failure, requestUrl, requestMethod, data, reload) {
   let HTTP = httpCall(requestUrl, requestMethod);
   let promise;
   try {
@@ -26,19 +26,23 @@ async function process(success, failure, requestUrl, requestMethod, data) {
     Store.saveUser(promise.data)
     validResponse(promise, success)
   } catch (err) {
-    AccessTokenError(err, failure, requestUrl, requestMethod, data, success);
+    AccessTokenError(err, failure, requestUrl, requestMethod, data, success, reload);
   }
 }
 
 //this method solve the Expire Token Problem.
-let AccessTokenError = function (err, failure, requestUrl, requestMethod, data, success) {
+let AccessTokenError = function (err, failure, requestUrl, requestMethod, data, success, reload) {
   if (err.request.status === 0) {
     errorResponse(err, failure)
   } else if (err.response.status === 403 || err.response.status === 401) {
     if (err.response["data"].error.debugMessage) {
       errorResponse("Wrong password supplied.", failure)
     } else {
-      new LoginApi().refresh(() => { process(success, failure, requestUrl, requestMethod, data) }, errorResponse(err, failure))
+      if (!reload) {
+        new LoginApi().refresh(() => { process(success, failure, requestUrl, requestMethod, data, "reload") }, errorResponse(err, failure))
+      } else {
+        errorResponse(err, failure)
+      }
     }
   } else { errorResponse(err, failure) }
 }

@@ -11,17 +11,17 @@ class AddAttachment extends Component {
     contactId: this.props.contactId,
     addSuccess: false,
     addFail: false,
-    color:'',
+    color: '',
     content: '',
     cancelAddAttachment: false,
     doubleClick: false
   }
 
   handleInput = (e) => {
-    if(e.target.files[0].size >= 5242880){
-      this.setState({color:'danger',content : "Uploaded file size must be below 5 MB"})
-    } else{
-      this.setState({ file: e.target.files[0],color:'',content:'' })
+    if (e.target.files[0].size >= 5242880) {
+      this.setState({ color: 'danger', content: "Uploaded file size must be below 5 MB" })
+    } else {
+      this.setState({ file: e.target.files[0], color: '', content: '' })
     }
   }
 
@@ -30,15 +30,16 @@ class AddAttachment extends Component {
     const { profileId, contactId, file } = this.state;
     let reader = new FormData()
     reader.append('file', file);
-    if (profileId !== undefined || contactId !== undefined) {
+    if (profileId || contactId) {
       this.setState({ doubleClick: false });
       new AttachmentApi().createAttachment(this.successCall, this.errorCall, profileId, contactId, reader)
     }
-
   }
+
   cancelAddAttachment = () => {
     this.setState({ cancelAddAttachment: true })
   }
+
   successCall = (json) => {
     this.setState({ addSuccess: true, content: "Successfully Added ", });
   }
@@ -75,7 +76,7 @@ class AddAttachment extends Component {
     return (
       <Card>
         {ReUseComponents.loadHeader("Add Attachment")}
-        <FormGroup> <br></br>
+        <FormGroup>
           <center>
             <Col sm={6}><Alert color={this.state.color} >{this.state.content}</Alert></Col>
             <input type="file" onChange={e => this.handleInput(e)} /> <br /><br />

@@ -2,42 +2,48 @@ import Axios from "axios";
 import Store from "../data/Store";
 import LoginApi from "./LoginApi";
 import Config from "../data/Config";
+
 class BillingAddressApi {
     createBillingAddress(success, failure, data) {
         process(success, failure, "/billing/address", "POST", data)
     }
+
     getBillings(success, failure) {
         process(success, failure, "/billing/address", "GET")
     }
-    getBillingItems(success,failure){
-        process(success,failure,"/billing/items", "GET")
-      }
-      
-    getPaymentsHistory(success,failure){
-        process(success,failure,"/billing/payments","GET")
-      }
-}
 
+    getBillingItems(success, failure) {
+        process(success, failure, "/billing/items", "GET")
+    }
+
+    getPaymentsHistory(success, failure) {
+        process(success, failure, "/billing/payments", "GET")
+    }
+}
 export default BillingAddressApi;
 
-async function process(success, failure, Uurl, Umethod, data) {
+async function process(success, failure, Uurl, Umethod, data, reload) {
     let HTTP = httpCall(Uurl, Umethod);
     let promise;
     try {
         data === null ? promise = await HTTP.request() : promise = await HTTP.request({ data });
         validResponse(promise, success)
     } catch (err) {
-        AccessTokenError(err, failure, Uurl, Umethod, data, success);
+        AccessTokenError(err, failure, Uurl, Umethod, data, success, reload);
     }
 }
 
 //this method slove the Exprie Token Problem.
-let AccessTokenError = function (err, failure, Uurl, Umethod, data, success) {
+let AccessTokenError = function (err, failure, Uurl, Umethod, data, success, reload) {
     if (err.request.status === 0) {
     } else if (err.response.status === 403 || err.response.status === 401) {
-        new LoginApi().refresh(() => {
-            process(success, failure, Uurl, Umethod, data)
-        }, errorResponse(err, failure))
+        if (!reload) {
+            new LoginApi().refresh(() => {
+                process(success, failure, Uurl, Umethod, data, "restrict")
+            }, errorResponse(err, failure));
+        } else {
+            errorResponse(err, failure);
+        }
     } else {
         errorResponse(err, failure)
     }
@@ -52,16 +58,17 @@ let validResponse = function (resp, successMethod) {
         }
     }
 };
+
 let errorResponse = async function (error, failure) {
     let err = error.response;
     if (err.status === 500 || err.status === 400) {
         let data = {
             status: err.status,
             message: err.data.error.debugMessage
-           }
+        }
         failure(data);
     } else {
-       failure(error);
+        failure(error);
     }
 };
 

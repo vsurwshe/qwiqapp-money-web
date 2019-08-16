@@ -24,12 +24,19 @@ class Login extends Component {
 
   handleEvent = event => {
     this.setState({ [event.target.name]: event.target.value });
+    if(event.target.name==="password"){
+      this.setState({ color:'', content:'' });
+    } else{
+      this.validateEmail(event);
+    }
   };
+
   handleEnter = event => {
     if (event.key === "Enter" && event.keyCode === 0) {
       this.handleButton();
-    }
+    } 
   };
+
   handleButton = event => {
     const { email, password } = this.state;
     if (email === '' || password === '') {
@@ -62,12 +69,11 @@ class Login extends Component {
   }
 
   callAlertTimer(color, content) {
-    this.setState({
-      color: color,
-      content: content
-    });
+    this.setState({ color: color, content: content });
     this.resetData();
-    setTimeout(() => this.setState({ color: '', content: '' }), Config.notificationMillis);
+    if(color !== 'danger'){
+      setTimeout(() => this.setState({ color: '', content: '' }), Config.notificationMillis);
+    }
   }
 
   validateEmail = e => {
@@ -104,14 +110,14 @@ class Login extends Component {
                   <CardTitle>Login to Web-Money !</CardTitle><br />
                   <FormGroup>
                     <Input name="email" type="email" placeholder="Your Email" value={email} valid={emailState === 'success'}
-                      invalid={emailState === 'danger'} onChange={(e) => { this.validateEmail(e); this.handleEvent(e) }} />
+                      invalid={emailState === 'danger'} onChange={this.handleEvent} />
                     <FormFeedback> Uh oh! Incorrect email. </FormFeedback>
                   </FormGroup>
                   <FormGroup>
-                    <Input type="password" name="password" onChange={(e) => { this.handleEvent(e) }}
+                    <Input type="password" name="password" onChange={this.handleEvent}
                       onKeyPress={this.handleEnter} placeholder="Your Password" value={password} />
                   </FormGroup>
-                  <Button color="info" onClick={this.handleButton}>Login</Button>
+                  <Button color="info" disabled={emailState === 'danger'} onClick={this.handleButton}>Login</Button>
                 </CardBody>
                 <CardBody>
                   <span>Don't have an Account yet? </span>&nbsp; <br />

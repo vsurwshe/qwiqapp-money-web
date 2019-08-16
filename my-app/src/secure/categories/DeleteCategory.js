@@ -11,8 +11,8 @@ class DeleteCategory extends Component {
       profileId: props.pid,
       categoryId: props.cid,
       categoryDeleted: false,
-      color: '',
-      content: ''
+      color: 'green',
+      content: 'Deleting Category ...'
     };
   }
 
@@ -21,9 +21,7 @@ class DeleteCategory extends Component {
   };
 
   successCall = () => {
-    setTimeout(() => {
-      this.setState({ categoryDeleted: true })
-    }, Config.notificationMillis)
+    this.callAlertTimer('success', 'Category deleted Successfully !!');
   };
 
   errorCall = () => {
@@ -41,7 +39,7 @@ class DeleteCategory extends Component {
   render() {
     const { categoryDeleted, color, content } = this.state;
     return categoryDeleted ? <Categories color={color} content={content} visible={true} />
-      : ReUseComponents.loadSpinner("Delete Category")
+      : ReUseComponents.loadDeleting("CATEGORIES", content, color)
   }
 }
 

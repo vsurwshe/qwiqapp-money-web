@@ -13,6 +13,8 @@ import { DeleteModel } from "../utility/DeleteModel";
 import { ProfileEmptyMessage } from "../utility/ProfileEmptyMessage";
 import { ReUseComponents } from "../utility/ReUseComponents";
 import ContactApi from "../../services/ContactApi";
+import '../../css/style.css';
+
 
 class Contacts extends Component {
   constructor(props) {
@@ -47,7 +49,7 @@ class Contacts extends Component {
   }
 
   setProfileId = async () => {
-    if (Store.getProfile() != null && Store.getProfile().length !== 0) {
+    if (Store.getProfile()) {
       await this.setState({ profileId: Store.getProfile().id });
       this.getContacts();
     }
@@ -115,58 +117,62 @@ class Contacts extends Component {
     const state = prevState.map((x, index) => tab === index ? !x : false);
     this.setState({ dropdownOpen: state });
   }
-  attachDropDown = (hKey, cId) => {
+
+  attachDropDown = (key, contactId) => {
     const prevState = this.state.attachDropdown;
-    const state = prevState.map((x, index) => hKey === index ? !x : false);
-    if (cId !== undefined) {
-      this.setState({ attachDropdown: state, contactId: cId });
+    const state = prevState.map((x, index) => key === index ? !x : false);
+    if (contactId) {
+      this.setState({ attachDropdown: state, contactId });
     } else {
       this.setState({ attachDropdown: state });
     }
   }
 
-  hoverAccordion = (hKey) => {
+  hoverAccordion = (key) => {
     const prevState = this.state.hoverAccord;
-    const state = prevState.map((x, index) => hKey === index ? !x : false);
+    const state = prevState.map((x, index) => key === index ? !x : false);
     this.setState({ hoverAccord: state });
   }
 
-  onHover = (e, hKey) => {
+  onHover = (e, key) => {
     this.setState({ onHover: true });
-    this.hoverAccordion(hKey)
+    this.hoverAccordion(key)
   }
 
-  onHoverOff = (e, hKey) => {
+  onHoverOff = (e, key) => {
     this.setState({ onHover: false });
-    this.hoverAccordion(hKey)
+    this.hoverAccordion(key)
   }
 
   addAttach = async (contactId, key) => {
     await this.setState({ contactId: contactId, addAttachRequest: true });
   }
+
   changeBg() {
     const { colors } = this.state;
     const color = colors[Math.floor(Math.random() * colors.length)];
     document.body.style.backgroundColor = color;
   }
+
   render() {
+    let profile = Store.getProfile();
     const { contacts, singleContact, createContact, updateContact, deleteContact, addAttachRequest, contactId, visible, profileId, spinner, labels } = this.state
-    if (Store.getProfile() !== null && Store.getProfile().length !== 0) {
+    if (profile) {
       if (contacts.length === 0 && !createContact) {
         return <div>{contacts.length === 0 && !createContact && !spinner ? this.loadSpinner() : this.loadContactEmpty()}</div>
       } else if (createContact) {
-        return (<CreateContact profileId={profileId} lables={labels} />)
+        return <CreateContact profileId={profileId} lables={labels} />
       } else if (updateContact) {
-        return (<UpdateContact profileId={profileId} contact={singleContact} lables={labels} />)
+        return <UpdateContact profileId={profileId} contact={singleContact} lables={labels} />
       } else if (deleteContact) {
-        return (<DeleteContact contactId={contactId} profileId={profileId} />)
+        return <DeleteContact contactId={contactId} profileId={profileId} />
       } else if (addAttachRequest) {
-        return (<AddAttachment contacId={contactId} profileId={profileId} />)
+        return <AddAttachment contacId={contactId} profileId={profileId} />
       } else {
         return <div>{this.loadShowContact(visible, contacts)}{this.loadDeleteContact()}</div>
       }
     } else {
-      return (<ProfileEmptyMessage />)
+      return <ProfileEmptyMessage />
     }
   }
 
@@ -176,55 +182,50 @@ class Contacts extends Component {
 
   searchingFor(term) {
     return function (x) {
-      return x.name.toLowerCase().includes(term.toLowerCase()) || !term
+      return (x.name.toLowerCase() + x.organization.toLowerCase()).includes(term.toLowerCase()) || !term
     }
   }
 
   loadHeader = () => {
-    return (
-      <CardHeader>
-        <Row style={{ padding: "0px 20px 0px 20px" }}>
-          <Col sm={3}>
-            <strong style={{ fontSize: 24 }}>Contacts </strong>
-          </Col>
-          <Col >
-            {this.state.contacts.length !== 0 &&
-              <InputGroup >
-                <Input type="search" className="float-right" onChange={this.searchHandler} value={this.state.searchContact} placeholder="Search Contacts..." />
-                <InputGroupAddon addonType="append"><InputGroupText className="dark"><FaSearch /></InputGroupText></InputGroupAddon>
-              </InputGroup>
-            }
-          </Col>
-          <Col sm={2}>
-            <Button color="success" className="float-right" onClick={this.callCreateContact}> + ADD </Button>
-          </Col>
-        </Row>
-      </CardHeader>
-    )
+    return <CardHeader>
+      <Row style={{ padding: "0px 20px 0px 20px" }}>
+        <Col sm={3}>
+          <strong style={{ fontSize: 24 }}>Contacts </strong>
+        </Col>
+        <Col>
+          {this.state.contacts.length !== 0 && <InputGroup >
+            <Input type="search" className="float-right" onChange={this.searchHandler} value={this.state.searchContact} placeholder="Search Contacts..." />
+            <InputGroupAddon addonType="append"><InputGroupText className="dark"><FaSearch /></InputGroupText></InputGroupAddon>
+          </InputGroup>
+          }
+        </Col>
+        <Col sm={2}>
+          <Button color="success" className="float-right" onClick={this.callCreateContact}> + ADD </Button>
+        </Col>
+      </Row>
+    </CardHeader>
   }
 
   loadSpinner = () => {
-    return (
-      <div className="animated fadeIn">
-        <Card>
-          {this.loadHeader()}
-          <center style={{ paddingTop: '20px' }}>
-            <CardBody><Loader type="Ball-Triangle" color="#2E86C1" height={80} width={80} /></CardBody>
-          </center>
-        </Card>
-      </div>)
+    return <div className="animated fadeIn">
+      <Card>
+        {this.loadHeader()}
+        <center className="padding-top">
+          <CardBody><Loader type="Ball-Triangle" color="#2E86C1" height={80} width={80} /></CardBody>
+        </center>
+      </Card>
+    </div>
   }
 
   loadContactEmpty = () => {
-    return (
-      <div className="animated fadeIn">
-        <Card>
-          {this.loadHeader()}
-          <center style={{ paddingTop: '20px' }}>
-            <CardBody><h5><b>You haven't created any Contacts yet... </b></h5> </CardBody>
-          </center>
-        </Card>
-      </div>)
+    return <div className="animated fadeIn">
+      <Card>
+        {this.loadHeader()}
+        <center className="padding-top">
+          <CardBody><h5><b>You haven't created any Contacts yet... </b></h5> </CardBody>
+        </center>
+      </Card>
+    </div>
   }
 
   callAlertTimer() {
@@ -234,49 +235,48 @@ class Contacts extends Component {
   }
 
   loadShowContact = (visible, contacts) => {
-    if (this.props.color !== undefined) {
+    if (this.props.color) {
       this.callAlertTimer()
     }
-    return (
-      <div className="animated fadeIn">
-        <Card>
-          {this.loadHeader()}
-          <div style={{ marginBottom: 20 }}>
-            <h6><Alert isOpen={visible} color={this.props.color === undefined ? '' : this.props.color}>{this.props.content}</Alert></h6>
-            {contacts.filter(this.searchingFor(this.state.searchContact)).map((contact, key) => { return this.loadSingleContact(contact, key) })}
-          </div>
-        </Card>
-      </div>)
+    return <div className="animated fadeIn">
+      <Card>
+        {this.loadHeader()}
+        <div><br />
+          <h6>{visible && <Alert isOpen={visible} color={this.props.color ? this.props.color : ""}>{this.props.content}</Alert>}</h6>
+          {contacts.filter(this.searchingFor(this.state.searchContact)).map((contact, key) => { return this.loadSingleContact(contact, key) })}
+        </div>
+      </Card>
+    </div>
   }
 
   loadSingleContact = (contact, contactKey) => {
     const styles = { marginTop: 4 }
-    return (
-      <ListGroup flush key={contactKey} className="animated fadeIn" onPointerEnter={(e) => this.onHover(e, contactKey)} onPointerLeave={(e) => this.onHoverOff(e, contactKey)}>
-        <ListGroupItem action >
-          <Row>
-            <Col onClick={() => { this.attachDropDown(contactKey) }}>
-              {this.displayName(contact, styles)}
-              <FaPaperclip color="#34aec1" style={{ marginTop: 5, marginLeft: 10 }} size={17} onClick={() => this.attachDropDown(contactKey, contact.id)} />
-            </Col>
-            <Col lg={1} sm={1} md={1} xl={1} >{this.state.onHover && this.state.hoverAccord[contactKey] ? this.loadDropDown(contact, contactKey, styles) : ''}</Col>
-          </Row>
-          <Collapse isOpen={this.state.attachDropdown[contactKey]}>{this.showAttachments(contact.id, contact)}</Collapse>
-        </ListGroupItem>
-      </ListGroup>)
+    return <ListGroup flush key={contactKey} className="animated fadeIn" onPointerEnter={(e) => this.onHover(e, contactKey)} onPointerLeave={(e) => this.onHoverOff(e, contactKey)}>
+      <ListGroupItem action >
+        <Row>
+          <Col onClick={() => { this.attachDropDown(contactKey) }}>
+            {this.displayName(contact, styles)}
+            <FaPaperclip style={{ color: '#34aec1', marginTop: 0, marginLeft: 10 }} onClick={() => this.attachDropDown(contactKey, contact.id)} />
+          </Col>
+          <Col lg={1} sm={1} md={1} xl={1} >{this.state.onHover && this.state.hoverAccord[contactKey] ? this.loadDropDown(contact, contactKey) : ''}</Col>
+        </Row>
+        <Collapse isOpen={this.state.attachDropdown[contactKey]}>{this.showAttachments(contact.id, contact)}</Collapse>
+      </ListGroupItem>
+    </ListGroup>
   }
 
   displayName = (contact, styles) => {
-    return (
-      <span style={{ styles }} ><FaUserCircle size={20} style={{ color: '#020e57' }} />{" "}&nbsp;
-        <b style={{ color: '#000000' }}>{contact.name.length > 20 ? contact.name.slice(0, 20) + "..." : contact.name}</b>
-        <Attachments profileId={this.state.profileId} contactId={contact.id} getCount={true} />
-      </span>)
+    return <span style={{ styles }} ><FaUserCircle size={20} style={{ color: '#020e57' }} />{" "}&nbsp;
+        <b className="text-link">{contact.name ? (contact.name.length > 20 ? contact.name.slice(0, 20) + "..." : contact.name) :
+        (contact.organization.length > 20 ? contact.organization.slice(0, 20) + "..." : contact.organization)}
+      </b>
+      <Attachments profileId={this.state.profileId} contactId={contact.id} getCount={true} />
+    </span>
   }
 
   loadDeleteContact = () => {
-    return (<DeleteModel danger={this.state.danger} headerMessage="Delete Contact" bodyMessage="Are You Sure Want to Delete Contact?"
-      toggleDanger={this.toggleDanger} delete={this.deleteContact} cancel={this.toggleDanger} />)
+    return <DeleteModel danger={this.state.danger} headerMessage="Delete Contact" bodyMessage="Are You Sure Want to Delete Contact?"
+      toggleDanger={this.toggleDanger} delete={this.deleteContact} cancel={this.toggleDanger} />
   }
 
   loadDropDown = (contact, contactKey) => {
@@ -288,14 +288,13 @@ class Contacts extends Component {
   }
 
   showAttachments(contactId, contact) {
-    return (
-      <div style={{ paddingLeft: 29, paddingTop: 10 }}>
-        <span style={{ color: '#000000' }}>
-          <b>Email: </b>{contact.email}<br />
-          <b>Phone: </b>{contact.phone}<br />
-        </span>
-        <Attachments contactId={contactId} profileId={this.state.profileId} />
-      </div>)
+    return <div className="attachments">
+      <span>
+        <b>Email: </b>{contact.email}<br />
+        <b>Phone: </b>{contact.phone}<br />
+      </span>
+      <Attachments contactId={contactId} profileId={this.state.profileId} />
+    </div>
   }
 }
 export default Contacts;

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
-import { Button, Input, Card, CardBody, CardHeader, Col, Alert, Table } from "reactstrap";
+import { Button, Input, Card, CardBody, CardHeader, Col, Alert, Table, Tooltip, FormGroup, Label } from "reactstrap";
 import Store from "../../data/Store";
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router-dom';
 import ProfileApi from "../../services/ProfileApi";
 import Profiles from "./Profiles";
 import Config from "../../data/Config";
@@ -21,11 +21,16 @@ class CreateProfile extends Component {
     action: '',
     comparisionText: "View Feature Comparision",
     profileTypes: [],
+    tooltipOpen: false
   };
 
   componentDidMount = () => {
+    let user = Store.getUser();
     this.setState({ action: Store.getUser().action });
     new ProfileTypesApi().getProfileTypes((profileTypes) => { this.setState({ profileTypes }) }, (error) => { console.log("error", error); })
+    if (user) {
+      this.setState({ action: user.action });
+    }
   }
 
   handleInput = e => {
@@ -50,6 +55,9 @@ class CreateProfile extends Component {
     this.setState({ cancelCreateProfile: true });
   }
 
+  toggle = () => {
+    this.setState({ tooltipOpen: !this.state.tooltipOpen });
+  }
 
   handleSubmit = e => {
     e.preventDefault();
@@ -100,11 +108,11 @@ class CreateProfile extends Component {
     const { color, profileCreated, cancelCreateProfile, action, profileType, profileInfoTable, profileTypes } = this.state
     const profileTypesOptions = profileTypes.map(proTypes => {
       return (<tr key={proTypes.type}>
-        <th> <Input type="radio" name="radio1" value={proTypes.type} checked={proTypes.type === profileType}
-          onChange={() => this.selectProfileType(proTypes.type)} />{' '}</th>
-        <th>{proTypes.name}</th>
-        <th>{proTypes.cost}</th>
-        <th>{proTypes.description}</th>
+        <td> <Input type="radio" name="radio1" value={proTypes.type} checked={proTypes.type === profileType}
+          onChange={() => this.selectProfileType(proTypes.type)} />{' '}</td>
+        <td>{proTypes.name}</td>
+        <td>{proTypes.cost}</td>
+        <td>{proTypes.description}</td>
       </tr>)
     })
     return <div>
@@ -135,28 +143,26 @@ class CreateProfile extends Component {
   }
 
   createProfileTypes = (profileTypesOptions) => {
-    return (
-      <Table>
-        <thead>
-          <tr>
-            <th>Type</th>
-            <th>Profile Type</th>
-            <th>Cost</th>
-            <th>Description</th>
-          </tr>
-        </thead>
-        <tbody>
-          {profileTypesOptions}
-        </tbody>
-      </Table>
-    )
+    return <Table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Profile Type</th>
+          <th>Cost</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        {profileTypesOptions}
+      </tbody>
+    </Table>
   }
 
   loadActionsButton = (action, profileType) => {
     let url = action === 'ADD_BILLING' ? "/billing/address" : '/billing/paymentHistory';
     if (action === "VERIFY_EMAIL") {
       return <Alert color="warning">Sorry you cannot Create Profile until you verify Your Email</Alert>
-    } else if (profileType !== 0 && profileType !== 3 && action ) {
+    } else if (profileType !== 0 && profileType !== 3 && action) {
       return <>
         <Button color="info"><Link to={url} style={{ color: "black" }}> {action}</Link></Button>
         <Button active color="danger" style={{ marginLeft: 20 }} aria-pressed="true" onClick={this.cancelCreateProfile}>Cancel</Button>
@@ -168,14 +174,17 @@ class CreateProfile extends Component {
 
   loadProfile = () => {
     const { name, buttonText } = this.state
-    return (
-      <>
-        <Col sm="6">
-          <Input name="name" value={name} type="text" placeholder="Enter Profile name" autoFocus={true} onChange={e => this.handleInput(e)} />
-        </Col><br />
-        <Button color="success" disabled={!name} onClick={e => this.handleSubmit(e)} > {buttonText} </Button>
-        <Button active color="light" style={{ marginLeft: 20 }} aria-pressed="true" onClick={this.cancelCreateProfile}>Cancel</Button>
-      </>)
+    return <>
+      <FormGroup row>
+        <Label sm={2}>Profile Name :</Label>
+        <Col sm={8}>
+          <Input name="name" value={name} type="text" placeholder="Enter Profile name" autoFocus={true} onChange={e => this.handleInput(e)} id="tool-tip" />
+          <Tooltip target="tool-tip" isOpen={this.state.tooltipOpen} placement="right" toggle={this.toggle}>Profile Name</Tooltip>
+        </Col>
+      </FormGroup>
+      <Button color="success" disabled={!name} onClick={e => this.handleSubmit(e)} > {buttonText} </Button>
+      <Button active color="light" style={{ marginLeft: 20 }} aria-pressed="true" onClick={this.cancelCreateProfile}>Cancel</Button>
+    </>
   }
 }
 export default CreateProfile;

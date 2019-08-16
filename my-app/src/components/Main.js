@@ -1,5 +1,5 @@
 import React, { Component, Suspense } from "react";
-import { Route, Redirect, Switch, withRouter  } from "react-router-dom";
+import { Route, Redirect, Switch, withRouter } from "react-router-dom";
 import { Container } from "reactstrap";
 import { AppFooter, AppHeader, AppSidebar, AppSidebarNav } from "@coreui/react";
 import Dashboard from "../secure/Dashboard";
@@ -10,12 +10,10 @@ import Store from "../data/Store";
 import SignupVerify from "../components/SignupVerify";
 import Profiles from "../secure/profiles/Profiles";
 import navigation, { item } from "../data/navigations";
-import CreateLable from "../secure/labels/Createlabel";
 import Lables from "../secure/labels/Labels";
 import Categories from "../secure/categories/Categories";
 import Contacts from "../secure/contacts/Contacts";
 import CreateContact from "../secure/contacts/CreateContact";
-import EditCategory from "../secure/categories/EditCategory";
 import UserApi from "../services/UserApi";
 import ProfileApi from "../services/ProfileApi";
 import CreateProfile from "../secure/profiles/CreateProfile";
@@ -43,7 +41,7 @@ class Main extends Component {
   }
 
   componentDidMount = () => {
-    if(Store.isAppUserLoggedIn()){
+    if (Store.isAppUserLoggedIn()) {
       new ProfileApi().getProfiles(this.successCallProfiles, this.errorCall);
     }
   }
@@ -54,15 +52,15 @@ class Main extends Component {
       console.log("There is No Profile");
     } else {
       await Store.saveUserProfiles(profiles);
-      if(Store.getSelectedValue()=== 'false'){
+      if (Store.getSelectedValue() === 'false') {
         await Store.saveProfile(profiles[0])
       }
-      profileSet = await profiles.map(profile=>{return {name:profile.name,url: "/profiles/"+profile.id, icon: "cui-user"}})
-      await this.setState({profileNames : profileSet})
+      profileSet = await profiles.map(profile => { return { name: profile.name, url: "/profiles/" + profile.id, icon: "cui-user" } })
+      await this.setState({ profileNames: profileSet })
       this.forceUpdate();
     }
     this.getUser();
-    new GeneralApi().settings((data) => {Store.saveSetting(data)}, (error)=>{console.log(error);});
+    new GeneralApi().settings((data) => { Store.saveSetting(data) }, (error) => { console.log(error); });
   }
 
   getUser = () => {
@@ -102,17 +100,15 @@ class Main extends Component {
         <PrivateRoute exact path="/editUser" component={EditUser} />
         <PrivateRoute exact path="/changePassword" component={ChangePassword} />
         <PrivateRoute exact path="/billing/address/add" component={EditBillingAddress} />
-        <PrivateRoute exact path="/billing/address" component={BillingInfo} /> 
+        <PrivateRoute exact path="/billing/address" component={BillingInfo} />
         <PrivateRoute exact path="/billing/addCredits" component={MakePayment} />
-        <PrivateRoute exact path="/billing/paymentHistory" component={PaymentHistory}/>
-        <PrivateRoute exact path ="/createProfile" component={CreateProfile} />
+        <PrivateRoute exact path="/billing/paymentHistory" component={PaymentHistory} />
+        <PrivateRoute exact path="/createProfile" component={CreateProfile} />
         <PrivateRoute exact path="/profiles" component={Profiles} />
-        <PrivateRoute exact path="/profiles/:id" component={SetProfile} />     
+        <PrivateRoute exact path="/profiles/:id" component={SetProfile} />
         <PrivateRoute path="/listBills" component={Bills} />
         <PrivateRoute path="/label/labels" component={Lables} />
-        <PrivateRoute path="/label/createLabel" component={CreateLable} />
         <PrivateRoute path="/listCategories" component={Categories} />
-        <PrivateRoute path="/categories/update" component={EditCategory} />
         <PrivateRoute exact path="/contact/createContact" component={CreateContact} />
         <PrivateRoute exact path="/contact/viewContacts" component={Contacts} />
         <Route path="/login" component={Login} />
@@ -160,11 +156,11 @@ class Main extends Component {
   //This method calls the inbuilt SideBar Component acc to condition
   loadSideBar = () => {
     //added currently profiels into sidebar items json array 
-    const sideNavbarProfileItems={items:this.state.profileNames.concat(item.items)}
-    return(
+    const sideNavbarProfileItems = { items: this.state.profileNames.concat(item.items) }
+    return (
       <AppSidebar fixed display="sm">
         <Suspense>
-           { Store.getProfile() !== null && !this.state.flag  ?  <AppSidebarNav navConfig={navigation} {...this.props} /> : <AppSidebarNav navConfig={sideNavbarProfileItems}  {...this.props} />  }
+          {Store.getProfile() !== null && !this.state.flag ? <AppSidebarNav navConfig={navigation} {...this.props} /> : <AppSidebarNav navConfig={sideNavbarProfileItems}  {...this.props} />}
         </Suspense>
       </AppSidebar>);
   }

@@ -3,6 +3,7 @@ import { Button, Col, Input, Alert, FormGroup, Card, CardHeader, Label, Collapse
 import LabelApi from "../../services/LabelApi";
 import Lables from "./Labels";
 import Config from "../../data/Config";
+
 class UpdateLabel extends Component {
   constructor(props) {
     super(props);
@@ -23,29 +24,34 @@ class UpdateLabel extends Component {
       doubleClick: false,
     };
   }
+
   handleUpdate = () => {
-    const {userColor,name,notes,parentId,version,profileId,id}=this.state;
+    const { userColor, name, notes, parentId, version, profileId, id } = this.state;
     let data = {
-      color:userColor,
+      color: userColor,
       name: name,
       notes: notes,
       parentId: parentId,
-      version:version
+      version: version
     };
     this.setState({ doubleClick: true });
-    new LabelApi().updateLabel(this.SuccessCall, this.errorCall, data, profileId, id)
+    new LabelApi().updateLabel(this.successCall, this.errorCall, data, profileId, id)
   };
+
   cancelUpdateLabel = () => {
     this.setState({ cancelUpdateLabel: true });
   }
+
   //this called When Componets Calling SucessFully
-  SuccessCall = json => {
+  successCall = json => {
     this.callAlertTimer("success", "Label Updated Successfully... ");
   };
+
   //when any api goto the api executions failed then called this method 
   errorCall = err => {
     this.callAlertTimer("danger", "Unable to Process Your Request, Please Try Again... ");
   };
+
   //this  method show the on page alert
   callAlertTimer = (alertColor, content) => {
     this.setState({ alertColor, content });
@@ -53,10 +59,12 @@ class UpdateLabel extends Component {
       this.setState({ name: '', alertColor: '', updateSuccess: true });
     }, Config.notificationMillis);
   };
+
   //this method make lable as main lable
   changeParentId = () => {
     this.setState({ parentId: "" });
   }
+
   //this method makes true or false for the collapse
   toggle = () => {
     this.setState({ collapse: !this.state.collapse });
@@ -70,6 +78,7 @@ class UpdateLabel extends Component {
       return <div>{updateSuccess ? <Lables /> : this.loadUpdatingLable(name, notes, alertColor, content, userColor)}</div>
     }
   }
+
   //This method shows the fields to update a Lable
   loadUpdatingLable = (name, notes, alertColor, content, userColor) => {
     return (
@@ -94,30 +103,29 @@ class UpdateLabel extends Component {
         </Card>
       </div>)
   }
+
   loadSublabelMakeParentLabel = () => {
-    return (<FormGroup check className="checkbox">
+    return <FormGroup check className="checkbox">
       <Input className="form-check-input" type="checkbox" onClick={this.changeParentId} value=" " />
       <Label check className="form-check-label" htmlFor="checkbox1"> &nbsp;Make as Parent-Label</Label>
-    </FormGroup>)
+    </FormGroup>
   }
 
   loadParentLableMakeSubLable = () => {
-    return (<FormGroup check className="checkbox">
+    return <FormGroup check className="checkbox">
       <Input className="form-check-input" type="checkbox" onClick={this.toggle} value=" " />
       <Label check className="form-check-label" htmlFor="checkbox1"> &nbsp;Nest label under</Label>
-    </FormGroup>)
+    </FormGroup>
   }
 
   loadCollapse = () => {
-    return (<Collapse isOpen={this.state.collapse}>
+    return <Collapse isOpen={this.state.collapse}>
       <Input type="select" name="selectLg" id="selectLg" onChange={(event) => this.setState({ parentId: event.target.value })} bsSize="lg">
         <option value="null">Please select Parent Lables</option>
         {this.state.labels.map((label) => { return (this.state.id === label.id ? '' : <option key={label.id} value={label.id}>{label.name}</option>) })}
       </Input>
-    </Collapse>);
+    </Collapse>;
   }
-
-
 }
 
 export default UpdateLabel;
