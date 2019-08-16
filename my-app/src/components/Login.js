@@ -121,7 +121,8 @@ class Login extends Component {
                 </CardBody>
                 <CardBody>
                   <span>Don't have an Account yet? </span>&nbsp; <br />
-                  <Link to="/signup">Signup Now</Link>
+                  <Link to="/passwd/forgot">ForgotPassword</Link> / 
+                  <Link to="/signup"> Signup Now</Link>
                 </CardBody>
               </Card>
             </Container>
