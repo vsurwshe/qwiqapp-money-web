@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import { AvForm, AvField } from 'availity-reactstrap-validation';
 import { Col, Card, Button, Alert, FormGroup, CardBody, Container, } from 'reactstrap';
 import '../css/style.css';
@@ -7,16 +8,24 @@ import SignupApi from '../services/SignupApi';
 class ResetPassword extends Component {
     constructor(props) {
         super(props);
-        this.state = { alertColor: '', content: '' };
+        this.state = {
+            alertColor: '',
+            content: '',
+            disableDoubleClick: false,
+            enableLink:false
+
+        };
     }
 
     handleSubmitValue = (event, errors, values) => {
         if (!errors.length) {
+            this.setState({ disableDoubleClick: true });
             new SignupApi().resetPassword(this.successCall, this.errorCall, values.email, values.otp, values.newpwd)
         }
     }
 
-    successCall = (response) => {
+    successCall = () => {
+        this.setState({ enableLink: true });        
         this.callAlertTimer("success", "Your password reset Successfully, please login now ...")
     }
 
@@ -35,8 +44,8 @@ class ResetPassword extends Component {
     }
 
     render() {
-        const { alertColor, content } = this.state;
-        return <div style={{ color: "teal" }}>
+        const { alertColor, content,disableDoubleClick,enableLink } = this.state;
+        return <div >
             <center>
                 <Container style={{ paddingTop: 50 }} className="App">
                     <Card >
@@ -51,7 +60,8 @@ class ResetPassword extends Component {
                                     <Col><AvField name="confirmpwd" placeholder="Confirm Password" type="password" validate={{ match: { value: 'newpwd' } }} errorMessage="New password and confirm password doesn't match" required /></Col>
                                     <center><FormGroup row>
                                         <Col>
-                                            <Button color="info" disabled={this.state.doubleClick} > Reset Password </Button> &nbsp; &nbsp;
+                                            <Button color="info" disabled={disableDoubleClick} > Reset Password </Button> &nbsp; &nbsp;
+                                            {enableLink && <p>Please go back to {<Link to="/login"> Login</Link>}</p>}
                                         </Col>
                                     </FormGroup></center>
                                 </AvForm>

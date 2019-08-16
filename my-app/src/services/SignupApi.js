@@ -63,13 +63,21 @@ let process = function (success, failure, Uurl, Umethod, data) {
     HTTP = httpCall(Uurl, Umethod, Store.getDummyUserAccessToken());
   }
   if ([data].length > 0) {
-    HTTP.request({ data }).then(resp => validResponse(resp, success)).catch(err => errorResponse(err, failure));
+    HTTP.request({ data })
+      .then(resp => validResponse(resp, success))
+      .catch(err => errorResponse(err, failure));
   } else {
-    HTTP.request().then(resp => validResponse(resp, success)).catch(err => errorResponse(err, failure));
+    HTTP.request()
+      .then(resp => validResponse(resp, success))
+      .catch(err => errorResponse(err, failure));
   }
 };
 
-let validResponse = function (resp, successMethod) { if (successMethod != null) { successMethod(resp.data); } };
+let validResponse = function (resp, successMethod) {
+  if (successMethod != null) {
+    successMethod(resp.data);
+  }
+};
 
 let errorResponse = function (error, failure) {
   if (failure != null) {
