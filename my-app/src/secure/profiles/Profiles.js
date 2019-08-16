@@ -139,8 +139,6 @@ class Profiles extends Component {
         <td>
           <Button style={{ backgroundColor: "#43A432", color: "#F0F3F4" }} onClick={() => { this.updateProfile(profile.id, profile.name) }}>Update</Button>
           <Button color="danger" onClick={() => { this.setState({ id: profile.id }); this.toggleDanger() }} style={{ marginLeft: 10 }} >Delete</Button>
-          {/* <FaPen size={14} style={{ color: '#4385ef', marginTop: "15px" }} onClick={() => { this.updateProfile(profile.id, profile.name) }} />
-          <FaTrashAlt onClick={() => { this.setState({ id: profile.id }); this.toggleDanger() }}  style={{ marginLeft:20, color: 'red', marginTop: "15px" }} /> */}
         </td>
       </tr>
     );

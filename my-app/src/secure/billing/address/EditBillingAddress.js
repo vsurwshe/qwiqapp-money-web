@@ -37,8 +37,17 @@ class EditBillingAddress extends Component {
     this.setState({ countries });
   }
 
-  validateCompany = () => {
-    this.form.validateInput('company')
+  handleInputValidate = (e) => {
+    if (e.target.name === "firstName") {
+      this.validateLastName();
+      this.validateCompany();
+    } else if (e.target.name === "lastName") {
+      this.validateFirstName();
+      this.validateCompany();
+    } else {
+      this.validateFirstName();
+      this.validateLastName();
+    }
   }
 
   validateFirstName = () => {
@@ -47,6 +56,10 @@ class EditBillingAddress extends Component {
 
   validateLastName = () => {
     this.form.validateInput('lastName')
+  }
+
+  validateCompany = () => {
+    this.form.validateInput('company')
   }
 
   //this method handle form submitons values and errors
@@ -110,9 +123,9 @@ class EditBillingAddress extends Component {
           <Alert color={alertColor}>{content}</Alert>
           <AvForm ref={refId => this.form = refId} onSubmit={this.handleSubmitValue}>
             <Row>
-              <Col><AvField name="firstName" placeholder="First Name" style={placeholderStyle} value={updateBill.firstName} validate={{ myValidation: firstNameAndlastNameOrcompany }} onChange={() => { this.validateCompany(); this.validateLastName() }} /></Col>
-              <Col><AvField name="lastName" placeholder="Last Name" style={placeholderStyle} value={updateBill.lastName} validate={{ myValidation: firstNameAndlastNameOrcompany }} onChange={()=>{this.validateFirstName();this.validateCompany();} }/></Col>
-              <Col><AvField name="company" placeholder="Organization" style={placeholderStyle} value={updateBill.company} validate={{ myValidation: firstNameAndlastNameOrcompany }} onChange={()=>{this.validateFirstName(); this.validateLastName();}} /></Col>
+              <Col><AvField name="firstName" placeholder="First Name" style={placeholderStyle} value={updateBill.firstName} validate={{ myValidation: firstNameAndlastNameOrcompany }} onChange={(e) => { this.handleInputValidate(e) }} /></Col>
+              <Col><AvField name="lastName" placeholder="Last Name" style={placeholderStyle} value={updateBill.lastName} validate={{ myValidation: firstNameAndlastNameOrcompany }} onChange={(e) => { this.handleInputValidate(e) }} /></Col>
+              <Col><AvField name="company" placeholder="Organization" style={placeholderStyle} value={updateBill.company} validate={{ myValidation: firstNameAndlastNameOrcompany }} onChange={(e) => { this.handleInputValidate(e) }} /></Col>
             </Row>
             <Row>
               <Col><AvField name="addressLine1" placeholder="Address 1" style={placeholderStyle} value={updateBill.addressLine1} errorMessage="Address should not be empty" helpMessage="H.No 1-1-1/1, xyz  street" required /></Col>
