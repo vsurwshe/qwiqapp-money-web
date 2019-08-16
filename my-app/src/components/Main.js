@@ -28,6 +28,7 @@ import GeneralApi from "../services/GeneralApi";
 import EditUser from "../secure/editUser/EditUser";
 import ChangePassword from "../secure/editUser/ChangePassword";
 import ForgotPassword from '../components/ForgotPassword';
+import Invoice from "../secure/invoices/Invoice";
 
 const DefaultFooter = React.lazy(() => import("../secure/sidebar/DefaultFooter"));
 
@@ -104,6 +105,7 @@ class Main extends Component {
         <PrivateRoute exact path="/billing/address" component={BillingInfo} />
         <PrivateRoute exact path="/billing/addCredits" component={MakePayment} />
         <PrivateRoute exact path="/billing/paymentHistory" component={PaymentHistory} />
+        <PrivateRoute exact path="/payment/invoice" component={Invoice} />
         <PrivateRoute exact path="/createProfile" component={CreateProfile} />
         <PrivateRoute exact path="/profiles" component={Profiles} />
         <PrivateRoute exact path="/profiles/:id" component={SetProfile} />

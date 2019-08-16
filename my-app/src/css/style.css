@@ -152,7 +152,25 @@ dropdown-align {
 .button-hover:focus{
     outline:0;
  }
-
-
+/* ================== User Invoice Code ================== */
+ .h1-padding{
+    padding-bottom : 20;
+ }
+ .p-style{
+    padding-top: 20px;
+    padding-block-end: 60px;
+ }
+ .span-left{
+    float : left;
+ }
+ .span-right{
+    float : right;
+ }
+ .tabel{
+     border: none;
+ }
+ .tbody-net{
+     float : right;
+ }
 /* ================== END  =================*/
 

@@ -63,7 +63,7 @@ class PaymentHistory extends Component {
       let paymentsList = payments.map((payment, key) => {
         return (<tr key={key} className="row-text-align">
           <td>{this.customeDateFormat(payment.created)}</td>
-          <td >{payment.description}</td>
+          <td > {payment.invoiceId <= 0 ? payment.description : <Link to={{pathname:"/payment/invoice", state:{invoiceId: payment.invoiceId}}} >{payment.description}</Link> } </td>
           <td>{this.showCurrenySymbol(payment.currency, currency)} {payment.amount}</td>
         </tr>
         )
