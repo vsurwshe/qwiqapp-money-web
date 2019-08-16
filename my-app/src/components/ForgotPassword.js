@@ -24,7 +24,7 @@ class ForgotPassword extends Component {
 
   handleSubmit = async (events, errors, values) => {
     if (!errors.length) {
-      this.setState({ disableDoubleClick: true });
+      this.setState( { disableDoubleClick:true});
       await new SignupApi().forgotPassword(this.successCall, this.errorCall, values.email)
     }
   }
