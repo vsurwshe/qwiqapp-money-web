@@ -20,6 +20,10 @@
 .container-top{
     padding-top: 50px;
 }
+.heading {
+  text-align: center;
+  font-size: 2.5ch
+}
 .padding{
     padding: 10px
 }
@@ -154,7 +158,7 @@ dropdown-align {
  }
 /* ================== User Invoice Code ================== */
  .h1-padding{
-    padding-bottom : 20;
+    padding-bottom : 1;
  }
  .p-style{
     padding-top: 20px;
