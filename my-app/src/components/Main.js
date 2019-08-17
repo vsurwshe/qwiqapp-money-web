@@ -57,7 +57,9 @@ class Main extends Component {
       if (Store.getSelectedValue() === 'false') {
         await Store.saveProfile(profiles[0])
       }
-      profileSet = await profiles.map(profile => { return { name: profile.name, url: "/profiles/" + profile.id, icon: "cui-user" } })
+      if (Array.isArray(profiles)) {
+        profileSet = await profiles.map(profile => { return { name: profile.name, url: "/profiles/" + profile.id, icon: "cui-user" } })
+      }
       await this.setState({ profileNames: profileSet })
       this.forceUpdate();
     }
