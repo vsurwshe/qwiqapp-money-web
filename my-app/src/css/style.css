@@ -135,5 +135,18 @@ dropdown-align {
     /* color: blue */
     color: #2E86C1
 }
+
+.button-hover{
+    float: left;
+    border:none;
+    color:#187AD1;
+}
+
+.button-hover:hover{
+   text-decoration:underline;
+}
+
+.button-hover:focus{
+    outline:0;
+ }
 /* ================== END  =================*/
-/* ============ End Contacts styles=========*/

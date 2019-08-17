@@ -5,13 +5,14 @@ import { AvForm, AvField } from "availity-reactstrap-validation";
 import { CardHeader, Card, CardBody, Col, Button, Alert } from "reactstrap";
 import Config from "../data/Config";
 import SignupApi from "../services/SignupApi";
+import '../css/style.css'
 
 class SignupVerify extends Component {
   constructor(props) {
     super(props);
     this.state = {
       content: '',
-      color: '',
+      color: '#000000',
       redirect: false
     };
   }
@@ -27,6 +28,10 @@ class SignupVerify extends Component {
     this.callAlertTimer("success", "Verified Successfully !")
     this.forceUpdate();
   };
+
+  successResendCode = () =>{
+    this.callAlertTimer("info", 'Code resent, please check your email now ...')
+  }
 
   errorCall = err => {
     this.callAlertTimer("danger", "Unable to process, Please Re-Enter your Verification code Again....")
@@ -52,7 +57,6 @@ class SignupVerify extends Component {
     }
   }
 
-
   loadVerify = () => {
     const { color, content } = this.state
     return (
@@ -64,7 +68,8 @@ class SignupVerify extends Component {
               <Col sm="6">
                 <Alert color={color}>{content}</Alert>
                 <AvForm onSubmit={this.handleSubmit}>
-                  <AvField type="number" name="code" placeholder="Enter Code sent to your Email" value={color === "danger" && ""} required errorMessage="Please Enter Valid 6-digit Code"></AvField>
+                  <AvField type="number" name="code" placeholder="Enter Code sent to your Email" value={color === "danger" && ""} required errorMessage="Please Enter Valid 6-digit Code" onChange={()=>this.clearAlert(color)}></AvField>
+                  <button type="button" className='button-hover' onClick={this.resendVerifyCode}>Resend Verification Code</button><br/><br/>
                   <Button color="info" >Verify</Button> &nbsp;&nbsp;&nbsp;
                   <Link to="/profiles"><Button type="button">Cancel</Button></Link>
                 </AvForm>
@@ -74,6 +79,16 @@ class SignupVerify extends Component {
         </Card>
       </div>
     );
+  }
+
+  clearAlert = (color) =>{
+    if(color === 'info'){
+      this.setState({ color:'', content: '' });
+    }
+  }
+
+  resendVerifyCode = () =>{
+    new SignupApi().resendVerifyCode(this.successResendCode, this.errorCall)
   }
 }
 
