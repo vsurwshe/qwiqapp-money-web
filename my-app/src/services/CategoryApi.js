@@ -40,11 +40,11 @@ async function process(success, failure, Uurl, Umethod, pid, data, reload) {
     }
     validResponse(promise, success);
   } catch (error) {
-    AccessTokenError(error, failure, Uurl, Umethod, data, success, reload)
+    handleAccessTokenError(error, failure, Uurl, Umethod, data, success, reload)
   }
 }
 
-let AccessTokenError = (err, failure, Uurl, Umethod, data, success, reload) => {
+let handleAccessTokenError = (err, failure, Uurl, Umethod, data, success, reload) => {
   if (err.request.status === 0) {
     errorResponse(err, failure)
   } else if (err.response.status === 401 || err.response.status === 403) {

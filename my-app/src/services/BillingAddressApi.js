@@ -29,12 +29,12 @@ async function process(success, failure, Uurl, Umethod, data, reload) {
         data === null ? promise = await HTTP.request() : promise = await HTTP.request({ data });
         validResponse(promise, success)
     } catch (err) {
-        AccessTokenError(err, failure, Uurl, Umethod, data, success, reload);
+        handleAccessTokenError(err, failure, Uurl, Umethod, data, success, reload);
     }
 }
 
 //this method slove the Exprie Token Problem.
-let AccessTokenError = function (err, failure, Uurl, Umethod, data, success, reload) {
+let handleAccessTokenError = function (err, failure, Uurl, Umethod, data, success, reload) {
     if (err.request.status === 0) {
     } else if (err.response.status === 403 || err.response.status === 401) {
         if (!reload) {

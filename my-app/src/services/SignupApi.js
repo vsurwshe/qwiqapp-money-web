@@ -2,7 +2,6 @@ import Axios from "axios";
 import Config from "../data/Config";
 import Store from "../data/Store";
 import LoginApi from "./LoginApi";
-import ForgotPassword from "../components/ForgotPassword"
 
 class SignupApi {
 
@@ -16,15 +15,17 @@ class SignupApi {
   registerUser(success, failure, data) {
     process(success, failure, Config.cloudBaseURL + "/user/register", "POST", data);
   }
- //user forgot password 
- forgotPassword(success, failure, email) {
-  process(success, failure, Config.cloudBaseURL + "/user/passwd/forgot?email=" + email, "GET")
-}
+
+  //user forgot password 
+  forgotPassword(success, failure, email) {
+    process(success, failure, Config.cloudBaseURL + "/user/passwd/forgot?email=" + email, "GET")
+  }
+  
   //Checks Whether user already exists or not
-  async existsUser(success, failure, data) {
+  async existsUser(success, failure, email) {
     this.getToken();
     setTimeout(() => {
-      let HTTP = httpCall(Config.cloudBaseURL + "/user/exists?email=" + data.email, "GET", Store.getDummyUserAccessToken());
+      let HTTP = httpCall(Config.cloudBaseURL + "/user/exists?email=" + email, "GET", Store.getDummyUserAccessToken());
       HTTP.request().then(resp => {
         if (resp.data) {
           validResponse(resp, success)

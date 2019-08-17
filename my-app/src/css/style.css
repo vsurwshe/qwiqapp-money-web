@@ -17,6 +17,9 @@
 .row-text-align { 
     text-align:left 
 }
+.container-top{
+    padding-top: 50px;
+}
 .padding{
     padding: 10px
 }
