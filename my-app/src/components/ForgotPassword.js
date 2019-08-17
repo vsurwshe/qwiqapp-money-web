@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-// import {Redirect} from 'react-router-dom';
+import {Link} from 'react-router-dom';
 import { AvForm, AvField } from 'availity-reactstrap-validation';
 import { Card, CardBody, Alert, FormGroup, Button, Container, Col } from 'reactstrap';
 import SignupApi from '../services/SignupApi';
@@ -74,7 +74,9 @@ class ForgotPassword extends Component {
                     <Col><AvField name="email" type="email" placeholder="your register email" errorMessage="Invalid Email Format" className="placeholder-style"
                       onChange={() => this.setState({ alertColor: '', alertMessage: '' })} required /></Col>
                     <center><FormGroup row>
-                      <Col><Button color="info" disabled={this.state.disableDoubleClick} > Forgot Password </Button> &nbsp; &nbsp;</Col>
+                      <Col><Button color="info" disabled={this.state.disableDoubleClick} > Forgot Password </Button> &nbsp; &nbsp;
+                      <Link to="/login"><Button > Cancel</Button></Link>
+                      </Col>
                     </FormGroup></center>
                   </AvForm>
                 </Col>
