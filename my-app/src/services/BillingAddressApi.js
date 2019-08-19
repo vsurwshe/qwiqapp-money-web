@@ -17,17 +17,17 @@ class BillingAddressApi {
     }
 
     getPaymentsHistory(success, failure) {
-        process(success, failure, "/billing/payments", "GET")
+        process(success, failure, "/billing/payments", "GET",null,null,"payments")
     }
 }
 export default BillingAddressApi;
 
-async function process(success, failure, Uurl, Umethod, data, reload) {
+async function process(success, failure, Uurl, Umethod, data, reload,payments) {
     let HTTP = httpCall(Uurl, Umethod);
     let promise;
     try {
         data === null ? promise = await HTTP.request() : promise = await HTTP.request({ data });
-        validResponse(promise, success)
+        validResponse(promise, success,payments)
     } catch (err) {
         handleAccessTokenError(err, failure, Uurl, Umethod, data, success, reload);
     }
@@ -49,12 +49,16 @@ let handleAccessTokenError = function (err, failure, Uurl, Umethod, data, succes
     }
 }
 
-let validResponse = function (resp, successMethod) {
+let validResponse =  function (resp, successMethod,payments) {
     if (successMethod != null) {
         if (resp.data === '') {
             successMethod(null);
-        } else {
+           
+        } else if(payments!=="payments") {
+            Store.saveBillingAddress(resp.data);
             successMethod(resp.data);
+        }else{
+             successMethod(resp.data);
         }
     }
 };

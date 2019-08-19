@@ -21,8 +21,8 @@
     padding-top: 50px;
 }
 .heading {
-  text-align: center;
-  font-size: 2.5ch
+  text-align: left;
+  font-size: 3.5ch
 }
 .padding{
     padding: 10px
@@ -82,6 +82,11 @@ dropdown-align {
 }
 .date-formate{
     padding-top: 5px;
+}
+.business-address{
+ text-align: left;
+ margin-inline-end: 0ch;
+ padding-left: 80px;
 }
 .padding-left {
     padding-left: 20px
@@ -175,6 +180,10 @@ dropdown-align {
  }
  .tbody-net{
      float : right;
+ }
+ .container-border{
+   border-style: ridge;
+   padding-top :20px;
  }
 /* ================== END  =================*/
 

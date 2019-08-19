@@ -28,7 +28,8 @@ import GeneralApi from "../services/GeneralApi";
 import EditUser from "../secure/editUser/EditUser";
 import ChangePassword from "../secure/editUser/ChangePassword";
 import ForgotPassword from '../components/ForgotPassword';
-import Invoice from "../secure/invoices/Invoice";
+import Invoice from "../secure/billing/Invoice";
+
 
 const DefaultFooter = React.lazy(() => import("../secure/sidebar/DefaultFooter"));
 

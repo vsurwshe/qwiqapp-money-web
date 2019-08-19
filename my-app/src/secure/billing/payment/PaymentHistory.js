@@ -172,7 +172,7 @@ class PaymentHistory extends Component {
           break;
       }
     }
-    return <div>{date.substring(0, 3)}, {day}<sup>{dateSuperTag}</sup> {date.substring(3, 7) + " " + date.substring(11, 15)}</div>;
+    return <div>{date.substring(0, 3)}, {day}<sup>{dateSuperTag}</sup> {`${date.substring(3, 7)} ${date.substring(11, 15)}`}</div>;
   }
 }
 export default PaymentHistory;
