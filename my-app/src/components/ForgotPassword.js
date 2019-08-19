@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {Link} from 'react-router-dom';
-import { AvForm, AvField } from 'availity-reactstrap-validation';
-import { Card, CardBody, Alert, FormGroup, Button, Container, Col } from 'reactstrap';
+import { AvForm, AvField} from 'availity-reactstrap-validation';
+import { Card, CardBody, Alert, FormGroup, Button, Container, Col, Input, Label,Collapse } from 'reactstrap';
 import SignupApi from '../services/SignupApi';
 import Config from '../data/Config';
 
@@ -13,7 +13,8 @@ class ForgotPassword extends Component {
       alertColor: '',
       alertMessage: '',
       otpSent: false,
-      disableDoubleClick: false
+      disableDoubleClick: false,
+      resetCode: false
     };
   }
 
@@ -30,14 +31,15 @@ class ForgotPassword extends Component {
 
   //when user signup successfull, this method is called ashc@as.com
   successCall = () => {
-    this.callAlertTimer("success", "Succesfull !! Please check your email for reset code .... ")
+    this.callAlertTimer("success", "Thank You !! You should receive an email with the reset code .... ")
   };
 
   // when any internal Error occur
   errorCall = error => {
+    this.setState({ disableDoubleClick: false });
     if (error.response.status) {
       if (error.response.status === 500) {
-        this.callAlertTimer("danger", "Email doesn't exists, please enter your registered email...");
+        this.callAlertTimer("danger", "Email doesn't exists, please enter valid email...");
       }
     } else {
       this.callAlertTimer("danger", "Unable to Process Request, Please try Again...");
@@ -57,21 +59,19 @@ class ForgotPassword extends Component {
   render() {
     const { alertMessage, alertColor, otpSent } = this.state;
     // TODO: Redirect to reset password functionality
-    if (otpSent) {
-      // return <Redirect to="/passwd/reset"/>
-      return <div>Redirected to Reset Password</div>
-    } else {
       return <div>
         <center>
           <Container className="container-top">
             <Card >
               <CardBody>
-                <h4 className="padding-top"><b><center> FORGOT PASSWORD</center></b></h4><br />
-                <p>Enter your email address below and we'll send you a otp code to reset your password.</p>
+                <h5 className="padding-top"><b><center> FORGOT/RESET PASSWORD</center></b></h5>
                 <Col sm="12" md={{ size: 8, offset: 0.5 }} >
                   <Alert color={alertColor}>{alertMessage}</Alert>
+                      <Label check style={{color:'green'}}>
+                        <Input type="checkbox" name="reset" onClick={()=>this.setState({resetCode:!this.state.resetCode})}/>I have a Reset Code
+                      </Label><br/><br/>
                   <AvForm onSubmit={this.handleSubmit}>
-                    <Col><AvField name="email" type="email" placeholder="your register email" errorMessage="Invalid Email Format" className="placeholder-style"
+                    <Col ><p style={{float:'left'}} >Enter Registered Email ID : </p><AvField name="email" type="email" disabled={otpSent} placeholder="Your Email" errorMessage="Invalid Email Format" className="placeholder-style"
                       onChange={() => this.setState({ alertColor: '', alertMessage: '' })} required /></Col>
                     <center><FormGroup row>
                       <Col><Button color="info" disabled={this.state.disableDoubleClick} > Forgot Password </Button> &nbsp; &nbsp;
@@ -79,6 +79,9 @@ class ForgotPassword extends Component {
                       </Col>
                     </FormGroup></center>
                   </AvForm>
+                  <Collapse isOpen={this.state.resetCode}>
+                      <h5>Reset Fields Called </h5>
+                  </Collapse>
                 </Col>
               </CardBody>
             </Card>
@@ -86,7 +89,6 @@ class ForgotPassword extends Component {
         </center>
       </div>
     }
-  }
 }
 
 export default ForgotPassword;

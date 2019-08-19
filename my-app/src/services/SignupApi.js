@@ -22,10 +22,10 @@ class SignupApi {
   }
   
   //Checks Whether user already exists or not
-  async existsUser(success, failure, email) {
+  async existsUser(success, failure, userData) {
     this.getToken();
     setTimeout(() => {
-      let HTTP = httpCall(Config.cloudBaseURL + "/user/exists?email=" + email, "GET", Store.getDummyUserAccessToken());
+      let HTTP = httpCall(Config.cloudBaseURL + "/user/exists?email=" + userData.email, "GET", Store.getDummyUserAccessToken());
       HTTP.request().then(resp => {
         if (resp.data) {
           validResponse(resp, success)
