@@ -26,11 +26,11 @@ async function process(successCall, failureCall, requestUrl, requestMethod, relo
     promise = await HTTP.request();
     successResponse(promise, successCall)
   } catch (error) {
-    AccessTokenError(error, successCall, failureCall, requestUrl, requestMethod, reload);
+    handleAccessTokenError(error, successCall, failureCall, requestUrl, requestMethod, reload);
   }
 }
 
-function AccessTokenError(err, success, failure, Uurl, Umethod, reload) {
+function handleAccessTokenError(err, success, failure, Uurl, Umethod, reload) {
   if (err.request.status === 0) {
     errorResponse(err, failure)
   } else if (err.response.status === 401 || err.response.status === 403) {

@@ -49,13 +49,13 @@ async function process(success, failure, Uurl, Umethod, profileId, data, reload)
       }
       validResponse(promise, success)
     } catch (err) {
-      AccessTokenError(profileId, err, failure, Uurl, Umethod, data, success, reload);
+      handleAccessTokenError(profileId, err, failure, Uurl, Umethod, data, success, reload);
     }
   }
 }
 
 //this method slove the Exprie Token Problem.
-let AccessTokenError = function (profileId, err, failure, Uurl, Umethod, data, success, reload) {
+let handleAccessTokenError = function (profileId, err, failure, Uurl, Umethod, data, success, reload) {
   if (err.request.status === 0) {
     new LabelApi().getSublabels(success, failure, profileId, "True");
   } else if (err.response.status === 403 || err.response.status === 401) {
