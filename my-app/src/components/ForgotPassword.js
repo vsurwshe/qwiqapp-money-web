@@ -34,6 +34,7 @@ class ForgotPassword extends Component {
 
   //when user signup successfull, this method is called ashc@as.com
   successCall = () => {
+    this.setState({ disableDoubleClick: false });
     this.callAlertTimer("success", "Thank You !! You should receive an email with the reset code .... ")
   };
 
@@ -57,11 +58,12 @@ class ForgotPassword extends Component {
   }
 
   resetSuccessCall = () => {
-    this.setState({ enableLink: true });
+    this.setState({ enableLink: true, disableDoubleClick: false });
     this.callAlertTimer("success", "Your password reset Successfully, please login now ...")
   }
 
   resetErrorCall = (error) => {
+    this.setState({ disableDoubleClick: false });
     if (error.response.status === 400) {
       this.callAlertTimer("danger", "Expired activation code, already verified or not existing")
     } else if (error.response.status === 500) {
@@ -76,21 +78,26 @@ class ForgotPassword extends Component {
     this.setState({ alertColor, alertMessage });
     if (alertColor === "success") {
       setTimeout(async () => {
-        await this.setState({ alertColor: '', alertMessage: '', otpSent: true })
+        await this.setState({ otpSent: true })
       }, Config.apiTimeoutMillis)
     }
+  }
+
+  handleAlertMessage = () => {
+    this.callAlertTimer('', '')
   }
 
   render() {
     const { alertMessage, alertColor, otpSent } = this.state;
     // TODO: Redirect to reset password functionality
+    console.log(alertColor, alertMessage);
     return <center>
       <Container className="container-top">
         <Card >
           <CardBody>
             <h5 className="padding-top"><b><center> FORGOT/RESET PASSWORD</center></b></h5>
             <Col sm="12" md={{ size: 8, offset: 0.5 }} >
-              <Alert color={alertColor}>{alertMessage}</Alert>
+              {alertMessage && <Alert color={alertColor}>{alertMessage}</Alert>}
                 {this.loadRadioButtons()}<br /><br />
               <Collapse isOpen={this.state.forgotPassword}>
                 {this.loadForgotPassword(otpSent)}
@@ -123,12 +130,12 @@ class ForgotPassword extends Component {
       forgotPassword: !this.state.forgotPassword 
     })
   }
-
+  
   // this functions loads the Forget Password UI
   loadForgotPassword = (otpSent) => {
     return <AvForm onSubmit={this.handleForgotPassword}>
-      <Col ><p style={{ float: 'left' }} >Enter Registered Email ID : </p><AvField name="email" type="email" disabled={otpSent} placeholder="Your Email" errorMessage="Invalid Email Format" className="placeholder-style"
-        onChange={() => this.setState({ alertColor: '', alertMessage: '' })} required /></Col>
+      <Col ><p style={{ float: 'left' }} >Enter Registered Email ID : </p><AvField name="email" type="email" onChange={(e)=>this.handleAlertMessage(e)} disabled={otpSent} placeholder="Your Email" errorMessage="Invalid Email Format" className="placeholder-style"
+        required /></Col>
       <center><FormGroup row>
         <Col><Button color="info" disabled={this.state.disableDoubleClick} > Forgot Password </Button> &nbsp; &nbsp;
       <Link to="/login"><Button > Cancel</Button></Link>
@@ -140,10 +147,10 @@ class ForgotPassword extends Component {
   // this functions loads the reset password UI
   loadResetPassword = () => {
     return <AvForm onSubmit={this.handleResetCode}>
-      <Col><AvField name="email" type="email" placeholder="Email" errorMessage="Invalid Email Format" className="placeholder-style" required /></Col>
-      <Col><AvField name="otp" placeholder="OTP Code" required /></Col>
-      <Col><AvField name="newpwd" type="password" placeholder="New Password" validate={{ minLength: { value: 6 } }} errorMessage="Password must be minimum 6 characters" required /></Col>
-      <Col><AvField name="confirmpwd" placeholder="Confirm Password" type="password" validate={{ match: { value: 'newpwd' } }} errorMessage="New password and confirm password doesn't match" required /></Col>
+      <Col><AvField name="email" type="email" placeholder="Email" onChange={this.handleAlertMessage} errorMessage="Invalid Email Format" className="placeholder-style" required /></Col>
+      <Col><AvField name="otp" placeholder="OTP Code" required onChange={this.handleAlertMessage}  /></Col>
+      <Col><AvField name="newpwd" type="password" placeholder="New Password" onChange={this.handleAlertMessage}  validate={{ minLength: { value: 6 } }} errorMessage="Password must be minimum 6 characters" required /></Col>
+      <Col><AvField name="confirmpwd" placeholder="Confirm Password" onChange={this.handleAlertMessage}  type="password" validate={{ match: { value: 'newpwd' } }} errorMessage="New password and confirm password doesn't match" required /></Col>
       <center><FormGroup row>
         <Col>
           <Button color="info" disabled={this.state.disableDoubleClick} > Reset Password </Button> &nbsp; &nbsp;
