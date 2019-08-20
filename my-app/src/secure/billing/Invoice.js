@@ -4,6 +4,7 @@ import { UserInvoiceApi } from '../../services/UserInvoiceApi';
 import Store from '../../data/Store';
 import '../../css/style.css';
 import GeneralApi from '../../services/GeneralApi';
+import BillingAddressApi from '../../services/BillingAddressApi';
 
 class Invoice extends Component {
     constructor(props) {
@@ -13,28 +14,38 @@ class Invoice extends Component {
             invoiceData: '',
             user: Store.getUser(),
             businessAddress: '',
-            userBillingAddress:Store.getBillingAddress(),
+            userBillingAddress: [],
         }
     }
 
     componentDidMount = () => {
         new UserInvoiceApi().showInvoice(this.successCall, this.errorCall, this.state.invoiceId);
-        new GeneralApi().settings((businessAddress) => { this.setState({ businessAddress }) },
-            (error) => { console.log('businessAddress is getting error: ', error) })
+        new GeneralApi().settings(this.settingsSuccessCall, this.errorCall);
+        new BillingAddressApi().getBillings(this.userBillingAddress, this.errorCall);
     }
-    successCall = (responce) => {
-        responce.then((resp) => {
+
+    settingsSuccessCall = (businessAddress) => {
+        this.setState({ businessAddress })
+    }
+
+    successCall = (response) => {
+        response.then((resp) => {
             this.setState({ invoiceData: resp.data });
         })
     }
+
+    userBillingAddress = (userBillingAddress) => {
+        this.setState({ userBillingAddress });
+    }
+
     errorCall = (error) => {
         error.catch((err) => {
             console.log(err)
         });
     }
+
     render() {
-        const { invoiceData, businessAddress,userBillingAddress } = this.state;
-         
+        const { invoiceData, businessAddress, userBillingAddress } = this.state;
         let rowData;
         if (invoiceData.invoiceItems) {
             rowData = invoiceData.invoiceItems.map((invoice, index) => {
@@ -47,9 +58,13 @@ class Invoice extends Component {
                 </tr>)
             })
         }
-        return this.invoiceTable(rowData,invoiceData, userBillingAddress,businessAddress);
+        return this.invoiceTable(rowData, invoiceData, userBillingAddress, businessAddress);
     }
-    invoiceTable=(invoice, invoiceData,userBillingAddress,businessAddress)=>{
+
+    invoiceTable = (invoice, invoiceData, userBillingAddress, businessAddress) => {
+        const { firstName, lastName, company, addressLine1, addressLine2, city, region, postCode, country } = userBillingAddress;
+        const { business, address1, address2, address4, address3, contact, taxRef } = businessAddress;
+        const { invoiceDate, netTotal, taxTotal, grossTotal } = invoiceData;
         return (
             <Container className="container-border">
                 <Card>
@@ -58,39 +73,40 @@ class Invoice extends Component {
                             <Col sm={9}>
                                 <CardTitle className="heading">INVOICE</CardTitle>
                                 <span >Invoice id: #{this.state.invoiceId} </span>
-                                  <p >Date:  {invoiceData.invoiceDate && this.customeDateFormate(invoiceData.invoiceDate)}</p> 
+                                <p >Date:  {invoiceDate && this.customDateFormat(invoiceDate)}</p>
                                 <br />
                                 <Row>
                                     <Col sm={3}>
-                                    <hr/>
+                                        <hr />
                                     </Col>
                                 </Row>
                                 <p>
-                               {userBillingAddress.firstName && <><b>Name: </b>{userBillingAddress.firstName}</>} 
-                                            {userBillingAddress.lastName && <>&nbsp;{userBillingAddress.lastName} <br/></>}
-                                            {userBillingAddress.company && <><b>Organization: </b> {userBillingAddress.company}<br/></>}
-                                 <b>Address:</b> {userBillingAddress.addressLine1}<br/>
-                                                <span >{userBillingAddress.addressLine2}, &nbsp;
-                                                 {userBillingAddress.city}<br/>
-                                                 {userBillingAddress.region}-
-                                                 {userBillingAddress.postCode}<br/>
-                                                 {userBillingAddress.country}<br/>
-                                                 </span>
+
+                                    {firstName && <><b>Name: </b>{firstName}</>}
+                                    {lastName && <>&nbsp;{lastName} <br /></>}<br />
+                                    {company && <><b>Organization: </b> {company}<br /></>}
+                                    {addressLine1 && <><b>Address:</b> {addressLine1}<br /></>}
+                                    <span >{addressLine2} &nbsp;
+                                    {city}<br />
+                                        {region} &nbsp;
+                                    {postCode}<br />
+                                        {country}<br />
+                                    </span>
                                 </p>
-                               </Col>
+                            </Col>
                             <Col sm={3}>
                                 <b>Business Address</b><br />
                                 <span>
-                                    {businessAddress.business}<br />
-                                    {businessAddress.address1}<br />
-                                    {businessAddress.address2}<br />
-                                    {businessAddress.address4}<br />
-                                    {businessAddress.address3}<br /><br/>
-                                    {businessAddress.contact && <>
-                                        {(businessAddress.contact).split(',')[0]} <br />
-                                        {(businessAddress.contact).split(',')[1]}<br />
+                                    {business}<br />
+                                    {address1}<br />
+                                    {address2}<br />
+                                    {address4}<br />
+                                    {address3}<br /><br />
+                                    {contact && <>
+                                        {(contact).split(',')[0]} <br />
+                                        {(contact).split(',')[1]}<br />
                                     </>}
-                                    {businessAddress.taxRef}
+                                    {taxRef}
                                 </span>
                             </Col>
                         </Row>
@@ -115,37 +131,36 @@ class Invoice extends Component {
                     <tbody className="tbody-net">
                         <tr>
                             <td> <h6>Net Total :</h6> </td>
-                            <td><h6>£ {invoiceData.netTotal}</h6></td>
+                            <td><h6>£ {netTotal}</h6></td>
                         </tr>
                         <tr>
                             <td> <h6>Tax :</h6> </td>
-                            <td><h6>£ {invoiceData.taxTotal}</h6></td>
+                            <td><h6>£ {taxTotal}</h6></td>
                         </tr>
                         <tr>
                             <td><h4>Gross Total : </h4></td>
-                            <td><h4>£ {invoiceData.netTotal}</h4></td>
+                            <td><h4>£ {grossTotal}</h4></td>
                         </tr>
                     </tbody>
                 </Table>
             </Container>
         );
     }
-    customeDateFormate=(invoiceDate)=>{
-       if (invoiceDate) {
-        let date=invoiceDate.split('T')[0].toString();
-        var monthNames = [
-         "Jan", "Feb", "Mar",
-         "Apr", "May", "Jun", "Jul",
-         "Aug", "Sep", "Oct",
-         "Nov", "Dec"
-       ];
-         var inDate=new Date(date);
-       const day = inDate.getDate();
-       const month = inDate.getMonth();
-       const year = inDate.getFullYear();
 
-       return `${day} ${monthNames[month]} ${year}`;
-       }
+    customDateFormat = (invoiceDate) => {
+        if (invoiceDate) {
+            let date = invoiceDate.split('T')[0].toString();
+            var monthNames = [
+                "Jan", "Feb", "Mar", "Apr",
+                "May", "Jun", "Jul", "Aug",
+                "Sep", "Oct", "Nov", "Dec"
+            ];
+            var inDate = new Date(date);
+            const day = inDate.getDate();
+            const month = inDate.getMonth();
+            const year = inDate.getFullYear();
+            return `${day} ${monthNames[month]} ${year}`;
+        }
     }
 }
 
