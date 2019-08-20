@@ -3,12 +3,12 @@ import { withRouter } from "react-router-dom";
 import Store from "./data/Store";
 import Main from "./components/Main";
 import { Button } from 'reactstrap';
-import {BASE_URL} from './environmnet';
+import Config from "./data/Config";
 
 const App = () => {
   return (
     <>   
-    <p>{BASE_URL}</p>
+    {console.log(Config.customSetting().color)}
     <Main /> 
      </>
   );

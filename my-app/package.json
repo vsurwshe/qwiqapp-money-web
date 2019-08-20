@@ -51,16 +51,15 @@
     "yarn": "^1.17.3"
   },
   "scripts": {
-    
-    "start": " react-scripts start ",
-    "dev": " REACT_APP_ENV=development npm start ",
-    "stag": " REACT_APP_ENV=staging npm start ",
-    "prod": " REACT_APP_ENV=production npm start ",
-    "build:dev": " REACT_APP_ENV=development npm build",
-    "build:stag": " REACT_APP_ENV=staging npm build",
-    "build:prod": " REACT_APP_ENV=production npm build",
+    "start": "react-scripts start ",
+    "dev": "eval $(cat .env) npm start ",
+    "stag": "REACT_APP_NODE_ENV=demo npm start ",
+    "prod": "REACT_APP_NODE_ENV=ppe npm start ",
+    "build:dev": "REACT_APP_NODE_ENV=development npm build",
+    "build:stag": "REACT_APP_NODE_ENV=staging npm build",
+    "build:prod": "REACT_APP_NODE_ENV=production npm build",
     "build": "react-scripts start build",
-    "test": " jest",
+    "test": "jest",
     "testw": "jest --watchAll --verbose",
     "testc": "jest --verbose --coverage",
     "eject": "react-scripts eject"

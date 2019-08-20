@@ -9,7 +9,25 @@ const Config = {
     clientId: "trusted-app",
     clientSecret: "secret",
     notificationMillis: 400,
-    apiTimeoutMillis: 2000
+    apiTimeoutMillis: 2000,
+    customSetting: function(){ 
+        let data={
+            color:'',
+            content:''
+        }
+        if(process.env.REACT_APP_NODE_ENV=== 'DEMO'){
+            data.color='red';
+            console.log("HELLO DEMO")
+        } else if(process.env.REACT_APP_NODE_ENV=== 'PPE'){
+            data.color='green';
+            data.content='abc';
+            console.log("HELLO PPE")
+        } else {
+            data.color='blue';
+            console.log("HELLO DEVELOPMENT")
+        }
+        return data;
+    }
 }
 
 export default Config;
