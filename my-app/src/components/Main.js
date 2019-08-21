@@ -29,8 +29,6 @@ import EditUser from "../secure/editUser/EditUser";
 import ChangePassword from "../secure/editUser/ChangePassword";
 import ForgotPassword from '../components/ForgotPassword';
 import Invoice from "../secure/billing/Invoice";
-
-import  {REACT_APP_BACKGROUNG_COLOUR} from '../environmnet';
 import Config from "../data/Config";
 
 const DefaultFooter = React.lazy(() => import("../secure/sidebar/DefaultFooter"));
