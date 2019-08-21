@@ -20,6 +20,10 @@
 .container-top{
     padding-top: 50px;
 }
+.heading {
+  text-align: left;
+  font-size: 3.5ch
+}
 .padding{
     padding: 10px
 }
@@ -78,6 +82,11 @@ dropdown-align {
 }
 .date-formate{
     padding-top: 5px;
+}
+.business-address{
+ text-align: left;
+ margin-inline-end: 0ch;
+ padding-left: 80px;
 }
 .padding-left {
     padding-left: 20px
@@ -152,4 +161,29 @@ dropdown-align {
 .button-hover:focus{
     outline:0;
  }
+/* ================== User Invoice Code ================== */
+ .h1-padding{
+    padding-bottom : 1;
+ }
+ .p-style{
+    padding-top: 20px;
+    padding-block-end: 60px;
+ }
+ .span-left{
+    float : left;
+ }
+ .span-right{
+    float : right;
+ }
+ .tabel{
+     border: none;
+ }
+ .tbody-net{
+     float : right;
+ }
+ .container-border{
+   border-style: ridge;
+   padding-top :20px;
+ }
 /* ================== END  =================*/
+

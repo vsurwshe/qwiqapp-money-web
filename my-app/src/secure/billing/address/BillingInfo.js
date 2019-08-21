@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Card, CardBody, CardHeader, Button, Alert } from 'reactstrap';
 import BillingAddressApi from '../../../services/BillingAddressApi';
 import EditBillingAddress from './EditBillingAddress';
+import Loader from 'react-loader-spinner'
 import '../../../css/style.css';
 
 let emptyBillingAddress = {
@@ -51,14 +52,29 @@ class BillingInfo extends Component {
   }
 
   render() {
-    const { billing, visible, addBilling } = this.state;
+    const { billing, visible, addBilling, spinner } = this.state;
     if (addBilling) {
       return <EditBillingAddress updateBill={billing} />
     } else if (!billing.country) {
-      return this.showingNoBillingMessage(billing)
+      if(!spinner){
+        return this.loadSpinner();
+      } else{
+        return this.showingNoBillingMessage(billing)
+      }
     } else {
       return this.billingAddress(billing, visible);
     }
+  }
+
+  loadSpinner = () =>{
+    return <div className="animated fadeIn">
+        <Card>
+          {this.loadHeader()}
+          <center className="padding-top">
+            <CardBody><Loader type="TailSpin" className="loader-color" height={60} width={60} /></CardBody>
+          </center>
+        </Card>
+      </div>
   }
 
   billingAddress = (billing, visible) => {

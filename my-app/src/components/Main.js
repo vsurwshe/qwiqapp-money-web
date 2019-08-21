@@ -28,6 +28,8 @@ import GeneralApi from "../services/GeneralApi";
 import EditUser from "../secure/editUser/EditUser";
 import ChangePassword from "../secure/editUser/ChangePassword";
 import ForgotPassword from '../components/ForgotPassword';
+import Invoice from "../secure/billing/Invoice";
+
 
 const DefaultFooter = React.lazy(() => import("../secure/sidebar/DefaultFooter"));
 
@@ -56,7 +58,9 @@ class Main extends Component {
       if (Store.getSelectedValue() === 'false') {
         await Store.saveProfile(profiles[0])
       }
-      profileSet = await profiles.map(profile => { return { name: profile.name, url: "/profiles/" + profile.id, icon: "cui-user" } })
+      if (Array.isArray(profiles)) {
+        profileSet = await profiles.map(profile => { return { name: profile.name, url: "/profiles/" + profile.id, icon: "cui-user" } })
+      }
       await this.setState({ profileNames: profileSet })
       this.forceUpdate();
     }
@@ -104,6 +108,7 @@ class Main extends Component {
         <PrivateRoute exact path="/billing/address" component={BillingInfo} />
         <PrivateRoute exact path="/billing/addCredits" component={MakePayment} />
         <PrivateRoute exact path="/billing/paymentHistory" component={PaymentHistory} />
+        <PrivateRoute exact path="/payment/invoice" component={Invoice} />
         <PrivateRoute exact path="/createProfile" component={CreateProfile} />
         <PrivateRoute exact path="/profiles" component={Profiles} />
         <PrivateRoute exact path="/profiles/:id" component={SetProfile} />
