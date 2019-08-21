@@ -18,23 +18,27 @@ class ForgotPassword extends Component {
       forgotPassword: true
     };
   }
+
   componentDidMount() {
     new SignupApi().getToken();
   }
 
-  handleForgotPassword = async (events,values) => {
+  handleForgotPassword = async (events, values) => {
     this.setState({ disableDoubleClick: true });
     await new SignupApi().forgotPassword(this.successCall, this.errorCall, values.email)
+
   }
 
   //when user signup successfull, this method is called ashc@as.com
   successCall = () => {
-    this.setState({ disableDoubleClick: false });
-    this.callAlertTimer("success", "Thank You !! You should receive an email with the reset code .... ")
+    this.setState({ disableDoubleClick: false, forgotPassword: true });
+    this.callAlertTimer("success", "Thank You! You should receive an email with the reset code .... ")
+    // this.form && this.form.reset()
   };
+
   // when any internal Error occur
   errorCall = error => {
-    this.setState({ disableDoubleClick: false });
+    this.setState({ disableDoubleClick: false, forgotPassword: false });
     if (error.response.status) {
       if (error.response.status === 500) {
         this.callAlertTimer("danger", "Email doesn't exists, please enter valid email...");
@@ -44,7 +48,7 @@ class ForgotPassword extends Component {
     }
   };
 
-  handleResetCode = (events,values) => {
+  handleResetCode = (events, values) => {
     this.setState({ disableDoubleClick: true });
     new SignupApi().resetPassword(this.resetSuccessCall, this.resetErrorCall, values.email, values.otp, values.newpwd)
   }
@@ -52,6 +56,7 @@ class ForgotPassword extends Component {
   resetSuccessCall = () => {
     this.setState({ enableLink: true, disableDoubleClick: false });
     this.callAlertTimer("success", "Your password reset Successfully, please login now ...")
+    this.form && this.form.reset();
   }
 
   resetErrorCall = (error) => {
@@ -68,28 +73,19 @@ class ForgotPassword extends Component {
   //this prints onscreen alert
   callAlertTimer = (alertColor, alertMessage) => {
     this.setState({ alertColor, alertMessage });
-   }
-
-  handleAlertMessage = () => {
-    this.callAlertTimer('', '')
   }
 
   render() {
-    const { alertMessage, alertColor } = this.state;
+    const { alertMessage, alertColor, resetCode, forgotPassword } = this.state;
     return <center>
       <Container className="container-top">
         <Card >
           <CardBody>
-            <h5 className="padding-top"><b><center> FORGOT/RESET PASSWORD</center></b></h5>
+            <h5 className="padding-top"><b><center> FORGOT / RESET PASSWORD</center></b></h5><br />
             <Col sm="12" md={{ size: 8, offset: 0.5 }} >
               {alertMessage && <Alert color={alertColor}>{alertMessage}</Alert>}
-                {this.loadRadioButtons()}<br /><br />
-              <Collapse isOpen={this.state.forgotPassword}>
-                {this.loadForgotPassword()}
-              </Collapse>
-              <Collapse isOpen={this.state.resetCode}>
-                {this.loadResetPassword()}
-              </Collapse>
+              {this.loadCheckBoxes()}<br /><br />
+              {this.loadForgotResetpassword(resetCode, forgotPassword)}
             </Col>
           </CardBody>
         </Card>
@@ -98,47 +94,30 @@ class ForgotPassword extends Component {
   }
 
   // This functions loads the radio buttons
-  loadRadioButtons = () => {
+  loadCheckBoxes = () => {
     return <>
-        <Label className="text-size" check>
-          <Input type="radio" name="forgot" onChange={this.handleRadioButtons} checked={this.state.forgotPassword} />I don't have a Reset Code
-        </Label><br /><br />
-        <Label className="text-size" check>
-            <Input type="radio" name="reset" onChange={this.handleRadioButtons} checked={this.state.resetCode} />I have a Reset Code &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <Label className="text-size" >
+        <Input type="checkbox" name="reset" onChange={this.handleCheckbox} checked={this.state.resetCode} />I have a reset code &nbsp;
         </Label>
-      </>
+    </>
   }
 
-  handleRadioButtons = () =>{
-    this.setState({ 
-      resetCode: !this.state.resetCode,
-      alertColor:'',
-      alertMessage:'',
-      forgotPassword: !this.state.forgotPassword 
-    })
-    this.form && this.form.reset();
-  }
-  
-  // this functions loads the Forget Password UI
-  loadForgotPassword = () => {
-    return <AvForm onValidSubmit={this.handleForgotPassword} >
-      <Col ><p style={{ float: 'left' }} >Enter Registered Email ID : </p><AvField name="email" type="email" onChange={(e)=>this.handleAlertMessage(e)} placeholder="Your Email" errorMessage="Invalid Email Format" className="placeholder-style"
-        required /></Col>
-      <center><FormGroup row>
-        <Col><Button color="info" disabled={this.state.disableDoubleClick} > Forgot Password </Button> &nbsp; &nbsp;
-      <Link to="/login"><Button > Cancel</Button></Link>
-        </Col>
-      </FormGroup></center>
-    </AvForm>
+  handleCheckbox = () => {
+    if (this.state.alertColor !== 'danger') {
+      this.setState({
+        alertColor: '',
+        alertMessage: '',
+        resetCode: !this.state.resetCode
+      })
+    }
   }
 
   // this functions loads the reset password UI
   loadResetPassword = () => {
-    return <AvForm onValidSubmit={this.handleResetCode} ref={cd=>(this.form=cd)}>
-      <Col><AvField name="email" type="email" placeholder="Email" onChange={this.handleAlertMessage} errorMessage="Invalid Email Format" className="placeholder-style" required /></Col>
-      <Col><AvField name="otp" placeholder="OTP Code" required onChange={this.handleAlertMessage}  /></Col>
-      <Col><AvField name="newpwd" type="password" placeholder="New Password" onChange={this.handleAlertMessage}  validate={{ minLength: { value: 6 } }} errorMessage="Password must be minimum 6 characters" required /></Col>
-      <Col><AvField name="confirmpwd" placeholder="Confirm Password" onChange={this.handleAlertMessage}  type="password" validate={{ match: { value: 'newpwd' } }} errorMessage="New password and confirm password doesn't match" required /></Col>
+    return <>
+      <Col><AvField name="otp" placeholder="OTP Code" required onChange={this.handleAlertMessage} /></Col>
+      <Col><AvField name="newpwd" type="password" placeholder="New Password" onChange={this.handleAlertMessage} validate={{ minLength: { value: 6 } }} errorMessage="Password must be minimum 6 characters" required /></Col>
+      <Col><AvField name="confirmpwd" placeholder="Confirm Password" onChange={this.handleAlertMessage} type="password" validate={{ match: { value: 'newpwd' } }} errorMessage="New password and confirm password doesn't match" required /></Col>
       <center><FormGroup row>
         <Col>
           <Button color="info" disabled={this.state.disableDoubleClick} > Reset Password </Button> &nbsp; &nbsp;
@@ -146,7 +125,24 @@ class ForgotPassword extends Component {
           {this.state.enableLink && <p className="text-size">Click here to {<Link to="/login"> Login</Link>} Now</p>}
         </Col>
       </FormGroup></center>
-     </AvForm>
+    </>
+  }
+
+  loadForgotResetpassword = (resetCode, forgotPassword) => {
+    return <AvForm onValidSubmit={this.state.resetCode ? this.handleResetCode : this.handleForgotPassword} ref={c => (this.form = c)}>
+      <Col ><p style={{ float: 'left' }} >Enter Registered Email ID : </p>
+        <AvField name="email" type="email" placeholder="Your Email" errorMessage="Invalid Email Format" className="placeholder-style" 
+          onChange={() => this.setState({ alertColor: "", alertMessage: "" })} required />
+      </Col>
+      <Collapse isOpen={!(resetCode && forgotPassword)}>
+        <center><FormGroup row>
+          <Col><Button color="info" disabled={this.state.disableDoubleClick} > Forgot Password </Button> &nbsp; &nbsp;
+            <Link to="/login"><Button > Cancel</Button></Link>
+          </Col>
+        </FormGroup></center>
+      </Collapse>
+      {( resetCode && forgotPassword ) && <Collapse isOpen={true}>  {this.loadResetPassword()}</Collapse> }
+    </AvForm>
   }
 }
 
