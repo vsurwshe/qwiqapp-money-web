@@ -32,19 +32,20 @@ class ForgotPassword extends Component {
   //when user signup successfull, this method is called ashc@as.com
   successCall = () => {
     this.setState({ disableDoubleClick: false, forgotPassword: true });
-    this.callAlertTimer("success", "Thank You! You should receive an email with the reset code .... ")
+    this.callAlertTimer("success", "Thank You! You should receive an email with the reset code, if its valid .... ")
     // this.form && this.form.reset()
   };
 
   // when any internal Error occur
   errorCall = error => {
-    this.setState({ disableDoubleClick: false, forgotPassword: false });
+    this.setState({ disableDoubleClick: false });
     if (error.response.status) {
       if (error.response.status === 500) {
-        this.callAlertTimer("danger", "Email doesn't exists, please enter valid email...");
+        this.callAlertTimer("success", "Thank You! You should receive an email with the reset code, if its valid .... ")
       }
     } else {
-      this.callAlertTimer("danger", "Unable to Process Request, Please try Again...");
+      this.setState({forgotPassword : false})
+      this.callAlertTimer("danger", "Unable to process request, Please try again...");
     }
   };
 
@@ -62,11 +63,11 @@ class ForgotPassword extends Component {
   resetErrorCall = (error) => {
     this.setState({ disableDoubleClick: false });
     if (error.response.status === 400) {
-      this.callAlertTimer("danger", "Expired activation code, already verified or not existing")
+      this.callAlertTimer("danger", "Expired activation code, already verified or not existing !")
     } else if (error.response.status === 500) {
-      this.callAlertTimer("danger", "Invalid email, please check your email and try Again ....")
+      this.callAlertTimer("danger", "Incorrect email, please check your email and try Again ....")
     } else {
-      this.callAlertTimer("danger", "unable to process request, please try again ...")
+      this.callAlertTimer("danger", "Unable to process request at the moment, please try again ...")
     }
   }
 
