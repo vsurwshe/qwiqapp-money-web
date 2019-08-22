@@ -185,5 +185,11 @@ dropdown-align {
    border-style: ridge;
    padding-top :20px;
  }
+
+.text-size{
+    font-size: 16;
+    font-weight: bold;
+    color: #6F6D6D;
+}
 /* ================== END  =================*/
 

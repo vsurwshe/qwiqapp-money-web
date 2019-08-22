@@ -30,7 +30,6 @@ import ChangePassword from "../secure/editUser/ChangePassword";
 import ForgotPassword from '../components/ForgotPassword';
 import Invoice from "../secure/billing/Invoice";
 
-
 const DefaultFooter = React.lazy(() => import("../secure/sidebar/DefaultFooter"));
 
 class Main extends Component {
