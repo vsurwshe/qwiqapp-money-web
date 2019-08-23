@@ -30,6 +30,8 @@ class UpdateBill extends Component {
       currencies: [],
       userAmount: props.bill.amount,
       cancelUpdateBill: false,
+      taxPercent: props.bill.taxPercent,
+      taxAmount: props.bill.taxAmount
     };
   }
 
@@ -97,6 +99,30 @@ class UpdateBill extends Component {
     this.setState({ contactOption, contactOptionUpdate: true })
   }
 
+  handleSetAmount = e =>{
+    this.setState({userAmount: e.target.value});
+  }
+
+  handleTaxAmount = (e) => {
+    const {userAmount}  = this.state;
+    let taxPercentVal = parseInt(e.target.value);
+    let taxAmount;
+    if ( userAmount && taxPercentVal >= 0) {
+      taxAmount = userAmount - ( userAmount * 100)/(taxPercentVal +100) ;
+    } 
+    this.setState({taxAmount: taxAmount, taxPercent: taxPercentVal });
+  }
+
+  handleTaxPercent = (e) => {
+    const {userAmount}  = this.state;
+    let taxAmtVal = parseInt(e.target.value);
+    let taxPercent;
+    if ( userAmount && taxAmtVal >= 0) {
+      taxPercent = (userAmount * 100)/(userAmount - taxAmtVal) - 100 ;
+    } 
+    this.setState({taxAmount: taxAmtVal, taxPercent: taxPercent });
+  }
+
   render() {
     const { alertColor, content, updateSuccess, labels, categories, bill, cancelUpdateBill, contacts } = this.state;
     if (cancelUpdateBill) {
@@ -126,13 +152,17 @@ class UpdateBill extends Component {
                   </AvField>
                 </Col>
                 <Col>
-                  <AvField name="amount" id="amount" label="Amount" value={this.state.userAmount} placeholder="Amount" type="text" errorMessage="Invalid amount"
+                  <AvField name="amount" id="amount" label="Amount" value={this.state.userAmount} placeholder="Amount" type="text" errorMessage="Invalid amount" onChange= {e=>{this.handleSetAmount(e)}}
                     validate={{ required: { value: true }, pattern: { value: '^([0-9]*[.])?[0-9]+$' } }} required />
                 </Col>
               </Row>
               <Row>
                 <Col>
-                  <AvField name="tax" id="tax" value={bill.tax + ''} placeholder="Ex: 2" label="Tax" type="text" errorMessage="Invalid amount" validate={{ required: { value: true }, pattern: { value: '^[0-9]+$' } }} required />
+                  <AvField name="tax" id="tax" value={this.state.taxPercent} placeholder="Ex: 2" label="Tax" type="number" errorMessage="Invalid tax%" onChange={(e)=>{this.handleTaxAmount(e)}} validate={{ required: { value: true }, pattern: { value: '^[0-9]+$' } }} required />
+                </Col>
+                <Col>
+                  <AvField name='dummy' label="Tax Amount" value={this.state.taxAmount} placeholder="Amount" type="number" errorMessage="Invalid Tax amount" onChange={(e)=>{this.handleTaxPercent(e)}}
+                    validate={{ required: { value: true }, pattern: { value: '^([0-9]*[.])?[0-9]+$' } }} required />
                 </Col>
               </Row>
               <Row>
