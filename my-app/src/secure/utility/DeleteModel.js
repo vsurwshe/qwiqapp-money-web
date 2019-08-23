@@ -7,7 +7,7 @@ export const DeleteModel = (props) => {
       <ModalHeader toggle={props.toggleDanger}>{props.headerMessage}</ModalHeader>
       <ModalBody>{props.bodyMessage}</ModalBody>
       <ModalFooter>
-        <Button color="danger" onClick={props.delete}>Delete</Button>
+        <Button color="danger" onClick={props.delete}>Remove</Button>
         <Button color="secondary" onClick={props.cancel}>Cancel</Button>
       </ModalFooter>
     </Modal>)

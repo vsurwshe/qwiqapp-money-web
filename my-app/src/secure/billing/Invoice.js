@@ -72,7 +72,7 @@ class Invoice extends Component {
                         <Row >
                             <Col sm={9}>
                                 <CardTitle className="heading">INVOICE</CardTitle>
-                                <span >Invoice id: #{this.state.invoiceId} </span>
+                                <span >Invoice Number:{this.state.invoiceId} </span>
                                 <p >Date:  {invoiceDate && this.customDateFormat(invoiceDate)}</p>
                                 <br />
                                 <Row>
@@ -81,11 +81,10 @@ class Invoice extends Component {
                                     </Col>
                                 </Row>
                                 <p>
-
-                                    {firstName && <><b>Name: </b>{firstName}</>}
-                                    {lastName && <>&nbsp;{lastName} <br /></>}<br />
-                                    {company && <><b>Organization: </b> {company}<br /></>}
-                                    {addressLine1 && <><b>Address:</b> {addressLine1}<br /></>}
+                                    TO: {firstName && <>{firstName}</>} &nbsp;
+                                    {lastName && <>{lastName} <br /></>}
+                                    {company && <>{company}<br /></>}
+                                    {addressLine1 && <>{addressLine1}<br /></>}
                                     <span >{addressLine2} &nbsp;
                                     {city}<br />
                                         {region} &nbsp;
@@ -95,7 +94,6 @@ class Invoice extends Component {
                                 </p>
                             </Col>
                             <Col sm={3}>
-                                <b>Business Address</b><br />
                                 <span>
                                     {business}<br />
                                     {address1}<br />

@@ -168,7 +168,8 @@ class Main extends Component {
     return (
       <AppSidebar fixed display="sm">
         <Suspense>
-          {Store.getProfile() !== null && !this.state.flag ? <AppSidebarNav navConfig={navigation} {...this.props} /> : <AppSidebarNav navConfig={sideNavbarProfileItems}  {...this.props} />}
+          {Store.getProfile() !== null && !this.state.flag ? <AppSidebarNav navConfig={navigation} {...this.props} />
+            : <AppSidebarNav navConfig={sideNavbarProfileItems}  {...this.props} />}
         </Suspense>
       </AppSidebar>);
   }

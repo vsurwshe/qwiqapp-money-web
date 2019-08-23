@@ -63,7 +63,7 @@ class ChangePassword extends Component {
                                 <AvField name="old" type="password" label="Old Password" errorMessage="Enter Correct Password" placeholder="Enter Old Password" value={color === "danger" && ""} required />
                                 <AvField name="new" type="password" label="New Password" errorMessage="New Password Required" placeholder="Enter  New Password" required />
                                 <center>
-                                    <Button color="success" disabled={this.state.doubleClick}>Update</Button>
+                                    <Button color="success" disabled={this.state.doubleClick}>Edit</Button>
                                     <Link to="/dashboard" style={{ marginLeft: 10 }} ><Button color="secondary" type="button" >Cancel</Button></Link>
                                 </center>
                             </AvForm></>

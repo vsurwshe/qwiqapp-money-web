@@ -13,7 +13,7 @@ class SetProfile extends React.Component {
   }
 
   render() {
-    return <Redirect to="/profiles" />
+    return <Redirect to="/dashboard" />
   }
 }
 

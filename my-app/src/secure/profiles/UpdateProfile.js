@@ -65,7 +65,7 @@ class UpdateProfile extends Component {
                 <Input type="text" name="profile name" value={name} style={{ fontWeight: 'bold', color: '#000000' }} autoFocus={true} onChange={e => { this.setState({ name: e.target.value }) }} />
               </Col>
               <br />
-              <Button color="success" disabled={!name} onClick={this.handleUpdate} >Update  </Button>&nbsp;&nbsp;&nbsp;
+              <Button color="success" disabled={!name} onClick={this.handleUpdate} >Edit  </Button>&nbsp;&nbsp;&nbsp;
               <Button active color="light" aria-pressed="true" onClick={() => { this.setState({ cancelUpdateProfile: true }) }}>Cancel</Button>
             </FormGroup>
           </center>

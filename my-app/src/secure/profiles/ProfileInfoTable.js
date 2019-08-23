@@ -2,6 +2,7 @@ import React from 'react';
 import { Table } from 'reactstrap';
 import { FaCheck, FaMinus } from "react-icons/fa";
 import ProfileTypesApi from '../../services/ProfileTypesApi'
+import Config from '../../data/Config';
 
 const green = { color: '#008000' }
 const red = { color: '#FF0000' }
@@ -10,7 +11,8 @@ export default class ProfileInfoTable extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      profileTypes: []
+      profileTypes: [],
+      loader: true
     }
   }
 
@@ -22,6 +24,10 @@ export default class ProfileInfoTable extends React.Component {
     var featureColor = { color: '#330561', fontWeight: 'bold', textAlign: 'left' }
     let profileTypeCost = this.state.profileTypes.map(profile => { return <td key={profile.type}>{profile.cost}</td> });
     let profileTypeName = this.state.profileTypes.map(profile => { return <td key={profile.type}><b>{profile.name}</b></td> });
+    return <> {this.state.loader ? this.loader() : this.loadProfileDifferences(featureColor, profileTypeName, profileTypeCost)} </>
+  }
+
+  loadProfileDifferences = (featureColor, profileTypeName, profileTypeCost) => {
     return (
       <Table size="sm" hover striped bordered responsive >
         <thead>
@@ -110,5 +116,10 @@ export default class ProfileInfoTable extends React.Component {
         </tbody>
       </Table>
     );
+  }
+  loader = () => {
+    setTimeout(() => {
+      this.setState({ loader: false });
+    }, Config.notificationMillis)
   }
 }

@@ -31,7 +31,7 @@ class UpdateContact extends Component {
       labels: this.props.lables,
       contactId: this.props.contact.id,
       selectedOption: [],
-      labelUpdate: '',
+      labelUpdate: false,
       spinner: false,
       doubleClick: false,
       selectedCountry: this.props.contact.country,
@@ -67,12 +67,16 @@ class UpdateContact extends Component {
       if (profileId | contactId || selectedCountry) {
         this.setState({ doubleClick: true });
         var new_Values = { ...values, "country": selectedCountry, "labelIds": selectedOption === [] ? [] : (labelUpdate ? selectedOption.map(opt => { return opt.value }) : selectedOption), "version": this.state.contact.version }
+        if (new_Values.labelIds.length === 0 && this.props.contact.labelIds.length !== 0 && !labelUpdate) {
+          new_Values.labelIds = this.props.contact.labelIds
+        }
         new ContactApi().updateContact(this.successCall, this.errorCall, new_Values, this.state.profileId, this.state.contactId)
       }
     }
   };
 
   handleSelect = selectedOption => {
+    console.log("selectedOption", selectedOption)
     this.setState({ selectedOption, labelUpdate: true });
   };
 

@@ -16,7 +16,7 @@ export const ReUseComponents = {
             <center>
               <Loader type="TailSpin" color={color} height={60} width={60} />
               <br /><br />
-              <h5 style={{color:'green'}}>{bodyMessage}</h5>
+              <h5 style={{ color: 'green' }}>{bodyMessage}</h5>
             </center>
           </CardBody>
         </Card>
@@ -62,8 +62,8 @@ export const ReUseComponents = {
         <FaEllipsisV />
       </DropdownToggle>
       <DropdownMenu>
-        <DropdownItem onClick={() => { updateLabel(item) }} > Update </DropdownItem>
-        <DropdownItem onClick={() => { stateFun(item); toggleDanger(); }}> Delete</DropdownItem>
+        <DropdownItem onClick={() => { updateLabel(item) }} > Edit </DropdownItem>
+        <DropdownItem onClick={() => { stateFun(item); toggleDanger(); }}> Remove</DropdownItem>
       </DropdownMenu>
     </Dropdown>);
   },
@@ -74,15 +74,15 @@ export const ReUseComponents = {
         <Col className="marigin-top" >
           <strong>{items ? headerMessage + " : " + items.length : headerMessage}</strong>
         </Col>
-        {(items && items.length) && 
-        <Col md={7} className="shadow p-0 mb-3 bg-white rounded">
-          <InputGroup>
-            <Input type="search" className="float-right" style={{ width: '20%' }} onChange={e => setSearch(e)} placeholder={placeHolder} />
-            <InputGroupAddon addonType="append">
-              <InputGroupText className="dark"><FaSearch /></InputGroupText>
-            </InputGroupAddon>
-          </InputGroup>
-        </Col> }
+        {(items && items.length) &&
+          <Col md={7} className="shadow p-0 mb-3 bg-white rounded">
+            <InputGroup>
+              <Input type="search" className="float-right" style={{ width: '20%' }} onChange={e => setSearch(e)} placeholder={placeHolder} />
+              <InputGroupAddon addonType="append">
+                <InputGroupText className="dark"><FaSearch /></InputGroupText>
+              </InputGroupAddon>
+            </InputGroup>
+          </Col>}
         <Col >
           <Button color="success" className="float-right" onClick={addItem}> + ADD </Button>
         </Col>
@@ -156,7 +156,7 @@ export const ReUseComponents = {
     return (
       <Collapse isOpen={accordion[ukey]}>
         {singleItem.subCategories ? (singleItem.subCategories ? singleItem.subCategories.map((subCategory, subKey) => { return this.loadSubItem(subCategory, subKey, subItemCss, ellipsisText1, ellipsisText2, setItemId, toggleDanger, handleUpdate, toggleAccordion) }) : "")
-          : (singleItem.subLabels ? (singleItem.subLabels  ? singleItem.subLabels.map((subLabel, subKey) => { return this.loadSubItem(subLabel, subKey, subItemCss, ellipsisText1, ellipsisText2, setItemId, toggleDanger, handleUpdate, toggleAccordion) }) : "") : "")}
+          : (singleItem.subLabels ? (singleItem.subLabels ? singleItem.subLabels.map((subLabel, subKey) => { return this.loadSubItem(subLabel, subKey, subItemCss, ellipsisText1, ellipsisText2, setItemId, toggleDanger, handleUpdate, toggleAccordion) }) : "") : "")}
       </Collapse>
     )
   },

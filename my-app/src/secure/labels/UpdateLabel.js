@@ -96,7 +96,7 @@ class UpdateLabel extends Component {
               {this.state.parentId !== null ? (this.props.label.subLabels !== null ? "" : this.loadSublabelMakeParentLabel()) : this.state.labels.length <= 1 ? "" : this.props.label.subLabels !== null ? "" : this.loadParentLableMakeSubLable()}
               {this.state.labels.length <= 1 ? "" : this.loadCollapse()}
               <br />
-              <Button color="success" disabled={!name && this.state.doubleClick} onClick={this.handleUpdate} >Update  </Button>&nbsp;&nbsp;&nbsp;
+              <Button color="success" disabled={!name && this.state.doubleClick} onClick={this.handleUpdate} >Edit  </Button>&nbsp;&nbsp;&nbsp;
              <Button active color="light" aria-pressed="true" onClick={this.cancelUpdateLabel}>Cancel</Button>
             </FormGroup>
           </Col>

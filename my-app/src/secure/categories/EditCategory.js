@@ -63,7 +63,6 @@ class EditCategory extends Component {
     this.setState({ color, content });
     setTimeout(() => {
       this.setState({ updateSuccess: true });
-      window.location.reload()
     }, Config.notificationMillis);
   };
 
@@ -99,7 +98,7 @@ class EditCategory extends Component {
               <Input name="categoryColor" type="color" list="colors" value={`${categoryColor}`} onChange={e => { this.handleInput(e) }} /><br />
               {this.props.category.subCategories === null ? <><Input name="check" type="checkbox" onClick={() => { this.toggle() }} /><Label for="mark">Nest Under Category</Label> <br /></> : ""}
               {this.loadCollapse(values)}
-              <Button color="success" disabled={!updateCategoryName} onClick={this.handleUpdate} >Update  </Button>&nbsp;&nbsp;&nbsp;
+              <Button color="success" disabled={!updateCategoryName} onClick={this.handleUpdate} >Edit</Button>&nbsp;&nbsp;&nbsp;
                <Link className="link-text" to="/listCategories" >
                 <Button active color="light" aria-pressed="true" onClick={this.cancelUpdateCategory}>Cancel</Button></Link>
             </Col>
