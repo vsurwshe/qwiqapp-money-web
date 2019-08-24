@@ -28,7 +28,8 @@ class Lables extends Component {
       danger: false,
       dropdownOpen: [],
       spinner: false,
-      search: ''
+      search: '',
+      index: '',
     };
   }
 
@@ -77,12 +78,14 @@ class Lables extends Component {
   errorCall = err => this.setState({ visible: true })
 
   loadCollapse = () => {
+    console.log("Props= ", this.props.index)
     this.state.labels.map(lables => {
       return this.setState(prevState => ({
         accordion: [...prevState.accordion, false],
         dropdownOpen: [...prevState.dropdownOpen, false]
       }))
     });
+    this.toggleAccordion(this.props.index);
   }
 
   toggleDanger = () => {
@@ -97,10 +100,10 @@ class Lables extends Component {
     this.setState({ deleteLabel: true })
   };
 
-  toggleAccordion = (tab) => {
+  toggleAccordion = (specificIndex) => {
     const prevState = this.state.accordion;
-    const state = prevState.map((x, index) => tab === index ? !x : false);
-    this.setState({ accordion: state });
+    const state = prevState.map((x, index) => specificIndex === index ? !x : false);
+    this.setState({ accordion: state, index: specificIndex });
   }
 
   toggleDropDown = (tab) => {
@@ -114,7 +117,7 @@ class Lables extends Component {
   callCreateLabel = () => this.setState({ createLabel: true })
 
   render() {
-    const { labels, createLabel, updateLabel, id, deleteLabel, visible, profileId, requiredLabel, spinner, search } = this.state
+    const { labels, createLabel, updateLabel, id, deleteLabel, visible, profileId, requiredLabel, spinner, search, index } = this.state
     let profile = Store.getProfile()
     if (!profile) {
       return <ProfileEmptyMessage />
@@ -125,7 +128,7 @@ class Lables extends Component {
     } else if (createLabel) {
       return <CreateLabel pid={profileId} label={labels} />
     } else if (updateLabel) {
-      return <UpdateLabel pid={profileId} label={requiredLabel} lables={labels} />
+      return <UpdateLabel pid={profileId} label={requiredLabel} lables={labels} index={index} />
     } else if (deleteLabel) {
       return <DeleteLabel id={id} pid={profileId} />
     } else {

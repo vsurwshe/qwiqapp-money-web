@@ -57,7 +57,7 @@ export const ReUseComponents = {
   //This method loads Dropdown when Ellipsis is clicked to Update/Delete
   // style={{ marginTop: 7 }} 
   loadDropDown: function (item, ukey, dropdownOpen, toggleDropDown, stateFun, toggleDanger, updateLabel) {
-    return (<Dropdown isOpen={dropdownOpen} className="marigin-top" toggle={() => { toggleDropDown(ukey); }} size="sm">
+    return <Dropdown isOpen={dropdownOpen} className="marigin-top" toggle={() => { toggleDropDown(ukey); }} size="sm">
       <DropdownToggle tag="span" onClick={() => { toggleDropDown(ukey); }} data-toggle="dropdown" aria-expanded={dropdownOpen}>
         <FaEllipsisV />
       </DropdownToggle>
@@ -65,7 +65,7 @@ export const ReUseComponents = {
         <DropdownItem onClick={() => { updateLabel(item) }} > Edit </DropdownItem>
         <DropdownItem onClick={() => { stateFun(item); toggleDanger(); }}> Remove</DropdownItem>
       </DropdownMenu>
-    </Dropdown>);
+    </Dropdown>
   },
 
   loadHeaderWithSearch: function (headerMessage, items, setSearch, placeHolder, addItem) {

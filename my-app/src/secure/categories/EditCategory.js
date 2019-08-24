@@ -26,6 +26,7 @@ class EditCategory extends Component {
       collapse: true,
       categoryNameValid: false,
       cancelUpdateCategory: false,
+      index: props.index
     };
   }
 
@@ -71,13 +72,13 @@ class EditCategory extends Component {
   }
 
   render() {
-    const { updateCategoryName, categoryColor, color, content, updateSuccess, cancelUpdateCategory, parentId, categories } = this.state;
+    const { updateCategoryName, categoryColor, color, content, updateSuccess, cancelUpdateCategory, parentId, categories, index } = this.state;
     values = categories.filter(categories => categories.id === parentId).map(item => item.name)
     if (cancelUpdateCategory) {
       return <div><Categories /></div>
     } else {
       return <div>
-        {updateSuccess ? <Categories /> : this.props.category.parentId === null ?
+        {updateSuccess ? <Categories index={index} /> : this.props.category.parentId === null ?
           <div>{this.loadCategoryToUpdate(updateCategoryName, categoryColor, color, content, values)}</div>
           : <div>{this.loadSubCategoryToUpdate(updateCategoryName, categoryColor, color, content, values)}</div>}
       </div>

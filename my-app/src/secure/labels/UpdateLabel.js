@@ -22,6 +22,7 @@ class UpdateLabel extends Component {
       collapse: false,
       cancelUpdateLabel: false,
       doubleClick: false,
+      index: props.index
     };
   }
 
@@ -71,11 +72,11 @@ class UpdateLabel extends Component {
   }
 
   render() {
-    const { name, notes, alertColor, content, updateSuccess, userColor, cancelUpdateLabel } = this.state;
+    const { name, notes, alertColor, content, updateSuccess, userColor, cancelUpdateLabel, index } = this.state;
     if (cancelUpdateLabel) {
       return <Lables />
     } else {
-      return <div>{updateSuccess ? <Lables /> : this.loadUpdatingLable(name, notes, alertColor, content, userColor)}</div>
+      return <div>{updateSuccess ? <Lables index={index} /> : this.loadUpdatingLable(name, notes, alertColor, content, userColor)}</div>
     }
   }
 

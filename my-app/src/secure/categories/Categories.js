@@ -26,7 +26,8 @@ class Categories extends Component {
       danger: false,
       visible: props.visible,
       spinner: false,
-      search: ''
+      search: '',
+      index:''
     };
   }
 
@@ -75,6 +76,7 @@ class Categories extends Component {
         dropDownAccord: [...prevState.dropDownAccord, false]
       }))
     })
+    this.toggleAccordion(this.props.index);
   }
 
   //Method that shows API's Error Call
@@ -110,7 +112,7 @@ class Categories extends Component {
   toggleAccordion = (specificIndex) => {
     const prevState = this.state.accordion;
     const state = prevState.map((x, index) => specificIndex === index ? !x : false);
-    this.setState({ accordion: state });
+    this.setState({ accordion: state, index: specificIndex });
   }
 
   dropDownAccordion = (dKey) => {
@@ -120,7 +122,7 @@ class Categories extends Component {
   }
 
   render() {
-    const { requiredCategory, createCategory, updateCategory, deleteCategory, profileId, categoryId, visible, spinner, search, categories } = this.state;
+    const { requiredCategory, createCategory, updateCategory, deleteCategory, profileId, categoryId, visible, spinner, search, categories, index } = this.state;
     let profile = Store.getProfile()
     if (!profile) {
       return <ProfileEmptyMessage />
@@ -129,7 +131,7 @@ class Categories extends Component {
     } else if (createCategory) {
       return <AddCategory category={categories} id={profileId} />
     } else if (updateCategory) {
-      return <EditCategory categories={categories} category={requiredCategory} id={profileId} />
+      return <EditCategory  index={index} categories={categories} category={requiredCategory} id={profileId} />
     } else if (deleteCategory) {
       return <DeleteCategory cid={categoryId} pid={profileId} />
     } else {
