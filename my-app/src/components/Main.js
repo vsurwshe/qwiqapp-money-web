@@ -130,12 +130,12 @@ class Main extends Component {
   loadSecureRoutes = () => {
     const { user } = this.state
     return (
-      <div className="app "  style={{ backgroundColor:Config.customSetting().color}}>
+      <div className="app "  style={{ backgroundColor:Config.settings().bgcolor}}>
         {this.loadHeader()}
         <div className="app-body">
           {this.loadSideBar()}
           <main className="main" >
-            {Config.customSetting().content && <p> This is Pre -Production Environment - {Config.customSetting().content}</p>}
+            { Config.isLive()  ? '' : <p> Non live Environment is: {Config.environment()}</p>}
             {this.loadNotification(user)}
             <Container fluid>
               <Suspense fallback={this.loading()}>{this.loadRoutes()}</Suspense>

@@ -8,7 +8,7 @@ import Config from "./data/Config";
 const App = () => {
   return (
     <>   
-    {console.log(Config.customSetting().color)}
+    {console.log(Config.settings().color)}
     <Main /> 
      </>
   );

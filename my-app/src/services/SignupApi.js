@@ -93,7 +93,7 @@ let errorResponse = function (error, failure) {
 function httpCall(customUrl, Umethod, value) {
   let HTTP = Axios.create({
     method: Umethod,
-    url: Config.customSetting().cloudBaseURL + customUrl,
+    url: Config.settings().cloudBaseURL + customUrl,
     headers: {
       "content-type": "application/json",
       Authorization: "Bearer " + value
