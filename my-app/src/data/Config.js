@@ -4,8 +4,6 @@ const Config = {
     // cloudBaseURL: "http://localhost:8082",
     // authBaseURL: "https://124apps.com/bills/auth",
     // cloudBaseURL: "https://124apps.com/bills/cloud",
-    authBaseURL: "http://demo-api.124apps.com/bills/auth",
-    cloudBaseURL: "http://demo-api.124apps.com/bills/cloud",
     clientId: "trusted-app",
     clientSecret: "secret",
     notificationMillis: 400,
@@ -13,18 +11,27 @@ const Config = {
     customSetting: function () {
         let data = {
             color: '',
-            content: ''
+            content: '',
+            authBaseURL:'',
+            cloudBaseURL:''
         }
-        if (process.env.REACT_APP_NODE_ENV === 'development') {
+        if (process.env.REACT_APP_NODE_ENV === 'DEMO') {
             data.color = 'red';
-            console.log("This is development level")
-        } else if (process.env.REACT_APP_NODE_ENV === 'production') {
+            data.authBaseURL= "http://demo-api.124apps.com/bills/auth";
+            data.cloudBaseURL="http://demo-api.124apps.com/bills/cloud";
+            console.log("This is DEMO level")
+        } else if (process.env.REACT_APP_NODE_ENV ==='PPE') {
+            data.color = 'green';
+            data.authBaseURL= "https://124apps.com/bills/auth";
+            data.cloudBaseURL="https://124apps.com/bills/cloud";
+            console.log("This is PPE")
+        } else if (process.env.REACT_APP_NODE_ENV === 'LIVE') {
             data.color = 'green';
             data.content = 'abc';
-            console.log("This is Production level(PPE)")
+            console.log("This is LIVE")
         } else {
             data.color = 'blue';
-            console.log("This is staging level")
+            console.log("This is Developmet",process.env.REACT_APP_NODE_ENV)
         }
         return data;
     }

@@ -46,7 +46,7 @@ let errorResponse = function (error, failure) {
 };
 
 let HTTP = axios.create({
-  baseURL: Config.authBaseURL,
+  baseURL: Config.customSetting().authBaseURL,
   method: "post",
   url: "/oauth/token",
   headers: { accept: "application/json", "content-type": "application/json" },

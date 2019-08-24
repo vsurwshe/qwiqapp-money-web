@@ -159,7 +159,7 @@ class MakePayment extends Component {
   }
 
   paypalOnApprove = async (data, actions) =>{
-    let paymentURL = Config.cloudBaseURL + "/billing/paypal-completed"
+    let paymentURL = Config.customSetting().cloudBaseURL + "/billing/paypal-completed"
     let code = this.state.selectedItem.code;
     let response = await this.savePaymentDetailsToApi(data, actions, paymentURL, code);
     if(response){

@@ -78,7 +78,7 @@ let errorResponse = async function (error, failure) {
 
 function httpCall(Uurl, Umethod) {
     let instance = Axios.create({
-        baseURL: Config.cloudBaseURL,
+        baseURL: Config.customSetting().cloudBaseURL,
         method: Umethod,
         url: Uurl,
         headers: {

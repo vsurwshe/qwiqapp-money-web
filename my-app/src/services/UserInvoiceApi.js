@@ -44,7 +44,7 @@ let errorResponse = function (error, failure) {
 
 function httpCall(requestUrl, requestMethod) {
   let instance = Axios.create({
-    baseURL: Config.cloudBaseURL,
+    baseURL: Config.customSetting().cloudBaseURL,
     method: requestMethod,
     url: requestUrl,
     headers: {
