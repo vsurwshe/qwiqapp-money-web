@@ -50,7 +50,8 @@ class CreateBill extends Component {
     } else if (errors.length === 0) {
       let billDateValue;
       billDateValue = values.billDate.split("-")[0] + values.billDate.split("-")[1] + values.billDate.split("-")[2];
-      const newData = { ...values, "billDate": billDateValue, "categoryId": categoryOption.value, "contactId": contactOption.value, "labelIds": labelOption === [] ? '' : labelOption.map(opt => { return opt.value }) }
+      const newData = { ...values,"amount":values.label+values.amount,"billDate": billDateValue, "categoryId": categoryOption.value, "contactId": contactOption.value, "labelIds": labelOption === [] ? '' : labelOption.map(opt => { return opt.value }) }
+      console.log(newData);
       this.handlePostData(event, newData);
     }
   }
@@ -137,7 +138,14 @@ class CreateBill extends Component {
                     })}
                   </AvField>
                 </Col>
-                <Col sm={9}>
+                <Col sm={3}>
+                  <AvField type="select"  name="label" label="Type of Bill" errorMessage="Select Type of Bill" required>
+                    <option value="">Select Type of Bill</option>
+                    <option value="-">EXPENESE</option>
+                    <option value="+">RECVIABLE</option>
+                  </AvField>
+                </Col>
+                <Col sm={6}>
                   <AvField name="amount" id="amount" label="Amount" placeholder="Amount" type="number" errorMessage="Invalid amount" onChange= {e=>{this.handleSetAmount(e)}}
                     validate={{ required: { value: true }, pattern: { value: '^([0-9]*[.])?[0-9]+$' } }} required />
                 </Col>

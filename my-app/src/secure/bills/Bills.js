@@ -241,9 +241,14 @@ class Bills extends Component {
             <Row className="text-link padding-left" style={{ color: bill.categoryName.color }} ><b>{bill.categoryName.name}</b></Row>
           </Col>
           <Col className="float-right column-text ">
+            {bill.type==="INCOME_RECEIVABLE" ? 
+          <b className="bill-amount-color">
+          {new Intl.NumberFormat('en-US', { style: 'currency', currency: bill.currency }).format(bill.amount)}
+        </b>:
             <b className="text-color">
               {new Intl.NumberFormat('en-US', { style: 'currency', currency: bill.currency }).format(bill.amount)}
             </b>
+            }
           </Col>
           <Col>{this.state.onHover && this.state.hoverAccord[key] ? this.loadDropDown(bill, key) : ''}</Col>
         </Row>

@@ -8,6 +8,7 @@ import Data from '../../data/SelectData';
 import Bills from "./Bills";
 import Config from "../../data/Config";
 import GeneralApi from "../../services/GeneralApi";
+import UpdateBillForm from "./UpdateBillForm";
 
 class UpdateBill extends Component {
   constructor(props) {
@@ -31,11 +32,30 @@ class UpdateBill extends Component {
       userAmount: props.bill.amount,
       cancelUpdateBill: false,
       taxPercent: props.bill.taxPercent,
-      taxAmount: props.bill.taxAmount
+      taxAmount: props.bill.taxAmount, 
+      sign: '',
+      singClicked: false,
+      taxAmtChanged: false,
+      billTypeColor: props.bill.amount<0 ? "red" : "green",
+      billTypeRequest: props.bill.amount<0 ? false : true,
+      billTypeSymbol: props.bill.amount<0 ? "-" : "+",
+      billType: props.bill.amount<0 ? "EXPENSE" : "INCOME"
     };
   }
 
   componentDidMount = async () => {
+    let splitVal = (""+ this.state.userAmount).split('-')
+    let taxAmt = (""+ this.state.taxAmount).split('-')
+    if (splitVal.length === 1) {
+      this.setState({userAmount: splitVal[0]});
+    } else {
+      this.setState({userAmount: splitVal[1], sign: splitVal[0]});
+    }
+    if ( taxAmt.length === 1 ) {
+      this.setState({taxAmount: taxAmt[0]});
+    } else {
+      this.setState({taxAmount: taxAmt[1]});
+    }
     new GeneralApi().getCurrencyList(this.successCurrency, this.failureCurrency)
   }
 
@@ -53,7 +73,8 @@ class UpdateBill extends Component {
 
   // handle form submission values and errors
   handleSubmitValue = (event, errors, values) => {
-    const { labelOption, categoryOption, categoryOptionUpdate, labelOptionUpdate, contactOptionUpdate, contactOption } = this.state
+    
+    const { labelOption, categoryOption, categoryOptionUpdate, labelOptionUpdate, contactOptionUpdate, contactOption, singClicked, sign } = this.state
     if (errors.length === 0) {
       let billDate = values.billDate.split("-")[0] + values.billDate.split("-")[1] + values.billDate.split("-")[2];
       const newData = {
@@ -61,7 +82,12 @@ class UpdateBill extends Component {
         "contactId": contactOptionUpdate ? contactOption.value : contactOption,
         "labelIds": labelOption === null || labelOption === [] ? [] : (labelOptionUpdate ? labelOption.map(opt => { return opt.value }) : labelOption), "version": this.props.bill.version
       }
-      this.handleUpdate(event, newData);
+      console.log(newData, newData.amount, newData.taxAmount);
+      newData.amount = parseInt(this.state.billTypeSymbol+ newData.amount)
+      // newData.taxAmount = parseInt(this.state.billTypeSymbol+ newData.dummy)
+      delete newData.label;
+      console.log(newData.amount, newData.taxAmount);
+      // this.handleUpdate(event, newData);
     }
   }
 
@@ -99,18 +125,25 @@ class UpdateBill extends Component {
     this.setState({ contactOption, contactOptionUpdate: true })
   }
 
-  handleSetAmount = e =>{
-    this.setState({userAmount: e.target.value});
+  handleSetAmount = async e =>{
+    await this.setState({userAmount: e.target.value});
+    this.setTaxAmt(this.state.taxPercent)
   }
 
   handleTaxAmount = (e) => {
+    let taxPercentage = parseInt(e.target.value);
+    this.setTaxAmt(taxPercentage);
+  }
+
+  setTaxAmt = (taxPercentage) => {
     const {userAmount}  = this.state;
-    let taxPercentVal = parseInt(e.target.value);
     let taxAmount;
-    if ( userAmount && taxPercentVal >= 0) {
-      taxAmount = userAmount - ( userAmount * 100)/(taxPercentVal +100) ;
-    } 
-    this.setState({taxAmount: taxAmount, taxPercent: taxPercentVal });
+    if ( userAmount && taxPercentage >= 0) {
+      taxAmount = userAmount - ( userAmount * 100)/(taxPercentage +100) ;
+    } else {
+      console.log("else");
+    }
+    this.setState({taxAmount: taxAmount, taxPercent: taxPercentage });
   }
 
   handleTaxPercent = (e) => {
@@ -121,6 +154,9 @@ class UpdateBill extends Component {
       taxPercent = (userAmount * 100)/(userAmount - taxAmtVal) - 100 ;
     } 
     this.setState({taxAmount: taxAmtVal, taxPercent: taxPercent });
+  }
+  handleSign = () => {
+    this.setState({singClicked: true});
   }
 
   render() {
@@ -134,6 +170,18 @@ class UpdateBill extends Component {
 
   loadHeader = () => <CardHeader><strong>Update Bill</strong></CardHeader>
 
+  handleBillType = async () =>{
+    await this.setState({billTypeRequest: !this.state.billTypeRequest});
+    this.handleBillTypeText()
+  }
+  handleBillTypeText = () =>{
+    if (this.state.billTypeRequest) {
+      this.setState({billTypeColor: "green", billTypeSymbol: "+", billType: "INCOME"});
+    } else {
+      this.setState({billTypeColor: "red", billTypeSymbol: "-", billType: "EXPENSE"});
+    }
+  }
+
   // when updating Form
   updateFormFiled = (alertColor, content, labels, categories, bill, contacts) => {
     return (
@@ -143,7 +191,10 @@ class UpdateBill extends Component {
           <Col sm="12" md={{ size: 7, offset: 3 }}>
             <br />
             {alertColor === "" ? "" : <Alert color={alertColor}>{content}</Alert>}
-            <AvForm onSubmit={this.handleSubmitValue}>
+            <UpdateBillForm updateForm={this.state} handleSubmitValue={this.handleSubmitValue} handleBillType={this.handleBillType} handleSetAmount={this.handleSetAmount} handleTaxAmount={this.handleTaxAmount} 
+              handleTaxPercent= {this.handleTaxPercent} contactSelected={this.contactSelected} lablesOptions={this.lablesOptions}
+              categorySelected={this.categorySelected} loadDateFormat={this.loadDateFormat} loadDateFormat={this.loadDateFormat} cancelUpdateBill={this.cancelUpdateBill}/>
+            {/* <AvForm onSubmit={this.handleSubmitValue}>
               <Row>
                 <Col sm={3}>
                   <AvField type="select" id="symbol" label="currency" value={bill.currency} name="currency" errorMessage="Select Currency" required>
@@ -151,8 +202,17 @@ class UpdateBill extends Component {
                     {this.state.currencies.map((currencies, key) => { return <option key={key} value={currencies.code} h={currencies.symbol} symbol={currencies.symbol} >{currencies.symbol}</option> })}
                   </AvField>
                 </Col>
+                <Col sm={3} > */}
+                  {/* <AvField type="select"  name="label" label="Type of Bill" onChange={(e)=>{this.handleSign(e)}} errorMessage="Select Type of Bill" required>
+                    <option value="">Select Type of Bill</option>
+                    <option value="-">EXPENESE</option>
+                    <option value="+">RECVIABLE</option>
+                  </AvField> */}
+                  {/* <Button onClick={this.handleBillType} style={{backgroundColor: this.state.billTypeColor}}>{this.state.billType}</Button>
+                </Col>
                 <Col>
-                  <AvField name="amount" id="amount" label="Amount" value={this.state.userAmount} placeholder="Amount" type="text" errorMessage="Invalid amount" onChange= {e=>{this.handleSetAmount(e)}}
+                  <AvField name="amount" id="amount" label="Amount" value={this.state.userAmount ? this.state.userAmount : 0 }
+                   placeholder="Amount" type="text" errorMessage="Invalid amount" onChange= {e=>{this.handleSetAmount(e)}}
                     validate={{ required: { value: true }, pattern: { value: '^([0-9]*[.])?[0-9]+$' } }} required />
                 </Col>
               </Row>
@@ -194,7 +254,7 @@ class UpdateBill extends Component {
                 <Button color="info"> Update </Button> &nbsp;&nbsp;
                 <Button type="button" onClick={this.cancelUpdateBill}>Cancel</Button>
               </FormGroup>
-            </AvForm>
+            </AvForm> */}
           </Col>
         </Card>
       </div>)

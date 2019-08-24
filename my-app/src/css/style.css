@@ -57,6 +57,9 @@
     padding-left: 10px;
     font-style: oblique;
 }
+.bill-amount-color{
+color: darkgreen;
+}
 .strong-text {
     font-size:20px;
     margin-left:20px;
