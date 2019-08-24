@@ -29,6 +29,7 @@ import EditUser from "../secure/editUser/EditUser";
 import ChangePassword from "../secure/editUser/ChangePassword";
 import ForgotPassword from '../components/ForgotPassword';
 import Invoice from "../secure/billing/Invoice";
+import Config from "../data/Config";
 
 const DefaultFooter = React.lazy(() => import("../secure/sidebar/DefaultFooter"));
 
@@ -129,11 +130,12 @@ class Main extends Component {
   loadSecureRoutes = () => {
     const { user } = this.state
     return (
-      <div className="app ">
+      <div className="app "  style={{ backgroundColor:Config.settings().bgcolor}}>
         {this.loadHeader()}
         <div className="app-body">
           {this.loadSideBar()}
-          <main className="main" style={{ backgroundColor: "#FFFFFF" }}>
+          <main className="main" >
+            { Config.isLive()  ? '' : <p> Non live Environment is: {Config.environment()}</p>}
             {this.loadNotification(user)}
             <Container fluid>
               <Suspense fallback={this.loading()}>{this.loadRoutes()}</Suspense>

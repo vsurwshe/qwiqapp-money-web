@@ -58,7 +58,7 @@ let successResponse = function (response, successCall) {
 
 function httpCall(url, method) {
   let instance = Axios.create({
-    baseURL: Config.cloudBaseURL,
+    baseURL: Config.settings().cloudBaseURL,
     method: method,
     url: url,
     headers: {

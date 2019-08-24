@@ -13,30 +13,35 @@ class SignupApi {
 
   //Registers User
   registerUser(success, failure, data) {
-    process(success, failure, Config.cloudBaseURL + "/user/register", "POST", data);
+    process(success, failure, "/user/register", "POST", data);
   }
 
   //user forgot password 
   forgotPassword(success, failure, email) {
-    process(success, failure, Config.cloudBaseURL + "/user/passwd/forgot?email=" + email, "GET")
+    process(success, failure, "/user/passwd/forgot?email=" + email, "GET")
   }
 
   // User Reset Password
   resetPassword(success, failure, email, otp, newpwd) {
-    process(success, failure, Config.cloudBaseURL + "/user/passwd/reset?email=" + email + "&otp=" + otp + "&newpwd=" + newpwd, "PUT");
+    process(success, failure, "/user/passwd/reset?email=" + email + "&otp=" + otp + "&newpwd=" + newpwd, "PUT");
   }
 
   //Checks Whether user already exists or not
   async existsUser(success, failure, userData) {
     this.getToken();
     setTimeout(() => {
-      let HTTP = httpCall(Config.cloudBaseURL + "/user/exists?email=" + userData.email, "GET", Store.getDummyUserAccessToken());
+      let HTTP = httpCall( "/user/exists?email=" + userData.email, "GET", Store.getDummyUserAccessToken());
       HTTP.request().then(resp => {
         if (resp.data) {
           validResponse(resp, success)
         }
       })
-        .catch(err => { if (err.response.status === "404") console.log("Internal Error") });
+        .catch(err => { if (err.response){  
+          if(err.response.status === "404"){
+            console.log("Internal Error") 
+          };
+        }
+      }) 
     }, Config.apiTimeoutMillis);
   }
 
@@ -44,12 +49,12 @@ class SignupApi {
   async verifySignup(success, failure, code) {
     await this.getToken()
     setTimeout(() => {
-      process(success, failure, Config.cloudBaseURL + "/user/verify?code=" + code + "&type=EMAIL", "GET", "verify");
+      process(success, failure, "/user/verify?code=" + code + "&type=EMAIL", "GET", "verify");
     }, Config.apiTimeoutMillis);
   }
 
   resendVerifyCode(success,failure) {
-    process(success, failure, Config.cloudBaseURL + "/user/verify/resend?type=EMAIL", "GET","verify");
+    process(success, failure, "/user/verify/resend?type=EMAIL", "GET","verify");
   }
 }
 
@@ -85,10 +90,10 @@ let errorResponse = function (error, failure) {
   }
 };
 
-function httpCall(Uurl, Umethod, value) {
+function httpCall(customUrl, Umethod, value) {
   let HTTP = Axios.create({
     method: Umethod,
-    url: Uurl,
+    url: Config.settings().cloudBaseURL + customUrl,
     headers: {
       "content-type": "application/json",
       Authorization: "Bearer " + value

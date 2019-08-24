@@ -10,6 +10,17 @@
     <title>Bills Reminder</title>
 </head>
 <body>
+    <!-- <div id="testHead"></div> -->
     <div id="root"></div>
+    <script>
+     window.onload=function(){
+        if('%REACT_APP_NODE_ENV%' === 'PPE'){
+            document.head.insertAdjacentHTML( 'beforeBegin', '<meta name="title" content="bills reminder"> <meta name="description" content="Manage all your bills and notify through reminders of upcoming, unpaid an paid bills"><meta name="keywords" content="Manage all your bills, notify bills, bills reminders of, upcoming, unpaid bills, an paid bills"><meta name="robots" content="index, follow"><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="language" content="English">' );
+           
+            /* This will help to check if meta tags are added or not, so better don't remove */
+            //document.getElementById('testHead').innerText = document.head.innerHTML;
+        }
+    }
+    </script>
 </body>
 </html>

@@ -46,10 +46,10 @@ let errorResponse = function (error, failure) {
 };
 
 let HTTP = axios.create({
-  baseURL: Config.authBaseURL,
+  baseURL: Config.settings().authBaseURL,
   method: "post",
   url: "/oauth/token",
   headers: { accept: "application/json", "content-type": "application/json" },
-  auth: { username: Config.clientId, password: Config.clientSecret },
+  auth: { username: Config.settings().clientId, password: Config.settings().clientSecret },
   withCredentials: true
 });
