@@ -1,8 +1,8 @@
 import React from 'react';
-import { Card, CardHeader, CardBody, Col, Alert, Dropdown, DropdownToggle, DropdownMenu, DropdownItem, Row, Input, InputGroup, InputGroupAddon, InputGroupText, Button, Collapse } from 'reactstrap';
+import { Card, CardHeader, CardBody, Col, Alert, Row, Input, InputGroup, InputGroupAddon, InputGroupText, Button, Collapse } from 'reactstrap';
 import Loader from 'react-loader-spinner';
 import Avatar from 'react-avatar';
-import { FaEllipsisV, FaSearch, FaTrashAlt, FaPen, FaAngleDown } from 'react-icons/fa';
+import { FaSearch, FaTrashAlt, FaPen, FaAngleDown } from 'react-icons/fa';
 import '../../css/style.css';
 
 export const ReUseComponents = {
@@ -55,17 +55,11 @@ export const ReUseComponents = {
   },
 
   //This method loads Dropdown when Ellipsis is clicked to Update/Delete
-  // style={{ marginTop: 7 }} 
   loadDropDown: function (item, ukey, dropdownOpen, toggleDropDown, stateFun, toggleDanger, updateLabel) {
-    return <Dropdown isOpen={dropdownOpen} className="marigin-top" toggle={() => { toggleDropDown(ukey); }} size="sm">
-      <DropdownToggle tag="span" onClick={() => { toggleDropDown(ukey); }} data-toggle="dropdown" aria-expanded={dropdownOpen}>
-        <FaEllipsisV />
-      </DropdownToggle>
-      <DropdownMenu>
-        <DropdownItem onClick={() => { updateLabel(item) }} > Edit </DropdownItem>
-        <DropdownItem onClick={() => { stateFun(item); toggleDanger(); }}> Remove</DropdownItem>
-      </DropdownMenu>
-    </Dropdown>
+    return <span className="float-right"><Row>
+      <Button style={{backgroundColor: "transparent",borderColor: "transparent", color:"green" }} onClick={() => { updateLabel(item) }}> Edit</Button>   
+      <Button style={{backgroundColor: "transparent",borderColor: "transparent", color:"red", paddingRight:30}} onClick={() => { stateFun(item); toggleDanger(); }}> Remove </Button></Row>
+    </span>
   },
 
   loadHeaderWithSearch: function (headerMessage, items, setSearch, placeHolder, addItem) {
@@ -118,12 +112,14 @@ export const ReUseComponents = {
     return (
       <div className="list-group" key={ukey}>
         <div className="list-group-item" style={{ paddingTop: 1, padding: 7 }}>
-          <Row >
+    <Row onMouseEnter={()=>{dropDownAccordion(ukey)}}  
+         onMouseLeave={()=>{dropDownAccordion(ukey)}}
+    >
             <Col>
               {this.loadAvatar_DisplayName(singleItem, ukey, ellipsisText1, ellipsisText2, toggleAccordion)}
             </Col>
-            <Col sm={1} md={1} lg={1} xl={1} >
-              {this.loadDropDown(singleItem, ukey, stateDrodownAccord[ukey], dropDownAccordion, setItemId, toggleDanger, handleUpdate)}
+            <Col className="float-right" >
+              { stateDrodownAccord[ukey] &&this.loadDropDown(singleItem, ukey, stateDrodownAccord[ukey], dropDownAccordion, setItemId, toggleDanger, handleUpdate)}
             </Col>
           </Row></div>
         <div style={{ marginBottom: 1.5 }} />

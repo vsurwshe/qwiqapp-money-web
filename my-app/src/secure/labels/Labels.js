@@ -78,7 +78,6 @@ class Lables extends Component {
   errorCall = err => this.setState({ visible: true })
 
   loadCollapse = () => {
-    console.log("Props= ", this.props.index)
     this.state.labels.map(lables => {
       return this.setState(prevState => ({
         accordion: [...prevState.accordion, false],

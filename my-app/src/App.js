@@ -3,12 +3,10 @@ import { withRouter } from "react-router-dom";
 import Store from "./data/Store";
 import Main from "./components/Main";
 import { Button } from 'reactstrap';
-import Config from "./data/Config";
 
 const App = () => {
   return (
     <>   
-    {console.log(Config.settings().color)}
     <Main /> 
      </>
   );
