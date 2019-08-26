@@ -118,7 +118,7 @@ class Main extends Component {
         <PrivateRoute exact path="/billing/address" component={BillingInfo} />
         <PrivateRoute exact path="/billing/addCredits" component={MakePayment} />
         <PrivateRoute exact path="/billing/paymentHistory" component={PaymentHistory} />
-        <PrivateRoute exact path="/payment/invoice" component={Invoice} />
+        <PrivateRoute exact path="/payment/invoice/:id" component={Invoice} />
         <PrivateRoute exact path="/createProfile" component={CreateProfile} />
         <PrivateRoute exact path="/profiles" component={Profiles} />
         <PrivateRoute exact path="/profiles/:id" component={SetProfile} />

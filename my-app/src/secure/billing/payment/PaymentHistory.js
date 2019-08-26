@@ -61,9 +61,10 @@ class PaymentHistory extends Component {
       }
     } else {
       let paymentsList = payments.map((payment, key) => {
+        var url='/payment/invoice/'+payment.invoiceId
         return (<tr key={key} className="row-text-align">
           <td>{this.customeDateFormat(payment.created)}</td>
-          <td > {payment.invoiceId <= 0 ? payment.description : <Link to={{pathname:"/payment/invoice", state:{invoiceId: payment.invoiceId}}} >{payment.description}</Link> } </td>
+          <td > {payment.invoiceId <= 0 ? payment.description : <Link to={url}>{payment.description}</Link> } </td>
           <td>{this.showCurrenySymbol(payment.currency, currency)} {payment.amount}</td>
         </tr>
         )
