@@ -6,8 +6,8 @@ import BillApi from "../../services/BillApi";
 import Bills from "./Bills";
 import Data from '../../data/SelectData'
 import Config from "../../data/Config";
-import GeneralApi from "../../services/GeneralApi";
 import '../../css/style.css'
+import Store from "../../data/Store";
 
 
 class CreateBill extends Component {
@@ -34,12 +34,10 @@ class CreateBill extends Component {
   }
   
   componentDidMount = () => {
-    new GeneralApi().getCurrencyList(this.successCurrency, this.failureCurrency)
+    const currencies = Store.getCurrencies();
+    this.setState({ currencies }) 
   }
-  successCurrency = (currencies) => { this.setState({ currencies }); }
-
-  failureCurrency = (err) => { console.log(err); }
-
+  
   cancelCreateBill = () => { this.setState({ cancelCreateBill: true }) }
 
   //this method handle form submit values and errors
@@ -50,7 +48,7 @@ class CreateBill extends Component {
     } else if (errors.length === 0) {
       let billDateValue;
       billDateValue = values.billDate.split("-")[0] + values.billDate.split("-")[1] + values.billDate.split("-")[2];
-      const newData = { ...values,"amount":values.label+values.amount,"billDate": billDateValue, "categoryId": categoryOption.value, "contactId": contactOption.value, "labelIds": labelOption === [] ? '' : labelOption.map(opt => { return opt.value }) }
+      const newData = { ...values, "taxPercent": values.taxPercent? values.taxPercent : 0,"amount":values.label+values.amount,"billDate": billDateValue, "categoryId": categoryOption.value, "contactId": contactOption.value, "labelIds": labelOption === [] ? '' : labelOption.map(opt => { return opt.value }) }
       console.log(newData);
       this.handlePostData(event, newData);
     }
@@ -60,7 +58,7 @@ class CreateBill extends Component {
   handlePostData = async (e, data) => {
     e.persist();
     this.setState({ doubleClick: true })
-    await new BillApi().createBill(this.successCreate, this.errorCall, this.state.profileId, data);
+   await new BillApi().createBill(this.successCreate, this.errorCall, this.state.profileId, data);
   };
 
   //this method call when labels created successfully
@@ -124,7 +122,6 @@ class CreateBill extends Component {
         <Card>
           <h4 className="padding-top"><b><center>CREATE BILL</center></b></h4>
           <Container>
-          {/* <Col sm="12" md={{ size: 7, offset: 3 }}> */}
           <Col>
             <Alert color={alertColor}>{content}</Alert>
             <AvForm onSubmit={this.handleSubmitValue}>
@@ -141,30 +138,30 @@ class CreateBill extends Component {
                 <Col sm={3}>
                   <AvField type="select"  name="label" label="Type of Bill" errorMessage="Select Type of Bill" required>
                     <option value="">Select Type of Bill</option>
-                    <option value="-">EXPENESE</option>
-                    <option value="+">RECVIABLE</option>
+                    <option value="-">Payable</option>
+                    <option value="+">Receivable</option>
                   </AvField>
                 </Col>
                 <Col sm={6}>
-                  <AvField name="amount" id="amount" label="Amount" placeholder="Amount" type="number" errorMessage="Invalid amount" onChange= {e=>{this.handleSetAmount(e)}}
-                    validate={{ required: { value: true }, pattern: { value: '^([0-9]*[.])?[0-9]+$' } }} required />
+                  <AvField name="amount" id="amount" label="Amount" placeholder="Amount" type="number" errorMessage="Invalid amount"
+                    onChange= {e=>{this.handleSetAmount(e)}} required />
                 </Col>
               </Row>
               <Row>
               <Col>
-                  <AvField name="taxPercent" id="taxPercent" placeholder="Ex: 2%" value={this.state.taxPercent} label="Tax (in %)" type="number" errorMessage="Invalid Tax Percentage" onChange={(e)=>{this.handleTaxAmount(e)}}
-                    validate={{ required: { value: true }, pattern: { value: '^[0-9]+$' } }} required />
+                  <AvField name="taxPercent" id="taxPercent" value={this.state.taxPercent} placeholder={this.state.taxPercent} 
+                   label="Tax (in %)" type="number" onChange={(e)=>{this.handleTaxAmount(e)}}/>
               </Col>
                <Col>
-                  <AvField name='dummy' label="Tax Amount" value={this.state.taxAmount} placeholder="Amount" type="number" errorMessage="Invalid Tax amount" onChange={(e)=>{this.handleTaxPercent(e)}}
-                    validate={{ required: { value: true }, pattern: { value: '^([0-9]*[.])?[0-9]+$' } }} required />
+                  <AvField name='dummy' label="Tax Amount" value={this.state.taxAmount} placeholder="0" type="number" onChange={(e)=>{this.handleTaxPercent(e)}}  />
                 </Col>
               </Row>
               <Row>
                 <Col>
                   {/* Categories loading in select options filed */}
                   <label >Category</label>
-                  <Select options={Data.categories(categories)} styles={Data.singleStyles} placeholder="Select Categories " onChange={this.categorySelected} required /></Col>
+                  <Select options={Data.categories(categories)} styles={Data.singleStyles} placeholder="Select Categories " 
+                  onChange={this.categorySelected} required /></Col>
               </Row>
               <br />
               <Row>

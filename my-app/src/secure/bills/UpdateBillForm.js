@@ -10,7 +10,7 @@ class UpdateBillForm extends Component {
         this.state = {};
     }
     render() {
-        const { currencies, billTypeColor, billType, userAmount, taxPercent, taxAmount, bill, categories, labels, contacts } = this.props.updateForm;
+        const { currencies, userAmount, taxPercent, taxAmount, bill, categories, labels, contacts } = this.props.updateForm;
         return (
             <AvForm onSubmit={this.props.handleSubmitValue}>
                 <Row>
@@ -20,48 +20,54 @@ class UpdateBillForm extends Component {
                             {currencies.map((currency, key) => { return <option key={key} value={currency.code} h={currency.symbol} symbol={currency.symbol} >{currency.symbol}</option> })}
                         </AvField>
                     </Col>
-                    <Col sm={3} >
-                        <Button onClick={this.props.handleBillType} style={{ backgroundColor: billTypeColor }}>{billType}</Button>
-                    </Col>
                     <Col>
-                        <AvField name="amount" label="Amount" value={userAmount ? userAmount : 0}
-                            placeholder="Amount" type="text" errorMessage="Invalid amount" onChange={e => { this.props.handleSetAmount(e) }}
-                            validate={{ required: { value: true }, pattern: { value: '^([0-9]*[.])?[0-9]+$' } }} required />
+                        <AvField name="amount" label="Amount" value={userAmount ? userAmount : 0} placeholder="Amount" type="text"
+                            errorMessage="Invalid amount" onChange={e => { this.props.handleSetAmount(e) }} required />
                     </Col>
                 </Row>
                 <Row>
                     <Col>
-                        <AvField name="taxPercent" value={taxPercent} placeholder="Ex: 2" label="TaxPercent" type="number" errorMessage="Invalid tax%" 
-                            onChange={(e)=>{this.props.handleTaxAmount(e)}} validate={{ required: { value: true }, pattern: { value: '^[0-9]+$' } }} required />
+                        <AvField name="taxPercent" value={taxPercent} placeholder="0" label="TaxPercent" type="number" errorMessage="Invalid tax%"
+                            onChange={(e) => { this.props.handleTaxAmount(e) }} />
                     </Col>
                     <Col>
-                        <AvField name='dummy' label="Tax Amount" value={taxAmount} placeholder="Amount" type="number" errorMessage="Invalid Tax amount" required 
-                            onChange={(e)=>{this.props.handleTaxPercent(e)}} validate={{ required: { value: true }, pattern: { value: '^([0-9]*[.])?[0-9]+$' } }} />
+                        <AvField name='dummy' label="Tax Amount" value={taxAmount} placeholder="0" type="number"
+                            onChange={(e) => { this.props.handleTaxPercent(e) }} />
                     </Col>
                 </Row>
                 <Row>
-                    <Col><label >Category</label>
-                    <Select options={Data.categories(categories)} defaultValue={Data.categories(categories).filter(item => { return item.value === bill.categoryId })} 
-                        styles={Data.singleStyles} placeholder="Select Categories " onChange={this.props.categorySelected} required />
+                    <Col>
+                    <label >Category</label>
+                        <Select options={Data.categories(categories)} defaultValue={Data.categories(categories).filter(item => { return item.value === bill.categoryId })}
+                            styles={Data.singleStyles} placeholder="Select Categories " onChange={this.props.categorySelected} required />
                     </Col>
                 </Row> <br />
                 <Row>
-                    <Col><AvField name="billDate" label="Bill Date" value={this.props.loadDateFormat(bill.billDate)} type="date" errorMessage="Invalid Date" 
-                        validate={{ date: { format: 'yyyy/MM/dd' }, dateRange: { format: 'YYYY/MM/DD', start: { value: '1900/01/01' }, end: { value: '9999/12/31' } },
-                            required: { value: true } }} />
+                    <Col>
+                    <AvField name="billDate" label="Bill Date" value={this.props.loadDateFormat(bill.billDate)} type="date" errorMessage="Invalid Date"
+                        validate={{
+                            date: { format: 'yyyy/MM/dd' }, dateRange: { format: 'YYYY/MM/DD', start: { value: '1900/01/01' }, end: { value: '9999/12/31' } },
+                            required: { value: true }
+                        }} />
                     </Col>
-                    <Col><AvField name="dueDays" label="Due Days" value={bill.dueDays} type="number" placeholder="No.of Days" errorMessage="Invalid days" /></Col>
+                    <Col>
+                    <AvField name="dueDays" label="Due Days" value={bill.dueDays} type="number" placeholder="No.of Days" errorMessage="Invalid days" />
+                    </Col>
                 </Row>
                 <Row>
-                    <Col><label >Description/Notes</label>
-                        <AvField name="description" type="text" value={bill.description} list="colors" errorMessage="Invalid Notes" placeholder="Ex: Recharge " /></Col>
+                    <Col>
+                    <label >Description/Notes</label>
+                        <AvField name="description" type="text" value={bill.description} list="colors" errorMessage="Invalid Notes" placeholder="Ex: Recharge " />
+                    </Col>
                 </Row>
                 <Row>
-                    <Col><label >Select Labels</label> {this.props.lablesOptions(labels, bill)}</Col>
+                    <Col>
+                    <label >Select Labels</label> {this.props.lablesOptions(labels, bill)}</Col>
                 </Row><br />
                 <Row>
-                    <Col><label >Select Contacts</label>
-                        <Select options={Data.contacts(contacts)} defaultValue={Data.contacts(contacts).filter(item => { return item.value === bill.contactId })} 
+                    <Col>
+                    <label >Select Contacts</label>
+                        <Select options={Data.contacts(contacts)} defaultValue={Data.contacts(contacts).filter(item => { return item.value === bill.contactId })}
                             placeholder="Select Contacts " onChange={this.props.contactSelected} required />
                     </Col>
                 </Row><br />
@@ -71,7 +77,7 @@ class UpdateBillForm extends Component {
                 </FormGroup>
             </AvForm>
         );
-    }                    
+    }
 }
-        
-        export default UpdateBillForm;
+
+export default UpdateBillForm;
