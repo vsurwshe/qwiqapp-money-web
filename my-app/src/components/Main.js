@@ -36,7 +36,6 @@ const DefaultFooter = React.lazy(() => import("../secure/sidebar/DefaultFooter")
 class Main extends Component {
   constructor(props) {
     super(props);
-    
     this.state = {
       flag: false,
       profileNames: [],
@@ -97,7 +96,7 @@ class Main extends Component {
   render() {
     if (Store.isAppUserLoggedIn()) {
       // this condtions checks, manually profile selected or not
-      if(this.props.location.state !== undefined && this.props.location.state !== null){
+      if(this.props.location.state){
         this.changeFlagValue();
       }
       return this.loadSecureRoutes();

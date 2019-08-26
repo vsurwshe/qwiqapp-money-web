@@ -258,7 +258,7 @@ class Contacts extends Component {
             {this.displayName(contact, styles)}
             <FaPaperclip style={{ color: '#34aec1', marginTop: 0, marginLeft: 10 }} onClick={() => this.attachDropDown(contactKey, contact.id)} />
           </Col>
-          <Col lg={1} sm={1} md={1} xl={1} >{this.state.onHover && this.state.hoverAccord[contactKey] ? this.loadDropDown(contact, contactKey) : ''}</Col>
+          <Col >{this.state.onHover && this.state.hoverAccord[contactKey] ? this.loadDropDown(contact, contactKey) : ''}</Col>
         </Row>
         <Collapse isOpen={this.state.attachDropdown[contactKey]}>{this.showAttachments(contact.id, contact)}</Collapse>
       </ListGroupItem>
