@@ -5,8 +5,8 @@ import Select from "react-select";
 import Contacts from './Contacts';
 import ContactApi from "../../services/ContactApi";
 import Config from "../../data/Config";
-import GeneralApi from "../../services/GeneralApi";
 import Data from '../../data/SelectData';
+import Store from "../../data/Store";
 
 const nameOrOrganization = (value, field) => {
   if (!field.name && !field.organization) {
@@ -35,14 +35,9 @@ class CreateContact extends Component {
   }
 
   componentDidMount = () => {
-    new GeneralApi().getCountrylist(this.successCallCountryList, this.errorCallCountry)
+    const countries = Store.getCountries()
+    this.setState({ countries })
   }
-
-  successCallCountryList = arrayResult => {
-    this.setState({ countries: arrayResult });
-  }
-
-  errorCallCountry = error => { console.log(error) }
 
   handleInput = e => {
     this.setState({ [e.target.name]: e.target.value });
