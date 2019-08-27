@@ -35,7 +35,7 @@ class Bills extends Component {
       onHover: false,
       spinner: false,
       selectedOption: '',
-      searchName: false,      
+      searchName: false,
     };
   }
 
@@ -206,24 +206,24 @@ class Bills extends Component {
   // when bills is empty. 
   emptyBills = () => {
     return <div className="animated fadeIn">
-    <Card>
-      {this.loadHeader("")}
-      <center className="padding-top" >
-        <CardBody><h5><b>You haven't created any Bills yet... </b></h5><br /></CardBody>
-      </center>
-    </Card>
-  </div>
+      <Card>
+        {this.loadHeader("")}
+        <center className="padding-top" >
+          <CardBody><h5><b>You haven't created any Bills yet... </b></h5><br /></CardBody>
+        </center>
+      </Card>
+    </div>
   }
-  
+
   // Displays all the Bills one by one
-  displayAllBills = (visible, bills) => { 
+  displayAllBills = (visible, bills) => {
     return <div className="animated fadeIn">
       <Card>
         {this.loadHeader(bills)}
-        <br/>
+        <br />
         <div className="header-search">
           <h6><Alert isOpen={visible} color="danger">Unable to Process Request, Please try Again....</Alert></h6>
-           {bills.filter(this.searchingFor(this.state.selectedOption)).map((bill, key) => { return this.loadSingleBill(bill, key); })}           
+          {bills.filter(this.searchingFor(this.state.selectedOption)).map((bill, key) => { return this.loadSingleBill(bill, key); })}
         </div>
       </Card>
     </div>
@@ -241,14 +241,14 @@ class Bills extends Component {
             <Row className="text-link padding-left">{bill.description}</Row>
             <Row className="text-link padding-left" style={{ color: bill.categoryName.color }} ><b>{bill.categoryName.name}</b></Row>
           </Col>
-          <Col className="float-right column-text ">           
-            {bill.type==="INCOME_RECEIVABLE" ? 
-          <b className="bill-amount-color">
-          {new Intl.NumberFormat('en-US', { style: 'currency', currency: bill.currency }).format(bill.amount)}
-        </b>:
-            <b className="text-color">
-              {new Intl.NumberFormat('en-US', { style: 'currency', currency: bill.currency }).format(bill.amount)}
-            </b>
+          <Col className="float-right column-text ">
+            {bill.type === "INCOME_RECEIVABLE" ?
+              <b className="bill-amount-color">
+                {new Intl.NumberFormat('en-US', { style: 'currency', currency: bill.currency }).format(bill.amount)}
+              </b> :
+              <b className="text-color">
+                {new Intl.NumberFormat('en-US', { style: 'currency', currency: bill.currency }).format(bill.amount)}
+              </b>
             }
           </Col>
           <Col>{this.state.onHover && this.state.hoverAccord[key] ? this.loadDropDown(bill, key) : ''}</Col>
