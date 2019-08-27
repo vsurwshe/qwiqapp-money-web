@@ -63,7 +63,7 @@ class PaymentHistory extends Component {
         return (<tr key={key} className="row-text-align">
           <td>{this.customeDateFormat(payment.created)}</td>
           <td > {payment.invoiceId <= 0 ? payment.description : <Link to={url}>{payment.description}</Link> } </td>
-          <td>{this.showCurrenySymbol(payment.currency, currency)} {payment.amount}</td>
+          <td>{this.showCurrenySymbol(payment.currency, currencies)} {payment.amount}</td>
         </tr>
         )
       });

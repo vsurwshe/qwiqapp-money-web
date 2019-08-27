@@ -231,7 +231,7 @@ class Bills extends Component {
 
   // Show the Single Bill 
   loadSingleBill = (bill, key) => {
-    return <ListGroup flush key={key} className="animated fadeIn" onPointerEnter={(e) => this.onHover(e, key)} onPointerLeave={(e) => this.onHoverOff(e, key)}>
+    return <ListGroup flush key={key} className="animated fadeIn" onPointerEnter={(e) => this.onHover(e, key)} onPointerLeave={(e) => this.onHoverOff(e, key)} style={{ paddingLeft: 10, paddingRight: 10 }}>
       <ListGroupItem action>
         <Row>
           <Col sm={{ size: 'auto', offset: 0 }} lg={1} className="date-format" >
