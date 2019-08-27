@@ -112,7 +112,7 @@ class Lables extends Component {
   }
 
   setSearch = e => this.setState({ search: e.target.value })
-  setLabelId = (labels) => this.setState({ id: labels.id })
+  setLabelId = (labels) => this.setState({ id: labels.id, labelname: labels.name })
   callCreateLabel = () => this.setState({ createLabel: true })
 
   render() {
@@ -183,13 +183,12 @@ class Lables extends Component {
   }
 
   loadDeleteLabel = () => {
-    return (
-      <DeleteModel danger={this.state.danger} headerMessage="Delete Label" bodyMessage="Are You Sure Want to Delete Label?"
-        toggleDanger={this.toggleDanger} delete={this.deleteLabel} cancel={this.toggleDanger} />)
+    return  <DeleteModel danger={this.state.danger} headerMessage="Delete Label" bodyMessage={this.state.labelname}
+        toggleDanger={this.toggleDanger} delete={this.deleteLabel} cancel={this.toggleDanger} >label</DeleteModel>
   }
 
   loadDropDown = (labels, ukey) => {
-    return ReUseComponents.loadDropDown(labels, ukey, this.state.dropdownOpen[ukey], this.toggleDropDown, this.updateLabel, this.setLabelId, this.toggleDanger)
+    return ReUseComponents.loadDropDown(labels, this.updateLabel, this.setLabelId, this.toggleDanger)
   }
 }
 

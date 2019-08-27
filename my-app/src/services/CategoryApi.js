@@ -40,16 +40,16 @@ async function process(success, failure, Uurl, Umethod, pid, data, reload) {
     }
     validResponse(promise, success);
   } catch (error) {
-    handleAccessTokenError(error, failure, Uurl, Umethod, data, success, reload)
+    handleAccessTokenError(error, failure, Uurl, Umethod, pid, data, success, reload)
   }
 }
 
-let handleAccessTokenError = (err, failure, Uurl, Umethod, data, success, reload) => {
+let handleAccessTokenError = (err, failure, Uurl, Umethod, pid, data, success, reload) => {
   if (err.request.status === 0) {
     errorResponse(err, failure)
   } else if (err.response.status === 401 || err.response.status === 403) {
-    if (!reload) {
-      new LoginApi().refresh(() => process(success, failure, Uurl, Umethod, data, "ristrict"), errorResponse(err, failure));
+      if (!reload) {
+      new LoginApi().refresh(() => process(success, failure, Uurl, Umethod, pid, data, "ristrict"), errorResponse(err, failure));
     } else {
       errorResponse(err, failure);
     }

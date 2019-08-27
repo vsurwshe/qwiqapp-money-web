@@ -22,7 +22,7 @@ class BillingAddressApi {
 }
 export default BillingAddressApi;
 
-async function process(success, failure, Uurl, Umethod, data, reload,payments) {
+async function process(success, failure, Uurl, Umethod, data, reload, payments) {
     let HTTP = httpCall(Uurl, Umethod);
     let promise;
     try {

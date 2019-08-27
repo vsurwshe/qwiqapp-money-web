@@ -190,7 +190,7 @@ class Contacts extends Component {
     return <CardHeader>
       <Row style={{ padding: "0px 20px 0px 20px" }}>
         <Col sm={3}>
-          <strong style={{ fontSize: 24 }}>Contacts </strong>
+          <strong >Contacts </strong>
         </Col>
         <Col>
           {this.state.contacts.length !== 0 && <InputGroup >
@@ -275,16 +275,22 @@ class Contacts extends Component {
   }
 
   loadDeleteContact = () => {
-    return <DeleteModel danger={this.state.danger} headerMessage="Delete Contact" bodyMessage="Are You Sure Want to Delete Contact?"
-      toggleDanger={this.toggleDanger} delete={this.deleteContact} cancel={this.toggleDanger} />
+    return <DeleteModel danger={this.state.danger} headerMessage="Delete Contact" bodyMessage={this.state.contactField}
+      toggleDanger={this.toggleDanger} delete={this.deleteContact} cancel={this.toggleDanger} >contact</DeleteModel>
   }
 
   loadDropDown = (contact, contactKey) => {
-    return ReUseComponents.loadDropDown(contact, contactKey, this.state.dropdownOpen[contactKey], this.toggleDropDown, this.setContactID, this.toggleDanger, this.updateContact)
+    return ReUseComponents.loadDropDown(contact, this.setContactID, this.toggleDanger, this.updateContact)
   }
 
   setContactID = contact => {
-    this.setState({ contactId: contact.id });
+    let fieldName;
+    if (contact.name) {
+      fieldName = contact.name
+    } else {
+      fieldName = contact.organization
+    }
+    this.setState({ contactId: contact.id, contactField: fieldName });
   }
 
   showAttachments(contactId, contact) {

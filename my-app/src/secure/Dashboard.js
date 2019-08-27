@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { Card, ButtonDropdown, ButtonGroup, CardBody, Row, Col, DropdownItem, DropdownMenu, DropdownToggle } from "reactstrap";
-import Store from "../data/Store";
 import '../css/style.css';
 
 class Dashboard extends Component {
@@ -30,30 +29,29 @@ class Dashboard extends Component {
   }
 
   render() {
-    const profileName = Store.getProfile().name;
-    return <div>{this.loadDashboard(profileName)}</div>
+    return <div>{this.loadDashboard()}</div>
   }
 
   // hard coded added for now...
-  loadDashboard = (profileName) => {
+  loadDashboard = () => {
     return <div className="animated fadeIn">
       <Row>
         {/* Upcomeing Bills */}
         <Col xs="12" sm="6" lg="3">
           <Card className="text-white bg-warning">
-          {this.loadBillDivision(this.state.upcomingBill, this.toogleUpcomingBillCard, 12, "Upcoming Bills")}
+            {this.loadBillDivision(this.state.upcomingBill, this.toogleUpcomingBillCard, 12, "Upcoming Bills")}
           </Card>
         </Col>
         {/* Overdue Bills */}
         <Col xs="12" sm="6" lg="3">
           <Card className="text-white bg-danger">
-          {this.loadBillDivision(this.state.overDueBill, this.toogleOverDueBillCard, 21, "Over Due")}
+            {this.loadBillDivision(this.state.overDueBill, this.toogleOverDueBillCard, 21, "Over Due")}
           </Card>
         </Col>
         {/* Paid Bills */}
         <Col xs="12" sm="6" lg="3">
           <Card className="text-white bg-success">
-          {this.loadBillDivision(this.state.paidBill, this.tooglePaidBillCard, 25, "Paid Bills")}
+            {this.loadBillDivision(this.state.paidBill, this.tooglePaidBillCard, 25, "Paid Bills")}
           </Card>
         </Col>
         {/* Unpaid Bills */}
@@ -65,11 +63,12 @@ class Dashboard extends Component {
       </Row>
     </div>
   }
-  
-  loadBillDivision = (isOpen, handleCard, value, billType) =>{
+
+  loadBillDivision = (isOpen, handleCard, value, billType) => {
     return <>
-        <CardBody className="pb-0">
-          <ButtonGroup className="float-right">
+      <CardBody className="pb-0">
+        <div>{billType}</div>
+        <ButtonGroup className="float-right">
             <ButtonDropdown id='upcomingBill' isOpen={isOpen} toggle={() => {handleCard()}}>
               <DropdownToggle caret className="p-0" color="transparent">
                 <i className="icon-settings"></i>
@@ -80,10 +79,9 @@ class Dashboard extends Component {
               </DropdownMenu>
             </ButtonDropdown>
           </ButtonGroup>
-          <div className="text-value"> {value} </div>
-          <div>{billType}</div>
-        </CardBody>
-        <div className="chart-wrapper mx-3" style={{ height: '70px' }}></div>
+        <div className="text-value"> {value} </div>
+      </CardBody>
+      <div className="chart-wrapper mx-3" style={{ height: '70px' }}></div>
     </>
   }
 }

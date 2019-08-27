@@ -159,7 +159,7 @@ class Bills extends Component {
     this.hoverAccordion(keyIndex)
   }
   setBillId = (bill) => {
-    this.setState({ id: bill.id });
+    this.setState({ id: bill.id, billDescription: bill.description});
   }
   render() {
     const { bills, createBillRequest, updateBillRequest, id, deleteBillRequest, visible, profileId, updateBill, spinner, labels, categories, contacts } = this.state;
@@ -285,12 +285,13 @@ class Bills extends Component {
 
   //this Method loads Browser DropDown
   loadDropDown = (bill, key) => {
-    return new ReUseComponents.loadDropDown(bill, key, this.state.dropdownOpen[key], this.toggleDropDown, this.setBillId, this.toggleDanger, this.updateBillAction);
+    return new ReUseComponents.loadDropDown(bill, this.setBillId, this.toggleDanger, this.updateBillAction);
   }
  
   //this method calls the delete model
   deleteBillModel = () => {
-    return <DeleteModel danger={this.state.danger} toggleDanger={this.toggleDanger} headerMessage="Delete Bill" bodyMessage="Are you Sure want to Delete This Bill ?" delete={this.deleteBillAction} cancel={this.toggleDanger} />
+    return <DeleteModel danger={this.state.danger} toggleDanger={this.toggleDanger} headerMessage="Delete Bill" bodyMessage={this.state.billDescription}
+        delete={this.deleteBillAction} cancel={this.toggleDanger} >bill</DeleteModel>
   }
 }
 export default Bills;
