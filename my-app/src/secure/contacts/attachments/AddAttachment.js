@@ -46,9 +46,9 @@ class AddAttachment extends Component {
 
   errorCall = (err) => {
     if ( err.response.status === 500) {
-      this.setState({ content: "Sorry, you can not add attachments for this profile", addFail: true });
+      this.setState({ content: "Sorry, you can not add attachments, please upgrade your profile", addFail: true });
     } else {
-      this.setState({ content: "Unable to Process, please try Again", addFail: true });
+      this.setState({ content: "Unable to process request, please try Again", addFail: true });
     }
    
   }

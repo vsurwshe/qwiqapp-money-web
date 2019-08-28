@@ -54,7 +54,7 @@ class Categories extends Component {
 
   categoriesSet = (categories) => {
     const prevState = categories;
-    const state = prevState.map((x, index) => {
+    const state = prevState.map((x) => {
       return { ...x, childName: this.displaySubCategoryName(x) }
     });
     this.setState({ categories: state });
@@ -123,7 +123,7 @@ class Categories extends Component {
   }
 
   render() {
-    const { requiredCategory, createCategory, updateCategory, deleteCategory, profileId, categoryId, visible, spinner, search, categories, index } = this.state;
+    const { requiredCategory, createCategory, updateCategory, deleteCategory, profileId, categoryId, visible, spinner, search, categories, index,danger } = this.state;
     let profile = Store.getProfile()
     if (!profile) {
       return <ProfileEmptyMessage />
@@ -135,8 +135,12 @@ class Categories extends Component {
       return <EditCategory  index={index} categories={categories} category={requiredCategory} id={profileId} />
     } else if (deleteCategory) {
       return <DeleteCategory cid={categoryId} pid={profileId} />
-    } else {
-      return <div>{this.loadCategories(categories, visible, search)}{this.loadDeleteCategory()}</div>
+    } 
+    else if(danger){
+        return <div>{this.loadDeleteCategory()} {this.loadCategories(categories, visible, search)}</div>
+    } 
+    else {
+      return this.loadCategories(categories, visible, search)
     }
   }
 
@@ -157,11 +161,6 @@ class Categories extends Component {
   loadDeleteCategory = () => {
     return <DeleteModel danger={this.state.danger} headerMessage="Delete Category" bodyMessage={this.state.categoryName}
       toggleDanger={this.toggleDanger} delete={this.deleteCategory} cancel={this.toggleDanger} >category</DeleteModel>
-  }
-
-  showDropdown = (category, uKey) => {
-    console.log(this.updateCategory,'===category==' ,this.setCategoryID)
-    return ReUseComponents.loadDropDown(category, this.updateCategory, this.setCategoryID, this.toggleDanger)
   }
 
   setCategoryID = category => {

@@ -156,7 +156,7 @@ class Contacts extends Component {
 
   render() {
     let profile = Store.getProfile();
-    const { contacts, singleContact, createContact, updateContact, deleteContact, addAttachRequest, contactId, visible, profileId, spinner, labels } = this.state
+    const { contacts, singleContact, createContact, updateContact, deleteContact, addAttachRequest, contactId, visible, profileId, spinner, labels, danger } = this.state
     if (profile) {
       if (contacts.length === 0 && !createContact) {
         return <div>{contacts.length === 0 && !createContact && !spinner ? this.loadSpinner() : this.loadContactEmpty()}</div>
@@ -168,8 +168,10 @@ class Contacts extends Component {
         return <DeleteContact contactId={contactId} profileId={profileId} />
       } else if (addAttachRequest) {
         return <AddAttachment contacId={contactId} profileId={profileId} />
+      } else if(danger){
+        return <div>{this.loadDeleteContact()} {this.loadShowContact(visible, contacts)}</div>
       } else {
-        return <div>{this.loadShowContact(visible, contacts)}{this.loadDeleteContact()}</div>
+        return this.loadShowContact(visible, contacts)
       }
     } else {
       return <ProfileEmptyMessage />
@@ -228,15 +230,15 @@ class Contacts extends Component {
     </div>
   }
 
-  callAlertTimer() {
-    if (this.state.visible) {
+  callAlertTimer = (visible) => {
+    if (visible) {
       setTimeout(() => this.setState({ visible: false }), 1800)
     }
   }
 
   loadShowContact = (visible, contacts) => {
     if (this.props.color) {
-      this.callAlertTimer()
+      this.callAlertTimer(visible)
     }
     return <div className="animated fadeIn">
       <Card>
@@ -258,7 +260,7 @@ class Contacts extends Component {
             {this.displayName(contact, styles)}
             <FaPaperclip style={{ color: '#34aec1', marginTop: 0, marginLeft: 10 }} onClick={() => this.attachDropDown(contactKey, contact.id)} />
           </Col>
-          <Col >{this.state.onHover && this.state.hoverAccord[contactKey] ? this.loadDropDown(contact, contactKey) : ''}</Col>
+          <Col >{this.state.onHover && this.state.hoverAccord[contactKey] ? this.loadDropDown(contact) : ''}</Col>
         </Row>
         <Collapse isOpen={this.state.attachDropdown[contactKey]}>{this.showAttachments(contact.id, contact)}</Collapse>
       </ListGroupItem>
@@ -279,7 +281,7 @@ class Contacts extends Component {
       toggleDanger={this.toggleDanger} delete={this.deleteContact} cancel={this.toggleDanger} >contact</DeleteModel>
   }
 
-  loadDropDown = (contact, contactKey) => {
+  loadDropDown = (contact) => {
     return ReUseComponents.loadDropDown(contact, this.setContactID, this.toggleDanger, this.updateContact)
   }
 
