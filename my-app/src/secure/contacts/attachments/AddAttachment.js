@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Card, CardBody, FormGroup, Button, Alert, Col } from 'reactstrap';
+import { Card, FormGroup, Button, Alert, Col } from 'reactstrap';
 import AttachmentApi from '../../../services/AttachmentApi';
 import { ReUseComponents } from '../../utility/ReUseComponents';
 import Contacts from '../Contacts';
@@ -10,7 +10,6 @@ class AddAttachment extends Component {
     profileId: this.props.profileId,
     contactId: this.props.contactId,
     addSuccess: false,
-    addFail: false,
     color: '',
     content: '',
     cancelAddAttachment: false,
@@ -41,24 +40,22 @@ class AddAttachment extends Component {
   }
 
   successCall = (json) => {
-    this.setState({ addSuccess: true, content: "Successfully Added ", });
+    this.setState({ addSuccess: true, content: "Successfully Added !!", });
   }
 
   errorCall = (err) => {
-    if ( err.response.status === 500) {
-      this.setState({ content: "Sorry, you can not add attachments, please upgrade your profile", addFail: true });
+    if (err.response.status === 500) {
+      this.setState({ color: 'danger', content: "Sorry, you can not add attachments, please upgrade your profile" });
     } else {
-      this.setState({ content: "Unable to process request, please try Again", addFail: true });
+      this.setState({ color: 'danger', content: "Unable to process request, please try Again" });
     }
-   
+
   }
 
   render() {
-    const { addSuccess, addFail, cancelAddAttachment } = this.state;
+    const { addSuccess, cancelAddAttachment } = this.state;
     if (addSuccess) {
       return this.loadSuccess();
-    } else if (addFail) {
-      return this.loadFailure();
     } else if (cancelAddAttachment) {
       return <Contacts />
     } else {
@@ -66,16 +63,7 @@ class AddAttachment extends Component {
     }
   }
 
-  loadFailure = () => {
-    return (
-      <Card>
-        {ReUseComponents.loadHeader("Add Attachment")}
-        <CardBody><center>{this.state.content}</center></CardBody>
-        {this.setState({ addFail: false })}
-      </Card>)
-  }
-
-  loadSuccess = () => <div style={{ color: "green" }}> Added Successfully !{window.location.reload()}</div>
+  loadSuccess = () => <div style={{ color: "green" }}> {this.state.content} {window.location.reload()}</div>
 
   loadAddAttachment = () => {
     return (

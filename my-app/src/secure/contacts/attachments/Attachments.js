@@ -44,8 +44,9 @@ class Attachments extends Component {
 
   toggleDanger = (id, fileName) => {
     this.setState({ danger: !this.state.danger });
-    if (id) { this.setState({ attachmentId: id, fileName, })
-  }
+    if (id) {
+      this.setState({ attachmentId: id, fileName, })
+    }
   }
 
   toggleView = (viewData, reattachment) => {
@@ -59,14 +60,13 @@ class Attachments extends Component {
   }
 
   success = (message) => {
-    console.log("message",message)
-    window.location.reload();   
+    window.location.reload();
   }
 
-  errorCall = (err) => { 
+  errorCall = (err) => {
     console.log(err);
   }
-  
+
   downloadLink = async (reattachment) => {
     Attachment.downloadAttachment(reattachment).then(response => console.log(response));
   }
@@ -88,8 +88,8 @@ class Attachments extends Component {
       else { return <span style={{ color: '#000000' }}>&nbsp;( {count} Attachments )</span> }
     } else if (count === 0 | this.state.addFile) {
       return <div><AddAttachment profileId={profileId} contactId={contactId} addFile={this.handleAddFile} /></div>
-    } else if(danger){
-       return <div>{this.deleteAttachment()} {this.loadAttachments(attachments, profileId, contactId)} </div>
+    } else if (danger) {
+      return <div>{this.deleteAttachment()} {this.loadAttachments(attachments, profileId, contactId)} </div>
     } else {
       return <div>{this.loadAttachments(attachments, profileId, contactId)}{this.displayAttachment()} </div>
     }
@@ -98,8 +98,8 @@ class Attachments extends Component {
   loadAttachments(attachments) {
     return (
       <Card>
-        <div style={{ paddingTop: 10, color: '#000000' }}><strong><center>ATTACHMENTS<FaCloudUploadAlt style={{ marginRight: 10 }} 
-        className="float-right" color="#020b71" size={20} onClick={this.handleAddFile} /></center></strong>
+        <div style={{ paddingTop: 10, color: '#000000' }}><strong><center>ATTACHMENTS<FaCloudUploadAlt style={{ marginRight: 10 }}
+          className="float-right" color="#020b71" size={20} onClick={this.handleAddFile} /></center></strong>
         </div>
         <CardBody>
           {attachments.map((attachment, key) => { return <div key={key}>{this.loadAttachment(attachment, key)}</div> })}
@@ -115,7 +115,7 @@ class Attachments extends Component {
           <Row>
             <Col><Button onClick={() => { this.downloadLink(attachment) }} color="link">{attachment.filename}</Button> &nbsp;({this.attachmentFileSize(attachment.sizeBytes)})</Col>
             <FaEye color="#1E90FF" size={20} className="float-right" style={{ marginTop: -4, marginRight: 10 }} onClick={e => this.viewLink(attachment)} />{"    "}<span className="float-right">{"  "}</span>
-            <FaTrashAlt color="#ff0000" className="float-right" style={styles} onClick={() =>  this.toggleDanger(attachment.id, attachment.filename)} /><span className="float-right">{"  "}</span>
+            <FaTrashAlt color="#ff0000" className="float-right" style={styles} onClick={() => this.toggleDanger(attachment.id, attachment.filename)} /><span className="float-right">{"  "}</span>
           </Row>
         </div>
       </div>)

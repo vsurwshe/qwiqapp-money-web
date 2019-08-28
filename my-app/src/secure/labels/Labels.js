@@ -116,7 +116,7 @@ class Lables extends Component {
   callCreateLabel = () => this.setState({ createLabel: true })
 
   render() {
-    const { labels, createLabel, updateLabel, id, deleteLabel, visible, profileId, requiredLabel, spinner, search, index,danger } = this.state
+    const { labels, createLabel, updateLabel, id, deleteLabel, visible, profileId, requiredLabel, spinner, search, index, danger } = this.state
     let profile = Store.getProfile()
     if (!profile) {
       return <ProfileEmptyMessage />
@@ -130,8 +130,8 @@ class Lables extends Component {
       return <UpdateLabel pid={profileId} label={requiredLabel} lables={labels} index={index} />
     } else if (deleteLabel) {
       return <DeleteLabel id={id} pid={profileId} />
-    } else if(danger)
-    return <div>{this.loadShowLabel(visible, labels, search)}{this.loadDeleteLabel()}</div>
+    } else if (danger)
+      return <div>{this.loadShowLabel(visible, labels, search)}{this.loadDeleteLabel()}</div>
     else {
       return <div>{this.loadShowLabel(visible, labels, search)}</div>
     }
@@ -181,13 +181,13 @@ class Lables extends Component {
       this.callAlertTimer()
     }
     return ReUseComponents.loadItems(labels, this.setSearch, search, this.callCreateLabel, visible, this.toggleAccordion,
-       this.state.accordion, this.setLabelId, this.toggleDanger, this.updateLabel,
+      this.state.accordion, this.setLabelId, this.toggleDanger, this.updateLabel,
       this.state.dropdownOpen, this.toggleDropDown, color, this.props.content);
   }
 
   loadDeleteLabel = () => {
-    return  <DeleteModel danger={this.state.danger} headerMessage="Delete Label" bodyMessage={this.state.labelname}
-        toggleDanger={this.toggleDanger} delete={this.deleteLabel} cancel={this.toggleDanger} >label</DeleteModel>
+    return <DeleteModel danger={this.state.danger} headerMessage="Delete Label" bodyMessage={this.state.labelname}
+      toggleDanger={this.toggleDanger} delete={this.deleteLabel} cancel={this.toggleDanger} >label</DeleteModel>
   }
 }
 
