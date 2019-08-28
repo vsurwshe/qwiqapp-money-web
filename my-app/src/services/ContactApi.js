@@ -54,7 +54,7 @@ let handleAccessTokenError = function (profileId, err, failure, Uurl, Umethod, d
     new ContactApi().getSublabels(success, failure, profileId, "True");
   } else if (err.response.status === 403 || err.response.status === 401) {
     if (!reload) {
-      new LoginApi().refresh(() => { process(success, failure, Uurl, Umethod, data) }, errorResponse(err, failure));
+      new LoginApi().refresh(() => { process(success, failure, Uurl, Umethod, data, "reload") }, errorResponse(err, failure));
     } else {
       errorResponse(err, failure);
     }

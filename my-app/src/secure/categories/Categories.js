@@ -26,7 +26,8 @@ class Categories extends Component {
       danger: false,
       visible: props.visible,
       spinner: false,
-      search: ''
+      search: '',
+      index:''
     };
   }
 
@@ -75,10 +76,12 @@ class Categories extends Component {
         dropDownAccord: [...prevState.dropDownAccord, false]
       }))
     })
+    this.toggleAccordion(this.props.index);
   }
 
   //Method that shows API's Error Call
   errorCall = error => {
+    console.log(error);
     this.callAlertTimer('danger', 'Unable to Process Request, Please Try Again')
   }
 
@@ -110,7 +113,7 @@ class Categories extends Component {
   toggleAccordion = (specificIndex) => {
     const prevState = this.state.accordion;
     const state = prevState.map((x, index) => specificIndex === index ? !x : false);
-    this.setState({ accordion: state });
+    this.setState({ accordion: state, index: specificIndex });
   }
 
   dropDownAccordion = (dKey) => {
@@ -120,7 +123,7 @@ class Categories extends Component {
   }
 
   render() {
-    const { requiredCategory, createCategory, updateCategory, deleteCategory, profileId, categoryId, visible, spinner, search, categories } = this.state;
+    const { requiredCategory, createCategory, updateCategory, deleteCategory, profileId, categoryId, visible, spinner, search, categories, index } = this.state;
     let profile = Store.getProfile()
     if (!profile) {
       return <ProfileEmptyMessage />
@@ -129,7 +132,7 @@ class Categories extends Component {
     } else if (createCategory) {
       return <AddCategory category={categories} id={profileId} />
     } else if (updateCategory) {
-      return <EditCategory categories={categories} category={requiredCategory} id={profileId} />
+      return <EditCategory  index={index} categories={categories} category={requiredCategory} id={profileId} />
     } else if (deleteCategory) {
       return <DeleteCategory cid={categoryId} pid={profileId} />
     } else {
@@ -152,16 +155,17 @@ class Categories extends Component {
   }
 
   loadDeleteCategory = () => {
-    return <DeleteModel danger={this.state.danger} headerMessage="Delete Category" bodyMessage="Are You Sure Want to Delete Category?"
-      toggleDanger={this.toggleDanger} delete={this.deleteCategory} cancel={this.toggleDanger} />
+    return <DeleteModel danger={this.state.danger} headerMessage="Delete Category" bodyMessage={this.state.categoryName}
+      toggleDanger={this.toggleDanger} delete={this.deleteCategory} cancel={this.toggleDanger} >category</DeleteModel>
   }
 
   showDropdown = (category, uKey) => {
-    return ReUseComponents.loadDropDown(category, uKey, this.state.dropDownAccord[uKey], this.dropDownAccordion, this.updateCategory, this.setCategoryID, this.toggleDanger)
+    console.log(this.updateCategory,'===category==' ,this.setCategoryID)
+    return ReUseComponents.loadDropDown(category, this.updateCategory, this.setCategoryID, this.toggleDanger)
   }
 
   setCategoryID = category => {
-    this.setState({ categoryId: category.id });
+    this.setState({ categoryId: category.id, categoryName: category.name });
   }
 }
 

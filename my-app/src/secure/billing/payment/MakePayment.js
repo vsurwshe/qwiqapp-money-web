@@ -94,7 +94,7 @@ class MakePayment extends Component {
     const {status, message} = this.state.error_message;
     let link, buttonText;
     if (status && status === 500) {
-      link = "/billing/address/add"
+      link = "/billing/address"
       buttonText = "Add Billing Address"
     } else {
       link = "/verify"

@@ -48,7 +48,6 @@
     color:#000000;
 }
 .placeholder-style {
-    color: #000000;
     font-size: 1.0em;
     font-weight: bold
 }
@@ -193,4 +192,20 @@ dropdown-align {
     color: #6F6D6D;
 }
 /* ================== END  =================*/
-
+/* ===Dashboard==== */
+.card-ttile{
+ color:#FFFFFF;
+}
+.overdue-bill{
+    background-color: "#F4FA58";
+}
+.upcoming-bill{
+    background-color: "#5882FA";
+}
+.paid-bill{
+    background-color: "#04B404";
+}
+.unpaid-bill{
+    background-color: "#FA5858";
+}
+/* ====*/

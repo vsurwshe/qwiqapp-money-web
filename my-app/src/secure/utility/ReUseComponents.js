@@ -1,8 +1,8 @@
 import React from 'react';
-import { Card, CardHeader, CardBody, Col, Alert, Dropdown, DropdownToggle, DropdownMenu, DropdownItem, Row, Input, InputGroup, InputGroupAddon, InputGroupText, Button, Collapse } from 'reactstrap';
+import { Card, CardHeader, CardBody, Col, Alert, Row, Input, InputGroup, InputGroupAddon, InputGroupText, Button, Collapse } from 'reactstrap';
 import Loader from 'react-loader-spinner';
 import Avatar from 'react-avatar';
-import { FaEllipsisV, FaSearch, FaTrashAlt, FaPen, FaAngleDown } from 'react-icons/fa';
+import { FaSearch, FaAngleDown } from 'react-icons/fa';
 import '../../css/style.css';
 
 export const ReUseComponents = {
@@ -16,7 +16,7 @@ export const ReUseComponents = {
             <center>
               <Loader type="TailSpin" color={color} height={60} width={60} />
               <br /><br />
-              <h5 style={{color:'green'}}>{bodyMessage}</h5>
+              <h5 style={{ color: 'green' }}>{bodyMessage}</h5>
             </center>
           </CardBody>
         </Card>
@@ -55,17 +55,12 @@ export const ReUseComponents = {
   },
 
   //This method loads Dropdown when Ellipsis is clicked to Update/Delete
-  // style={{ marginTop: 7 }} 
-  loadDropDown: function (item, ukey, dropdownOpen, toggleDropDown, stateFun, toggleDanger, updateLabel) {
-    return (<Dropdown isOpen={dropdownOpen} className="marigin-top" toggle={() => { toggleDropDown(ukey); }} size="sm">
-      <DropdownToggle tag="span" onClick={() => { toggleDropDown(ukey); }} data-toggle="dropdown" aria-expanded={dropdownOpen}>
-        <FaEllipsisV />
-      </DropdownToggle>
-      <DropdownMenu>
-        <DropdownItem onClick={() => { updateLabel(item) }} > Update </DropdownItem>
-        <DropdownItem onClick={() => { stateFun(item); toggleDanger(); }}> Delete</DropdownItem>
-      </DropdownMenu>
-    </Dropdown>);
+  loadDropDown: function (item, stateFun, toggleDanger, updateLabel) {
+    return <span className="float-right"><Row>
+      <Button style={{ backgroundColor: "transparent", color: "green" }} onClick={() => { updateLabel(item) }}> Edit</Button> &nbsp;
+      <Button style={{ backgroundColor: "transparent", color: "red", marginRight: 10 }} onClick={() => { stateFun(item); toggleDanger(); }}> Remove </Button>
+      </Row>
+    </span>
   },
 
   loadHeaderWithSearch: function (headerMessage, items, setSearch, placeHolder, addItem) {
@@ -74,15 +69,15 @@ export const ReUseComponents = {
         <Col className="marigin-top" >
           <strong>{items ? headerMessage + " : " + items.length : headerMessage}</strong>
         </Col>
-        {(items && items.length) && 
-        <Col md={7} className="shadow p-0 mb-3 bg-white rounded">
-          <InputGroup>
-            <Input type="search" className="float-right" style={{ width: '20%' }} onChange={e => setSearch(e)} placeholder={placeHolder} />
-            <InputGroupAddon addonType="append">
-              <InputGroupText className="dark"><FaSearch /></InputGroupText>
-            </InputGroupAddon>
-          </InputGroup>
-        </Col> }
+        {(items && items.length) &&
+          <Col md={7} className="shadow p-0 mb-3 bg-white rounded">
+            <InputGroup>
+              <Input type="search" className="float-right" style={{ width: '20%' }} onChange={e => setSearch(e)} placeholder={placeHolder} />
+              <InputGroupAddon addonType="append">
+                <InputGroupText className="dark"><FaSearch /></InputGroupText>
+              </InputGroupAddon>
+            </InputGroup>
+          </Col>}
         <Col >
           <Button color="success" className="float-right" onClick={addItem}> + ADD </Button>
         </Col>
@@ -99,15 +94,14 @@ export const ReUseComponents = {
       itemType = "Categories"
     }
     let placeHolder = "Search " + itemType + "..."
-    return (
-      <div className="animated fadeIn">
+    return <div className="animated fadeIn">
         <Card>
           {this.loadHeaderWithSearch(itemType, items, setSearch, placeHolder, addItem)}
           <div className="margin" >
             {visible && <Alert color={color}>{content}</Alert>}
             {items.filter(this.searchingFor(search)).map((singleItem, key) => { return this.loadSingleItem(singleItem, key, toggleAccordion, accordion, setItemId, toggleDanger, handleUpdate, stateDrodownAccord, dropDownAccordion) })} </div>
         </Card>
-      </div>)
+      </div>
   },
 
   //This method loads Single Items One by One
@@ -118,14 +112,15 @@ export const ReUseComponents = {
     return (
       <div className="list-group" key={ukey}>
         <div className="list-group-item" style={{ paddingTop: 1, padding: 7 }}>
-          <Row >
-            <Col>
-              {this.loadAvatar_DisplayName(singleItem, ukey, ellipsisText1, ellipsisText2, toggleAccordion)}
-            </Col>
-            <Col sm={1} md={1} lg={1} xl={1} >
-              {this.loadDropDown(singleItem, ukey, stateDrodownAccord[ukey], dropDownAccordion, setItemId, toggleDanger, handleUpdate)}
-            </Col>
-          </Row></div>
+         <Row onMouseEnter={() => { dropDownAccordion(ukey) }} onMouseLeave={() => { dropDownAccordion(ukey) }}>
+              <Col>
+                {this.loadAvatar_DisplayName(singleItem, ukey, ellipsisText1, ellipsisText2, toggleAccordion)}
+              </Col>
+              <Col className="float-right" >
+                {stateDrodownAccord[ukey] && this.loadDropDown(singleItem, setItemId, toggleDanger, handleUpdate)}
+              </Col>
+         </Row>
+          </div>
         <div style={{ marginBottom: 1.5 }} />
         {this.loadCollapse(singleItem, ukey, accordion, setItemId, toggleDanger, handleUpdate, subItemCss, ellipsisText1, ellipsisText2, toggleAccordion)}
         <div style={{ marginTop: 1 }} />
@@ -153,27 +148,27 @@ export const ReUseComponents = {
 
   //This method displays subItems 
   loadCollapse: function (singleItem, ukey, accordion, setItemId, toggleDanger, handleUpdate, subItemCss, ellipsisText1, ellipsisText2, toggleAccordion) {
-    return (
-      <Collapse isOpen={accordion[ukey]}>
+    return <Collapse isOpen={accordion[ukey]}>
         {singleItem.subCategories ? (singleItem.subCategories ? singleItem.subCategories.map((subCategory, subKey) => { return this.loadSubItem(subCategory, subKey, subItemCss, ellipsisText1, ellipsisText2, setItemId, toggleDanger, handleUpdate, toggleAccordion) }) : "")
-          : (singleItem.subLabels ? (singleItem.subLabels  ? singleItem.subLabels.map((subLabel, subKey) => { return this.loadSubItem(subLabel, subKey, subItemCss, ellipsisText1, ellipsisText2, setItemId, toggleDanger, handleUpdate, toggleAccordion) }) : "") : "")}
+          : (singleItem.subLabels ? (singleItem.subLabels ? singleItem.subLabels.map((subLabel, subKey) => { return this.loadSubItem(subLabel, subKey, subItemCss, ellipsisText1, ellipsisText2, setItemId, toggleDanger, handleUpdate, toggleAccordion) }) : "") : "")}
       </Collapse>
-    )
   },
 
   // This method each subitem one by one
   loadSubItem: function (subItem, key, subItemCss, ellipsisText1, ellipsisText2, setItemId, toggleDanger, handleUpdate) {
-    return (
-      <span className="list-group-item" style={subItemCss} key={key}>
+    return <span className="list-group-item" style={subItemCss} key={key}>
         <Row>
           <Col>
             {this.loadAvatar_DisplayName(subItem, key, ellipsisText1, ellipsisText2)}
           </Col>
-          <Col> <FaTrashAlt className="float-right fa-trash-alt" onClick={() => { setItemId(subItem); toggleDanger() }} />
-            <FaPen size={12} className="float-right fa-pen" onClick={() => handleUpdate(subItem)} />
+          <Col>
+            <Row className="float-right">
+              <Button style={{ backgroundColor: "transparent", color: "green" }} onClick={() => { handleUpdate(subItem) }}> Edit</Button> &nbsp;
+              <Button style={{ backgroundColor: "transparent", color: "red" }} onClick={() => { setItemId(subItem); toggleDanger() }}> Remove </Button>
+            </Row>
           </Col>
         </Row>
         <br />
-      </span>)
+      </span>
   }
 }

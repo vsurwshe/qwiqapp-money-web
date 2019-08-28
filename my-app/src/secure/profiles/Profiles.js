@@ -136,9 +136,9 @@ class Profiles extends Component {
       <tr key={key} >
         <td><b onClick={() => { this.selectProfile(profile.id) }} ><Avatar name={profile.name.charAt(0)} size="40" round={true} /> &nbsp;&nbsp;{profile.name}</b> </td>
         <td style={{ paddingTop: 18 }}>{this.loadProfileType(profile.type)} </td>
-        <td>
-          <Button style={{ backgroundColor: "#43A432", color: "#F0F3F4" }} onClick={() => { this.updateProfile(profile.id, profile.name) }}>Update</Button>
-          <Button color="danger" onClick={() => { this.setState({ id: profile.id }); this.toggleDanger() }} style={{ marginLeft: 10 }} >Delete</Button>
+        <td style={{ paddingRight: 35 }}>
+          <Button className="float-centre" style={{ backgroundColor: "#43A432", color: "#F0F3F4" }} onClick={() => { this.updateProfile(profile.id, profile.name) }}>Edit</Button>
+          {/* <Button color="danger" onClick={() => { this.setState({ id: profile.id }); this.toggleDanger() }} style={{ marginLeft: 10 }} >Delete</Button> */}
         </td>
       </tr>
     );

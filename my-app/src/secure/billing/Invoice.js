@@ -10,7 +10,7 @@ class Invoice extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            invoiceId: props.location.state.invoiceId,
+            invoiceId: props.match.params.id,
             invoiceData: '',
             user: Store.getUser(),
             businessAddress: '',
@@ -72,7 +72,7 @@ class Invoice extends Component {
                         <Row >
                             <Col sm={9}>
                                 <CardTitle className="heading">INVOICE</CardTitle>
-                                <span >Invoice id: #{this.state.invoiceId} </span>
+                                <span >Invoice Number:&nbsp;&nbsp;{this.state.invoiceId} </span>
                                 <p >Date:  {invoiceDate && this.customDateFormat(invoiceDate)}</p>
                                 <br />
                                 <Row>
@@ -80,23 +80,19 @@ class Invoice extends Component {
                                         <hr />
                                     </Col>
                                 </Row>
-                                <p>
-
-                                    {firstName && <><b>Name: </b>{firstName}</>}
-                                    {lastName && <>&nbsp;{lastName} <br /></>}<br />
-                                    {company && <><b>Organization: </b> {company}<br /></>}
-                                    {addressLine1 && <><b>Address:</b> {addressLine1}<br /></>}
-                                    <span >{addressLine2} &nbsp;
-                                    {city}<br />
-                                        {region} &nbsp;
-                                    {postCode}<br />
-                                        {country}<br />
-                                    </span>
-                                </p>
+                                    <b>To:</b>  {firstName && <>{firstName}</>}{lastName && <>{lastName} <br /></>}   
+                                    <div style={{paddingLeft:25}}>
+                                            {company && <>{company}<br /></>}
+                                            {addressLine1 && <>{addressLine1}<br /></>}
+                                            {addressLine2}
+                                            {city}<br />
+                                            {region}
+                                            {postCode}<br />
+                                            {country}<br />
+                                    </div>
                             </Col>
                             <Col sm={3}>
-                                <b>Business Address</b><br />
-                                <span>
+                                <div className="float-right">
                                     {business}<br />
                                     {address1}<br />
                                     {address2}<br />
@@ -107,7 +103,7 @@ class Invoice extends Component {
                                         {(contact).split(',')[1]}<br />
                                     </>}
                                     {taxRef}
-                                </span>
+                                </div>
                             </Col>
                         </Row>
                         <br />

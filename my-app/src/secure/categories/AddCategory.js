@@ -68,7 +68,6 @@ class AddCategory extends Component {
     this.setState({ alertColor, content });
     setTimeout(() => {
       this.setState({ categoryCreated: true });
-      window.location.reload()
     }, Config.notificationMillis);
   };
 

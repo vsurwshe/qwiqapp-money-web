@@ -22,6 +22,7 @@ class UpdateLabel extends Component {
       collapse: false,
       cancelUpdateLabel: false,
       doubleClick: false,
+      index: props.index
     };
   }
 
@@ -71,11 +72,11 @@ class UpdateLabel extends Component {
   }
 
   render() {
-    const { name, notes, alertColor, content, updateSuccess, userColor, cancelUpdateLabel } = this.state;
+    const { name, notes, alertColor, content, updateSuccess, userColor, cancelUpdateLabel, index } = this.state;
     if (cancelUpdateLabel) {
       return <Lables />
     } else {
-      return <div>{updateSuccess ? <Lables /> : this.loadUpdatingLable(name, notes, alertColor, content, userColor)}</div>
+      return <div>{updateSuccess ? <Lables index={index} /> : this.loadUpdatingLable(name, notes, alertColor, content, userColor)}</div>
     }
   }
 
@@ -96,7 +97,7 @@ class UpdateLabel extends Component {
               {this.state.parentId !== null ? (this.props.label.subLabels !== null ? "" : this.loadSublabelMakeParentLabel()) : this.state.labels.length <= 1 ? "" : this.props.label.subLabels !== null ? "" : this.loadParentLableMakeSubLable()}
               {this.state.labels.length <= 1 ? "" : this.loadCollapse()}
               <br />
-              <Button color="success" disabled={!name && this.state.doubleClick} onClick={this.handleUpdate} >Update  </Button>&nbsp;&nbsp;&nbsp;
+              <Button color="success" disabled={!name && this.state.doubleClick} onClick={this.handleUpdate} >Edit  </Button>&nbsp;&nbsp;&nbsp;
              <Button active color="light" aria-pressed="true" onClick={this.cancelUpdateLabel}>Cancel</Button>
             </FormGroup>
           </Col>

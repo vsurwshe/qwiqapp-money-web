@@ -24,15 +24,19 @@ class DeleteCategory extends Component {
     this.callAlertTimer('success', 'Category deleted Successfully !!');
   };
 
-  errorCall = () => {
-    this.callAlertTimer('danger', 'Unable to Process Request, Please Try Again')
+  errorCall = (error) => {
+    if (error.response && error.response.status ===500 && error.response.data.error.debugMessage) {
+      this.callAlertTimer('danger', error.response.data.error.debugMessage)
+    } else {
+      this.callAlertTimer('danger', 'Unable to Process Request, Please Try Again')
+    }
+    
   };
 
   callAlertTimer = (color, content) => {
     this.setState({ color, content });
     setTimeout(() => {
       this.setState({ categoryDeleted: true });
-      window.location.reload()
     }, Config.notificationMillis);
   };
 

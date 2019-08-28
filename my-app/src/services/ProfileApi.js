@@ -39,17 +39,17 @@ async function process(success, failure, requestUrl, requestMethod, data, delete
     }
     validResponse(promise, success, requestMethod, deleteId)
   } catch (err) {
-    handleAccessTokenError(err, failure, requestUrl, requestMethod, data, success, reload);
+    handleAccessTokenError(err, failure, requestUrl, requestMethod, data, deleteId, success, reload);
   }
 }
 
 //this method solve the Expire Token Problem.
-let handleAccessTokenError = function (err, failure, requestUrl, requestMethod, data, success, reload) {
+let handleAccessTokenError = function (err, failure, requestUrl, requestMethod, data, deleteId, success, reload) {
   if (err.request.status === 0) {
     errorResponse(err, failure)
   } else if (err.response.status === 403 || err.response.status === 401) {
     if (!reload) {
-      new LoginApi().refresh(() => { process(success, failure, requestUrl, requestMethod, data, "reload") }, errorResponse(err, failure))
+      new LoginApi().refresh(() => { process(success, failure, requestUrl, requestMethod, data, deleteId, "reload") }, errorResponse(err, failure))
     } else {
       errorResponse(err, failure)
     }

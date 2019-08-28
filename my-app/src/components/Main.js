@@ -88,8 +88,17 @@ class Main extends Component {
     this.setState({ flag: !this.state.flag })
   }
 
+  changeFlagValue=()=>{
+      this.setState({ flag: this.props.location.state.changeFlag})
+      this.props.location.state= null
+  }
+
   render() {
     if (Store.isAppUserLoggedIn()) {
+      // this condtions checks, manually profile selected or not
+      if(this.props.location.state){
+        this.changeFlagValue();
+      }
       return this.loadSecureRoutes();
     } else {
       return this.loadRoutes();
@@ -108,7 +117,7 @@ class Main extends Component {
         <PrivateRoute exact path="/billing/address" component={BillingInfo} />
         <PrivateRoute exact path="/billing/addCredits" component={MakePayment} />
         <PrivateRoute exact path="/billing/paymentHistory" component={PaymentHistory} />
-        <PrivateRoute exact path="/payment/invoice" component={Invoice} />
+        <PrivateRoute exact path="/payment/invoice/:id" component={Invoice} />
         <PrivateRoute exact path="/createProfile" component={CreateProfile} />
         <PrivateRoute exact path="/profiles" component={Profiles} />
         <PrivateRoute exact path="/profiles/:id" component={SetProfile} />
@@ -168,7 +177,8 @@ class Main extends Component {
     return (
       <AppSidebar fixed display="sm">
         <Suspense>
-          {Store.getProfile() !== null && !this.state.flag ? <AppSidebarNav navConfig={navigation} {...this.props} /> : <AppSidebarNav navConfig={sideNavbarProfileItems}  {...this.props} />}
+          {Store.getProfile() !== null && !this.state.flag ? <AppSidebarNav navConfig={navigation} {...this.props} />
+            : <AppSidebarNav navConfig={sideNavbarProfileItems}  {...this.props} />}
         </Suspense>
       </AppSidebar>);
   }

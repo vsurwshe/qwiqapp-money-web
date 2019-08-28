@@ -66,7 +66,7 @@ class EditUser extends Component {
                     <AvField name="email" type="email" label="Email" placeholder="Email" value={user.email} required />
                     <AvField name="name" type="text" label="User Name" placeholder="User Name" value={user.name} required />
                     <center>
-                        <Button color="success" disabled={this.state.doubleClick}>Update</Button>
+                        <Button color="success" disabled={this.state.doubleClick}>Edit</Button>
                         <Link to="/dashboard" style={{ marginLeft: 10 }} ><Button color="secondary" type="button" >Cancel</Button></Link>
                     </center>
                 </AvForm>

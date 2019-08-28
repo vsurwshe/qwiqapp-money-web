@@ -26,6 +26,7 @@ class EditCategory extends Component {
       collapse: true,
       categoryNameValid: false,
       cancelUpdateCategory: false,
+      index: props.index
     };
   }
 
@@ -63,7 +64,6 @@ class EditCategory extends Component {
     this.setState({ color, content });
     setTimeout(() => {
       this.setState({ updateSuccess: true });
-      window.location.reload()
     }, Config.notificationMillis);
   };
 
@@ -72,13 +72,13 @@ class EditCategory extends Component {
   }
 
   render() {
-    const { updateCategoryName, categoryColor, color, content, updateSuccess, cancelUpdateCategory, parentId, categories } = this.state;
+    const { updateCategoryName, categoryColor, color, content, updateSuccess, cancelUpdateCategory, parentId, categories, index } = this.state;
     values = categories.filter(categories => categories.id === parentId).map(item => item.name)
     if (cancelUpdateCategory) {
       return <div><Categories /></div>
     } else {
       return <div>
-        {updateSuccess ? <Categories /> : this.props.category.parentId === null ?
+        {updateSuccess ? <Categories index={index} /> : this.props.category.parentId === null ?
           <div>{this.loadCategoryToUpdate(updateCategoryName, categoryColor, color, content, values)}</div>
           : <div>{this.loadSubCategoryToUpdate(updateCategoryName, categoryColor, color, content, values)}</div>}
       </div>
@@ -99,7 +99,7 @@ class EditCategory extends Component {
               <Input name="categoryColor" type="color" list="colors" value={`${categoryColor}`} onChange={e => { this.handleInput(e) }} /><br />
               {this.props.category.subCategories === null ? <><Input name="check" type="checkbox" onClick={() => { this.toggle() }} /><Label for="mark">Nest Under Category</Label> <br /></> : ""}
               {this.loadCollapse(values)}
-              <Button color="success" disabled={!updateCategoryName} onClick={this.handleUpdate} >Update  </Button>&nbsp;&nbsp;&nbsp;
+              <Button color="success" disabled={!updateCategoryName} onClick={this.handleUpdate} >Edit</Button>&nbsp;&nbsp;&nbsp;
                <Link className="link-text" to="/listCategories" >
                 <Button active color="light" aria-pressed="true" onClick={this.cancelUpdateCategory}>Cancel</Button></Link>
             </Col>

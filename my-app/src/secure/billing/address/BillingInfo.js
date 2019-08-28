@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
 import { Card, CardBody, CardHeader, Button, Alert } from 'reactstrap';
 import BillingAddressApi from '../../../services/BillingAddressApi';
 import EditBillingAddress from './EditBillingAddress';
-import Loader from 'react-loader-spinner'
+import Loader from 'react-loader-spinner';
 import '../../../css/style.css';
 
 let emptyBillingAddress = {
@@ -40,21 +39,21 @@ class BillingInfo extends Component {
   }
 
   errorcall = () => {
-    this.setState({ visible: true })
+    this.setState({ visible: true });
   }
 
   editBillingAddress = () => {
     this.setState({ addBilling: true, spinner: true });
   }
 
-  updateBillingAddress = () => {
-    this.setState({ updateBill: true })
+  cancelEditBillingAddress = () => {
+    this.setState({ addBilling: false })
   }
 
   render() {
     const { billing, visible, addBilling, spinner } = this.state;
     if (addBilling) {
-      return <EditBillingAddress updateBill={billing} />
+      return <EditBillingAddress updateBill={billing} handleCancelEditBillingAddress={this.cancelEditBillingAddress} />
     } else if (!billing.country) {
       if(!spinner){
         return this.loadSpinner();
@@ -82,7 +81,7 @@ class BillingInfo extends Component {
       <div className="animated fadeIn">
         <Card>
           <CardHeader><strong>Billing Address</strong>
-            <Link to={{ pathname: "/billing/address/add", state: { updateBill: billing } }}><Button color="success" className="float-right" onClick={this.EditBillingAddress}> Update </Button></Link>
+            <Button color="success" className="float-right" onClick={this.editBillingAddress}> Edit Billing Address</Button>
           </CardHeader>
           <CardBody>
             <Alert isOpen={visible} color="danger">Unable to process, Please try Again.... </Alert>
@@ -111,7 +110,7 @@ class BillingInfo extends Component {
     return (
       <CardHeader>
         <strong>Billing Address</strong>
-        <Link to={{ pathname: "/billing/address/add", state: { updateBill: billing } }}><Button color="success" className="float-right" onClick={this.editBillingAddress}> + Billing Address</Button></Link>
+        <Button color="success" className="float-right" onClick={this.editBillingAddress}> + Billing Address</Button>
       </CardHeader>);
   }
 

@@ -28,7 +28,8 @@ class Lables extends Component {
       danger: false,
       dropdownOpen: [],
       spinner: false,
-      search: ''
+      search: '',
+      index: '',
     };
   }
 
@@ -83,6 +84,7 @@ class Lables extends Component {
         dropdownOpen: [...prevState.dropdownOpen, false]
       }))
     });
+    this.toggleAccordion(this.props.index);
   }
 
   toggleDanger = () => {
@@ -97,10 +99,10 @@ class Lables extends Component {
     this.setState({ deleteLabel: true })
   };
 
-  toggleAccordion = (tab) => {
+  toggleAccordion = (specificIndex) => {
     const prevState = this.state.accordion;
-    const state = prevState.map((x, index) => tab === index ? !x : false);
-    this.setState({ accordion: state });
+    const state = prevState.map((x, index) => specificIndex === index ? !x : false);
+    this.setState({ accordion: state, index: specificIndex });
   }
 
   toggleDropDown = (tab) => {
@@ -110,11 +112,11 @@ class Lables extends Component {
   }
 
   setSearch = e => this.setState({ search: e.target.value })
-  setLabelId = (labels) => this.setState({ id: labels.id })
+  setLabelId = (labels) => this.setState({ id: labels.id, labelname: labels.name })
   callCreateLabel = () => this.setState({ createLabel: true })
 
   render() {
-    const { labels, createLabel, updateLabel, id, deleteLabel, visible, profileId, requiredLabel, spinner, search } = this.state
+    const { labels, createLabel, updateLabel, id, deleteLabel, visible, profileId, requiredLabel, spinner, search, index } = this.state
     let profile = Store.getProfile()
     if (!profile) {
       return <ProfileEmptyMessage />
@@ -125,7 +127,7 @@ class Lables extends Component {
     } else if (createLabel) {
       return <CreateLabel pid={profileId} label={labels} />
     } else if (updateLabel) {
-      return <UpdateLabel pid={profileId} label={requiredLabel} lables={labels} />
+      return <UpdateLabel pid={profileId} label={requiredLabel} lables={labels} index={index} />
     } else if (deleteLabel) {
       return <DeleteLabel id={id} pid={profileId} />
     } else {
@@ -181,13 +183,12 @@ class Lables extends Component {
   }
 
   loadDeleteLabel = () => {
-    return (
-      <DeleteModel danger={this.state.danger} headerMessage="Delete Label" bodyMessage="Are You Sure Want to Delete Label?"
-        toggleDanger={this.toggleDanger} delete={this.deleteLabel} cancel={this.toggleDanger} />)
+    return  <DeleteModel danger={this.state.danger} headerMessage="Delete Label" bodyMessage={this.state.labelname}
+        toggleDanger={this.toggleDanger} delete={this.deleteLabel} cancel={this.toggleDanger} >label</DeleteModel>
   }
 
   loadDropDown = (labels, ukey) => {
-    return ReUseComponents.loadDropDown(labels, ukey, this.state.dropdownOpen[ukey], this.toggleDropDown, this.updateLabel, this.setLabelId, this.toggleDanger)
+    return ReUseComponents.loadDropDown(labels, this.updateLabel, this.setLabelId, this.toggleDanger)
   }
 }
 
