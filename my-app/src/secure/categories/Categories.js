@@ -27,7 +27,8 @@ class Categories extends Component {
       visible: props.visible,
       spinner: false,
       search: '',
-      index:''
+      index:'',
+      subCategoryHover:[]
     };
   }
 
@@ -71,6 +72,11 @@ class Categories extends Component {
 
   loadCollapse = () => {
     this.state.categories.map(category => {
+      if(Array.isArray(category.subCategories)){
+        category.subCategories.map(sub => {
+          return this.setState(prevState => ({ subCategoryHover: [...prevState.subCategoryHover, false]}))
+        })
+      } 
       return this.setState(prevState => ({
         accordion: [...prevState.accordion, false],
         dropDownAccord: [...prevState.dropDownAccord, false]
@@ -122,6 +128,12 @@ class Categories extends Component {
     this.setState({ dropDownAccord: state });
   }
 
+  subCategoryAccordion = (specificIndex) => {
+    const prevState = this.state.subCategoryHover;
+    const state = prevState.map((x, index) => specificIndex === index ? !x : false);
+    this.setState({ subCategoryHover: state });
+  }
+
   render() {
     const { requiredCategory, createCategory, updateCategory, deleteCategory, profileId, categoryId, visible, spinner, search, categories, index,danger } = this.state;
     let profile = Store.getProfile()
@@ -155,7 +167,7 @@ class Categories extends Component {
     }
     return ReUseComponents.loadItems(categories, this.setSearch, search, this.callAddCategory, visible,
       this.toggleAccordion, this.state.accordion, this.setCategoryID, this.toggleDanger, this.updateCategory,
-      this.state.dropDownAccord, this.dropDownAccordion, color, this.props.content);
+      this.state.dropDownAccord, this.dropDownAccordion, color, this.props.content,this.state.subCategoryHover, this.subCategoryAccordion);
   }
 
   loadDeleteCategory = () => {

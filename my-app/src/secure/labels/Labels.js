@@ -30,6 +30,7 @@ class Lables extends Component {
       spinner: false,
       search: '',
       index: '',
+      subLabelHover: []
     };
   }
 
@@ -78,7 +79,12 @@ class Lables extends Component {
   errorCall = err => this.setState({ visible: true })
 
   loadCollapse = () => {
-    this.state.labels.map(lables => {
+    this.state.labels.map(lable => {
+      if (Array.isArray(lable.subLabels)) {
+        lable.subLabels.map(subLabel => {
+          return this.setState(prevState => ({ subLabelHover: [...prevState.subLabelHover, false] }))
+        })
+      }
       return this.setState(prevState => ({
         accordion: [...prevState.accordion, false],
         dropdownOpen: [...prevState.dropdownOpen, false]
@@ -109,6 +115,12 @@ class Lables extends Component {
     const prevState = this.state.dropdownOpen;
     const state = prevState.map((x, index) => tab === index ? !x : false);
     this.setState({ dropdownOpen: state });
+  }
+
+  subLabelAccordion = (tab) => {
+    const prevState = this.state.subLabelHover;;
+    const state = prevState.map((x, index) => tab === index ? !x : false);
+    this.setState({ subLabelHover: state });
   }
 
   setSearch = e => this.setState({ search: e.target.value })
@@ -182,7 +194,7 @@ class Lables extends Component {
     }
     return ReUseComponents.loadItems(labels, this.setSearch, search, this.callCreateLabel, visible, this.toggleAccordion,
       this.state.accordion, this.setLabelId, this.toggleDanger, this.updateLabel,
-      this.state.dropdownOpen, this.toggleDropDown, color, this.props.content);
+      this.state.dropdownOpen, this.toggleDropDown, color, this.props.content, this.state.subLabelHover, this.subLabelAccordion);
   }
 
   loadDeleteLabel = () => {
