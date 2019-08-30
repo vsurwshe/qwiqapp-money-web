@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { AvForm, AvField } from 'availity-reactstrap-validation';
-import { Alert, Button, Card, FormGroup, Col, Row, Container } from "reactstrap";
+import { Alert, Button, Card, FormGroup, Col, Row, Container, Input } from "reactstrap";
 import Select from 'react-select';
 import BillApi from "../../services/BillApi";
 import Bills from "./Bills";
@@ -29,7 +29,9 @@ class CreateBill extends Component {
       doubleClick: false,
       amount: 0,
       taxPercent: 0,
-      taxAmount: 0
+      taxAmount: 0,
+      checked: false,
+      notifyDate: ""
     };
   }
   
@@ -48,8 +50,9 @@ class CreateBill extends Component {
     } else if (errors.length === 0) {
       let billDateValue;
       billDateValue = values.billDate.split("-")[0] + values.billDate.split("-")[1] + values.billDate.split("-")[2];
-      const newData = { ...values, "taxPercent": values.taxPercent? values.taxPercent : 0,"amount":values.label+values.amount,"billDate": billDateValue, "categoryId": categoryOption.value, "contactId": contactOption.value, "labelIds": labelOption === [] ? '' : labelOption.map(opt => { return opt.value }) }
-      console.log(newData);
+      const newData = { ...values, "taxPercent": values.taxPercent? values.taxPercent : 0,"amount":values.label+values.amount,"billDate": billDateValue, 
+      "categoryId": categoryOption.value, "contactId": contactOption.value, "notificationEnabled": this.state.checked,
+      "labelIds": labelOption === [] ? '' : labelOption.map(opt => { return opt.value }) }
       this.handlePostData(event, newData);
     }
   }
@@ -71,7 +74,7 @@ class CreateBill extends Component {
 
   //this method Notifies the user after every request
   callAlertTimer = (alertColor, content) => {
-    this.setState({ alertColor, content });
+    this.setState({ alertColor, content, doubleClick: false });
     if (alertColor === "success") {
       setTimeout(() => {
         this.setState({ name: "", content: "", alertColor: "", billCreated: true });
@@ -165,14 +168,15 @@ class CreateBill extends Component {
               </Row>
               <br />
               <Row>
-                <Col><AvField name="billDate" label="Bill Date" value={this.state.userBillDate} type="date" errorMessage="Invalid Date" validate={{
+                <Col><AvField name="billDate" label="Bill Date" value={this.state.userBillDate} type="date" onChange={(e)=>{this.handleBillDate(e)}} errorMessage="Invalid Date" validate={{
                   date: { format: 'dd/MM/yyyy' },
                   dateRange: { format: 'YYYY/MM/DD', start: { value: '1900/01/01' }, end: { value: '9999/12/31' } },
                   required: { value: true }
                 }} /></Col>
-                <Col><AvField name="dueDays" label="Due Days" placeholder="No.of Days" value={this.state.userDueDate} type="number" errorMessage="Invalid Days" /></Col>
+                <Col><AvField name="dueDays" label="Due Days" placeholder="No.of Days" onChange={e=>{this.handleDueDate(e)}} value={this.state.userDueDate} type="number" errorMessage="Invalid Days" /></Col>
               </Row>
               <Row>
+              <Col><AvField name="dueDate" label="Due Date" value={this.state.dueDate} disabled type="date" errorMessage="Invalid Date" validate={{ date: { format: 'dd/MM/yyyy' } }} /></Col>
                 <Col>
                   <label >Description/Notes</label>
                   <AvField name="description" type="text" list="colors" placeholder="Ex: Recharge" errorMessage="Invalid Notes" /></Col>
@@ -189,6 +193,17 @@ class CreateBill extends Component {
                   <label >Contact Name</label>
                   <Select options={Data.contacts(contacts)} placeholder="Select Contact " onChange={this.contactSelected} /></Col>
               </Row><br />
+              <Row>
+                <Col>
+                  <Input name="check" type="checkbox" checked={this.state.checked} value={this.state.checked} onChange={()=>this.setState({ checked: !this.state.checked })} />Notification enabled</Col>
+              </Row> <br/>
+              {this.state.checked && 
+                <Row>
+                  {/* disabled  */}
+                  <Col><AvField name="notifyDays" label="Notify Days" placeholder="Notify Days" type="number" onChange={(e)=>{this.handleNotifyDate(e)}} errorMessage="Invalid notify-days" /></Col>
+                  <Col><AvField name="notifyDate" label="notify Date" value={this.state.notifyDate} type="date" errorMessage="Invalid Date" validate={{ date: { format: 'dd/MM/yyyy' } }}/></Col>
+                </Row>
+              }
               <FormGroup >
                 <Button color="success" disabled={this.state.doubleClick}> Save  </Button> &nbsp;&nbsp;
                 <Button type="button" onClick={this.cancelCreateBill}>Cancel</Button>
@@ -198,6 +213,34 @@ class CreateBill extends Component {
           </Container>
         </Card>
       </div>);
+  }
+
+  handleBillDate = (e) =>{
+    this.setState({userBillDate: e.target.value});;
+  }
+
+  handleNotifyDate = (e) =>{
+    let value = e.target.value;
+    if (this.state.userBillDate && value) {
+      let billDate  = new Date(this.state.userBillDate);
+      billDate.setDate(billDate.getDate()+ parseInt(value))
+      let notifyDate = new Intl.DateTimeFormat('sv-SE', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(billDate);
+      this.setState({notifyDate });
+    } else {
+      this.callAlertTimer("danger", "Please enter billdate and notify days ")
+    }
+  }
+
+  handleDueDate = (e) =>{
+    let value = e.target.value;
+    if (this.state.userBillDate && value) {
+      let billDate  = new Date(this.state.userBillDate);
+      billDate.setDate(billDate.getDate()+ parseInt(value))
+      let dueDate = new Intl.DateTimeFormat('sv-SE', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(billDate);
+      this.setState({ dueDate });
+    } else {
+      this.callAlertTimer("danger", "Please enter billdate and due days ")
+    }
   }
 
   labelSelected = (labelOption) => {

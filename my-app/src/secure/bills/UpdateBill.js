@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Col, Alert, Card, CardHeader } from "reactstrap";
+import { Col, Alert,Card, CardHeader } from "reactstrap";
 import Select from 'react-select';
 import Lables from "./Bills";
 import BillApi from "../../services/BillApi";
@@ -25,27 +25,35 @@ class UpdateBill extends Component {
       categoryOptionUpdate: false,
       labelOptionUpdate: false,
       contactOptionUpdate: false,
-      contactOption: props.bill.contactId,
+      contactOption: props.bill.coontactId,
       categoryOption: props.bill.categoryId,
       currencies: [],
-      cancelUpdateBill: false,
       userAmount: props.bill.amount,
+      cancelUpdateBill: false,
       taxPercent: props.bill.taxPercent,
-      taxAmount: props.bill.taxAmount,
-      billType: props.bill.amount < 0 ? "-" : "+",
+      taxAmount: props.bill.taxAmount, 
+      taxAmtChanged: false,
+      checked: this.props.bill.notificationEnabled,
+      notifyDays: props.bill.notifyDays,
+      billType: props.bill.amount<0 ? '-' : '+'
     };
   }
 
   componentDidMount = async () => {
-    let splitAmount = ("" + this.state.userAmount).split('-')
-    let taxAmt = ("" + this.state.taxAmount).split('-')
-    if (splitAmount.length === 1 && taxAmt.length === 1) {
-      this.setState({ userAmount: splitAmount[0], taxAmount: taxAmt[0] });
+    let splitVal = (""+ this.state.userAmount).split('-') 
+    let taxAmt = (""+ this.state.taxAmount).split('-')
+    if (splitVal.length === 1) {
+      this.setState({userAmount: splitVal[0]});
     } else {
-      this.setState({ userAmount: splitAmount[1], taxAmount: taxAmt[1] });
+      this.setState({userAmount: splitVal[1], sign: splitVal[0]});
     }
-    const currencies = Store.getCurrencies();
-    this.setState({ currencies })
+    if ( taxAmt.length === 1 ) {
+      this.setState({taxAmount: taxAmt[0]});
+    } else {
+      this.setState({taxAmount: taxAmt[1]});
+    }
+    const currencies =Store.getCurrencies();
+      this.setState({ currencies })
   }
 
   cancelUpdateBill = () => {
@@ -58,19 +66,17 @@ class UpdateBill extends Component {
     if (errors.length === 0) {
       let billDate = values.billDate.split("-")[0] + values.billDate.split("-")[1] + values.billDate.split("-")[2];
       const newData = {
-        ...values, "billDate": billDate,
-        "categoryId": categoryOptionUpdate ? categoryOption.value : categoryOption,
-        "amount": values.label + values.amount,
+        ...values, "billDate": billDate, "categoryId": categoryOptionUpdate ? categoryOption.value : categoryOption,
         "contactId": contactOptionUpdate ? contactOption.value : contactOption,
-        "labelIds": labelOption === null || labelOption === [] ? [] : (labelOptionUpdate ? labelOption.map(opt => { return opt.value }) : labelOption),
-        "version": this.props.bill.version
+        "notificationEnabled": this.state.checked,
+        "labelIds": labelOption === null || labelOption === [] ? [] : (labelOptionUpdate ? labelOption.map(opt => { return opt.value }) : labelOption), "version": this.props.bill.version
       }
       this.handleUpdate(event, newData);
     }
   }
 
   handleUpdate = (e, data) => {
-    new BillApi().updateBill(this.successCall, this.errorCall, data, this.state.profileId, this.props.bill.id)
+     new BillApi().updateBill(this.successCall, this.errorCall, data, this.state.profileId, this.props.bill.id)
   };
 
   // updated bill
@@ -103,8 +109,8 @@ class UpdateBill extends Component {
     this.setState({ contactOption, contactOptionUpdate: true })
   }
 
-  handleSetAmount = async e => {
-    await this.setState({ userAmount: e.target.value });
+  handleSetAmount = async e =>{
+    await this.setState({userAmount: e.target.value});
     this.setTaxAmt(this.state.taxPercent)
   }
 
@@ -114,22 +120,26 @@ class UpdateBill extends Component {
   }
 
   setTaxAmt = (taxPercentage) => {
-    const { userAmount } = this.state;
+    const {userAmount}  = this.state;
     let taxAmount;
-    if (userAmount && taxPercentage >= 0) {
-      taxAmount = userAmount - (userAmount * 100) / (taxPercentage + 100);
-    }
-    this.setState({ taxAmount: taxAmount, taxPercent: taxPercentage });
+    if ( userAmount && taxPercentage >= 0) {
+      taxAmount = userAmount - ( userAmount * 100)/(taxPercentage +100) ;
+    } 
+    this.setState({taxAmount: taxAmount, taxPercent: taxPercentage });
   }
 
   handleTaxPercent = (e) => {
-    const { userAmount } = this.state;
+    const {userAmount}  = this.state;
     let taxAmtVal = parseInt(e.target.value);
     let taxPercent;
-    if (userAmount && taxAmtVal >= 0) {
-      taxPercent = (userAmount * 100) / (userAmount - taxAmtVal) - 100;
-    }
-    this.setState({ taxAmount: taxAmtVal, taxPercent: taxPercent });
+    if ( userAmount && taxAmtVal >= 0) {
+      taxPercent = (userAmount * 100)/(userAmount - taxAmtVal) - 100 ;
+    } 
+    this.setState({taxAmount: taxAmtVal, taxPercent: taxPercent });
+  }
+
+  handleNotificationEnabled = () =>{
+    this.setState({ checked: !this.state.checked })
   }
 
   render() {
@@ -145,18 +155,6 @@ class UpdateBill extends Component {
 
   // when updating Form
   updateFormFiled = (alertColor, content) => {
-    const updateProps = {
-      handleSubmitValue: this.handleSubmitValue,
-      handleSetAmount: this.handleSetAmount,
-      handleTaxAmount: this.handleTaxAmount,
-      handleTaxPercent: this.handleTaxPercent,
-      contactSelected: this.contactSelected,
-      lablesOptions: this.lablesOptions,
-      categorySelected: this.categorySelected,
-      loadDateFormat: this.loadDateFormat,
-      cancelUpdateBill: this.cancelUpdateBill,
-    }
-
     return (
       <div className="animated fadeIn" >
         <Card>
@@ -164,7 +162,11 @@ class UpdateBill extends Component {
           <Col sm="12" md={{ size: 7, offset: 3 }}>
             <br />
             {alertColor === "" ? "" : <Alert color={alertColor}>{content}</Alert>}
-            <UpdateBillForm updateForm={this.state} updateProps={updateProps} />
+            <UpdateBillForm updateForm={this.state} handleSubmitValue={this.handleSubmitValue}
+            handleSetAmount={this.handleSetAmount} handleTaxAmount={this.handleTaxAmount} handleTaxPercent= {this.handleTaxPercent} 
+            contactSelected={this.contactSelected} lablesOptions={this.lablesOptions} categorySelected={this.categorySelected}
+            loadDateFormat={this.loadDateFormat} cancelUpdateBill={this.cancelUpdateBill} callAlertTimer={this.callAlertTimer} 
+            handleNotificationEnabled={this.handleNotificationEnabled}/>
           </Col>
         </Card>
       </div>)
