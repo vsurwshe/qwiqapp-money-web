@@ -11,7 +11,6 @@ import AddAttachment from "./attachments/AddAttachment";
 import Store from "../../data/Store";
 import { DeleteModel } from "../utility/DeleteModel";
 import { ProfileEmptyMessage } from "../utility/ProfileEmptyMessage";
-import { ReUseComponents } from "../utility/ReUseComponents";
 import ContactApi from "../../services/ContactApi";
 import '../../css/style.css';
 /* 
@@ -249,10 +248,9 @@ class Contacts extends Component {
   }
 
   loadSingleContact = (contact, contactKey) => {
-    const styles = { marginTop: 4 }
-    return <ListGroup flush key={contactKey} className="animated fadeIn" onPointerEnter={(e) => this.onHover(e, contactKey)} onPointerLeave={(e) => this.onHoverOff(e, contactKey)}>
+    return <ListGroup flush key={contactKey} className="animated fadeIn" >
       <ListGroupItem action >
-        <Row>
+        <Row onMouseEnter={() => this.hoverAccordion(contactKey)} onMouseLeave={() => this.hoverAccordion(contactKey)}>
           <Col onClick={() => { this.attachDropDown(contactKey) }}>
             <span >
               <FaUserCircle size={20} style={{ color: '#020e57' }} />{" "}&nbsp;
@@ -262,12 +260,12 @@ class Contacts extends Component {
               </b> &nbsp;
               {this.state.profileType > 1 ?
                 <>
-                  <Attachments profileId={this.state.profileId} contactId={contact.id} getCount={true} />
+                  {/* <Attachments profileId={this.state.profileId} contactId={contact.id} getCount={true} /> */}
                   <FaPaperclip style={{ color: '#34aec1', marginTop: 0, marginLeft: 10 }} onClick={() => this.attachDropDown(contactKey, contact.id)} />
                 </> : <FaCaretDown />}
             </span>
           </Col>
-          <Col>{this.state.onHover && this.state.hoverAccord[contactKey] ? this.loadDropDown(contact) : ''}</Col>
+          <Col>{this.state.hoverAccord[contactKey] ? this.loadDropDown(contact) : ''}</Col>
         </Row>
         <Collapse isOpen={this.state.attachDropdown[contactKey]}>{this.showAttachments(contact.id, contact)}</Collapse>
       </ListGroupItem>
@@ -280,7 +278,13 @@ class Contacts extends Component {
   }
   // view update, delete 
   loadDropDown = (contact) => {
-    return ReUseComponents.loadDropDown(contact, this.setContactID, this.toggleDanger, this.updateContact)
+    return (<>
+      <Attachments profileId={this.state.profileId} contactId={contact.id} getCount={true} />
+      <span className="float-right" >
+      <small><button style={{ backgroundColor: "transparent", borderColor: 'green', color: "green" }} onClick={() => { this.updateContact(contact) }}> EDIT </button></small> &nbsp;
+      <small><button style={{ backgroundColor: "transparent", borderColor: 'red', color: "red" }} onClick={() => { this.setContactID(contact); this.toggleDanger(); }}> REMOVE </button></small>
+    </span></>
+    )
   }
 
   setContactID = contact => {

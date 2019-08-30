@@ -55,10 +55,14 @@ export const ReUseComponents = {
 
   //This method loads Dropdown when Ellipsis is clicked to Update/Delete
   loadDropDown: function (item, stateFun, toggleDanger, updateLabel) {
-    return <span className="float-right" style={{ paddingTop: 7, paddingRight: 7 }}>
+    return <>
+      <span>
+      {item.subCategories && <span className="padding-top" ><b>Subcategories: {item.subCategories.length}</b></span>}
+      {item.subLabels && <b>SubLabels: {item.subLabels.length}</b>}</span>
+    <span className="float-right" style={{marginRight: 7, marginTop: -3}}>
       <Button style={{ backgroundColor: "transparent", borderColor: 'green', color: "green", marginRight: 5, width: 77, padding: 2 }} onClick={() => { updateLabel(item) }}> EDIT </Button> &nbsp;
       <Button style={{ backgroundColor: "transparent", borderColor: 'red', color: "red", width: 90, padding: 2 }} onClick={() => { stateFun(item); toggleDanger(); }}> REMOVE </Button>
-    </span>
+    </span></>
   },
 
   loadHeaderWithSearch: function (headerMessage, items, setSearch, placeHolder, addItem) {
@@ -114,7 +118,7 @@ export const ReUseComponents = {
             <Col>
               {this.loadAvatar_DisplayName(singleItem, ukey, ellipsisText1, ellipsisText2, toggleAccordion)}
             </Col>
-            <Col>
+            <Col style={{paddingTop:10}}>
               {stateDrodownAccord[ukey] && this.loadDropDown(singleItem, setItemId, toggleDanger, handleUpdate)}
             </Col>
           </Row>
