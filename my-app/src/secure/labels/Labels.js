@@ -30,6 +30,7 @@ class Lables extends Component {
       spinner: false,
       search: '',
       index: '',
+      subLabelHover: []
     };
   }
 
@@ -60,7 +61,7 @@ class Lables extends Component {
 
   labelsSet = (labels) => {
     const prevState = labels;
-    const state = prevState.map((x, index) => {
+    const state = prevState.map((x) => {
       return { ...x, childName: this.displaySubLabelName(x) }
     });
     this.setState({ labels: state });
@@ -78,7 +79,12 @@ class Lables extends Component {
   errorCall = err => this.setState({ visible: true })
 
   loadCollapse = () => {
-    this.state.labels.map(lables => {
+    this.state.labels.map(lable => {
+      if (Array.isArray(lable.subLabels)) {
+        lable.subLabels.map(subLabel => {
+          return this.setState(prevState => ({ subLabelHover: [...prevState.subLabelHover, false] }))
+        })
+      }
       return this.setState(prevState => ({
         accordion: [...prevState.accordion, false],
         dropdownOpen: [...prevState.dropdownOpen, false]
@@ -111,12 +117,18 @@ class Lables extends Component {
     this.setState({ dropdownOpen: state });
   }
 
+  subLabelAccordion = (tab) => {
+    const prevState = this.state.subLabelHover;;
+    const state = prevState.map((x, index) => tab === index ? !x : false);
+    this.setState({ subLabelHover: state });
+  }
+
   setSearch = e => this.setState({ search: e.target.value })
   setLabelId = (labels) => this.setState({ id: labels.id, labelname: labels.name })
   callCreateLabel = () => this.setState({ createLabel: true })
 
   render() {
-    const { labels, createLabel, updateLabel, id, deleteLabel, visible, profileId, requiredLabel, spinner, search, index } = this.state
+    const { labels, createLabel, updateLabel, id, deleteLabel, visible, profileId, requiredLabel, spinner, search, index, danger } = this.state
     let profile = Store.getProfile()
     if (!profile) {
       return <ProfileEmptyMessage />
@@ -131,7 +143,7 @@ class Lables extends Component {
     } else if (deleteLabel) {
       return <DeleteLabel id={id} pid={profileId} />
     } else {
-      return <div>{this.loadShowLabel(visible, labels, search)}{this.loadDeleteLabel()}</div>
+      return <div>{this.loadShowLabel(visible, labels, search)}{danger && this.loadDeleteLabel()}</div>
     }
   }
 
@@ -178,18 +190,14 @@ class Lables extends Component {
     if (color) {
       this.callAlertTimer()
     }
-    return ReUseComponents.loadItems(labels, this.setSearch, search, this.callCreateLabel, visible, this.toggleAccordion, this.state.accordion, this.setLabelId, this.toggleDanger, this.updateLabel,
-      this.state.dropdownOpen, this.toggleDropDown, color, this.props.content);
+    return ReUseComponents.loadItems(labels, this.setSearch, search, this.callCreateLabel, visible, this.toggleAccordion,
+      this.state.accordion, this.setLabelId, this.toggleDanger, this.updateLabel,
+      this.state.dropdownOpen, this.toggleDropDown, color, this.props.content, this.state.subLabelHover, this.subLabelAccordion);
   }
 
   loadDeleteLabel = () => {
-    return  <DeleteModel danger={this.state.danger} headerMessage="Delete Label" bodyMessage={this.state.labelname}
-        toggleDanger={this.toggleDanger} delete={this.deleteLabel} cancel={this.toggleDanger} >label</DeleteModel>
-  }
-
-  loadDropDown = (labels, ukey) => {
-    return ReUseComponents.loadDropDown(labels, this.updateLabel, this.setLabelId, this.toggleDanger)
+    return <DeleteModel danger={this.state.danger} headerMessage="Delete Label" bodyMessage={this.state.labelname}
+      toggleDanger={this.toggleDanger} delete={this.deleteLabel} cancel={this.toggleDanger} >label</DeleteModel>
   }
 }
-
 export default Lables;

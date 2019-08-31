@@ -63,7 +63,7 @@ class Profiles extends Component {
   }
 
   render() {
-    const { profiles, id, createProfile, updateProfile, deleteProfile, selectProfile, name, spinner } = this.state
+    const { profiles, id, createProfile, updateProfile, deleteProfile, selectProfile, name, spinner, danger } = this.state
     if (profiles.length === 0 && !createProfile) {
       return <div>{profiles.length === 0 && !createProfile && !spinner ? this.loadSpinner() : <ProfileEmptyMessage />}</div>
     } else if (selectProfile) {
@@ -75,9 +75,9 @@ class Profiles extends Component {
       return (<Container> <UpdateProfile id={id} name={name} /> </Container>)
     } else if (deleteProfile) {
       return (<Container> <DeleteProfile id={id} /> </Container>)
-    } else {
-      return <div>{this.showProfile(profiles)}{this.loadDeleteProfile()}</div>
-    }
+     } else  {
+       return <div> { danger && this.loadDeleteProfile()} {this.showProfile(profiles)}</div>
+     }
   }
 
   loadHeader = () => {
@@ -172,4 +172,4 @@ class Profiles extends Component {
         toggleDanger={this.toggleDanger} delete={this.deleteProfile} cancel={this.toggleDanger} />)
   }
 }
-export default Profiles
+export default Profiles;

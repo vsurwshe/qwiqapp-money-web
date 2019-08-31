@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Table, CardBody, CardTitle, Container, Card, Row, Col } from "reactstrap";
+import { Link } from 'react-router-dom';
+import { Table, CardBody, CardTitle, Container, Card, Row, Col, Button } from "reactstrap";
 import { UserInvoiceApi } from '../../services/UserInvoiceApi';
 import Store from '../../data/Store';
 import '../../css/style.css';
@@ -67,12 +68,14 @@ class Invoice extends Component {
         const { invoiceDate, netTotal, taxTotal, grossTotal } = invoiceData;
         return (
             <Container className="container-border">
+               
+                <br />
                 <Card>
                     <CardBody>
                         <Row >
                             <Col sm={9}>
                                 <CardTitle className="heading">INVOICE</CardTitle>
-                                <span >Invoice Number:&nbsp;&nbsp;{this.state.invoiceId} </span>
+                                <span >Invoice number:&nbsp;&nbsp;{this.state.invoiceId} </span>
                                 <p >Date:  {invoiceDate && this.customDateFormat(invoiceDate)}</p>
                                 <br />
                                 <Row>
@@ -87,7 +90,7 @@ class Invoice extends Component {
                                             {addressLine2}
                                             {city}<br />
                                             {region}
-                                            {postCode}<br />
+                                            {postCode && " - "+postCode}<br />
                                             {country}<br />
                                     </div>
                             </Col>
@@ -139,6 +142,9 @@ class Invoice extends Component {
                         </tr>
                     </tbody>
                 </Table>
+                <center style={{paddingLeft: 20}}>
+                    <Button color="success" style={{ borderColor: 'green', color: "green", }}><Link to="/billing/paymentHistory" style={{color: "black"}} >Go back</Link></Button>
+                </center>
             </Container>
         );
     }

@@ -1,31 +1,28 @@
 import React, { useEffect, useState } from "react";
 import { withRouter, Link } from 'react-router-dom';
-import { AppSidebarToggler, AppNavbarBrand, AppHeaderDropdown } from "@coreui/react";
+import { AppSidebarToggler, AppHeaderDropdown, AppNavbarBrand } from "@coreui/react";
 import { Button, Nav, Modal, ModalHeader, ModalBody, ModalFooter, DropdownItem, DropdownMenu, DropdownToggle, } from "reactstrap";
-import { FaCaretDown, FaSync, FaCaretUp, FaKey, FaUserEdit, FaUserTie, FaPowerOff, FaAngleDown, FaAddressCard, FaRegCalendarAlt } from "react-icons/fa";
+import { FaUserTie, FaKey, FaUserEdit, FaPowerOff, FaAngleDown, FaAddressCard, FaRegCalendarAlt, FaUserCircle, FaRegSun, FaUserPlus, FaSyncAlt } from "react-icons/fa";
 import { AuthButton } from "../../App";
 import Config from "../../data/Config";
 import Store from "../../data/Store";
 
 const DefaultHeader = (props) => {
+  let [profileName, setProfileName] = useState("Web Money");
 
-  const styles = { paddingTop: '10px', marginRight: 10, marginBottom: 10, color: "#228B22" }
-  let [profileName, changeProfleName] = useState("Web Money");
-  let [flag, changeFlag] = useState(false);
-  let [authButton, chnageAuthButton] = useState(false);
-  let [userName, changeUsername] = useState("");
+  let [authButton, setAuthButton] = useState(false);
   let [icon, animatedIcon] = useState(false);
 
-  const toggle = (e) => {
-    changeFlag(flag = !flag)
-    props.onFlagChange()
-  }
+  // let [changeUsername] = useState("");
+  // let [animatedIcon] = useState(false);
+  // let [flag, setFlagAction] = useState(false);
+
+  let profiles = Store.getUserProfiles();
 
   const refreshButton = async () => {
     await Store.userDataClear();
     callAlert();
   }
-
   let callAlert = () => {
     animatedIcon(icon = true);
     setTimeout(() => {
@@ -34,70 +31,90 @@ const DefaultHeader = (props) => {
   }
 
   const toggleDanger = () => {
-    chnageAuthButton(authButton = !authButton)
+    setAuthButton(authButton = !authButton)
   }
 
   const successCall = async () => {
     if (Store.getProfile() === null) {
-      changeProfleName(profileName = "Web Money");
+      setProfileName(profileName = "Web Money");
     } else {
-      await changeProfleName(profileName = Store.getProfile().name);
+      await setProfileName(profileName = Store.getProfile().name);
     }
   }
   //TODO:  handle profile error message
-  useEffect(() => {
-    successCall();
-    getUseName();
-  });
+  useEffect(() => { successCall(); });
 
-  const getUseName = () => {
-    let user = Store.getUser();
-    if (user) {
-      changeUsername(userName = user.name)
-    }
-  };
+  // const getUseName = () => {
+  //   let user = Store.getUser();
+  //   if (user) {
+  //     changeUsername(userName = user.name)
+  //   }
+  // };
 
   const loadAuthButton = () => {
-    return (
-      <Modal isOpen={authButton} toggle={toggleDanger} >
-        <ModalHeader toggle={toggleDanger}>Sign Out</ModalHeader>
-        <ModalBody>Are you Sure you want to Signout ?</ModalBody>
-        <ModalFooter>
-          <AuthButton> Signout </AuthButton>
-          <Button color="secondary" onClick={toggleDanger}>Cancel</Button>
-        </ModalFooter>
-      </Modal>)
+    return <Modal isOpen={authButton} toggle={toggleDanger} >
+      <ModalHeader toggle={toggleDanger}>Sign Out</ModalHeader>
+      <ModalBody>Are you Sure you want to Signout ?</ModalBody>
+      <ModalFooter>
+        <AuthButton> Signout </AuthButton>
+        <Button color="secondary" onClick={toggleDanger}>Cancel</Button>
+      </ModalFooter>
+    </Modal>
+  }
+  const loadUserDropdown = () => {
+    return (<>
+      <DropdownToggle nav>
+        <FaUserTie style={{ marginLeft: 5, position: "relative" }} size={20} /><FaAngleDown size={18} style={{ color: "darkblue", marginRight: 25 }} />
+      </DropdownToggle>
+      <DropdownMenu right style={{ right: 'auto' }}>
+        <DropdownItem header tag="div" className="text-center"><strong> Settings</strong></DropdownItem>
+        <DropdownItem><Link to="/billing/address" ><FaAddressCard style={{ color: "#F16939", marginRight: 15 }} />Billing Address</Link> </DropdownItem>
+        <DropdownItem><Link to="/billing/paymentHistory" ><FaRegCalendarAlt style={{ color: "green", marginRight: 15 }} />Payment History</Link> </DropdownItem>
+        <DropdownItem><Link to="/editUser" ><FaUserEdit style={{ color: "#AB2504", marginRight: 15 }} />Edit User</Link> </DropdownItem>
+        <DropdownItem><Link to="/changePassword" ><FaKey style={{ color: "#101011", marginRight: 15 }} /> &nbsp;Change Password</Link> </DropdownItem>
+        <DropdownItem onClick={e => toggleDanger(e)} ><FaPowerOff style={{ color: "red", marginRight: 15 }} />Logout</DropdownItem>
+      </DropdownMenu>
+    </>)
   }
 
-  return (
-    <React.Fragment>
-      <AppSidebarToggler className="d-lg-none" display="md" mobile />
-      <AppNavbarBrand>
-        <span onClick={toggle} >
-          <FaUserTie style={{ marginLeft: 5, position: "relative" }} size={25} />
-          <strong style={{ marginLeft: 5, marginTop: 10 }}>{profileName ? profileName.length <= 13 ? profileName : profileName.slice(0, 11) + "..." : ""}</strong>&nbsp;
-                 {flag ? <FaCaretUp style={{ color: '#0e2f73' }} /> : <FaCaretDown />}
-        </span>
-      </AppNavbarBrand>
-      <Nav className="d-md-down-none" navbar />
-      <Nav className="ml-auto" navbar>
-        {!icon ? <FaSync style={styles} data-toggle="tooltip" boundary="scrollParent" data-placement="bottom" title="Refresh" size={25}
-          onClick={refreshButton} /> : ""}
-        <AppHeaderDropdown direction="down">
-          <DropdownToggle nav>
-            <b>{userName}</b>&nbsp;<FaAngleDown size={18} style={{ color: "darkblue", marginRight: 25 }} />
-          </DropdownToggle>
-          <DropdownMenu right style={{ right: 'auto' }}>
-            <DropdownItem header tag="div" className="text-center"><strong> Settings</strong></DropdownItem>
-            <DropdownItem><Link to="/billing/address" ><FaAddressCard style={{ color: "#F16939", marginRight: 15 }} />Billing Address</Link> </DropdownItem>
-            <DropdownItem><Link to="/billing/paymentHistory" ><FaRegCalendarAlt style={{ color: "green", marginRight: 15 }} />Payment History</Link> </DropdownItem>
-            <DropdownItem><Link to="/editUser" ><FaUserEdit style={{ color: "#AB2504", marginRight: 15 }} />Edit User</Link> </DropdownItem>
-            <DropdownItem><Link to="/changePassword" ><FaKey style={{ color: "#101011", marginRight: 15 }} />Change Password</Link> </DropdownItem>
-            <DropdownItem onClick={e => toggleDanger(e)} ><FaPowerOff style={{ color: "red", marginRight: 15 }} />Logout</DropdownItem>
-          </DropdownMenu>
-        </AppHeaderDropdown>
-      </Nav>
-      {loadAuthButton()}
-    </React.Fragment>)
+  const loadProfileDropdown = () => {
+    return (<>
+      <DropdownToggle nav>
+        <b>{profileName ? profileName.length <= 13 ? profileName : profileName.slice(0, 11) + "..." : ""}&nbsp;</b>&nbsp;
+        <FaAngleDown size={18} style={{ color: "darkblue", marginRight: 25 }} />
+      </DropdownToggle>
+      <DropdownMenu right style={{ right: 'auto' }}>
+        <DropdownItem header tag="div" className="text-center"><strong>Selecting Profile</strong></DropdownItem>
+        {profiles && profiles.map((profile, id) => {
+          let url = "/profiles/" + profile.id;
+          return <DropdownItem key={id} > 
+                  <Link to={url} style={{ textDecoration: "none", color: "#3e4444" }}>
+                    <FaUserCircle style={{ color: "#7F3BDB" }} /> &nbsp; {profile.name.length > 15 ? profileName.slice(0, 15) + "..." : profile.name} 
+                  </Link>
+                </DropdownItem>
+        })
+        }
+        <DropdownItem> <Link to="/profiles" style={{ textDecoration: "none", color: "#3e4444" }} > <FaRegSun style={{ color: "#4763B9" }} /> &nbsp;Manage Profile</Link></DropdownItem>
+        <DropdownItem><Link to="/createProfile" style={{ textDecoration: "none", color: "#3e4444" }}><FaUserPlus style={{ color: "#832476  " }} /> &nbsp; Create Profile </Link></DropdownItem>
+        <DropdownItem onClick={refreshButton} > {!icon && <><FaSyncAlt style={{ color: "#0C7223" }} />&nbsp; Refresh</>}
+        </DropdownItem>
+      </DropdownMenu>
+    </>);
+  }
+
+  return <React.Fragment>
+    <AppSidebarToggler className="d-lg-none" display="md" mobile />
+    <AppNavbarBrand />
+    <Nav className="d-md-down-none" navbar />
+    <Nav className="ml-auto" navbar>
+      <AppHeaderDropdown direction="down">
+        {loadProfileDropdown()}
+      </AppHeaderDropdown>
+      <AppHeaderDropdown direction="down">
+        {loadUserDropdown()}
+      </AppHeaderDropdown>
+    </Nav>
+    {loadAuthButton()}
+  </React.Fragment>
 }
 export default withRouter(DefaultHeader);

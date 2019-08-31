@@ -2,7 +2,7 @@ import Store from '../../../data/Store';
 import AttachmentApi from '../../../services/AttachmentApi';
 
 const Attachment = {
-    DownloadAttachment: function (attachment) {
+    downloadAttachment: function (attachment) {
         const url = Store.getProfile().url + "" + attachment.downloadLink;
         const filename = attachment.filename;
         return fetch(url, {
@@ -24,8 +24,8 @@ const Attachment = {
         })
     },
 
-    DeleteAttachment: function (success, error, proId, contId, attachId) {
-        new AttachmentApi().deleteAttachment(success, error, proId, contId, attachId);
+    deleteAttachment: function (success, error, profileId, contactId, attachmentId) {
+        new AttachmentApi().deleteAttachment(success, error, profileId, contactId, attachmentId);
     },
 
     viewAttachment: function (attachment) {

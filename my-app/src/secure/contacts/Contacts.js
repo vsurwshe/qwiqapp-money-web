@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Button, Row, Col, Card, CardBody, CardHeader, Alert, Input, InputGroup, InputGroupAddon, InputGroupText, ListGroupItem, ListGroup, Collapse } from "reactstrap";
-import { FaPaperclip, FaUserCircle, FaSearch } from 'react-icons/fa';
+import { FaPaperclip, FaUserCircle, FaSearch, FaCaretDown } from 'react-icons/fa';
 import Loader from 'react-loader-spinner'
 import UpdateContact from "./UpdateContact";
 import DeleteContact from "./DeleteContact";
@@ -11,10 +11,12 @@ import AddAttachment from "./attachments/AddAttachment";
 import Store from "../../data/Store";
 import { DeleteModel } from "../utility/DeleteModel";
 import { ProfileEmptyMessage } from "../utility/ProfileEmptyMessage";
-import { ReUseComponents } from "../utility/ReUseComponents";
 import ContactApi from "../../services/ContactApi";
 import '../../css/style.css';
-
+/* 
+  * Presently we are showing attachments also
+  * We must get profileType, if we doesn't show attachment file option for free/ basic profiles for user
+*/
 
 class Contacts extends Component {
   constructor(props) {
@@ -39,9 +41,9 @@ class Contacts extends Component {
       onHover: false,
       hoverAccord: [],
       spinner: false,
-      searchContact: ''
+      searchContact: '',
+      profileType: Store.getProfile().type
     };
-    this.searchHandler = this.searchHandler.bind(this)
   }
 
   componentDidMount = () => {
@@ -156,7 +158,7 @@ class Contacts extends Component {
 
   render() {
     let profile = Store.getProfile();
-    const { contacts, singleContact, createContact, updateContact, deleteContact, addAttachRequest, contactId, visible, profileId, spinner, labels } = this.state
+    const { contacts, singleContact, createContact, updateContact, deleteContact, addAttachRequest, contactId, visible, profileId, spinner, labels, danger } = this.state
     if (profile) {
       if (contacts.length === 0 && !createContact) {
         return <div>{contacts.length === 0 && !createContact && !spinner ? this.loadSpinner() : this.loadContactEmpty()}</div>
@@ -169,7 +171,7 @@ class Contacts extends Component {
       } else if (addAttachRequest) {
         return <AddAttachment contacId={contactId} profileId={profileId} />
       } else {
-        return <div>{this.loadShowContact(visible, contacts)}{this.loadDeleteContact()}</div>
+        return <div>{ danger && this.loadDeleteContact()} {this.loadShowContact(visible, contacts)}</div>
       }
     } else {
       return <ProfileEmptyMessage />
@@ -189,19 +191,15 @@ class Contacts extends Component {
   loadHeader = () => {
     return <CardHeader>
       <Row style={{ padding: "0px 20px 0px 20px" }}>
-        <Col sm={3}>
-          <strong >Contacts </strong>
-        </Col>
+        <Col sm={3}><strong >Contacts </strong></Col>
         <Col>
           {this.state.contacts.length !== 0 && <InputGroup >
-            <Input type="search" className="float-right" onChange={this.searchHandler} value={this.state.searchContact} placeholder="Search Contacts..." />
+            <Input type="search" className="float-right" onChange={() => this.searchHandler} value={this.state.searchContact} placeholder="Search Contacts..." />
             <InputGroupAddon addonType="append"><InputGroupText className="dark"><FaSearch /></InputGroupText></InputGroupAddon>
           </InputGroup>
           }
         </Col>
-        <Col sm={2}>
-          <Button color="success" className="float-right" onClick={this.callCreateContact}> + ADD </Button>
-        </Col>
+        <Col sm={2}><Button color="success" className="float-right" onClick={this.callCreateContact}> + ADD </Button></Col>
       </Row>
     </CardHeader>
   }
@@ -228,16 +226,14 @@ class Contacts extends Component {
     </div>
   }
 
-  callAlertTimer() {
-    if (this.state.visible) {
+  callAlertTimer = (visible) => {
+    if (visible) {
       setTimeout(() => this.setState({ visible: false }), 1800)
     }
   }
 
   loadShowContact = (visible, contacts) => {
-    if (this.props.color) {
-      this.callAlertTimer()
-    }
+    if (this.props.color) { this.callAlertTimer(visible) }
     return <div className="animated fadeIn">
       <Card>
         {this.loadHeader()}
@@ -250,37 +246,43 @@ class Contacts extends Component {
   }
 
   loadSingleContact = (contact, contactKey) => {
-    const styles = { marginTop: 4 }
-    return <ListGroup flush key={contactKey} className="animated fadeIn" onPointerEnter={(e) => this.onHover(e, contactKey)} onPointerLeave={(e) => this.onHoverOff(e, contactKey)}>
+    return <ListGroup flush key={contactKey} className="animated fadeIn" >
       <ListGroupItem action >
-        <Row>
+        <Row onMouseEnter={() => this.hoverAccordion(contactKey)} onMouseLeave={() => this.hoverAccordion(contactKey)}>
           <Col onClick={() => { this.attachDropDown(contactKey) }}>
-            {this.displayName(contact, styles)}
-            <FaPaperclip style={{ color: '#34aec1', marginTop: 0, marginLeft: 10 }} onClick={() => this.attachDropDown(contactKey, contact.id)} />
+            <span >
+              <FaUserCircle size={20} style={{ color: '#020e57' }} />{" "}&nbsp;
+              <b className="text-link">
+                {contact.name ? (contact.name.length > 20 ? contact.name.slice(0, 20) + "..." : contact.name)
+                  : (contact.organization.length > 20 ? contact.organization.slice(0, 20) + "..." : contact.organization)}
+              </b> &nbsp;
+              {this.state.profileType > 1 ?
+                <>
+                  {/* <Attachments profileId={this.state.profileId} contactId={contact.id} getCount={true} /> */}
+                  <FaPaperclip style={{ color: '#34aec1', marginTop: 0, marginLeft: 10 }} onClick={() => this.attachDropDown(contactKey, contact.id)} />
+                </> : <FaCaretDown />}
+            </span>
           </Col>
-          <Col >{this.state.onHover && this.state.hoverAccord[contactKey] ? this.loadDropDown(contact, contactKey) : ''}</Col>
+          <Col>{this.state.hoverAccord[contactKey] ? this.loadDropDown(contact) : ''}</Col>
         </Row>
         <Collapse isOpen={this.state.attachDropdown[contactKey]}>{this.showAttachments(contact.id, contact)}</Collapse>
       </ListGroupItem>
     </ListGroup>
   }
 
-  displayName = (contact, styles) => {
-    return <span style={{ styles }} ><FaUserCircle size={20} style={{ color: '#020e57' }} />{" "}&nbsp;
-        <b className="text-link">{contact.name ? (contact.name.length > 20 ? contact.name.slice(0, 20) + "..." : contact.name) :
-        (contact.organization.length > 20 ? contact.organization.slice(0, 20) + "..." : contact.organization)}
-      </b>
-      <Attachments profileId={this.state.profileId} contactId={contact.id} getCount={true} />
-    </span>
-  }
-
   loadDeleteContact = () => {
     return <DeleteModel danger={this.state.danger} headerMessage="Delete Contact" bodyMessage={this.state.contactField}
       toggleDanger={this.toggleDanger} delete={this.deleteContact} cancel={this.toggleDanger} >contact</DeleteModel>
   }
-
-  loadDropDown = (contact, contactKey) => {
-    return ReUseComponents.loadDropDown(contact, this.setContactID, this.toggleDanger, this.updateContact)
+  // view update, delete 
+  loadDropDown = (contact) => {
+    return (<>
+      <Attachments profileId={this.state.profileId} contactId={contact.id} getCount={true} />
+      <span className="float-right" >
+      <small><button style={{ backgroundColor: "transparent", borderColor: 'green', color: "green" }} onClick={() => { this.updateContact(contact) }}> EDIT </button></small> &nbsp;
+      <small><button style={{ backgroundColor: "transparent", borderColor: 'red', color: "red" }} onClick={() => { this.setContactID(contact); this.toggleDanger(); }}> REMOVE </button></small>
+    </span></>
+    )
   }
 
   setContactID = contact => {
@@ -299,7 +301,9 @@ class Contacts extends Component {
         <b>Email: </b>{contact.email}<br />
         <b>Phone: </b>{contact.phone}<br />
       </span>
-      <Attachments contactId={contactId} profileId={this.state.profileId} />
+      {this.state.profileType > 1 ?
+        <Attachments contactId={contactId} profileId={this.state.profileId} />
+        : ''}
     </div>
   }
 }

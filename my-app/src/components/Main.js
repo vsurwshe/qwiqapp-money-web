@@ -9,7 +9,7 @@ import Login from "./Login";
 import Store from "../data/Store";
 import SignupVerify from "../components/SignupVerify";
 import Profiles from "../secure/profiles/Profiles";
-import navigation, { item } from "../data/navigations";
+import navigation from "../data/navigations";
 import Lables from "../secure/labels/Labels";
 import Categories from "../secure/categories/Categories";
 import Contacts from "../secure/contacts/Contacts";
@@ -50,7 +50,6 @@ class Main extends Component {
   }
 
   successCallProfiles = async (profiles) => {
-    let profileSet;
     if (profiles.length === 0 || profiles === null) {
       console.log("There is No Profile");
     } else {
@@ -58,10 +57,6 @@ class Main extends Component {
       if (Store.getSelectedValue() === 'false') {
         await Store.saveProfile(profiles[0])
       }
-      if (Array.isArray(profiles)) {
-        profileSet = await profiles.map(profile => { return { name: profile.name, url: "/profiles/" + profile.id, icon: "cui-user" } })
-      }
-      await this.setState({ profileNames: profileSet })
       this.forceUpdate();
     }
     this.getUser();
@@ -173,14 +168,14 @@ class Main extends Component {
   //This method calls the inbuilt SideBar Component acc to condition
   loadSideBar = () => {
     //added currently profiels into sidebar items json array 
-    const sideNavbarProfileItems = { items: this.state.profileNames.concat(item.items) }
     return (
-      <AppSidebar fixed display="sm">
+      <>
+     {Store.getProfile() !== null && 
+     <AppSidebar fixed display="sm">
         <Suspense>
-          {Store.getProfile() !== null && !this.state.flag ? <AppSidebarNav navConfig={navigation} {...this.props} />
-            : <AppSidebarNav navConfig={sideNavbarProfileItems}  {...this.props} />}
+          <AppSidebarNav navConfig={navigation} {...this.props} />
         </Suspense>
-      </AppSidebar>);
+     </AppSidebar>}</>);
   }
 
   //This method displays the Static Notification according to User's Action

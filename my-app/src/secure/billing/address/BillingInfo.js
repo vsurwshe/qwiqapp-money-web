@@ -92,10 +92,9 @@ class BillingInfo extends Component {
                   <p>
                     {billing.addressLine1 + ', '}
                     {billing.addressLine2 && billing.addressLine2 + ','} <br />
-                    {billing.city && billing.city + ', '}
-                    {billing.region && billing.region + ', '}
-                    {(billing.city && billing.region && (<br />))}
-                    {billing.country} {billing.postCode && " - " + billing.postCode}
+                    {billing.city && <>{billing.city + ', '}<br /></>}
+                    {billing.region ? <>{billing.region + ', '}{billing.postCode && " - " + billing.postCode+","}<br /></> : billing.postCode && <>{billing.postCode+","}<br /></>}
+                    {billing.country} 
                   </p>
                 </center>
               </CardBody>
