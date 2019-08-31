@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Row, Col, Card, CardBody, Alert, ListGroupItem, ListGroup } from "reactstrap";
+import { Row, Col, Card, CardBody, Alert, ListGroupItem, ListGroup, Button } from "reactstrap";
 import Loader from 'react-loader-spinner'
 import UpdateBill from "./UpdateBill";
 import CreateBill from "./CreateBill";
@@ -13,6 +13,7 @@ import { ProfileEmptyMessage } from "../utility/ProfileEmptyMessage";
 import { DeleteModel } from "../utility/DeleteModel";
 import { ReUseComponents } from "../utility/ReUseComponents";
 import '../../css/style.css';
+import Config from "../../data/Config";
 
 class Bills extends Component {
   constructor(props) {
@@ -26,7 +27,7 @@ class Bills extends Component {
       createBillRequest: false,
       updateBillRequest: false,
       deleteBillRequest: false,
-      visible: false,
+      visible: props.visible,
       dropdownOpen: [],
       hoverAccord: [],
       accordion: [],
@@ -113,7 +114,7 @@ class Bills extends Component {
     }
   };
 
-  errorCall = (err) => { this.setState({ visible: true }) }
+  errorCall = (err) => { this.setState({ color:'danger', content:'Unable to Process Request, Please try Again....' }) }
 
   //this toggle for Delete Model
   toggleDanger = () => {
@@ -158,6 +159,7 @@ class Bills extends Component {
     this.setState({ onHover: false });
     this.hoverAccordion(keyIndex)
   }
+
   setBillId = (bill) => {
     let data = {
       "deletBillDescription": bill.description,
@@ -165,6 +167,15 @@ class Bills extends Component {
     }
     this.setState({ id: bill.id, deleteBillName: data});
   }
+
+  callAlertTimer = (visible) => {
+    if (visible) {
+      setTimeout(() => {
+        this.setState({ visible: false });
+      }, Config.apiTimeoutMillis)
+    }
+  };
+
   render() {
     const { bills, createBillRequest, updateBillRequest, id, deleteBillRequest, visible, profileId, updateBill, spinner, labels, categories, contacts, danger } = this.state;
     if (!profileId) {
@@ -178,7 +189,7 @@ class Bills extends Component {
     } else if (deleteBillRequest) {
       return <DeleteBill id={id} pid={profileId} />
     } else {
-      return <div>{this.displayAllBills(visible, bills)}{danger && this.deleteBillModel()}</div>
+      return <div>{this.displayAllBills( visible, bills )}{danger && this.deleteBillModel()}</div>
     }
   }
 
@@ -220,13 +231,17 @@ class Bills extends Component {
   }
 
   // Displays all the Bills one by one
-  displayAllBills = (visible, bills) => {
+  displayAllBills = ( visible, bills ) => {
+    const color = this.props.color;
+    if(color){
+      this.callAlertTimer(visible)
+    }
     return <div className="animated fadeIn">
       <Card>
         {this.loadHeader(bills)}
         <br />
         <div className="header-search">
-          <h6><Alert isOpen={visible} color="danger">Unable to Process Request, Please try Again....</Alert></h6>
+          <h6>{visible && <Alert isOpen={visible} color={color}>{this.props.content}</Alert>}</h6>
           {bills.filter(this.searchingFor(this.state.selectedOption)).map((bill, key) => { return this.loadSingleBill(bill, key); })}
         </div>
       </Card>
@@ -300,7 +315,11 @@ class Bills extends Component {
 
   //this Method loads Browser DropDown
   loadDropDown = (bill, key) => {
-    return new ReUseComponents.loadDropDown(bill, this.setBillId, this.toggleDanger, this.updateBillAction);
+   return  <span className="float-right" style={{ marginRight: 7, marginTop: 7 }}>
+        <Button style={{ backgroundColor: "transparent", borderColor: 'green', color: "green", marginRight: 5, width: 77, padding: 2 }} onClick={() => {this.updateBillAction(bill) }}> EDIT </Button> &nbsp;
+      <Button style={{ backgroundColor: "transparent", borderColor: 'red', color: "red", width: 90, padding: 2 }} onClick={() => {this.setBillId(bill); this.toggleDanger(); }}> REMOVE </Button>
+      </span>
+    // return new ReUseComponents.loadDropDown(bill, this.setBillId, this.toggleDanger, this.updateBillAction);
   }
 
   //this method calls the delete model

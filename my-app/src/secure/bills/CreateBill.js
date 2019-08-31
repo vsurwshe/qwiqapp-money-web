@@ -79,9 +79,8 @@ class CreateBill extends Component {
     this.setState({ alertColor, content, doubleClick: false });
     if (alertColor === "success") {
       setTimeout(() => {
-        this.setState({ name: "", content: "", alertColor: "", billCreated: true });
-        window.location.reload();
-      }, Config.apiTimeOutMillis);
+        this.setState({ name: "", billCreated: true });
+      }, Config.apiTimeoutMillis);
     }
   };
 

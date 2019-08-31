@@ -137,6 +137,7 @@ class UpdateBillForm extends Component {
             this.props.callAlertTimer("danger", "Please enter billdate and due days ")
         }
     }
+
     // shows the response messages for user
     callAlertTimer = (alertColor, content) => {
         this.setState({ alertColor, content });

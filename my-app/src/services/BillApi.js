@@ -43,7 +43,6 @@ async function process(success, failure, Uurl, Umethod, profileId, data, reload)
       await new BillApi().getBills(success, failure, profileId, "True");
     }
   }
-  
   //TODO: handle user error   
   catch (err) {
     handleAccessTokenError(profileId, err, failure, Uurl, Umethod, data, success, reload);
