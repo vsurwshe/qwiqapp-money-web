@@ -40,6 +40,7 @@
     "react-router-dom": "^4.3.1",
     "react-scripts": "^3.0.1",
     "react-select": "^2.4.3",
+    "react-to-print": "^2.4.0",
     "react-truncate": "^2.4.0",
     "reactjs-bootstrap-table": "^1.0.12",
     "reactstrap": "^6.5.0",
