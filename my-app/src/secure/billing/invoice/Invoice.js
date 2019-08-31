@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Button } from 'reactstrap';
+import { Link } from 'react-router-dom';
 import { UserInvoiceApi } from '../../../services/UserInvoiceApi';
 import Store from '../../../data/Store';
 import '../../../css/style.css';
@@ -41,16 +42,9 @@ class Invoice extends Component {
     }
 
     errorCall = (error) => {
-        error.catch((err) => {
-            console.log(err)
-        });
+        console.log(error)
     }
-    filePDF = () => {
-        console.log("object")
-    }
-    fileDownload = () => {
-        console.log("object")
-    }
+    
     render() {
         const { invoiceData, businessAddress, userBillingAddress } = this.state;
         let rowData;
@@ -98,14 +92,16 @@ class Invoice extends Component {
         }
         return (
             <div>
+                <Button color="success" style={{ borderColor: 'green', color: "green", }}><Link to="/billing/paymentHistory" style={{color: "black"}} >payment History</Link></Button>
+                {/* <Link to="/billing/paymentHistory"  >payment History</Link> */}
                 <span className="float-right" >
-                    <Button color="primary" onClick={this.props.fileDownload}>Download</Button> &nbsp;
-                    <Button color="danger" onClick={this.props.filePDF} >ConvertPDF</Button> &nbsp;
+                    <Button color="primary" >Download</Button> &nbsp;
+                    <Button color="danger" >ConvertPDF</Button> &nbsp;
                         <ReactToPrint trigger={() => <Button color="success" href="#"> print</Button>} content={() => this.componentRef} /></span> &nbsp;
                     <div className="float-right">
 
 
-                </div> <br /><br />
+                </div> <br />
                 <InvoiceConvertPdfFile ref={el => (this.componentRef = el)} data={data} customDateFormat={this.customDateFormat} />
             </div>
         )

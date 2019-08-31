@@ -1,29 +1,21 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
-import { Table, CardBody, CardTitle, Container, Card, Row, Col, Button } from "reactstrap";
-import { UserInvoiceApi } from '../../services/UserInvoiceApi';
-import Store from '../../data/Store';
-import '../../css/style.css';
-import GeneralApi from '../../services/GeneralApi';
-import BillingAddressApi from '../../services/BillingAddressApi';
+import { Table, CardBody, CardTitle, Container, Card, Row, Col } from "reactstrap";
+import '../../../css/style.css';
 
 class InvoiceConvertPdfFile extends Component {
     render(){
-    
-    const {invoice, invoiceId, firstName, lastName, company, addressLine1, addressLine2, city, 
-        region, postCode, country, business, address1, address2, address4, address3, 
-        contact, taxRef, invoiceDate, netTotal, taxTotal, grossTotal } = this.props.data
-        return (
-            <Container className="container-border">
-               
+        const {invoice, invoiceId, firstName, lastName, company, addressLine1, addressLine2, city,  region, postCode, country, business,
+            address1, address2, address4, address3, contact, taxRef, invoiceDate, netTotal, taxTotal, grossTotal } = this.props.data
+        return (<>
+            {/* // <Container className="container-border"> */}
                 <br />
                 <Card>
                     <CardBody>
                         <Row >
                             <Col sm={9}>
                                 <CardTitle className="heading">INVOICE</CardTitle>
-                                <span >Invoice number:&nbsp;&nbsp;{this.state.invoiceId} </span>
-                                <p >Date:  {invoiceDate && this.customDateFormat(invoiceDate)}</p>
+                                <span >Invoice number:&nbsp;&nbsp;{invoiceId} </span>
+                                <p >Date:  {invoiceDate && this.props.customDateFormat(invoiceDate)}</p>
                                 <br />
                                 <Row>
                                     <Col sm={3}>
@@ -89,13 +81,11 @@ class InvoiceConvertPdfFile extends Component {
                         </tr>
                     </tbody>
                 </Table>
-                <center style={{paddingLeft: 20}}>
-                    <Button color="success" style={{ borderColor: 'green', color: "green", }}><Link to="/billing/paymentHistory" style={{color: "black"}} >Go back</Link></Button>
-                </center>
-            </Container>
-           
+                
+            {/* // </Container> */}
+           </>
         );
-                                    }
+    }
 }
  
 export default InvoiceConvertPdfFile;
