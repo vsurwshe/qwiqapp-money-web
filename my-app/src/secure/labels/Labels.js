@@ -142,10 +142,8 @@ class Lables extends Component {
       return <UpdateLabel pid={profileId} label={requiredLabel} lables={labels} index={index} />
     } else if (deleteLabel) {
       return <DeleteLabel id={id} pid={profileId} />
-    } else if (danger)
-      return <div>{this.loadShowLabel(visible, labels, search)}{this.loadDeleteLabel()}</div>
-    else {
-      return <div>{this.loadShowLabel(visible, labels, search)}</div>
+    } else {
+      return <div>{this.loadShowLabel(visible, labels, search)}{danger && this.loadDeleteLabel()}</div>
     }
   }
 
@@ -202,5 +200,4 @@ class Lables extends Component {
       toggleDanger={this.toggleDanger} delete={this.deleteLabel} cancel={this.toggleDanger} >label</DeleteModel>
   }
 }
-
 export default Lables;

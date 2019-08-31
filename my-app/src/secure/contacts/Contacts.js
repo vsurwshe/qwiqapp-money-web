@@ -170,10 +170,8 @@ class Contacts extends Component {
         return <DeleteContact contactId={contactId} profileId={profileId} />
       } else if (addAttachRequest) {
         return <AddAttachment contacId={contactId} profileId={profileId} />
-      } else if (danger) {
-        return <div>{this.loadDeleteContact()} {this.loadShowContact(visible, contacts)}</div>
       } else {
-        return this.loadShowContact(visible, contacts)
+        return <div>{ danger && this.loadDeleteContact()} {this.loadShowContact(visible, contacts)}</div>
       }
     } else {
       return <ProfileEmptyMessage />

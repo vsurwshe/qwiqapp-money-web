@@ -135,7 +135,7 @@ class Categories extends Component {
   }
 
   render() {
-    const { requiredCategory, createCategory, updateCategory, deleteCategory, profileId, categoryId, visible, spinner, search, categories, index,danger } = this.state;
+    const { requiredCategory, createCategory, updateCategory, deleteCategory, profileId, categoryId, visible, spinner, search, categories, index, danger } = this.state;
     let profile = Store.getProfile()
     if (!profile) {
       return <ProfileEmptyMessage />
@@ -148,12 +148,9 @@ class Categories extends Component {
     } else if (deleteCategory) {
       return <DeleteCategory cid={categoryId} pid={profileId} />
     } 
-    else if(danger){
-        return <div>{this.loadDeleteCategory()} {this.loadCategories(categories, visible, search)}</div>
+    else{
+        return <div>{ danger && this.loadDeleteCategory()} { this.loadCategories(categories, visible, search)}</div>
     } 
-    else {
-      return this.loadCategories(categories, visible, search)
-    }
   }
 
   setSearch = e => {

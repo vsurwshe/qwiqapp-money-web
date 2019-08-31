@@ -159,10 +159,10 @@ class Bills extends Component {
     this.hoverAccordion(keyIndex)
   }
   setBillId = (bill) => {
-    this.setState({ id: bill.id, billDescription: bill.description});
+    this.setState({ id: bill.id, billDescription: bill.description });
   }
   render() {
-    const { bills, createBillRequest, updateBillRequest, id, deleteBillRequest, visible, profileId, updateBill, spinner, labels, categories, contacts } = this.state;
+    const { bills, createBillRequest, updateBillRequest, id, deleteBillRequest, visible, profileId, updateBill, spinner, labels, categories, contacts, danger } = this.state;
     if (!profileId) {
       return <ProfileEmptyMessage />
     } else if (bills.length === 0 && !createBillRequest) {
@@ -174,7 +174,7 @@ class Bills extends Component {
     } else if (deleteBillRequest) {
       return <DeleteBill id={id} pid={profileId} />
     } else {
-      return <div>{this.displayAllBills(visible, bills)}{this.deleteBillModel()}</div>
+      return <div>{this.displayAllBills(visible, bills)}{danger && this.deleteBillModel()}</div>
     }
   }
 
@@ -189,7 +189,7 @@ class Bills extends Component {
   }
 
   loadHeader = () => {
-    return new ReUseComponents.loadHeaderWithSearch("BILLS","", this.searchSelected, "Search Bills.....", this.createBillAction);
+    return new ReUseComponents.loadHeaderWithSearch("BILLS", "", this.searchSelected, "Search Bills.....", this.createBillAction);
   }
 
   loadLoader = () => {
@@ -206,13 +206,13 @@ class Bills extends Component {
   // when bills is empty. 
   emptyBills = () => {
     return <div className="animated fadeIn">
-    <Card>
-      {this.loadHeader()}
-      <center className="padding-top" >
-        <CardBody><h5><b>You haven't created any Bills yet... </b></h5><br /></CardBody>
-      </center>
-    </Card>
-  </div>
+      <Card>
+        {this.loadHeader()}
+        <center className="padding-top" >
+          <CardBody><h5><b>You haven't created any Bills yet... </b></h5><br /></CardBody>
+        </center>
+      </Card>
+    </div>
   }
 
   // Displays all the Bills one by one
@@ -287,11 +287,12 @@ class Bills extends Component {
   loadDropDown = (bill, key) => {
     return new ReUseComponents.loadDropDown(bill, this.setBillId, this.toggleDanger, this.updateBillAction);
   }
- 
+
   //this method calls the delete model
   deleteBillModel = () => {
+    
     return <DeleteModel danger={this.state.danger} toggleDanger={this.toggleDanger} headerMessage="Delete Bill" bodyMessage={this.state.billDescription}
-        delete={this.deleteBillAction} cancel={this.toggleDanger} >bill</DeleteModel>
+      delete={this.deleteBillAction} cancel={this.toggleDanger} >bill</DeleteModel>
   }
 }
 export default Bills;

@@ -75,12 +75,9 @@ class Profiles extends Component {
       return (<Container> <UpdateProfile id={id} name={name} /> </Container>)
     } else if (deleteProfile) {
       return (<Container> <DeleteProfile id={id} /> </Container>)
-     } else if(danger) {
-       return <div>{this.loadDeleteProfile()} {this.showProfile(profiles)}</div>
+     } else  {
+       return <div> { danger && this.loadDeleteProfile()} {this.showProfile(profiles)}</div>
      }
-    else {
-      return <div>{this.showProfile(profiles)}</div>
-    }
   }
 
   loadHeader = () => {
