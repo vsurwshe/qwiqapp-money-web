@@ -87,7 +87,6 @@ class Categories extends Component {
 
   //Method that shows API's Error Call
   errorCall = error => {
-    console.log(error);
     this.callAlertTimer('danger', 'Unable to Process Request, Please Try Again')
   }
 
@@ -170,6 +169,10 @@ class Categories extends Component {
   loadDeleteCategory = () => {
     return <DeleteModel danger={this.state.danger} headerMessage="Delete Category" bodyMessage={this.state.categoryName}
       toggleDanger={this.toggleDanger} delete={this.deleteCategory} cancel={this.toggleDanger} >category</DeleteModel>
+  }
+
+  showDropdown = (category, uKey) => {
+    return ReUseComponents.loadDropDown(category, this.updateCategory, this.setCategoryID, this.toggleDanger)
   }
 
   setCategoryID = category => {

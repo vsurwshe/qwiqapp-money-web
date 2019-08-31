@@ -30,7 +30,9 @@ class DeleteBill extends Component {
 
   callAlertTimer = (color, content) => {
     this.setState({ color, content });
-    setTimeout(() => { this.setState({ color: "", content: "", labelDeleted: true }); }, Config.notificationMillis);
+    setTimeout(() => {
+      this.setState({ color: "", content: "", labelDeleted: true });
+    }, Config.notificationMillis);
   };
 
   render() {

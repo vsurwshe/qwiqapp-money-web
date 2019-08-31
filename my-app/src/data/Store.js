@@ -208,8 +208,8 @@ const Store = {
 
     //this is get bills form local storege
     getBills: function () {
-        const categories = db.getItem("BILL")
-        return JSON.parse(categories)
+        const bills = db.getItem("BILL")
+        return JSON.parse(bills)
     },
 
     saveContacts: function (data) {

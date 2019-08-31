@@ -159,7 +159,11 @@ class Bills extends Component {
     this.hoverAccordion(keyIndex)
   }
   setBillId = (bill) => {
-    this.setState({ id: bill.id, billDescription: bill.description });
+    let data = {
+      "deletBillDescription": bill.description,
+      "deletBillCategoryName": bill.categoryName.name      
+    }
+    this.setState({ id: bill.id, deleteBillName: data});
   }
   render() {
     const { bills, createBillRequest, updateBillRequest, id, deleteBillRequest, visible, profileId, updateBill, spinner, labels, categories, contacts, danger } = this.state;
@@ -237,16 +241,21 @@ class Bills extends Component {
           <Col sm={{ size: 'auto', offset: 0 }} lg={1} className="date-format" >
             <strong className="date-formate"><center>{this.dateFormat(bill.billDate)}</center></strong>
           </Col>
-          <Col sm={8}>
-            <Row className="text-link padding-left">{bill.description}</Row>
-            <Row className="text-link padding-left" style={{ color: bill.categoryName.color }} ><b>{bill.categoryName.name}</b></Row>
+          <Col sm={5}>
+            {bill.description ? 
+              <><Row className="text-link padding-left">{bill.description}</Row>
+                <Row className="text-link padding-left" style={{ color: bill.categoryName.color }} ><b>{bill.categoryName.name}</b></Row>
+              </> :
+              <><Row className="text-link padding-left"><p></p></Row>
+              <Row className="text-link padding-left" style={{ color: bill.categoryName.color, paddingBottom: 3 }} ><b>{bill.categoryName.name}</b></Row>
+            </>}
           </Col>
-          <Col className="float-right column-text ">
-            {bill.type === "INCOME_RECEIVABLE" ?
-              <b className="bill-amount-color">
+          <Col className="column-text ">
+            {bill.amount > 0 ?
+              <b className="float-right bill-amount-color">
                 {new Intl.NumberFormat('en-US', { style: 'currency', currency: bill.currency }).format(bill.amount)}
               </b> :
-              <b className="text-color">
+              <b className="float-right text-color">
                 {new Intl.NumberFormat('en-US', { style: 'currency', currency: bill.currency }).format(bill.amount)}
               </b>
             }
@@ -296,9 +305,10 @@ class Bills extends Component {
 
   //this method calls the delete model
   deleteBillModel = () => {
-    
-    return <DeleteModel danger={this.state.danger} toggleDanger={this.toggleDanger} headerMessage="Delete Bill" bodyMessage={this.state.billDescription}
-      delete={this.deleteBillAction} cancel={this.toggleDanger} >bill</DeleteModel>
+   let billDeleteItem = this.state.deleteBillName.deletBillDescription ? this.state.deleteBillName.deletBillDescription
+                                                                      : this.state.deleteBillName.deletBillCategoryName;
+    return <DeleteModel danger={this.state.danger} toggleDanger={this.toggleDanger} headerMessage="Delete Bill" bodyMessage={billDeleteItem}
+        delete={this.deleteBillAction} cancel={this.toggleDanger} >bill</DeleteModel>
   }
 }
 export default Bills;
