@@ -105,7 +105,7 @@ class Invoice extends Component {
             <span className="float-right" >
                 <Button color="danger" onClick={this.callDownload} >Download PDF</Button> &nbsp;
                     <ReactToPrint trigger={() => <Button color="success" href="#"> print</Button>} content={() => this.componentRef} /></span> &nbsp;
-                    <br /> <br /> <br />
+                    <br /> <br />
             <InvoiceConvertPdfFile ref={el => (this.componentRef = el)} data={data} customDateFormat={this.customDateFormat} download={this.state.download} />
         </div>
     }

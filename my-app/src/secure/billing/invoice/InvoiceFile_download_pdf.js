@@ -47,11 +47,11 @@ class InvoiceConvertPdfFile extends Component {
                             <div style={{ paddingLeft: 25 }}>
                                 {company && <>{company}<br /></>}
                                 {addressLine1 && <>{addressLine1}<br /></>}
-                                {addressLine2}
-                                {city}<br />
-                                {region}
-                                {postCode && " - " + postCode}<br />
-                                {country}<br />
+                                {addressLine2 && <>{address2}<br/></>}
+                                {city && <>  {city}<br /> </>}
+                                {region ? <> {region} {postCode && " - " + postCode}<br /> </> 
+                                    : <>{postCode && <>{postCode}<br /></>}</>}
+                                {country}
                             </div>
                         </Col>
                         <Col sm={3}>
