@@ -2,14 +2,12 @@ import React, { Component } from 'react';
 import { Button } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { UserInvoiceApi } from '../../../services/UserInvoiceApi';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
-import Store from '../../../data/Store';
-import '../../../css/style.css';
 import GeneralApi from '../../../services/GeneralApi';
 import BillingAddressApi from '../../../services/BillingAddressApi';
 import ReactToPrint from 'react-to-print';
-import InvoiceConvertPdfFile from './InvoiceConvertPdfFile';
+import InvoiceConvertPdfFile from './InvoiceFile_download_pdf';
+import Store from '../../../data/Store';
+import '../../../css/style.css';
 
 class Invoice extends Component {
     constructor(props) {
@@ -24,6 +22,7 @@ class Invoice extends Component {
     }
 
     componentDidMount = () => {
+        
         new UserInvoiceApi().showInvoice(this.successCall, this.errorCall, this.state.invoiceId);
         new GeneralApi().settings(this.settingsSuccessCall, this.errorCall);
         new BillingAddressApi().getBillings(this.userBillingAddress, this.errorCall);
@@ -46,7 +45,7 @@ class Invoice extends Component {
     errorCall = (error) => {
         console.log(error)
     }
-    
+
     render() {
         const { invoiceData, businessAddress, userBillingAddress } = this.state;
         let rowData;
@@ -65,18 +64,15 @@ class Invoice extends Component {
     }
 
     callDownload = () => {
-        html2canvas(document.querySelector("#download")).then(canvas => {
-            document.body.appendChild(canvas);  // if you want see your screenshot in body.
-            const imgData = canvas.toDataURL('image/png');
-            const pdf = new jsPDF();
-            pdf.addImage(imgData, 'PNG', 0, 0);
-            pdf.save("download.pdf"); 
-        });
+        this.setState({ download: true });
     }
+
     invoiceTable = (invoice, invoiceData, userBillingAddress, businessAddress) => {
+
         const { firstName, lastName, company, addressLine1, addressLine2, city, region, postCode, country } = userBillingAddress;
         const { business, address1, address2, address4, address3, contact, taxRef } = businessAddress;
         const { invoiceDate, netTotal, taxTotal, grossTotal } = invoiceData;
+
         let data = {
             "firstName": firstName,
             "lastName": lastName,
@@ -101,19 +97,17 @@ class Invoice extends Component {
             "invoice": invoice,
             "invoiceId": this.state.invoiceId
         }
-        return (
-            <div>
-                <Button color="success" style={{ borderColor: 'green', color: "green", }}><Link to="/billing/paymentHistory" style={{color: "black"}} >payment History</Link></Button>
-                {/* <Link to="/billing/paymentHistory"  >payment History</Link> */}
-                <span className="float-right" >
-                    <Button color="primary" onClick={this.callDownload} >Download</Button> &nbsp;
-                    <Button color="danger" >ConvertPDF</Button> &nbsp;
-                        <ReactToPrint trigger={() => <Button color="success" href="#"> print</Button>} content={() => this.componentRef} /></span> &nbsp;
-                    <br />
-                <div id="download">
-                <InvoiceConvertPdfFile ref={el => (this.componentRef = el)} data={data} customDateFormat={this.customDateFormat} /></div>
-            </div>
-        )
+
+        return <div >
+            <Button color="link">
+                <Link to="/billing/paymentHistory" style={{ color: "#1a75ff" }} >Back</Link>
+            </Button>
+            <span className="float-right" >
+                <Button color="danger" onClick={this.callDownload} >Download PDF</Button> &nbsp;
+                    <ReactToPrint trigger={() => <Button color="success" href="#"> print</Button>} content={() => this.componentRef} /></span> &nbsp;
+                    <br /> <br /> <br />
+            <InvoiceConvertPdfFile ref={el => (this.componentRef = el)} data={data} customDateFormat={this.customDateFormat} download={this.state.download} />
+        </div>
     }
 
     customDateFormat = (invoiceDate) => {
@@ -133,7 +127,3 @@ class Invoice extends Component {
     }
 }
 export default Invoice;
-
-
-
-
