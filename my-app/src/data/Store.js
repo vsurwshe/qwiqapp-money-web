@@ -110,12 +110,31 @@ const Store = {
             return null;
         }
     },
+
+    saveCurrencies: function(currencies){
+        db.setItem("CURRENCIES", JSON.stringify(currencies))
+    },
+
+    getCurrencies: function(){
+        return JSON.parse(db.getItem('CURRENCIES'))
+    },
+
+    saveCountries: function(countries){
+        db.setItem("COUNTRIES", JSON.stringify(countries))
+    },
+
+    getCountries: function(){
+        return JSON.parse(db.getItem('COUNTRIES'))
+    },
+
     saveBillingAddress:function(billingAddress){
         db.setItem("BILLING_ADDRESS",JSON.stringify(billingAddress));
     },
+
     getBillingAddress:function(){
         return JSON.parse(db.getItem("BILLING_ADDRESS"));
     },
+
     storeJson: function (keyName, jsonValue) {
         db.setItem(keyName, JSON.stringify(jsonValue));
     },
@@ -189,8 +208,8 @@ const Store = {
 
     //this is get bills form local storege
     getBills: function () {
-        const categories = db.getItem("BILL")
-        return JSON.parse(categories)
+        const bills = db.getItem("BILL")
+        return JSON.parse(bills)
     },
 
     saveContacts: function (data) {

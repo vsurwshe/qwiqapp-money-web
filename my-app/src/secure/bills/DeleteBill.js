@@ -3,6 +3,7 @@ import { Card, CardHeader, CardBody, Alert, Col } from "reactstrap";
 import Bills from "./Bills";
 import BillApi from "../../services/BillApi";
 import Config from "../../data/Config";
+import { ReUseComponents } from "../utility/ReUseComponents";
 
 class DeleteBill extends Component {
   constructor(props) {
@@ -30,12 +31,14 @@ class DeleteBill extends Component {
 
   callAlertTimer = (color, content) => {
     this.setState({ color, content });
-    setTimeout(() => { this.setState({ color: "", content: "", labelDeleted: true }); }, Config.notificationMillis);
+    setTimeout(() => {
+      this.setState({ labelDeleted: true });
+    }, Config.notificationMillis);
   };
 
   render() {
     const { labelDeleted, content, color } = this.state;
-    return <div>{labelDeleted ? <Bills /> : this.deleteBill(color, content)}</div>
+    return <div>{labelDeleted ? <Bills color={color} content={content} visible={true} /> : ReUseComponents.loadDeleting("Bills", content, color)}</div>
   }
 
   deleteBill = (color, content) => {

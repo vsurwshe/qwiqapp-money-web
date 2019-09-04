@@ -99,7 +99,7 @@ const Data = {
       if (category.subCategories !== null) {
         options.push({ value: category.id, label: <b>{category.name}</b>, color: !category.color ? "#000000" : category.color })
         category.subCategories.map(subCategory => {
-          return options.push({ label: <span style={{ paddingLeft: 30 }}>{subCategory.name}</span>, color: !subCategory.color ? "#000000" : subCategory.color, value: subCategory.id })
+          return options.push({ label: <><span style={{ color: category.color }}>{category.name}</span> / {subCategory.name}</>, color: !subCategory.color ? "#000000" : subCategory.color, value: subCategory.id })
         })
       } else {
         return options.push({ value: category.id, label: <b>{category.name}</b>, color: !category.color ? "#000000" : category.color })

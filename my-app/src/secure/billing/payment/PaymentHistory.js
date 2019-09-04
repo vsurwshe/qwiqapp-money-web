@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom';
 import { Card, CardBody, CardHeader, Table, Button, Label } from 'reactstrap';
 import Loader from 'react-loader-spinner';
 import BillingAddressApi from '../../../services/BillingAddressApi';
-import GeneralApi from '../../../services/GeneralApi';
 import Config from '../../../data/Config';
 import '../../../css/style.css';
+import Store from '../../../data/Store';
 
 class PaymentHistory extends Component {
   constructor(props) {
@@ -14,7 +14,7 @@ class PaymentHistory extends Component {
       payments: [],
       toggle: false,
       accordion: [],
-      currency: [],
+      currencies: [],
       spinner: false,
       search: '',
       alertColor: '',
@@ -25,18 +25,16 @@ class PaymentHistory extends Component {
 
   componentDidMount = () => {
     new BillingAddressApi().getPaymentsHistory(this.successCall, this.errorCall)
-    new GeneralApi().getCurrencyList(this.successCall, this.errorCall);
   }
 
   successCall = async (response) => {
-    if (response.payments) {  //    response form all Payments & Total Balance  
+      const currencies = Store.getCurrencies();
       await this.setState({
+        currencies, 
         payments: response.payments,
-        total_balance: response.balance, spinner: true
+        total_balance: response.balance, 
+        spinner: true
       });
-    } else {
-      this.setState({ currency: response }) //response to all Currencies  
-    }
   }
 
   // Response API Error 
@@ -52,7 +50,7 @@ class PaymentHistory extends Component {
   }
 
   render() {
-    const { payments, spinner, currency } = this.state;
+    const { payments, spinner, currencies } = this.state;
     if (!payments.length) {
       if (!spinner) {
         return this.loadSpinner()
@@ -65,7 +63,7 @@ class PaymentHistory extends Component {
         return (<tr key={key} className="row-text-align">
           <td>{this.customeDateFormat(payment.created)}</td>
           <td > {payment.invoiceId <= 0 ? payment.description : <Link to={url}>{payment.description}</Link> } </td>
-          <td>{this.showCurrenySymbol(payment.currency, currency)} {payment.amount}</td>
+          <td>{this.showCurrenySymbol(payment.currency, currencies)} {payment.amount}</td>
         </tr>
         )
       });
@@ -141,9 +139,9 @@ class PaymentHistory extends Component {
       </Table></>
   }
 
-  showCurrenySymbol = (paymentCurrency, currency) => {
+  showCurrenySymbol = (paymentCurrency, currencies) => {
     let currency_symbol = '';
-    currency.map(currency => {
+    currencies.map(currency => {
       if (paymentCurrency === currency.code) {
         currency_symbol = currency.symbol;
       }

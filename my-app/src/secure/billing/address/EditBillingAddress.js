@@ -3,7 +3,6 @@ import { AvForm, AvField } from 'availity-reactstrap-validation';
 import { Alert, Button, Card, FormGroup, Col, Row } from "reactstrap";
 import UserApi from '../../../services/UserApi';
 import BillingAddressApi from '../../../services/BillingAddressApi';
-import GeneralApi from "../../../services/GeneralApi";
 import Config from "../../../data/Config";
 import Store from "../../../data/Store";
 import BillingInfo from "./BillingInfo";
@@ -30,12 +29,9 @@ class EditBillingAddress extends Component {
   }
 
   componentDidMount = () => {
-    new GeneralApi().getCountrylist(this.successCall, this.errorCall)
-  }
-
-  successCall = countries => {
+    const countries = Store.getCountries();
     this.setState({ countries });
-  }
+   }
 
   handleInputValidate = (e) => {
     if (e.target.name === "firstName") {

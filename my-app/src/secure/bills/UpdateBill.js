@@ -1,13 +1,12 @@
 import React, { Component } from "react";
-import { AvForm, AvField } from 'availity-reactstrap-validation';
-import { Button, Col, Row, Alert, FormGroup, Card, CardHeader } from "reactstrap";
+import { Col, Alert, Card, CardHeader } from "reactstrap";
 import Select from 'react-select';
-import Lables from "./Bills";
 import BillApi from "../../services/BillApi";
 import Data from '../../data/SelectData';
 import Bills from "./Bills";
 import Config from "../../data/Config";
-import GeneralApi from "../../services/GeneralApi";
+import UpdateBillForm from "./UpdateBillForm";
+import Store from "../../data/Store";
 
 class UpdateBill extends Component {
   constructor(props) {
@@ -30,19 +29,30 @@ class UpdateBill extends Component {
       currencies: [],
       userAmount: props.bill.amount,
       cancelUpdateBill: false,
+      taxPercent: props.bill.taxPercent,
+      taxAmount: props.bill.taxAmount_,
+      taxAmtChanged: false,
+      checked: this.props.bill.notificationEnabled,
+      notifyDays: props.bill.notifyDays,
+      billType: props.bill.amount < 0 ? '-' : '+'
     };
   }
 
   componentDidMount = async () => {
-    new GeneralApi().getCurrencyList(this.successCurrency, this.failureCurrency)
-  }
-
-  successCurrency = currencies => {
-    this.setState({ currencies });
-  }
-
-  failureCurrency = err => {
-    console.log(err);
+    let splitVal = ("" + this.state.userAmount).split('-')
+    let taxAmt = ("" + this.state.taxAmount).split('-')
+    if (splitVal.length === 1) {
+      this.setState({ userAmount: splitVal[0] });
+    } else {
+      this.setState({ userAmount: splitVal[1], sign: splitVal[0] });
+    }
+    if (taxAmt.length === 1) {
+      this.setState({ taxAmount: taxAmt[0] });
+    } else {
+      this.setState({ taxAmount: taxAmt[1] });
+    }
+    const currencies = Store.getCurrencies();
+    this.setState({ currencies })
   }
 
   cancelUpdateBill = () => {
@@ -57,7 +67,11 @@ class UpdateBill extends Component {
       const newData = {
         ...values, "billDate": billDate, "categoryId": categoryOptionUpdate ? categoryOption.value : categoryOption,
         "contactId": contactOptionUpdate ? contactOption.value : contactOption,
-        "labelIds": labelOption === null || labelOption === [] ? [] : (labelOptionUpdate ? labelOption.map(opt => { return opt.value }) : labelOption), "version": this.props.bill.version
+        "amount": values.label + values.amount,
+        "notificationEnabled": this.state.checked,
+        "taxPercent": values.taxPercent === "" ? 0 : values.taxPercent,
+        "labelIds": labelOption === null || labelOption === [] ? [] : (labelOptionUpdate ? labelOption.map(opt => { return opt.value }) : labelOption),
+        "version": this.props.bill.version
       }
       this.handleUpdate(event, newData);
     }
@@ -69,7 +83,7 @@ class UpdateBill extends Component {
 
   // updated bill
   successCall = json => {
-    this.callAlertTimer("success", "Bill Updated Successfully... ");
+    this.callAlertTimer("success", "Bill Updated Successfully !! ");
   };
 
   // updated bill Error messages
@@ -80,9 +94,11 @@ class UpdateBill extends Component {
   // shows the response messages for user
   callAlertTimer = (alertColor, content) => {
     this.setState({ alertColor, content });
-    setTimeout(() => {
-      this.setState({ name: '', alertColor: '', updateSuccess: true });
-    }, Config.notificationMillis);
+    if (alertColor === "success") {
+      setTimeout(() => {
+        this.setState({ name: '', alertColor: '', updateSuccess: true });
+      }, Config.notificationMillis);
+    }
   };
 
   labelSelected = (labelOption) => {
@@ -97,74 +113,72 @@ class UpdateBill extends Component {
     this.setState({ contactOption, contactOptionUpdate: true })
   }
 
+  handleSetAmount = async e => {
+    e.persist();
+    await this.setState({ userAmount: e.target.value });
+    this.setTaxAmt(this.state.taxPercent)
+  }
+
+  handleTaxAmount = (e) => {
+    e.persist();
+    let taxPercentage = parseInt(e.target.value);
+    this.setTaxAmt(taxPercentage);
+  }
+
+  setTaxAmt = (taxPercent) => {
+    const { userAmount } = this.state;
+    let taxAmount;
+    if (userAmount && taxPercent > 0) {
+      taxAmount = userAmount - (userAmount * 100) / (taxPercent + 100);
+      this.setState({ taxAmount, taxPercent });
+    } else {
+      this.setState({ taxAmount: 0 });
+    }
+  }
+
+  handleTaxPercent = (e) => {
+    e.persist();
+    const { userAmount } = this.state;
+    let taxAmount = parseInt(e.target.value);
+    let taxPercent;
+    if (userAmount && taxAmount > 0) {
+      taxPercent = (userAmount * 100) / (userAmount - taxAmount) - 100;
+      this.setState({ taxAmount, taxPercent });
+    } else {
+      this.setState({ taxAmount: 0 });
+    }
+
+  }
+
+  handleNotificationEnabled = () => {
+    this.setState({ checked: !this.state.checked })
+  }
+
   render() {
-    const { alertColor, content, updateSuccess, labels, categories, bill, cancelUpdateBill, contacts } = this.state;
+    const { alertColor, content, updateSuccess, cancelUpdateBill } = this.state;
     if (cancelUpdateBill) {
       return <Bills />
     } else {
-      return <div>{updateSuccess ? <Lables /> : this.updateFormFiled(alertColor, content, labels, categories, bill, contacts)}</div>
+      return <div>{updateSuccess ? <Bills /> : this.updateFormField(alertColor, content)}</div>
     }
   }
 
   loadHeader = () => <CardHeader><strong>Update Bill</strong></CardHeader>
 
   // when updating Form
-  updateFormFiled = (alertColor, content, labels, categories, bill, contacts) => {
+  updateFormField = (alertColor, content) => {
     return (
       <div className="animated fadeIn" >
         <Card>
           {this.loadHeader()}
           <Col sm="12" md={{ size: 7, offset: 3 }}>
             <br />
-            {alertColor === "" ? "" : <Alert color={alertColor}>{content}</Alert>}
-            <AvForm onSubmit={this.handleSubmitValue}>
-              <Row>
-                <Col sm={3}>
-                  <AvField type="select" id="symbol" label="currency" value={bill.currency} name="currency" errorMessage="Select Currency" required>
-                    <option value="">Select</option>
-                    {this.state.currencies.map((currencies, key) => { return <option key={key} value={currencies.code} h={currencies.symbol} symbol={currencies.symbol} >{currencies.symbol}</option> })}
-                  </AvField>
-                </Col>
-                <Col>
-                  <AvField name="amount" id="amount" label="Amount" value={this.state.userAmount} placeholder="Amount" type="text" errorMessage="Invalid amount"
-                    validate={{ required: { value: true }, pattern: { value: '^([0-9]*[.])?[0-9]+$' } }} required />
-                </Col>
-              </Row>
-              <Row>
-                <Col>
-                  <AvField name="tax" id="tax" value={bill.tax + ''} placeholder="Ex: 2" label="Tax" type="text" errorMessage="Invalid amount" validate={{ required: { value: true }, pattern: { value: '^[0-9]+$' } }} required />
-                </Col>
-              </Row>
-              <Row>
-                <Col><label >Category</label>
-                  <Select options={Data.categories(categories)} defaultValue={Data.categories(categories).filter(item => { return item.value === bill.categoryId })} styles={Data.singleStyles} placeholder="Select Categories " onChange={this.categorySelected} required /></Col>
-              </Row>
-              <br />
-              <Row>
-                <Col><AvField name="billDate" label="Bill Date" value={this.loadDateFormat(bill.billDate)} type="date" errorMessage="Invalid Date" validate={{
-                  date: { format: 'yyyy/MM/dd' },
-                  dateRange: { format: 'YYYY/MM/DD', start: { value: '1900/01/01' }, end: { value: '9999/12/31' } },
-                  required: { value: true }
-                }} /></Col>
-                <Col><AvField name="dueDays" label="Due Days" value={bill.dueDays} type="number" placeholder="No.of Days" errorMessage="Invalid days" /></Col>
-              </Row>
-              <Row>
-                <Col><label >Description/Notes</label>
-                  <AvField name="description" type="text" value={bill.description} list="colors" errorMessage="Invalid Notes" placeholder="Ex: Recharge " /></Col>
-              </Row>
-              <Row>
-                <Col><label >Select Labels</label>
-                  {this.lablesOptions(labels, bill)}</Col>
-              </Row><br />
-              <Row>
-                <Col><label >Select Contacts</label>
-                  <Select options={Data.contacts(contacts)} defaultValue={Data.contacts(contacts).filter(item => { return item.value === bill.contactId })} placeholder="Select Contacts " onChange={this.contactSelected} required /></Col>
-              </Row><br />
-              <FormGroup>
-                <Button color="info"> Update </Button> &nbsp;&nbsp;
-                <Button type="button" onClick={this.cancelUpdateBill}>Cancel</Button>
-              </FormGroup>
-            </AvForm>
+            {alertColor && <Alert color={alertColor}>{content}</Alert>}
+            <UpdateBillForm updateForm={this.state} handleSubmitValue={this.handleSubmitValue}
+              handleSetAmount={this.handleSetAmount} handleTaxAmount={this.handleTaxAmount} handleTaxPercent={this.handleTaxPercent}
+              contactSelected={this.contactSelected} lablesOptions={this.lablesOptions} categorySelected={this.categorySelected}
+              loadDateFormat={this.loadDateFormat} cancelUpdateBill={this.cancelUpdateBill} callAlertTimer={this.callAlertTimer}
+              handleNotificationEnabled={this.handleNotificationEnabled} />
           </Col>
         </Card>
       </div>)

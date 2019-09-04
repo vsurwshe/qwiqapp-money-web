@@ -60,9 +60,23 @@ class Main extends Component {
       this.forceUpdate();
     }
     this.getUser();
-    new GeneralApi().settings((data) => { Store.saveSetting(data) }, (error) => { console.log(error); });
+    new GeneralApi().settings(this.getPaypalSettings, this.errorCall);
+    new GeneralApi().getCurrencyList(this.getCurrenciesList, this.errorCall);
+    new GeneralApi().getCountrylist(this.getCountriesList, this.errorCall);
   }
 
+  getPaypalSettings = (data)=>{
+    Store.saveSetting(data) 
+  }
+
+  getCurrenciesList=(currencies)=>{
+    Store.saveCurrencies(currencies)
+  }
+
+  getCountriesList=(countries)=>{
+    Store.saveCountries(countries)
+  }
+  
   getUser = () => {
     new UserApi().getUser(this.successCallUser, this.errorCall)
   }

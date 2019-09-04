@@ -5,10 +5,9 @@ import { AvForm, AvField } from 'availity-reactstrap-validation';
 import Loader from 'react-loader-spinner';
 import Contacts from "./Contacts";
 import ContactApi from "../../services/ContactApi";
-import GeneralApi from "../../services/GeneralApi";
 import Data from '../../data/SelectData';
 import Config from "../../data/Config";
-// import '../../../public/';
+import Store from "../../data/Store";
 
 const nameOrOrganization = (value, field) => {
   if (field.name === "" && field.organization === "") {
@@ -40,16 +39,10 @@ class UpdateContact extends Component {
   }
 
   componentDidMount = () => {
-    this.getCountryList();
+    const countries = Store.getCountries();
+    this.setState({ countries, spinner: !this.state.spinner })
   }
 
-  getCountryList = () => {
-    new GeneralApi().getCountrylist(this.setCountryList, this.errorCall);
-  }
-
-  setCountryList = arrayOfJson => {
-    this.setState({ countries: arrayOfJson, spinner: !this.state.spinner });
-  }
   /*
       validate contact name/ organization 
   */

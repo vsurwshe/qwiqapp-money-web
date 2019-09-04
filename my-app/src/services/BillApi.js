@@ -35,18 +35,14 @@ async function process(success, failure, Uurl, Umethod, profileId, data, reload)
   let HTTP = httpCall(Uurl, Umethod);
   let promise;
   try {
-    data === null ? promise = await HTTP.request() : promise = await HTTP.request({
-      data
-    });
+    data === null ? promise = await HTTP.request() : promise = await HTTP.request({data});
     if (Umethod === "GET") {
       Store.saveBills(promise.data);
       validResponse(promise, success)
     } else {
-      new BillApi().getBills(success, failure, profileId, "True");
-      validResponse(promise, success)
+      await new BillApi().getBills(success, failure, profileId, "True");
     }
   }
-  
   //TODO: handle user error   
   catch (err) {
     handleAccessTokenError(profileId, err, failure, Uurl, Umethod, data, success, reload);
