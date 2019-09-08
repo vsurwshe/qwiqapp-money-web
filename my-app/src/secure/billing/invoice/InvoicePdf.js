@@ -4,7 +4,7 @@ import html2canvas from 'html2canvas';
 import { Table, CardBody, CardTitle, Container, Card, Row, Col } from "reactstrap";
 import '../../../css/style.css';
 
-class InvoiceConvertPdfFile extends Component {
+class InvoicePdfFile extends Component {
 
     render() {
         const { invoice, invoiceId, firstName, lastName, company, addressLine1, addressLine2, city, region, postCode, country, business,
@@ -107,4 +107,4 @@ class InvoiceConvertPdfFile extends Component {
     }
 }
 
-export default InvoiceConvertPdfFile;
+export default InvoicePdfFile;

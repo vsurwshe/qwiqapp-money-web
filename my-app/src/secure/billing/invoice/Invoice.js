@@ -5,7 +5,7 @@ import { UserInvoiceApi } from '../../../services/UserInvoiceApi';
 import GeneralApi from '../../../services/GeneralApi';
 import BillingAddressApi from '../../../services/BillingAddressApi';
 import ReactToPrint from 'react-to-print';
-import InvoiceConvertPdfFile from './InvoiceFile_download_pdf';
+import InvoicePdfFile from './InvoicePdf';
 import Store from '../../../data/Store';
 import '../../../css/style.css';
 
@@ -106,7 +106,7 @@ class Invoice extends Component {
                 <Button color="danger" onClick={this.callDownload} >Download PDF</Button> &nbsp;
                     <ReactToPrint trigger={() => <Button color="success" href="#"> print</Button>} content={() => this.componentRef} /></span> &nbsp;
                     <br /> <br />
-            <InvoiceConvertPdfFile ref={el => (this.componentRef = el)} data={data} customDateFormat={this.customDateFormat} download={this.state.download} />
+            <InvoicePdfFile ref={el => (this.componentRef = el)} data={data} customDateFormat={this.customDateFormat} download={this.state.download} />
         </div>
     }
 
