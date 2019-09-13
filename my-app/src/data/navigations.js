@@ -23,7 +23,7 @@ export default {
     {
       name: "Bills  ",
       url: "/listBills",
-      icon: "cui-note"
+      icon: "cui-calendar"
     }
   ]
 };
