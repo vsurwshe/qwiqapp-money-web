@@ -14,16 +14,56 @@ class UpdateBillForm extends Component {
             dueDate: this.props.loadDateFormat(this.props.updateForm.bill.dueDate_),
             notifyDate: this.props.loadDateFormat(this.props.updateForm.bill.notifyDate_),
             updateSuccess: this.props.updateForm.updateSuccess,
+            dueDays: this.props.updateForm.bill.dueDays
         };
     }
 
     handleBillDate = (e) => {
         this.setState({ billDate: e.target.value })
+        this.setDueDate(e.target.value, this.state.dueDays)
     }
 
     handleNotificationEnabled = () => {
         this.setState({ checked: !this.state.checked });
         this.props.handleNotificationEnabled();
+    }
+
+    handleDueDate = (e) => {
+        let value = e.target.value;
+        this.setDueDate(this.state.billDate, value)
+    }
+
+    setDueDate = (billDateValue, value) => {
+        if (billDateValue && value) {
+            this.props.callAlertTimer("", "")
+            let billDate = new Date(billDateValue);
+            billDate.setDate(billDate.getDate() + parseInt(value))
+            let dueDate = new Intl.DateTimeFormat('sv-SE', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(billDate);
+            this.setState({ dueDate });
+        } else {
+            this.props.callAlertTimer("danger", "Please enter billdate and due days ")
+        }
+    }
+
+    // shows the response messages for user
+    callAlertTimer = (alertColor, content) => {
+        this.setState({ alertColor, content });
+        setTimeout(() => {
+            this.setState({ alertColor: '', updateSuccess: true });
+        }, Config.notificationMillis);
+    };
+
+    handleNotifyDate = (e) => {
+        let value = e.target.value;
+        if (this.state.billDate && value) {
+            this.props.callAlertTimer("", "")
+            let billDate = new Date(this.state.billDate);
+            billDate.setDate(billDate.getDate() + parseInt(value))
+            let notifyDate = new Intl.DateTimeFormat('sv-SE', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(billDate);
+            this.setState({ notifyDate });
+        } else {
+            this.props.callAlertTimer("danger", "Please enter billdate and notify days ")
+        }
     }
 
     render() {
@@ -123,40 +163,6 @@ class UpdateBillForm extends Component {
                     <Button type="button" onClick={this.props.cancelUpdateBill}>Cancel</Button>
             </FormGroup>
         </AvForm>
-    }
-
-    handleDueDate = (e) => {
-        let value = e.target.value;
-        if (this.state.billDate && value) {
-            this.props.callAlertTimer("", "")
-            let billDate = new Date(this.state.billDate);
-            billDate.setDate(billDate.getDate() + parseInt(value))
-            let dueDate = new Intl.DateTimeFormat('sv-SE', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(billDate);
-            this.setState({ dueDate });
-        } else {
-            this.props.callAlertTimer("danger", "Please enter billdate and due days ")
-        }
-    }
-
-    // shows the response messages for user
-    callAlertTimer = (alertColor, content) => {
-        this.setState({ alertColor, content });
-        setTimeout(() => {
-            this.setState({ alertColor: '', updateSuccess: true });
-        }, Config.notificationMillis);
-    };
-
-    handleNotifyDate = (e) => {
-        let value = e.target.value;
-        if (this.state.billDate && value) {
-            this.props.callAlertTimer("", "")
-            let billDate = new Date(this.state.billDate);
-            billDate.setDate(billDate.getDate() + parseInt(value))
-            let notifyDate = new Intl.DateTimeFormat('sv-SE', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(billDate);
-            this.setState({ notifyDate });
-        } else {
-            this.props.callAlertTimer("danger", "Please enter billdate and notify days ")
-        }
     }
 }
 export default UpdateBillForm;
