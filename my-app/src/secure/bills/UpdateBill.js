@@ -34,7 +34,7 @@ class UpdateBill extends Component {
       taxAmtChanged: false,
       checked: this.props.bill.notificationEnabled,
       notifyDays: props.bill.notifyDays,
-      billType: props.bill.amount < 0 ? '-' : '+'
+      billType: props.bill.amount < 0 ? '-' : '+',
     };
   }
 
@@ -64,7 +64,7 @@ class UpdateBill extends Component {
     const { labelOption, categoryOption, categoryOptionUpdate, labelOptionUpdate, contactOptionUpdate, contactOption } = this.state
     if (errors.length === 0) {
       let billDate = values.billDate.split("-")[0] + values.billDate.split("-")[1] + values.billDate.split("-")[2];
-      const newData = {
+     let newData = {
         ...values, "billDate": billDate, "categoryId": categoryOptionUpdate ? categoryOption.value : categoryOption,
         "contactId": contactOptionUpdate ? contactOption.value : contactOption,
         "amount": values.label + values.amount,
@@ -82,7 +82,7 @@ class UpdateBill extends Component {
   };
 
   // updated bill
-  successCall = json => {
+  successCall = response => {
     this.callAlertTimer("success", "Bill Updated Successfully !! ");
   };
 
