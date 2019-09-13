@@ -92,11 +92,11 @@ class CreateBill extends Component {
     const { amount } = this.state;
     let taxPercent = parseInt(e.target.value);
     let taxAmount;
-    if (amount && taxPercent >= 0) {
+    if (amount && taxPercent) {
       taxAmount = amount - (amount * 100) / (taxPercent + 100);
       this.setState({ taxAmount: taxAmount, taxPercent: taxPercent });
     }
-    else if (taxPercent === '') {
+    else {
       this.setState({ taxAmount: 0 })
     }
 
