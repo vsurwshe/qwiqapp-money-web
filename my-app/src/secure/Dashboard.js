@@ -98,25 +98,25 @@ class Dashboard extends Component {
         {/* Upcoming Bills */}
         <Col xs="12" sm="6" lg="3">
           <Card className="text-white bg-warning">
-            {this.loadBillDivision(this.state.upcomingBills, "Upcoming Bills", '/listBills')}
+            {this.loadBillDivision(this.state.upcomingBills, "Upcoming Bills", '/listBills/upcomingBills')}
           </Card>
         </Col>
         {/* Overdue Bills */}
         <Col xs="12" sm="6" lg="3">
           <Card className="text-white bg-danger">
-            {this.loadBillDivision(this.state.overdueBills, "OverDue Bills", '/listBills')}
+            {this.loadBillDivision(this.state.overdueBills, "OverDue Bills", '/listBills/overdueBills')}
           </Card>
         </Col>
         {/* Paid Bills */}
         <Col xs="12" sm="6" lg="3">
           <Card className="text-white bg-success">
-            {this.loadBillDivision(this.state.paidBills, "Paid Bills", '/listBills')}
+            {this.loadBillDivision(this.state.paidBills, "Paid Bills", '/listBills/paidBills')}
           </Card>
         </Col>
         {/* Unpaid Bills */}
         <Col xs="12" sm="6" lg="3">
           <Card className="text-white bg-info">
-            {this.loadBillDivision(this.state.unpaidBills, "Unpaid Bills", '/listBills')}
+            {this.loadBillDivision(this.state.unpaidBills, "Unpaid Bills", '/listBills/unpaidBills')}
           </Card>
         </Col>
       </Row>
@@ -130,7 +130,10 @@ class Dashboard extends Component {
         <div className="text-value"> {value} </div>
       </CardBody>
       <div className="chart-wrapper mx-3" style={{ height: 40, marginTop: 40 }}>
-        <div ><Link to={url} style={{ color: '#ffffff' }}>View {billType}</Link></div>
+        <div >
+          <Link to={url} style={{ color: '#ffffff' }}>View {billType}</Link>
+          {/* In Future This Page Called Show Bills List according to links (upcomeing, overdue, paid & unpaid) */}
+        </div>
       </div>
     </>
   }
