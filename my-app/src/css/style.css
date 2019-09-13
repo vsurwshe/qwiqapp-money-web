@@ -189,8 +189,12 @@ dropdown-align {
 }
 /* ================== END  =================*/
 /* ===Dashboard==== */
-.card-ttile{
+.card-title{
  color:#FFFFFF;
+}
+.card-style{
+    height: 40px; 
+    margin-top: 40px;
 }
 .overdue-bill{
     background-color: "#F4FA58";

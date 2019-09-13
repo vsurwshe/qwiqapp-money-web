@@ -8,8 +8,8 @@ class SetProfile extends React.Component {
     const { match: { params: { id } } } = this.props;
     const selectedProfile = Store.getUserProfiles().filter(profile => id === profile.id.toString())
     await Store.saveProfile(selectedProfile[0])
-    await Store.setSelectedValue(true)
     await Store.userDataClear()
+    await Store.setSelectedValue(true)
   }
 
   render() {

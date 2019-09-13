@@ -130,7 +130,8 @@ class Main extends Component {
         <PrivateRoute exact path="/createProfile" component={CreateProfile} />
         <PrivateRoute exact path="/profiles" component={Profiles} />
         <PrivateRoute exact path="/profiles/:id" component={SetProfile} />
-        <PrivateRoute path="/listBills" component={Bills} />
+        <PrivateRoute exact path="/listBills" component={Bills} />
+        <PrivateRoute exact path="/listBills/:value" component={Bills} />
         <PrivateRoute path="/label/labels" component={Lables} />
         <PrivateRoute path="/listCategories" component={Categories} />
         <PrivateRoute exact path="/contact/createContact" component={CreateContact} />
