@@ -129,9 +129,9 @@ class Dashboard extends Component {
         <div className="text-value">{billType}</div>
         <div className="text-value"> {value} </div>
       </CardBody>
-      <div className="chart-wrapper mx-3" style={{ height: 40, marginTop: 40 }}>
+      <div className="chart-wrapper mx-3 card-style">
         <div >
-          <Link to={url} style={{ color: '#ffffff' }}>View {billType}</Link>
+          <Link to={url} className="card-title">View {billType}</Link>
           {/* In Future This Page Called Show Bills List according to links (upcomeing, overdue, paid & unpaid) */}
         </div>
       </div>
