@@ -4,28 +4,28 @@ import LoginApi from "./LoginApi";
 
 class BillApi {
   //This Method Create Bill
-  createBill(success, failure, pid, data) {
-    process(success, failure, pid + "/bills", "POST", pid, data);
+  createBill(success, failure, profileId, data) {
+    process(success, failure, profileId + "/bills", "POST", profileId, data);
   }
 
   //This Method Get All Bills
-  getBills(success, failure, pid, value) {
-    Store.getBills() === null || value === "True" ? process(success, failure, pid + "/bills", "GET") : success(Store.getBills());
+  getBills(success, failure, profileId, value) {
+    Store.getBills() === null || value === "True" ? process(success, failure, profileId + "/bills", "GET") : success(Store.getBills());
   }
 
   //This Method Get Bill By ID
-  getBillById(success, failure, pid, billId) {
-    process(success, failure, pid + "/bills/" + billId, "GET");
+  getBillById(success, failure, profileId, billId) {
+    process(success, failure, profileId + "/bills/" + billId, "GET");
   }
 
   //This Method Update Bill 
-  updateBill(success, failure, data, pid, billId) {
-    process(success, failure, pid + "/bills/" + billId, "PUT", pid, data);
+  updateBill(success, failure, data, profileId, billId) {
+    process(success, failure, profileId + "/bills/" + billId, "PUT", profileId, data);
   }
 
   //This Method Delete Bill
-  deleteBill(success, failure, pid, billId) {
-    process(success, failure, pid + "/bills/" + billId, "DELETE", pid);
+  deleteBill(success, failure, profileId, billId) {
+    process(success, failure, profileId + "/bills/" + billId+"?removeDependency=true", "DELETE", profileId);
   }
 }
 
