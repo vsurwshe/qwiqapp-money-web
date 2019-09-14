@@ -212,6 +212,15 @@ const Store = {
         return JSON.parse(bills)
     },
 
+    saveRecurringBills: function (data) {
+        db.setItem("RECURRINGBILLS", JSON.stringify(data));
+    },
+    
+    getRecurringBills: function () {
+        const recurringBills = db.getItem("RECURRINGBILLS");
+        return JSON.parse(recurringBills)
+    },
+
     saveContacts: function (data) {
         db.setItem("CONTACTS", JSON.stringify(data))
     },
@@ -236,6 +245,7 @@ const Store = {
         db.removeItem("LABELS");
         db.removeItem("CONTACTS");
         db.removeItem("BILL");
+        db.removeItem("RECURRINGBILLS");
     }
 }
 export default Store;
