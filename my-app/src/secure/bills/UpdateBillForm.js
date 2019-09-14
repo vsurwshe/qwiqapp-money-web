@@ -37,7 +37,7 @@ class UpdateBillForm extends Component {
         if (billDateValue && value) {
             this.props.callAlertTimer("", "")
             let billDate = new Date(billDateValue);
-            billDate.setDate(billDate.getDate() + parseInt(value))
+            billDate.setDate(billDate.getDate() + parseInt(value - 1))
             let dueDate = new Intl.DateTimeFormat('sv-SE', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(billDate);
             this.setState({ dueDate });
         } else {
@@ -58,7 +58,7 @@ class UpdateBillForm extends Component {
         if (this.state.billDate && value) {
             this.props.callAlertTimer("", "")
             let billDate = new Date(this.state.billDate);
-            billDate.setDate(billDate.getDate() + parseInt(value))
+            billDate.setDate(billDate.getDate() + parseInt(value - 1))
             let notifyDate = new Intl.DateTimeFormat('sv-SE', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(billDate);
             this.setState({ notifyDate });
         } else {
@@ -67,7 +67,7 @@ class UpdateBillForm extends Component {
     }
 
     render() {
-        const { currencies, userAmount, taxPercent, bill, categories, labels, contacts, billType, taxAmount } = this.props.updateForm;
+        const { currencies, amount, taxPercent, bill, categories, labels, contacts, billType, taxAmount } = this.props.updateForm;
         const { checked } = this.state;
         return <AvForm onSubmit={this.props.handleSubmitValue}>
             <Row>
@@ -85,7 +85,7 @@ class UpdateBillForm extends Component {
                     </AvField>
                 </Col>
                 <Col>
-                    <AvField name="amount" label="Amount" value={userAmount ? userAmount : 0} placeholder="Amount" type="text"
+                    <AvField name="amount" label="Amount" value={amount ? amount : 0} placeholder="Amount" type="text"
                         errorMessage="Invalid amount" onChange={e => { this.props.handleSetAmount(e) }} required />
                 </Col>
             </Row>
@@ -143,7 +143,7 @@ class UpdateBillForm extends Component {
                 </Col>
             </Row><br />
             <Row>
-                <Col>
+                <Col style={{ marginLeft: 20 }}>
                     <Input name="check" type="checkbox" checked={checked} value={checked} onChange={this.handleNotificationEnabled} />Notification enabled</Col>
             </Row> <br />
             {checked &&

@@ -27,7 +27,7 @@ class UpdateBill extends Component {
       contactOption: props.bill.coontactId,
       categoryOption: props.bill.categoryId,
       currencies: [],
-      userAmount: props.bill.amount,
+      amount: props.bill.amount,
       cancelUpdateBill: false,
       taxPercent: props.bill.taxPercent,
       taxAmount: props.bill.taxAmount_,
@@ -39,12 +39,12 @@ class UpdateBill extends Component {
   }
 
   componentDidMount = async () => {
-    let splitVal = ("" + this.state.userAmount).split('-')
+    let splitVal = ("" + this.state.amount).split('-')
     let taxAmt = ("" + this.state.taxAmount).split('-')
     if (splitVal.length === 1) {
-      this.setState({ userAmount: splitVal[0] });
+      this.setState({ amount: splitVal[0] });
     } else {
-      this.setState({ userAmount: splitVal[1], sign: splitVal[0] });
+      this.setState({ amount: splitVal[1], sign: splitVal[0] });
     }
     if (taxAmt.length === 1) {
       this.setState({ taxAmount: taxAmt[0] });
@@ -64,7 +64,7 @@ class UpdateBill extends Component {
     const { labelOption, categoryOption, categoryOptionUpdate, labelOptionUpdate, contactOptionUpdate, contactOption } = this.state
     if (errors.length === 0) {
       let billDate = values.billDate.split("-")[0] + values.billDate.split("-")[1] + values.billDate.split("-")[2];
-     let newData = {
+      let newData = {
         ...values, "billDate": billDate, "categoryId": categoryOptionUpdate ? categoryOption.value : categoryOption,
         "contactId": contactOptionUpdate ? contactOption.value : contactOption,
         "amount": values.label + values.amount,
@@ -115,21 +115,21 @@ class UpdateBill extends Component {
 
   handleSetAmount = async e => {
     e.persist();
-    await this.setState({ userAmount: e.target.value });
+    await this.setState({ amount: e.target.value });
     this.setTaxAmt(this.state.taxPercent)
   }
 
   handleTaxAmount = (e) => {
     e.persist();
-    let taxPercentage = parseInt(e.target.value);
+    let taxPercentage = e.target.value;
     this.setTaxAmt(taxPercentage);
   }
 
   setTaxAmt = (taxPercent) => {
-    const { userAmount } = this.state;
+    const { amount } = this.state;
     let taxAmount;
-    if (userAmount && taxPercent > 0) {
-      taxAmount = userAmount - (userAmount * 100) / (taxPercent + 100);
+    if (amount && taxPercent > 0) {
+      taxAmount = (taxPercent * amount) / 100;
       this.setState({ taxAmount, taxPercent });
     } else {
       this.setState({ taxAmount: 0 });
@@ -138,11 +138,11 @@ class UpdateBill extends Component {
 
   handleTaxPercent = (e) => {
     e.persist();
-    const { userAmount } = this.state;
-    let taxAmount = parseInt(e.target.value);
+    const { amount } = this.state;
+    let taxAmount = e.target.value;
     let taxPercent;
-    if (userAmount && taxAmount > 0) {
-      taxPercent = (userAmount * 100) / (userAmount - taxAmount) - 100;
+    if (amount && taxAmount > 0) {
+      taxPercent = (taxAmount * 100) / (amount - taxAmount);
       this.setState({ taxAmount, taxPercent });
     } else {
       this.setState({ taxAmount: 0 });

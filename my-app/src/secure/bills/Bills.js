@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Row, Col, Card, CardBody, Alert, ListGroupItem, ListGroup, Button, FormGroup, Label, Input } from "reactstrap";
+import { Card, CardBody, Alert, Table, Button, FormGroup, Label, Input } from "reactstrap";
 import Loader from 'react-loader-spinner'
 import UpdateBill from "./UpdateBill";
 import CreateBill from "./CreateBill";
@@ -38,7 +38,7 @@ class Bills extends Component {
       selectedOption: '',
       searchName: false,
       removeDependents: true
-        };
+    };
   }
 
   componentDidMount = () => {
@@ -173,8 +173,8 @@ class Bills extends Component {
     }
   };
 
-  handleRemoveDependents = () =>{
-    this.setState({removeDependents : !this.state.removeDependents});
+  handleRemoveDependents = () => {
+    this.setState({ removeDependents: !this.state.removeDependents });
   }
 
   render() {
@@ -182,8 +182,8 @@ class Bills extends Component {
     if (!profileId) {
       return <ProfileEmptyMessage />
     } else if (bills.length === 0 && !createBillRequest) {
-      return <div>{!spinner ? <>{visible && <Alert isOpen={visible} color={this.state.color}>{this.state.content}</Alert>} {this.loadLoader()} </> 
-              : (bills.length === 0 && !createBillRequest ? this.emptyBills() : "")}</div>
+      return <div>{!spinner ? <>{visible && <Alert isOpen={visible} color={this.state.color}>{this.state.content}</Alert>} {this.loadLoader()} </>
+        : (bills.length === 0 && !createBillRequest ? this.emptyBills() : "")}</div>
     } else if (createBillRequest) {
       return <CreateBill pid={profileId} label={labels} categories={categories} contacts={contacts} />
     } else if (updateBillRequest) {
@@ -244,7 +244,23 @@ class Bills extends Component {
         <br />
         <div className="header-search">
           <h6>{visible && <Alert isOpen={visible} color={color}>{this.props.content}</Alert>}</h6>
-          {bills.filter(this.searchingFor(this.state.selectedOption)).map((bill, key) => { return this.loadSingleBill(bill, key); })}
+          <CardBody className="card-align">
+            <Table frame="box" borderColor="#DEE9F2">
+              <thead className="table-header-color" >
+                <tr>
+                  <th>Due On</th>
+                  <th>Bill Date</th>
+                  <th>Description</th>
+                  <th>Bill Amount</th>
+                  <th>Paid Amount</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {bills.filter(this.searchingFor(this.state.selectedOption)).map((bill, key) => { return this.loadSingleBill(bill, key); })}
+              </tbody>
+            </Table>
+          </CardBody>
         </div>
       </Card>
     </div>
@@ -252,35 +268,30 @@ class Bills extends Component {
 
   // Show the Single Bill 
   loadSingleBill = (bill, key) => {
-    return <ListGroup flush key={key} className="animated fadeIn" onPointerEnter={(e) => this.onHover(e, key)} onPointerLeave={(e) => this.onHoverOff(e, key)} style={{ paddingLeft: 10, paddingRight: 10 }}>
-      <ListGroupItem action>
-        <Row>
-          <Col sm={{ size: "auto" }} md={{ size: "auto" }} lg={{ size: "auto" }} xl={{ size: "auto" }} className="date-format" >
-            <strong className="date-formate"><center>{this.dateFormat(bill.billDate)}</center></strong>
-          </Col>
-          <Col sm={5}>
-            {bill.description ?
-              <><Row className="text-link padding-left">{bill.description}</Row>
-                <Row className="text-link padding-left" style={{ color: bill.categoryName.color }} ><b>{bill.categoryName.name}</b></Row>
-              </> :
-              <><Row className="text-link padding-left"><p></p></Row>
-                <Row className="text-link padding-left" style={{ color: bill.categoryName.color, paddingBottom: 3 }} ><b>{bill.categoryName.name}</b></Row>
-              </>}
-          </Col>
-          <Col className="column-text ">
-            {bill.amount > 0 ?
-              <b className="float-right bill-amount-color">
-                {new Intl.NumberFormat('en-US', { style: 'currency', currency: bill.currency }).format(bill.amount)}
-              </b> :
-              <b className="float-right text-color">
-                {new Intl.NumberFormat('en-US', { style: 'currency', currency: bill.currency }).format(bill.amount)}
-              </b>
-            }
-          </Col>
-          <Col>{this.state.onHover && this.state.hoverAccord[key] ? this.loadDropDown(bill, key) : ''}</Col>
-        </Row>
-      </ListGroupItem>
-    </ListGroup>
+    return <tr onPointerEnter={(e) => this.onHover(e, key)} onPointerLeave={(e) => this.onHoverOff(e, key)} width={50} key={key}>
+      <td><h6>{this.dateFormat(bill.dueDate_)}</h6></td>
+      <td><h6>{this.dateFormat(bill.billDate)}</h6></td>
+      <td><h6>{bill.description ? bill.description : bill.categoryName.name}</h6></td>
+      <td><h6>{bill.amount > 0 ?
+        <b className="bill-amount-color">
+          {new Intl.NumberFormat('en-US', { style: 'currency', currency: bill.currency }).format(bill.amount)}
+        </b> :
+        <b className="text-color">
+          {new Intl.NumberFormat('en-US', { style: 'currency', currency: bill.currency }).format(bill.amount)}
+        </b>
+      }</h6></td>
+      <td><h6>
+        {bill.amount > 0 ?
+          <h6 className="bill-amount-color">
+            <b>Last paid</b> {this.dateFormat(bill.billDate)} &nbsp; {new Intl.NumberFormat('en-US', { style: 'currency', currency: bill.currency }).format(0)}
+          </h6> :
+          <h6 className="bill-amount-color">
+            <b>Last paid</b> {this.dateFormat(bill.billDate)} {new Intl.NumberFormat('en-US', { style: 'currency', currency: bill.currency }).format(0)}
+          </h6>
+        }
+      </h6></td>
+      <td><h6>{this.loadDropDown(bill, key)}</h6></td>
+    </tr>
   }
 
   dateFormat = (userDate) => {
@@ -314,16 +325,16 @@ class Bills extends Component {
 
   //this Method loads Browser DropDown
   loadDropDown = (bill, key) => {
-    return <span className="float-right" style={{ marginRight: 7, marginTop: 7 }}>
-      <Button style={{ backgroundColor: "transparent", borderColor: 'green', color: "green", marginRight: 5, width: 77, padding: 2 }} onClick={() => { this.updateBillAction(bill) }}> EDIT </Button> &nbsp;
-      <Button style={{ backgroundColor: "transparent", borderColor: 'red', color: "red", width: 90, padding: 2 }} onClick={() => { this.setBillId(bill); this.toggleDanger(); }}> REMOVE </Button>
-    </span>
+    return <>
+      <Button className="rounded" style={{ backgroundColor: "transparent", borderColor: ' #ada397', color: "green", width: 77 }} onClick={() => { this.updateBillAction(bill) }}>Edit</Button> &nbsp;
+      <Button className="rounded" style={{ backgroundColor: "transparent", borderColor: '#eea29a', color: "red", width: 92 }} onClick={() => { this.setBillId(bill); this.toggleDanger(); }}>Remove</Button>
+    </>
   }
 
   //this method calls the delete model
   deleteBillModel = () => {
-    let billDeleteItem = this.state.deleteBillName.deletBillDescription ? this.state.deleteBillName.deletBillDescription 
-                                                                        : this.state.deleteBillName.deletBillCategoryName;
+    let billDeleteItem = this.state.deleteBillName.deletBillDescription ? this.state.deleteBillName.deletBillDescription
+      : this.state.deleteBillName.deletBillCategoryName;
     return <DeleteModel danger={this.state.danger} toggleDanger={this.toggleDanger} headerMessage="Delete Bill" bodyMessage={billDeleteItem}
       delete={this.deleteBillAction} cancel={this.toggleDanger} loadDeleteOptions={this.loadDeleteOptions}>bill</DeleteModel>
   }
