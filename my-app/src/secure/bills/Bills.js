@@ -14,6 +14,8 @@ import { DeleteModel } from "../utility/DeleteModel";
 import { ShowServiceComponet } from "../utility/ShowServiceComponet";
 import '../../css/style.css';
 import Config from "../../data/Config";
+import BillPayment from "./billPayment/ BillPayment";
+import ViewPayment from "./billPayment/ViewPayment";
 
 class Bills extends Component {
   constructor(props) {
@@ -228,6 +230,10 @@ class Bills extends Component {
       return <BillForm pid={profileId} bill={updateBill} labels={labels} categories={categories} contacts={contacts} />
     } else if (deleteBillRequest) {
       return <DeleteBill id={id} pid={profileId} removeDependents={this.state.removeDependents} />
+    } else if (this.state.addPayment || this.state.markPaid) {
+      return <BillPayment bill={updateBill} markPaid={this.state.markPaid} profileId={profileId}/>
+    } else if (this.state.viewPayment) {
+      return <ViewPayment bill={updateBill} />
     } else {
       return <div>{this.displayAllBills(visible, bills)}{danger && this.deleteBillModel()}</div>
     }
