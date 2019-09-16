@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { withRouter } from "react-router-dom";
 import { Card, CardBody, Alert, Table, Button, FormGroup, Label, Input } from "reactstrap";
 import Loader from 'react-loader-spinner'
 import UpdateBill from "./UpdateBill";
@@ -37,11 +38,16 @@ class Bills extends Component {
       spinner: false,
       selectedOption: '',
       searchName: false,
-      removeDependents: true
+      removeDependents: true,
+      value: ''
     };
   }
 
   componentDidMount = () => {
+    this.setProfileId();
+  }
+
+  componentWillReceiveProps = () => {
     this.setProfileId();
   }
 
@@ -67,14 +73,39 @@ class Bills extends Component {
   };
 
   // bills response
-  successCallBill = async bill => {
-    if (bill === []) {
-      this.setState({ bills: [0] })
-    } else {
-      await this.billsWithcategoryNameColor(bill);
+  successCallBill = async bills => {
+    let newBills;
+    if (bills.length === 0) {
+      this.setState({ bills: [] })
+    } 
+    else {
+      if (this.props.match.params.value) {
+        switch (this.props.match.params.value) {
+          case "Upcoming":
+            newBills = bills.filter(bill => this.loadDateFormat(bill.dueDate_) >= new Date());
+            break;
+          case "Overdue":
+            newBills = bills.filter(bill => this.loadDateFormat(bill.dueDate_) < new Date());
+            break;
+          case "Paid":
+            newBills = bills.filter(bill => bill.paid === true);
+            break;
+          case "Unpaid":
+            newBills = bills.filter(bill => bill.paid === false);
+            break;
+          default:
+            newBills = bills;
+            break;
+        }
+      }
+      else {
+        newBills = bills;
+      }
+      await this.billsWithcategoryNameColor(newBills);
       this.loadCollapse();
     }
-  };
+  }
+  
 
   // category name color append to bills
   billsWithcategoryNameColor = (bills) => {
@@ -176,14 +207,21 @@ class Bills extends Component {
   handleRemoveDependents = () => {
     this.setState({ removeDependents: !this.state.removeDependents });
   }
+  setValue = () => {
+    this.setState({ value: '' })
+  }
 
   render() {
     const { bills, createBillRequest, updateBillRequest, id, deleteBillRequest, visible, profileId, updateBill, spinner, labels, categories, contacts, danger } = this.state;
     if (!profileId) {
       return <ProfileEmptyMessage />
-    } else if (bills.length === 0 && !createBillRequest) {
-      return <div>{!spinner ? <>{visible && <Alert isOpen={visible} color={this.state.color}>{this.state.content}</Alert>} {this.loadLoader()} </>
-        : (bills.length === 0 && !createBillRequest ? this.emptyBills() : "")}</div>
+    } else if (bills.length === 0 && !createBillRequest) {  // Checks for bills not there and no bill create Request, then executes
+      return <div> 
+      {/*  If spinner is true and bills are there, it shows the loader function, until bills are loaded */}
+      {(spinner && bills.length !== 0) ? <>{visible && <Alert isOpen={visible} color={this.state.color}>{this.state.content}</Alert>} {this.loadLoader()} </>
+        : 
+        // If bills not there, it will show Empty message
+      (bills.length === 0 ? this.emptyBills() : "")}</div>
     } else if (createBillRequest) {
       return <CreateBill pid={profileId} label={labels} categories={categories} contacts={contacts} />
     } else if (updateBillRequest) {
@@ -226,7 +264,7 @@ class Bills extends Component {
       <Card>
         {this.loadHeader("")}
         <center className="padding-top" >
-          <CardBody><h5><b>You haven't created any Bills yet... </b></h5><br /></CardBody>
+          <CardBody><h5><b>You don't have any {this.props.match.params.value ? this.props.match.params.value : ' '} Bills ... </b></h5><br /></CardBody>
         </center>
       </Card>
     </div>
@@ -245,7 +283,7 @@ class Bills extends Component {
         <div className="header-search">
           <h6>{visible && <Alert isOpen={visible} color={color}>{this.props.content}</Alert>}</h6>
           <CardBody className="card-align">
-            <Table frame="box" borderColor="#DEE9F2">
+            <Table frame="box" style={{ borderColor: "#DEE9F2" }}>
               <thead className="table-header-color" >
                 <tr>
                   <th>Due On</th>
@@ -269,18 +307,18 @@ class Bills extends Component {
   // Show the Single Bill 
   loadSingleBill = (bill, key) => {
     return <tr onPointerEnter={(e) => this.onHover(e, key)} onPointerLeave={(e) => this.onHoverOff(e, key)} width={50} key={key}>
-      <td><h6>{this.dateFormat(bill.dueDate_)}</h6></td>
-      <td><h6>{this.dateFormat(bill.billDate)}</h6></td>
-      <td><h6>{bill.description ? bill.description : bill.categoryName.name}</h6></td>
-      <td><h6>{bill.amount > 0 ?
+      <td>{this.dateFormat(bill.dueDate_)}</td>
+      <td>{this.dateFormat(bill.billDate)}</td>
+      <td>{bill.description ? bill.description : bill.categoryName.name}</td>
+      <td>{bill.amount > 0 ?
         <b className="bill-amount-color">
           {new Intl.NumberFormat('en-US', { style: 'currency', currency: bill.currency }).format(bill.amount)}
         </b> :
         <b className="text-color">
           {new Intl.NumberFormat('en-US', { style: 'currency', currency: bill.currency }).format(bill.amount)}
         </b>
-      }</h6></td>
-      <td><h6>
+      }</td>
+      <td>
         {bill.amount > 0 ?
           <h6 className="bill-amount-color">
             <b>Last paid</b> {this.dateFormat(bill.billDate)} &nbsp; {new Intl.NumberFormat('en-US', { style: 'currency', currency: bill.currency }).format(0)}
@@ -289,7 +327,7 @@ class Bills extends Component {
             <b>Last paid</b> {this.dateFormat(bill.billDate)} {new Intl.NumberFormat('en-US', { style: 'currency', currency: bill.currency }).format(0)}
           </h6>
         }
-      </h6></td>
+      </td>
       <td><h6>{this.loadDropDown(bill, key)}</h6></td>
     </tr>
   }
@@ -299,6 +337,13 @@ class Bills extends Component {
     let dateString = date.substring(0, 4) + "-" + date.substring(4, 6) + "-" + date.substring(6, 8)
     const formatDate = new Intl.DateTimeFormat('en-gb', { month: 'short', weekday: 'short', day: '2-digit' }).format(new Date(dateString));
     return formatDate;
+  }
+
+  loadDateFormat = (dateParam) => {
+    let toStr = "" + dateParam
+    let dateString = toStr.substring(0, 4) + "-" + toStr.substring(4, 6) + "-" + toStr.substring(6, 8)
+    let date = new Date(dateString);
+    return date;
   }
 
   displayCategoryName = (categoryId) => {
@@ -354,4 +399,5 @@ class Bills extends Component {
     </>
   }
 }
-export default Bills;
+
+export default withRouter(Bills);
