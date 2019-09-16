@@ -212,7 +212,6 @@ class UpdateRecurringBill extends Component {
   }
 
   render() {
-    console.log(this.props.updateRecurBill.endsOn)
     const { alertColor, alertMessage, cancelUpdateBill, updateSuccess, recurBill, labels, categories, contacts } = this.state;
     if (cancelUpdateBill) {
       return <RecurringBills />

@@ -49,11 +49,9 @@ class RecurringBills extends Component {
   setProfileId = async () => {
     if (Store.getProfile() !== null && Store.getProfile().length !== 0) {
       await this.setState({ profileId: Store.getProfile().id, profileType: Store.getProfile().type });
-      console.log()
       if (this.state.profileType > 0) {
         this.getCategory();
-      }
-      
+      }      
     }
   }
 
@@ -323,10 +321,6 @@ class RecurringBills extends Component {
       <button style={{ backgroundColor: "transparent", borderColor: 'green', color: "green", marginRight: 5, width: 77, padding: 2 }} onClick={() => { this.handleUpdateRecurBill(recurbill) }}> EDIT </button> &nbsp;
       <button style={{ backgroundColor: "transparent", borderColor: 'red', color: "red", width: 90, padding: 2 }} onClick={() => { this.setRecurBillId(recurbill); this.toggleDanger(); }}> REMOVE </button>
     </td>
-    // return <span className="float-right" style={{ marginRight: 2}}>
-    //   <button style={{ backgroundColor: "transparent", borderColor: 'green', color: "green", marginRight: 5, width: 77, padding: 2 }} onClick={() => { this.handleUpdateRecurBill(recurbill) }}> EDIT </button> &nbsp;
-    //     <button style={{ backgroundColor: "transparent", borderColor: 'red', color: "red", width: 90, padding: 2 }} onClick={() => { this.setRecurBillId(recurbill); this.toggleDanger(); }}> REMOVE </button>
-    // </span>
   }
 
   //this method calls the delete model

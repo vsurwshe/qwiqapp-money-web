@@ -136,7 +136,7 @@ class CreateRecurringBill extends Component {
   handleBillDate = (e) => {
     this.setState({ userBillDate: e.target.value });;
   }
-    handleDueDate = (e) => {
+  handleDueDate = (e) => {
     let value = e.target.value;
     if (this.state.userBillDate && value) {
       if (this.state.alertColor) { this.setState({ alertColor: '', alertMessage: '' }) }
@@ -185,7 +185,23 @@ class CreateRecurringBill extends Component {
       this.callAlertTimer("danger", "please select repeat every");
     }
   }
-  
+
+  defaultEndDateSet = (type, number) => {
+    let endDate = new Date();
+    if (type) {
+      endDate.setMonth(endDate.getMonth()+ parseInt(number));
+    } else {
+      endDate.setFullYear(endDate.getFullYear()+ parseInt(number) )
+    }
+    let endDateVal = new Intl.DateTimeFormat('sv-SE', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(endDate);
+    return endDateVal;
+  }
+  handleSelectRecurBillEndDateType = (e) =>{
+    let number = e.target.value.split(',')[1];
+    let type = e.target.value.includes("MONTH");    
+    this.setState({ endDate: this.defaultEndDateSet(type, number) });
+  }
+
   render() {
     const { alertColor, alertMessage, cancelCreateBill, billCreated } = this.state;
     if (cancelCreateBill) {
@@ -198,7 +214,6 @@ class CreateRecurringBill extends Component {
   selectLabels = (alertColor, alertMessage) => {
     return this.recurBillForm(alertColor, alertMessage);
   }
-
 
   loadNotifications = () => {
     return <Row>
@@ -357,9 +372,9 @@ class CreateRecurringBill extends Component {
                 dateRange: { format: 'YYYY/MM/DD', start: { value: '1900/01/01' }, end: { value: '9999/12/31' } },
                 required: { value: true }
               }} /></Col>
-                   
+                 {/* EndDate dependents on end's months/year's   */}
           <Col> 
-          <AvField type="select" name="repeatType" value={RECURRINGBILLSELECTION.ONE_MONTH} label="Select Every" onChange={(e) => { this.handleEndDate(e) }}
+          <AvField type="select" name="repeatType" value={RECURRINGBILLSELECTION.ONE_MONTH} label="Select Every" onChange={(e) => { this.handleSelectRecurBillEndDateType(e) }}
           errorMessage="Select any Option" required>
           <option value={RECURRINGBILLSELECTION.ONE_MONTH}>One month</option>
           <option value={RECURRINGBILLSELECTION.TWO_MONTHS}>Two months</option>
@@ -387,22 +402,6 @@ class CreateRecurringBill extends Component {
       </Col>
     </Row>
     </>
-  }
-
-  defaultEndDateSet = (type, number) => {
-    let endDate = new Date();
-    if (type) {
-      endDate.setMonth(endDate.getMonth()+ parseInt(number));
-    } else {
-      endDate.setFullYear(endDate.getFullYear()+ parseInt(number) )
-    }
-    let endDateVal = new Intl.DateTimeFormat('sv-SE', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(endDate);
-    return endDateVal;
-  }
-  handleEndDate = (e) =>{
-    let number = e.target.value.split(',')[1];
-    let type = e.target.value.includes("MONTH");    
-    this.setState({ endDate: this.defaultEndDateSet(type, number) });
   }
 }
 export default CreateRecurringBill;
