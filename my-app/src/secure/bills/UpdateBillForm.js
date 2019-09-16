@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { AvForm, AvField } from 'availity-reactstrap-validation';
-import { Button, Col, Input, Row, FormGroup } from "reactstrap";
+import { Button, Col, Input, Row, FormGroup, Collapse } from "reactstrap";
 import Data from '../../data/SelectData';
 import Select from 'react-select';
 import Config from '../../data/Config';
@@ -14,8 +14,13 @@ class UpdateBillForm extends Component {
             dueDate: this.props.loadDateFormat(this.props.updateForm.bill.dueDate_),
             notifyDate: this.props.loadDateFormat(this.props.updateForm.bill.notifyDate_),
             updateSuccess: this.props.updateForm.updateSuccess,
-            dueDays: this.props.updateForm.bill.dueDays
+            dueDays: this.props.updateForm.bill.dueDays,
         };
+    }
+
+    componentDidMount = () => {
+        const bill = this.props.updateForm.bill;
+        this.checkMoreOptions(bill);
     }
 
     handleBillDate = (e) => {
@@ -66,6 +71,16 @@ class UpdateBillForm extends Component {
         }
     }
 
+    toggleCustom = () => {
+        this.setState({ moreOptions: !this.state.moreOptions })
+    }
+
+    checkMoreOptions = (bill) => {
+        if (bill.taxPercent || bill.taxAmount || bill.notifyDays || bill.notificationEnabled) {
+            this.setState({ moreOptions: true });
+        }
+    }
+
     render() {
         const { currencies, amount, taxPercent, bill, categories, labels, contacts, billType, taxAmount } = this.props.updateForm;
         const { checked } = this.state;
@@ -87,16 +102,6 @@ class UpdateBillForm extends Component {
                 <Col>
                     <AvField name="amount" label="Amount" value={amount ? amount : 0} placeholder="Amount" type="text"
                         errorMessage="Invalid amount" onChange={e => { this.props.handleSetAmount(e) }} required />
-                </Col>
-            </Row>
-            <Row>
-                <Col>
-                    <AvField name="taxPercent" value={taxPercent} placeholder="0" label="TaxPercent" type="number" errorMessage="Invalid tax%"
-                        onChange={(e) => { this.props.handleTaxAmount(e) }} />
-                </Col>
-                <Col>
-                    <AvField name='dummy' label="Tax Amount" value={taxAmount} placeholder="0" type="number"
-                        onChange={(e) => { this.props.handleTaxPercent(e) }} />
                 </Col>
             </Row>
             <Row>
@@ -131,38 +136,56 @@ class UpdateBillForm extends Component {
                     <AvField name="description" type="text" value={bill.description} list="colors" errorMessage="Invalid Notes" placeholder="Ex: Recharge " />
                 </Col>
             </Row>
-            <Row>
-                <Col>
-                    <label >Select Labels</label> {this.props.lablesOptions(labels, bill)}</Col>
-            </Row><br />
-            <Row>
-                <Col>
-                    <label >Select Contacts</label>
-                    <Select options={Data.contacts(contacts)} defaultValue={Data.contacts(contacts).filter(item => { return item.value === bill.contactId })}
-                        placeholder="Select Contacts " onChange={this.props.contactSelected} required />
-                </Col>
-            </Row><br />
-            <Row>
-                <Col style={{ marginLeft: 20 }}>
-                    <Input name="check" type="checkbox" checked={checked} value={checked} onChange={this.handleNotificationEnabled} />Notification enabled</Col>
-            </Row> <br />
-            {checked &&
-                <Row>
-                    {/* disabled  */}
-                    <Col><AvField name="notifyDays" label="Notify Days" placeholder="Notify Days" type="number" value={bill.notifyDays} onChange={(e) => { this.handleNotifyDate(e) }} errorMessage="Invalid notify-days" /></Col>
-                    <Col><AvField name="notifyDate" label="notify Date" value={this.state.notifyDate} type="date" disabled errorMessage="Invalid Date"
-                        validate={{
-                            date: { format: 'yyyy/MM/dd' }, dateRange: { format: 'YYYY/MM/DD', start: { value: '1900/01/01' }, end: { value: '9999/12/31' } },
-                            required: { value: true }
-                        }}
-                    /></Col>
-                </Row>
-            }
+            <Button className="m-0 p-0" color="link" onClick={() => this.toggleCustom()} aria-expanded={this.state.moreOptions} aria-controls="exampleAccordion1">
+                More Options
+           </Button>
+            {this.loadMoreOptions(labels, contacts, taxPercent, taxAmount, bill, checked)} <br /><br />
             <FormGroup>
                 <Button color="info"> Update </Button> &nbsp;&nbsp;
                     <Button type="button" onClick={this.props.cancelUpdateBill}>Cancel</Button>
             </FormGroup>
         </AvForm>
+    }
+
+    loadMoreOptions = (labels, contacts, taxPercent, taxAmount, bill, checked) => {
+        return <Collapse isOpen={this.state.moreOptions} data-parent="#exampleAccordion" id="exampleAccordion1">
+                <Row>
+                    <Col>
+                        <AvField name="taxPercent" value={taxPercent} placeholder="0" label="TaxPercent" type="number" errorMessage="Invalid tax%"
+                            onChange={(e) => { this.props.handleTaxAmount(e) }} />
+                    </Col>
+                    <Col>
+                        <AvField name='dummy' label="Tax Amount" value={taxAmount} placeholder="0" type="number"
+                            onChange={(e) => { this.props.handleTaxPercent(e) }} />
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        <label >Select Labels</label> {this.props.lablesOptions(labels, bill)}</Col>
+                </Row><br />
+                <Row>
+                    <Col>
+                        <label >Select Contacts</label>
+                        <Select options={Data.contacts(contacts)} defaultValue={Data.contacts(contacts).filter(item => { return item.value === bill.contactId })}
+                            placeholder="Select Contacts " onChange={this.props.contactSelected} required />
+                    </Col>
+                </Row><br />
+                <Row>
+                    <Col style={{ marginLeft: 20 }}>
+                        <Input name="check" type="checkbox" checked={checked} value={checked} onChange={this.handleNotificationEnabled} />Notification enabled</Col>
+                </Row> <br />
+                {checked &&
+                    <Row>
+                        <Col><AvField name="notifyDays" label="Notify Days" placeholder="Notify Days" type="number" value={bill.notifyDays} onChange={(e) => { this.handleNotifyDate(e) }} errorMessage="Invalid notify-days" /></Col>
+                        <Col><AvField name="notifyDate" label="notify Date" value={this.state.notifyDate} type="date" disabled errorMessage="Invalid Date"
+                            validate={{
+                                date: { format: 'yyyy/MM/dd' }, dateRange: { format: 'YYYY/MM/DD', start: { value: '1900/01/01' }, end: { value: '9999/12/31' } },
+                                required: { value: true }
+                            }}
+                        /></Col>
+                    </Row>
+                }
+        </Collapse>
     }
 }
 export default UpdateBillForm;

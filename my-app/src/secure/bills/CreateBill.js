@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { AvForm, AvField } from 'availity-reactstrap-validation';
-import { Alert, Button, Card, FormGroup, Col, Row, Container, Input } from "reactstrap";
+import { Alert, Button, Card, FormGroup, Col, Row, Container, Input, Collapse } from "reactstrap";
 import Select from 'react-select';
 import BillApi from "../../services/BillApi";
 import Bills from "./Bills";
@@ -174,6 +174,10 @@ class CreateBill extends Component {
     this.setState({ contactOption })
   }
 
+  toggleCustom = () => {
+    this.setState({ moreOptions: !this.state.moreOptions })
+  }
+
   render() {
     const { alertColor, content, categories, cancelCreateBill, contacts, billCreated } = this.state;
     if (cancelCreateBill) {
@@ -220,15 +224,6 @@ class CreateBill extends Component {
                 </Row>
                 <Row>
                   <Col>
-                    <AvField name="taxPercent" id="taxPercent" value={this.state.taxPercent} placeholder={0}
-                      label="Tax (in %)" type="number" onChange={(e) => { this.handleTaxAmount(e) }} />
-                  </Col>
-                  <Col>
-                    <AvField name='dummy' label="Tax Amount" value={Math.round(this.state.taxAmount * 100) / 100} placeholder="0" type="number" onChange={(e) => { this.handleTaxPercent(e) }} />
-                  </Col>
-                </Row>
-                <Row>
-                  <Col>
                     {/* Categories loading in select options filed */}
                     <label>Category</label>
                     <Select options={Data.categories(categories)} styles={Data.singleStyles} placeholder="Select Categories "
@@ -239,7 +234,6 @@ class CreateBill extends Component {
                     required: { value: true }
                   }} /></Col>
                 </Row>
-                <br />
                 <Row>
                   <Col>
                     <AvField name="dueDays" label="Due Days" placeholder="No.of Days" onChange={e => { this.handleDueDate(e) }} value={this.state.userDueDate} type="number" errorMessage="Invalid Days" />
@@ -253,28 +247,10 @@ class CreateBill extends Component {
                     <label>Description/Notes</label>
                     <AvField name="description" type="text" list="colors" placeholder="Ex: Recharge" errorMessage="Invalid Notes" /></Col>
                 </Row>
-                <Row>
-                  <Col>
-                    {/* Labels loading in select options filed */}
-                    <label>Select Labels</label>
-                    <Select isMulti options={Data.labels(labels)} styles={Data.colourStyles} placeholder="Select Labels " onChange={this.labelSelected} /></Col>
-                  <Col>
-                    {/* Contacts loading in select options filed */}
-                    <label>Select Contacts</label>
-                    <Select options={Data.contacts(contacts)} placeholder="Select Contacts" onChange={this.contactSelected} /></Col>
-                </Row><br />
-                <Row style={{ marginLeft: 7 }}>
-                  <Col>
-                    <Input name="check" type="checkbox" checked={this.state.checked} value={this.state.checked}
-                      onChange={() => this.setState({ checked: !this.state.checked })} />Notification enabled</Col>
-                </Row> <br />
-                {this.state.checked &&
-                  <Row>
-                    {/* disabled  */}
-                    <Col><AvField name="notifyDays" label="Notify Days" placeholder="Ex: 2" type="number" onChange={(e) => { this.handleNotifyDate(e) }} errorMessage="Invalid notify-days" /></Col>
-                    <Col><AvField name="notifyDate" label="notify Date" disabled value={this.state.notifyDate} type="date" errorMessage="Invalid Date" validate={{ date: { format: 'dd/MM/yyyy' } }} /></Col>
-                  </Row>
-                }
+                <Button className="m-0 p-0" color="link" onClick={() => this.toggleCustom()} aria-expanded={this.state.moreOptions} aria-controls="exampleAccordion1">
+                  More Options
+                </Button>
+                {this.loadMoreOptions(labels, contacts)} <br />     <br />
                 <FormGroup >
                   <Button color="success" disabled={this.state.doubleClick}> Save  </Button> &nbsp;&nbsp;
                 <Button type="button" onClick={this.cancelCreateBill}>Cancel</Button>
@@ -284,6 +260,42 @@ class CreateBill extends Component {
           </Container>
         </Card>
       </div>);
+  }
+
+  loadMoreOptions = (labels, contacts) => {
+    return <Collapse isOpen={this.state.moreOptions} data-parent="#exampleAccordion" id="exampleAccordion1">
+        <Row>
+          <Col>
+            <AvField name="taxPercent" id="taxPercent" value={this.state.taxPercent} placeholder={0}
+              label="Tax (in %)" type="number" onChange={(e) => { this.handleTaxAmount(e) }} />
+          </Col>
+          <Col>
+            <AvField name='dummy' label="Tax Amount" value={Math.round(this.state.taxAmount * 100) / 100} placeholder="0" type="number" onChange={(e) => { this.handleTaxPercent(e) }} />
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            {/* Labels loading in select options filed */}
+            <label>Select Labels</label>
+            <Select isMulti options={Data.labels(labels)} styles={Data.colourStyles} placeholder="Select Labels " onChange={this.labelSelected} /></Col>
+          <Col>
+            {/* Contacts loading in select options filed */}
+            <label>Select Contacts</label>
+            <Select options={Data.contacts(contacts)} placeholder="Select Contacts" onChange={this.contactSelected} /></Col>
+        </Row><br />
+        <Row style={{ marginLeft: 7 }}>
+          <Col>
+            <Input name="check" type="checkbox" checked={this.state.checked} value={this.state.checked}
+              onChange={() => this.setState({ checked: !this.state.checked })} />Notification enabled</Col>
+        </Row> <br />
+        {this.state.checked &&
+          <Row>
+            {/* disabled  */}
+            <Col><AvField name="notifyDays" label="Notify Days" placeholder="Ex: 2" type="number" onChange={(e) => { this.handleNotifyDate(e) }} errorMessage="Invalid notify-days" /></Col>
+            <Col><AvField name="notifyDate" label="notify Date" disabled value={this.state.notifyDate} type="date" errorMessage="Invalid Date" validate={{ date: { format: 'dd/MM/yyyy' } }} /></Col>
+          </Row>
+        }
+    </Collapse>
   }
 }
 export default CreateBill;
