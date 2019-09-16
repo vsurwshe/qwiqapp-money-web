@@ -31,7 +31,7 @@ class CreateBill extends Component {
       taxPercent: 0,
       taxAmount: 0,
       checked: false,
-      notifyDate: "",
+      notifyDate: '',
       dueDays: '',
       billDate: '',
     };
@@ -121,43 +121,26 @@ class CreateBill extends Component {
 
   handleBillDate = async (e) => {
     await this.setState({ billDate: e.target.value });;
-    this.setDueDate(this.state.billDate, this.state.dueDays)
+    this.setDate(this.state.billDate, this.state.dueDays)
   }
 
-  handleNotifyDate = (e) => {
-    let value = e.target.value;
-    if (this.state.billDate && value) {
+  handleDate =  (e) => {
+    this.setState({ [e.target.name]: e.target.value })
+    this.setDate(this.state.billDate, e.target.value, e.target.name)
+  }
+
+  setDate = (billDate, days, type) => {
+    if (billDate && days) {
       if (this.state.alertColor) { this.setState({ alertColor: '', content: '' }) }
       let billDate = new Date(this.state.billDate);
-      billDate.setDate(billDate.getDate() + parseInt(value - 1))
-      let notifyDate = new Intl.DateTimeFormat('sv-SE', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(billDate);
-      this.setState({ notifyDate });
+      billDate.setDate(billDate.getDate() + parseInt(days - 1))
+      let date = new Intl.DateTimeFormat('sv-SE', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(billDate);
+      type === 'dueDays' ? this.setState({dueDate : date}) : this.setState({notifyDate : date})  
     } else {
       if (!this.state.billDate) {
         this.callAlertTimer("danger", "Please enter Bill Date... ")
       } else {
-        this.callAlertTimer("danger", "Please enter Notify days... ")
-      }
-    }
-  }
-
-  handleDueDate = async (e) => {
-    await this.setState({ dueDays: e.target.value })
-    this.setDueDate(this.state.billDate, this.state.dueDays)
-  }
-
-  setDueDate = (billDate, dueDays) => {
-    if (billDate && dueDays) {
-      if (this.state.alertColor) { this.setState({ alertColor: '', content: '' }) }
-      let billDate = new Date(this.state.billDate);
-      billDate.setDate(billDate.getDate() + parseInt(dueDays - 1))
-      let dueDate = new Intl.DateTimeFormat('sv-SE', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(billDate);
-      this.setState({ dueDate });
-    } else {
-      if (!this.state.billDate) {
-        this.callAlertTimer("danger", "Please enter Bill Date... ")
-      } else {
-        this.callAlertTimer("danger", "Please enter Due days... ")
+        this.callAlertTimer("danger", "Please enter Due days, Notify Days... ")
       }
     }
   }
@@ -237,7 +220,7 @@ class CreateBill extends Component {
                 </Row>
                 <Row>
                   <Col>
-                    <AvField name="dueDays" label="Due Days" placeholder="No.of Days" onChange={e => { this.handleDueDate(e) }} value={userDueDate} type="number" errorMessage="Invalid Days" />
+                    <AvField name="dueDays" label="Due Days" placeholder="No.of Days" onChange={e => { this.handleDate(e) }} value={userDueDate} type="number" errorMessage="Invalid Days" />
                   </Col>
                   <Col>
                     <AvField name="dueDate" label="Due Date" disabled value={dueDate} type="date" errorMessage="Invalid Date" validate={{ date: { format: 'dd/MM/yyyy' } }} />
@@ -292,7 +275,7 @@ class CreateBill extends Component {
         {this.state.checked &&
           <Row>
             {/* disabled  */}
-            <Col><AvField name="notifyDays" label="Notify Days" placeholder="Ex: 2" type="number" onChange={(e) => { this.handleNotifyDate(e) }} errorMessage="Invalid notify-days" /></Col>
+            <Col><AvField name="notifyDays" label="Notify Days" placeholder="Ex: 2" type="number" onChange={(e) => { this.handleDate(e) }} errorMessage="Invalid notify-days" /></Col>
             <Col><AvField name="notifyDate" label="notify Date" disabled value={this.state.notifyDate} type="date" errorMessage="Invalid Date" validate={{ date: { format: 'dd/MM/yyyy' } }} /></Col>
           </Row>
         }
