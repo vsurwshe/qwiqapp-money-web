@@ -1,5 +1,6 @@
 import React, { Component } from "react";
-import { Row, Col, Card, CardBody, Alert, ListGroupItem, ListGroup, Button } from "reactstrap";
+import { withRouter } from "react-router-dom";
+import { Card, CardBody, Alert, Table, Button, FormGroup, Label, Input } from "reactstrap";
 import Loader from 'react-loader-spinner'
 import UpdateBill from "./UpdateBill";
 import CreateBill from "./CreateBill";
@@ -37,10 +38,16 @@ class Bills extends Component {
       spinner: false,
       selectedOption: '',
       searchName: false,
+      removeDependents: true,
+      value: ''
     };
   }
 
   componentDidMount = () => {
+    this.setProfileId();
+  }
+
+  componentWillReceiveProps = () => {
     this.setProfileId();
   }
 
@@ -66,14 +73,39 @@ class Bills extends Component {
   };
 
   // bills response
-  successCallBill = async bill => {
-    if (bill === []) {
-      this.setState({ bills: [0] })
-    } else {
-      await this.billsWithcategoryNameColor(bill);
+  successCallBill = async bills => {
+    let newBills;
+    if (bills.length === 0) {
+      this.setState({ bills: [] })
+    } 
+    else {
+      if (this.props.match.params.value) {
+        switch (this.props.match.params.value) {
+          case "upcoming":
+            newBills = bills.filter(bill => this.loadDateFormat(bill.dueDate_) >= new Date());
+            break;
+          case "overdue":
+            newBills = bills.filter(bill => this.loadDateFormat(bill.dueDate_) < new Date());
+            break;
+          case "paid":
+            newBills = bills.filter(bill => bill.paid === true);
+            break;
+          case "unpaid":
+            newBills = bills.filter(bill => bill.paid === false);
+            break;
+          default:
+            newBills = bills;
+            break;
+        }
+      }
+      else {
+        newBills = bills;
+      }
+      await this.billsWithcategoryNameColor(newBills);
       this.loadCollapse();
     }
-  };
+  }
+  
 
   // category name color append to bills
   billsWithcategoryNameColor = (bills) => {
@@ -114,7 +146,16 @@ class Bills extends Component {
     }
   };
 
-  errorCall = (err) => { this.setState({ color:'danger', content:'Unable to Process Request, Please try Again....' }) }
+  errorCall = (err) => {
+    if (err.response.status === 500 && err.response.data.error.debugMessage) {
+      this.setState({ visible: true, color: 'danger', content: 'Something went wrong, unable to fetch bills...' });
+      setTimeout(() => {
+        this.setState({ visible: false, spinner: true });
+      }, Config.apiTimeoutMillis);
+    } else {
+      this.setState({ color: 'danger', content: 'Unable to Process Request, Please try Again....' });
+    }
+  }
 
   //this toggle for Delete Model
   toggleDanger = () => {
@@ -130,19 +171,6 @@ class Bills extends Component {
   deleteBillAction = () => {
     this.setState({ deleteBillRequest: true })
   };
-
-  //this method toggle Bills tabIndex
-  toggleAccordion = (tabIndex) => {
-    const prevState = this.state.accordion;
-    const state = prevState.map((value, index) => tabIndex === index ? !value : false);
-    this.setState({ accordion: state });
-  }
-
-  toggleDropDown = (tabIndex) => {
-    const prevState = this.state.dropdownOpen;
-    const state = prevState.map((value, index) => tabIndex === index ? !value : false);
-    this.setState({ dropdownOpen: state });
-  }
 
   hoverAccordion = (keyIndex) => {
     const prevState = this.state.hoverAccord;
@@ -163,9 +191,9 @@ class Bills extends Component {
   setBillId = (bill) => {
     let data = {
       "deletBillDescription": bill.description,
-      "deletBillCategoryName": bill.categoryName.name      
+      "deletBillCategoryName": bill.categoryName.name
     }
-    this.setState({ id: bill.id, deleteBillName: data});
+    this.setState({ id: bill.id, deleteBillName: data });
   }
 
   callAlertTimer = (visible) => {
@@ -176,20 +204,32 @@ class Bills extends Component {
     }
   };
 
+  handleRemoveDependents = () => {
+    this.setState({ removeDependents: !this.state.removeDependents });
+  }
+  setValue = () => {
+    this.setState({ value: '' })
+  }
+
   render() {
     const { bills, createBillRequest, updateBillRequest, id, deleteBillRequest, visible, profileId, updateBill, spinner, labels, categories, contacts, danger } = this.state;
     if (!profileId) {
       return <ProfileEmptyMessage />
-    } else if (bills.length === 0 && !createBillRequest) {
-      return <div>{!spinner ? this.loadLoader() : bills.length === 0 && !createBillRequest ? this.emptyBills() : ""}</div>
+    } else if (bills.length === 0 && !createBillRequest) {  // Checks for bills not there and no bill create Request, then executes
+      return <div> 
+      {/*  If spinner is true and bills are there, it shows the loader function, until bills are loaded */}
+      {(spinner && bills.length !== 0) ? <>{visible && <Alert isOpen={visible} color={this.state.color}>{this.state.content}</Alert>} {this.loadLoader()} </>
+        : 
+        // If bills not there, it will show Empty message
+      (bills.length === 0 ? this.emptyBills() : "")}</div>
     } else if (createBillRequest) {
       return <CreateBill pid={profileId} label={labels} categories={categories} contacts={contacts} />
     } else if (updateBillRequest) {
       return <UpdateBill pid={profileId} bill={updateBill} lables={labels} categories={categories} contacts={contacts} />
     } else if (deleteBillRequest) {
-      return <DeleteBill id={id} pid={profileId} />
+      return <DeleteBill id={id} pid={profileId} removeDependents={this.state.removeDependents} />
     } else {
-      return <div>{this.displayAllBills( visible, bills )}{danger && this.deleteBillModel()}</div>
+      return <div>{this.displayAllBills(visible, bills)}{danger && this.deleteBillModel()}</div>
     }
   }
 
@@ -224,16 +264,16 @@ class Bills extends Component {
       <Card>
         {this.loadHeader("")}
         <center className="padding-top" >
-          <CardBody><h5><b>You haven't created any Bills yet... </b></h5><br /></CardBody>
+          <CardBody><h5><b>You don't have any {this.props.match.params.value ? this.props.match.params.value : ' '} Bills ... </b></h5><br /></CardBody>
         </center>
       </Card>
     </div>
   }
 
   // Displays all the Bills one by one
-  displayAllBills = ( visible, bills ) => {
+  displayAllBills = (visible, bills) => {
     const color = this.props.color;
-    if(color){
+    if (color) {
       this.callAlertTimer(visible)
     }
     return <div className="animated fadeIn">
@@ -242,7 +282,23 @@ class Bills extends Component {
         <br />
         <div className="header-search">
           <h6>{visible && <Alert isOpen={visible} color={color}>{this.props.content}</Alert>}</h6>
-          {bills.filter(this.searchingFor(this.state.selectedOption)).map((bill, key) => { return this.loadSingleBill(bill, key); })}
+          <CardBody className="card-align">
+            <Table frame="box" style={{ borderColor: "#DEE9F2" }}>
+              <thead className="table-header-color" >
+                <tr>
+                  <th>Due On</th>
+                  <th>Bill Date</th>
+                  <th>Description</th>
+                  <th>Bill Amount</th>
+                  <th>Paid Amount</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {bills.filter(this.searchingFor(this.state.selectedOption)).map((bill, key) => { return this.loadSingleBill(bill, key); })}
+              </tbody>
+            </Table>
+          </CardBody>
         </div>
       </Card>
     </div>
@@ -250,45 +306,44 @@ class Bills extends Component {
 
   // Show the Single Bill 
   loadSingleBill = (bill, key) => {
-    return <ListGroup flush key={key} className="animated fadeIn" onPointerEnter={(e) => this.onHover(e, key)} onPointerLeave={(e) => this.onHoverOff(e, key)} style={{ paddingLeft: 10, paddingRight: 10 }}>
-      <ListGroupItem action>
-        <Row>
-          <Col sm={{ size: 'auto', offset: 0 }} lg={1} className="date-format" >
-            <strong className="date-formate"><center>{this.dateFormat(bill.billDate)}</center></strong>
-          </Col>
-          <Col sm={5}>
-            {bill.description ? 
-              <><Row className="text-link padding-left">{bill.description}</Row>
-                <Row className="text-link padding-left" style={{ color: bill.categoryName.color }} ><b>{bill.categoryName.name}</b></Row>
-              </> :
-              <><Row className="text-link padding-left"><p></p></Row>
-              <Row className="text-link padding-left" style={{ color: bill.categoryName.color, paddingBottom: 3 }} ><b>{bill.categoryName.name}</b></Row>
-            </>}
-          </Col>
-          <Col className="column-text ">
-            {bill.amount > 0 ?
-              <b className="float-right bill-amount-color">
-                {new Intl.NumberFormat('en-US', { style: 'currency', currency: bill.currency }).format(bill.amount)}
-              </b> :
-              <b className="float-right text-color">
-                {new Intl.NumberFormat('en-US', { style: 'currency', currency: bill.currency }).format(bill.amount)}
-              </b>
-            }
-          </Col>
-          <Col>{this.state.onHover && this.state.hoverAccord[key] ? this.loadDropDown(bill, key) : ''}</Col>
-        </Row>
-      </ListGroupItem>
-    </ListGroup>
+    return <tr onPointerEnter={(e) => this.onHover(e, key)} onPointerLeave={(e) => this.onHoverOff(e, key)} width={50} key={key}>
+      <td>{this.dateFormat(bill.dueDate_)}</td>
+      <td>{this.dateFormat(bill.billDate)}</td>
+      <td>{bill.description ? bill.description : bill.categoryName.name}</td>
+      <td>{bill.amount > 0 ?
+        <b className="bill-amount-color">
+          {new Intl.NumberFormat('en-US', { style: 'currency', currency: bill.currency }).format(bill.amount)}
+        </b> :
+        <b className="text-color">
+          {new Intl.NumberFormat('en-US', { style: 'currency', currency: bill.currency }).format(bill.amount)}
+        </b>
+      }</td>
+      <td>
+        {bill.amount > 0 ?
+          <h6 className="bill-amount-color">
+            <b>Last paid</b> {this.dateFormat(bill.billDate)} &nbsp; {new Intl.NumberFormat('en-US', { style: 'currency', currency: bill.currency }).format(0)}
+          </h6> :
+          <h6 className="bill-amount-color">
+            <b>Last paid</b> {this.dateFormat(bill.billDate)} {new Intl.NumberFormat('en-US', { style: 'currency', currency: bill.currency }).format(0)}
+          </h6>
+        }
+      </td>
+      <td><h6>{this.loadDropDown(bill, key)}</h6></td>
+    </tr>
   }
 
   dateFormat = (userDate) => {
-    let sd = userDate.toString().split('');
-    let year = sd[0] + sd[1] + sd[2] + sd[3];
-    let month = sd[4] + sd[5];
-    let day = sd[6] + sd[7];
-    var date = new Date(year, month, day);
-    const finalDate = new Intl.DateTimeFormat('en-gb', { month: 'short', weekday: 'short', day: '2-digit' }).format(date);
-    return finalDate;
+    let date = "" + userDate
+    let dateString = date.substring(0, 4) + "-" + date.substring(4, 6) + "-" + date.substring(6, 8)
+    const formatDate = new Intl.DateTimeFormat('en-gb', { month: 'short', weekday: 'short', day: '2-digit' }).format(new Date(dateString));
+    return formatDate;
+  }
+
+  loadDateFormat = (dateParam) => {
+    let toStr = "" + dateParam
+    let dateString = toStr.substring(0, 4) + "-" + toStr.substring(4, 6) + "-" + toStr.substring(6, 8)
+    let date = new Date(dateString);
+    return date;
   }
 
   displayCategoryName = (categoryId) => {
@@ -315,19 +370,34 @@ class Bills extends Component {
 
   //this Method loads Browser DropDown
   loadDropDown = (bill, key) => {
-   return  <span className="float-right" style={{ marginRight: 7, marginTop: 7 }}>
-        <Button style={{ backgroundColor: "transparent", borderColor: 'green', color: "green", marginRight: 5, width: 77, padding: 2 }} onClick={() => {this.updateBillAction(bill) }}> EDIT </Button> &nbsp;
-      <Button style={{ backgroundColor: "transparent", borderColor: 'red', color: "red", width: 90, padding: 2 }} onClick={() => {this.setBillId(bill); this.toggleDanger(); }}> REMOVE </Button>
-      </span>
-    // return new ReUseComponents.loadDropDown(bill, this.setBillId, this.toggleDanger, this.updateBillAction);
+    return <>
+      <Button className="rounded" style={{ backgroundColor: "transparent", borderColor: ' #ada397', color: "green", width: 77 }} onClick={() => { this.updateBillAction(bill) }}>Edit</Button> &nbsp;
+      <Button className="rounded" style={{ backgroundColor: "transparent", borderColor: '#eea29a', color: "red", width: 92 }} onClick={() => { this.setBillId(bill); this.toggleDanger(); }}>Remove</Button>
+    </>
   }
 
   //this method calls the delete model
   deleteBillModel = () => {
-   let billDeleteItem = this.state.deleteBillName.deletBillDescription ? this.state.deleteBillName.deletBillDescription
-                                                                      : this.state.deleteBillName.deletBillCategoryName;
+    let billDeleteItem = this.state.deleteBillName.deletBillDescription ? this.state.deleteBillName.deletBillDescription
+      : this.state.deleteBillName.deletBillCategoryName;
     return <DeleteModel danger={this.state.danger} toggleDanger={this.toggleDanger} headerMessage="Delete Bill" bodyMessage={billDeleteItem}
-        delete={this.deleteBillAction} cancel={this.toggleDanger} >bill</DeleteModel>
+      delete={this.deleteBillAction} cancel={this.toggleDanger} loadDeleteOptions={this.loadDeleteOptions}>bill</DeleteModel>
+  }
+
+  loadDeleteOptions = () => {
+    return <>
+      <FormGroup check >
+        <Label check>
+          <Input type="radio" name="radio2" value="true" onChange={this.handleRemoveDependents} checked={this.state.removeDependents === true} />{' '}
+          Delete this Bill along with the Recurring bills associated with it ?
+          </Label>
+        <Label check>
+          <Input type="radio" name="radio2" value="false" onChange={this.handleRemoveDependents} checked={this.state.removeDependents === false} />{' '}
+          Delete this Bill without deleting the associated Recurring bills ?
+          </Label>
+      </FormGroup>
+    </>
   }
 }
-export default Bills;
+
+export default withRouter(Bills);
