@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Row, Col, Card, CardHeader, CardBody, Alert, Input, ListGroupItem, ListGroup, InputGroup, InputGroupAddon, InputGroupText, Button, FormGroup, Label } from "reactstrap";
+import { Row, Col, Card, CardHeader, CardBody, Alert, Input, InputGroup, InputGroupAddon, InputGroupText, Button, FormGroup, Label, Table } from "reactstrap";
 import { FaSearch } from 'react-icons/fa';
 import Loader from 'react-loader-spinner'
 import CreateRecurringBill from "./CreateRecurringBill";
@@ -244,7 +244,22 @@ class RecurringBills extends Component {
         {this.loadHeader()}
         <div className="header-search">
           <h6><Alert isOpen={visible} color="danger">Unable to Process Request, Please try Again....</Alert></h6>
-          {recurBillsList.filter(this.searchingFor(this.state.selectedOption)).map((recurbill, key) => { return this.singleRecurBill(recurbill, key); })}
+          <CardBody className="card-align">
+          <Table frame="box" bordercolor="#DEE9F2">
+            <thead className="table-header-color" >
+              <tr>
+                <th>Due On</th>
+                <th>Bill Date</th>
+                <th>Description</th>
+                <th>Bill Amount</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {recurBillsList.filter(this.searchingFor(this.state.selectedOption)).map((recurbill, key) => { return this.singleRecurBill(recurbill, key); })}
+            </tbody>
+          </Table>
+        </CardBody>
         </div>
       </Card>
     </div>
@@ -252,30 +267,21 @@ class RecurringBills extends Component {
 
   // Show the Single RecurBill 
   singleRecurBill = (recurbill, key) => {
-    return <ListGroup flush key={key} className="animated fadeIn" onPointerEnter={(e) => this.onHover(e, key)} onPointerLeave={(e) => this.onHoverOff(e, key)}>
-      <ListGroupItem action>
-        <Row>
-          <Col sm={{ size: "auto" }} md={{ size: "auto" }} lg={{ size: "auto" }} xl={{ size: "auto" }} className="date-format" >
-            <strong style={{ paddingBottom: 20 }}><center>{this.dateFormat(recurbill.billDate)}</center></strong>
-          </Col>
-          <Col >
-            <Row className="text-link padding-left">{recurbill.description}</Row>
-            <Row className="text-link padding-left" style={{ color: recurbill.categoryName.color }} ><b>{recurbill.categoryName.name}</b></Row>
-          </Col>
-          <Col className="float-right column-text ">
-            {recurbill.amount < 0 ?
+    let description = recurbill.description ? recurbill.description: recurbill.categoryName.name
+    return <tr onPointerEnter={(e) => this.onHover(e, key)} onPointerLeave={(e) => this.onHoverOff(e, key)} width={50} key={key}>
+      <td> { this.dateFormat(recurbill.dueDate_) } </td>
+      <td>{this.dateFormat(recurbill.nextBillDate)}</td>
+      <td>{description}</td>
+      <td>{recurbill.amount < 0 ?
               <b className="text-color">
                 {new Intl.NumberFormat('en-US', { style: 'currency', currency: recurbill.currency }).format(recurbill.amount)}
               </b> :
               <b className="bill-amount-color">
                 {new Intl.NumberFormat('en-US', { style: 'currency', currency: recurbill.currency }).format(recurbill.amount)}
               </b>
-            }
-          </Col>
-          <Col>{this.state.onHover && this.state.hoverAccord[key] ? this.loadDropDown(recurbill, key) : ''}</Col>
-        </Row>
-      </ListGroupItem>
-    </ListGroup>
+            }</td>
+       { this.loadDropDown(recurbill, key)}
+    </tr>
   }
 
   dateFormat = (userDate) => {
@@ -313,10 +319,14 @@ class RecurringBills extends Component {
 
   //this Method loads Browser DropDown
   loadDropDown = (recurbill, key) => {
-    return <span className="float-right" style={{ marginRight: 7, marginTop: 7 }}>
-      <Button style={{ backgroundColor: "transparent", borderColor: 'green', color: "green", marginRight: 5, width: 77, padding: 2 }} onClick={() => { this.handleUpdateRecurBill(recurbill) }}> EDIT </Button> &nbsp;
-        <Button style={{ backgroundColor: "transparent", borderColor: 'red', color: "red", width: 90, padding: 2 }} onClick={() => { this.setRecurBillId(recurbill); this.toggleDanger(); }}> REMOVE </Button>
-    </span>
+    return <td>
+      <button style={{ backgroundColor: "transparent", borderColor: 'green', color: "green", marginRight: 5, width: 77, padding: 2 }} onClick={() => { this.handleUpdateRecurBill(recurbill) }}> EDIT </button> &nbsp;
+      <button style={{ backgroundColor: "transparent", borderColor: 'red', color: "red", width: 90, padding: 2 }} onClick={() => { this.setRecurBillId(recurbill); this.toggleDanger(); }}> REMOVE </button>
+    </td>
+    // return <span className="float-right" style={{ marginRight: 2}}>
+    //   <button style={{ backgroundColor: "transparent", borderColor: 'green', color: "green", marginRight: 5, width: 77, padding: 2 }} onClick={() => { this.handleUpdateRecurBill(recurbill) }}> EDIT </button> &nbsp;
+    //     <button style={{ backgroundColor: "transparent", borderColor: 'red', color: "red", width: 90, padding: 2 }} onClick={() => { this.setRecurBillId(recurbill); this.toggleDanger(); }}> REMOVE </button>
+    // </span>
   }
 
   //this method calls the delete model

@@ -46,7 +46,7 @@ async function process(success, failure, Uurl, Umethod, profileId, data, updateB
       if (updateBill) {
         validResponse(promise, success)
       } else {
-        const newPostData = { ...data, "recurId": promise.data.id, "billDate": data.actualBillDate }
+        const newPostData = { ...data, "recurId": promise.data.id }
         await new BillApi().createBill(BillSuccessData(success, failure, profileId), failure, profileId, newPostData);
       }
     } else {

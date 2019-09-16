@@ -24,7 +24,8 @@ class UpdateRecurringBill extends Component {
       categoryOption: props.updateRecurBill.categoryId,
       notifyDate: this.loadDateFormat(props.updateRecurBill.notifyDate_),
       notifyDays: props.updateRecurBill.notifyDays,
-      billDate: this.loadDateFormat(props.updateRecurBill.billDate),
+      nextBillDate: this.loadDateFormat(props.updateRecurBill.nextBillDate),
+      endsOn: this.loadDateFormat(props.updateRecurBill.endsOn),
       dueDays: props.updateRecurBill.dueDays,
       dueDate: this.loadDateFormat(props.updateRecurBill.dueDate_),
       taxAmount: props.updateRecurBill.taxAmount_,
@@ -40,7 +41,6 @@ class UpdateRecurringBill extends Component {
       cancelUpdateBill: false,
       recurringToggle: true,
       repeatType: props.updateRecurBill.repeatType,
-      nextBillDate: this.loadDateFormat(props.updateRecurBill.billDate),
       repeatEvery: props.updateRecurBill.every
     };
   }
@@ -84,10 +84,10 @@ class UpdateRecurringBill extends Component {
   handleSubmitValue = (event, errors, values) => {
     const { labelOption, categoryOption, categoryOptionUpdate, labelOptionUpdate, contactOptionUpdate, contactOption } = this.state
     if (errors.length === 0) {
-      let billDate = values.recurBillDate.split("-")[0] + values.recurBillDate.split("-")[1] + values.recurBillDate.split("-")[2];
+      let nextBillDate = values.recurBillDate.split("-")[0] + values.recurBillDate.split("-")[1] + values.recurBillDate.split("-")[2];
       let endDate = values.endsOn.split("-")[0] + values.endsOn.split("-")[1] + values.endsOn.split("-")[2];
       const newData = {
-        ...values, "billDate": billDate, "categoryId": categoryOptionUpdate ? categoryOption.value : categoryOption,
+        ...values, "nextBillDate": nextBillDate, "categoryId": categoryOptionUpdate ? categoryOption.value : categoryOption,
         "amount": values.label + values.amount, "endsOn": endDate,
         "contactId": contactOptionUpdate ? contactOption.value : contactOption, "notificationEnabled": this.state.checked,
         "labelIds": labelOption === null || labelOption === [] ? [] : (labelOptionUpdate ? labelOption.map(opt => { return opt.value }) : labelOption), "version": this.state.recurBill.version
@@ -173,20 +173,20 @@ class UpdateRecurringBill extends Component {
   }
 
   handleBillDate = async (e) => {
-    await this.setState({ billDate: e.target.value });
+    await this.setState({ nextBillDate: e.target.value });
     this.recurBillNextDate(this.state.repeatEvery, this.state.repeatType);
   }
 
   handleNotifyDate = async (e) => {
     let value = await e.target.value;
-    if (this.state.billDate && value) {
+    if (this.state.nextBillDate && value) {
       if (this.state.alertColor) { this.setState({ alertColor: '', content: '' }) }
-      let billDate = new Date(this.state.billDate);
-      billDate.setDate(billDate.getDate() + parseInt(value))
-      let notifyDate = new Intl.DateTimeFormat('sv-SE', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(billDate);
+      let nextBillDate = new Date(this.state.nextBillDate);
+      nextBillDate.setDate(nextBillDate.getDate() + parseInt(value))
+      let notifyDate = new Intl.DateTimeFormat('sv-SE', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(nextBillDate);
       this.setState({ notifyDate });
     } else {
-      if (!this.state.billDate) {
+      if (!this.state.nextBillDate) {
         this.callAlertTimer("danger", "Please enter Bill Date... ")
       } else {
         this.callAlertTimer("danger", "Please enter Notify days... ")
@@ -196,14 +196,14 @@ class UpdateRecurringBill extends Component {
 
   handleDueDate = (e) => {
     let value = e.target.value;
-    if (this.state.billDate && value) {
+    if (this.state.nextBillDate && value) {
       if (this.state.alertColor) { this.setState({ alertColor: '', content: '' }) }
-      let billDate = new Date(this.state.billDate);
-      billDate.setDate(billDate.getDate() + parseInt(value))
-      let dueDate = new Intl.DateTimeFormat('sv-SE', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(billDate);
+      let nextBillDate = new Date(this.state.nextBillDate);
+      nextBillDate.setDate(nextBillDate.getDate() + parseInt(value))
+      let dueDate = new Intl.DateTimeFormat('sv-SE', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(nextBillDate);
       this.setState({ dueDate });
     } else {
-      if (!this.state.billDate) {
+      if (!this.state.nextBillDate) {
         this.callAlertTimer("danger", "Please enter Bill Date... ")
       } else {
         this.callAlertTimer("danger", "Please enter Due days... ")
@@ -212,6 +212,7 @@ class UpdateRecurringBill extends Component {
   }
 
   render() {
+    console.log(this.props.updateRecurBill.endsOn)
     const { alertColor, alertMessage, cancelUpdateBill, updateSuccess, recurBill, labels, categories, contacts } = this.state;
     if (cancelUpdateBill) {
       return <RecurringBills />
@@ -279,7 +280,7 @@ class UpdateRecurringBill extends Component {
                 </Row>
                 <br />
                 <Row>
-                  <Col><AvField name="billDate" label="Bill Date" value={this.state.billDate} type="date"
+                  <Col><AvField name="nextBillDate" label="Bill Date" value={this.state.nextBillDate} type="date"
                     onChange={(e) => { this.handleBillDate(e) }} errorMessage="Invalid Date" validate={{
                       date: { format: 'dd/MM/yyyy' },
                       dateRange: { format: 'YYYY/MM/DD', start: { value: '1900/01/01' }, end: { value: '9999/12/31' } },
@@ -381,7 +382,7 @@ class UpdateRecurringBill extends Component {
                   required: { value: true }
                 }} /></Col>
             <Col md={6}>
-              <AvField name="endsOn" label="Ends On" value={this.state.recurBill.endsOn} type="date" errorMessage="Invalid Date" validate={{
+              <AvField name="endsOn" label="Ends On" value={this.state.endsOn} type="date" errorMessage="Invalid Date" validate={{
                 date: { format: 'dd/MM/yyyy' },
                 dateRange: { format: 'YYYY/MM/DD', start: { value: '1900/01/01' }, end: { value: '9999/12/31' } },
                 required: { value: true }
@@ -406,7 +407,7 @@ class UpdateRecurringBill extends Component {
   }
 
   recurBillNextDate = (repeatEveryValue, repeatEveryCal) => {
-    let currentDate = new Date(this.state.billDate);
+    let currentDate = new Date(this.state.nextBillDate);
     if (repeatEveryValue && repeatEveryCal) {
       switch (repeatEveryCal) {
         case "WEEK":

@@ -8,6 +8,7 @@ import RecurringBills from "./RecurringBills";
 import Store from "../../data/Store";
 import Select from 'react-select';
 import Data from "../../data/SelectData";
+import { RECURRINGBILLSELECTION } from "./RECURRINGBILLSELECTION";
 
 class CreateRecurringBill extends Component {
   constructor(props) {
@@ -26,7 +27,8 @@ class CreateRecurringBill extends Component {
       billType: "EXPENCE_PAYABLE",
       billTypeReq: false,
       billTypecolor: "red",
-      selectRepeatEvery: "DAY"
+      selectRepeatEvery: "DAY",
+      endDate: this.defaultEndDateSet(true, 3),
     };
   }
 
@@ -47,12 +49,12 @@ class CreateRecurringBill extends Component {
       this.callAlertTimer("warning", "Please Select Category...");
     } else if (errors.length === 0) {
       actualBillDate = values.billDate.split("-")[0] + values.billDate.split("-")[1] + values.billDate.split("-")[2] // crearte bill date
-      recurBillDate = values.recurBillDate.split("-")[0] + values.recurBillDate.split("-")[1] + values.recurBillDate.split("-")[2]; // create recurBill date
+      recurBillDate = values.nextBillDate.split("-")[0] + values.nextBillDate.split("-")[1] + values.nextBillDate.split("-")[2]; // create recurBill date
       let endsonDate = values.endsOn.split("-")[0] + values.endsOn.split("-")[1] + values.endsOn.split("-")[2]
       const newData = {
         ...values,
-        "billDate": recurBillDate, //Recurring Bill BillDate
-        "actualBillDate": actualBillDate, // Actual Bill BillDate
+        "billDate": actualBillDate, // Bill BillDate
+        "nextBillDate": recurBillDate,
         "notificationEnabled": notifyRecurBill,
         "type": billType,
         "endsOn": endsonDate,
@@ -134,25 +136,7 @@ class CreateRecurringBill extends Component {
   handleBillDate = (e) => {
     this.setState({ userBillDate: e.target.value });;
   }
-
-  handleNotifyDate = (e) => {
-    let value = e.target.value;
-    if (this.state.userBillDate && value) {
-      if (this.state.alertColor) { this.setState({ alertColor: '', alertMessage: '' }) }
-      let billDate = new Date(this.state.userBillDate);
-      billDate.setDate(billDate.getDate() + parseInt(value))
-      let notifyDate = new Intl.DateTimeFormat('sv-SE', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(billDate);
-      this.setState({ notifyDate });
-    } else {
-      if (!this.state.userBillDate) {
-        this.callAlertTimer("danger", "Please enter Bill Date... ")
-      } else {
-        this.callAlertTimer("danger", "Please enter Notify days... ")
-      }
-    }
-  }
-
-  handleDueDate = (e) => {
+    handleDueDate = (e) => {
     let value = e.target.value;
     if (this.state.userBillDate && value) {
       if (this.state.alertColor) { this.setState({ alertColor: '', alertMessage: '' }) }
@@ -168,22 +152,21 @@ class CreateRecurringBill extends Component {
       }
     }
   }
-
   setDate = (repeatEveryValue, repeatEveryCal) => {
     let currentDate = new Date(this.state.userBillDate);
     if (repeatEveryValue && repeatEveryCal) {
       switch (repeatEveryCal) {
-        case "WEEK":
+        case RECURRINGBILLSELECTION.WEEK:
           currentDate.setDate(currentDate.getDate() + parseInt(repeatEveryValue) * 7);
           break;
-        case "MONTH":
+        case RECURRINGBILLSELECTION.MONTH:
           currentDate.setMonth(currentDate.getMonth() + parseInt(repeatEveryValue));
           break;
-        case "DAYOFMONTH":
+        case RECURRINGBILLSELECTION.DAYOFMONTH:
           currentDate.setMonth(currentDate.getMonth() + 1);
           currentDate.setDate(parseInt(repeatEveryValue))
           break;
-        case "YEAR":
+        case RECURRINGBILLSELECTION.YEAR:
           currentDate.setYear(currentDate.getFullYear() + parseInt(repeatEveryValue));
           break;
         default:
@@ -191,12 +174,18 @@ class CreateRecurringBill extends Component {
           break;
       }
       let dates = new Intl.DateTimeFormat('sv-SE', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(currentDate);
-      this.setState({ recurrBillDate: dates });
+      let diff = new Date(this.state.endDate) - new Date(dates)
+      if (diff/(1000*60*60*24) >= 0) {
+        this.setState({ recurrBillDate: dates });
+      } else {
+        this.callAlertTimer("danger", "invalid next bill date, please change end_date or nextBillDate");
+      }
+      
     } else {
       this.callAlertTimer("danger", "please select repeat every");
     }
   }
-
+  
   render() {
     const { alertColor, alertMessage, cancelCreateBill, billCreated } = this.state;
     if (cancelCreateBill) {
@@ -214,13 +203,13 @@ class CreateRecurringBill extends Component {
   loadNotifications = () => {
     return <Row>
       <Col><AvField name="notifyDays" label="Notify Days" placeholder="Ex: 2" type="number"
-        onChange={(e) => { this.handleNotifyDate(e) }} errorMessage="Invalid notify-days" /></Col>
+        onChange={(e) => { this.handleDueDate(e) }} errorMessage="Invalid notify-days" /></Col>
       <Col><AvField name="notifyDate" label="notify Date" disabled value={this.state.notifyDate} type="date"
         errorMessage="Invalid Date" validate={{ date: { format: 'dd/MM/yyyy' } }} /></Col>
     </Row>
   }
 
-  recurBillEvery = (e) => {
+  handleEveryRecurBill = (e) => {
     let recurBillEvery = e.target.name = e.target.value;
     this.setState({ type: recurBillEvery, alertColor: "", alertMessage: "" });
     if (this.state.userBillDate) {
@@ -229,9 +218,7 @@ class CreateRecurringBill extends Component {
       this.setState({ userBillDate: "" });
       this.callAlertTimer("danger", "please select bill date")
     }
-
   }
-
 
   recurBillOption = (e) => {
     let recurrBillOption = e.target.value;
@@ -239,19 +226,16 @@ class CreateRecurringBill extends Component {
     this.setDate(this.state.type, recurrBillOption)
   }
 
-
   recurBillForm = (alertColor, alertMessage) => {
   let categoryName,labelName,contactName;
   const {currencies, taxPercent, taxAmount, userBillDate, dueDays, dueDate, description, recurBill, updateAmount, currencyCode, billType, doubleClick} = this.state
   const { categories, label, contacts } = this.props
-
   if (recurBill) {
     const options = Data.labels(label);
     categoryName = Data.categories(categories).filter(item => { return item.value === recurBill.categoryId })
     labelName = recurBill.labelIds === null ? '' : recurBill.labelIds.map(id => { return options.filter(item => { return item.value === id }) }).flat();
     contactName = Data.contacts(contacts).filter(item => { return item.value === recurBill.contactId })
   }
-
 
     return (
       <div className="animated fadeIn" >
@@ -344,14 +328,14 @@ class CreateRecurringBill extends Component {
           onChange={() => this.setState({ checked: !this.state.checked })} />Notification enabled</Col>
       </Row> <br />
       {this.state.checked && this.loadNotifications()}
-      {Store.getProfile().type > 0 && this.loadRecurringBills()}<br />
+      {Store.getProfile().type > 0 && this.selectEveryRecurBill()}<br />
     </>
   }
 
-  loadRecurringBills = () => {
+  selectEveryRecurBill = () => {
     return <><Row>
       <Col sm={3}>
-        <AvField name="every" label="Repeats Every" placeholder="Ex: 1" type="number" onChange={(e) => { this.recurBillEvery(e) }}
+        <AvField name="every" label="Repeats Every" placeholder="Ex: 1" type="number" onChange={(e) => { this.handleEveryRecurBill(e) }}
           errorMessage="Invalid day" />
       </Col>
       <Col sm={3}>
@@ -367,14 +351,33 @@ class CreateRecurringBill extends Component {
       <Col sm-={3}>
         <Row>
           <Col>
-            <AvField name="recurBillDate" label="Next bill date" value={this.state.recurrBillDate} type="date" errorMessage="Invalid Date" disabled
+            <AvField name="nextBillDate" label="Next bill date" value={this.state.recurrBillDate} type="date" errorMessage="Invalid Date" disabled
               validate={{
                 date: { format: 'dd/MM/yyyy' },
                 dateRange: { format: 'YYYY/MM/DD', start: { value: '1900/01/01' }, end: { value: '9999/12/31' } },
                 required: { value: true }
               }} /></Col>
-          <Col md={6}>
-            <AvField name="endsOn" label="Ends On" value={this.state.userBillDate} type="date" errorMessage="Invalid Date" validate={{
+                   
+          <Col> 
+          <AvField type="select" name="repeatType" value={RECURRINGBILLSELECTION.ONE_MONTH} label="Select Every" onChange={(e) => { this.handleEndDate(e) }}
+          errorMessage="Select any Option" required>
+          <option value={RECURRINGBILLSELECTION.ONE_MONTH}>One month</option>
+          <option value={RECURRINGBILLSELECTION.TWO_MONTHS}>Two months</option>
+          <option value={RECURRINGBILLSELECTION.THREE_MONTHS}>Three months</option>
+          <option value={RECURRINGBILLSELECTION.FOUR_MONTHS}>Four month</option>
+          <option value={RECURRINGBILLSELECTION.FIVE_MONTHS}>Five months</option>
+          <option value={RECURRINGBILLSELECTION.SIX_MONTHS}>Six months</option>
+          <option value={RECURRINGBILLSELECTION.ONE_YEAR}>One year</option>
+          <option value={RECURRINGBILLSELECTION.EIGHTEEN_MONTHS}>Eighteen months</option>
+          <option value={RECURRINGBILLSELECTION.TWO_YEARS}>Two years</option>
+          <option value={RECURRINGBILLSELECTION.THREE_YEARS}>Three years</option>
+          <option value={RECURRINGBILLSELECTION.FOUR_YEARS}>Four years</option>
+          <option value={RECURRINGBILLSELECTION.FIVE_YEARS}>Five years</option>
+          <option value={RECURRINGBILLSELECTION.TEN_YEARS}>Ten years</option>
+        </AvField>
+        </Col>
+        <Col md={6}>
+            <AvField name="endsOn" label="Ends On" value={this.state.endDate} type="date" errorMessage="Invalid Date" validate={{
               date: { format: 'dd/MM/yyyy' },
               dateRange: { format: 'YYYY/MM/DD', start: { value: '1900/01/01' }, end: { value: '9999/12/31' } },
               required: { value: true }
@@ -383,42 +386,23 @@ class CreateRecurringBill extends Component {
         </Row>
       </Col>
     </Row>
-    {/* <Row>
-    <Col><Input name="check" type="checkbox" checked={this.state.endDateReq} value={this.state.endDateReq}
-          // onChange={() => this.setState({ endDateReq: !this.state.endDateReq })} />Endson date</Col>
-          onChange={this.setEndsOnDate} />Repeat until</Col>
-    </Row>
-    {this.state.endDateReq && <Col md={6}>
-            <AvField name="endsOn" label="Ends On" value={this.state.endDate} type="date" errorMessage="Invalid Date" validate={{
-              date: { format: 'dd/MM/yyyy' },
-              dateRange: { format: 'YYYY/MM/DD', start: { value: '1900/01/01' }, end: { value: '9999/12/31' } },
-              required: { value: true }
-            }} />
-          </Col>} */}
     </>
   }
-  setEndsOnDate = () => {
-    this.setState({ endDateReq: !this.state.endDateReq })
-    console.log(this.state.userBillDate)
-    
-    if (this.state.userBillDate) {
-      let endDate = new Date(this.state.userBillDate);
-      endDate.setMonth(endDate.getMonth()+2);
-      this.setState({ endDate: new Intl.DateTimeFormat('sv-SE', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(endDate)})
+
+  defaultEndDateSet = (type, number) => {
+    let endDate = new Date();
+    if (type) {
+      endDate.setMonth(endDate.getMonth()+ parseInt(number));
+    } else {
+      endDate.setFullYear(endDate.getFullYear()+ parseInt(number) )
     }
+    let endDateVal = new Intl.DateTimeFormat('sv-SE', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(endDate);
+    return endDateVal;
   }
-  
-  labelSelected = (labelOption) => {
-    this.setState({ labelOption })
+  handleEndDate = (e) =>{
+    let number = e.target.value.split(',')[1];
+    let type = e.target.value.includes("MONTH");    
+    this.setState({ endDate: this.defaultEndDateSet(type, number) });
   }
-
-  categorySelected = (categoryOption) => {
-    this.setState({ categoryOption, alertColor: '', alertMessage: '' })
-  }
-
-  contactSelected = (contactOption) => {
-    this.setState({ contactOption })
-  }
-
 }
 export default CreateRecurringBill;
