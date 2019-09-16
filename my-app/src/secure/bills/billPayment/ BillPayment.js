@@ -89,7 +89,7 @@ class BillPayment extends Component {
                           <Label className="radio">
                             <p style={{color:"#006600"}}><Input type="radio" checked={this.state.billType} onClick={this.handleBillType} /> Receivable</p>
                         </Label></Col></Row>
-                    </div> <br />
+                    </div>
                     <AvForm onSubmit={this.handleSubmitValue}>
                         <Row>
                             <Col sm ={3} md ={3} xl={3} lg ={3}>Bill amount:</Col>
