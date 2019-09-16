@@ -40,7 +40,8 @@ class Bills extends Component {
       selectedOption: '',
       searchName: false,
       removeDependents: true,
-      value: ''
+      value: '',
+      showPaymentOptions: false
     };
   }
 
@@ -213,6 +214,13 @@ class Bills extends Component {
     this.setState({ value: '' })
   }
 
+  handleShowPayment = (bill) => { 
+    this.setState({ showPaymentOptions: !this.state.showPaymentOptions, billPayment: bill }); 
+  }
+  handleAddPayment = () => { this.setState({ addPayment: true }); } 
+  handleMarkAsPaid = () => { this.setState({ markPaid: true }); } 
+  handleViewPayment = () => { this.setState({ viewPayment: !this.state.viewPayment }); } 
+
   render() {
     const { bills, createBillRequest, updateBillRequest, id, deleteBillRequest, visible, profileId, updateBill, spinner, labels, categories, contacts, danger } = this.state;
     if (!profileId) {
@@ -231,11 +239,11 @@ class Bills extends Component {
     } else if (deleteBillRequest) {
       return <DeleteBill id={id} pid={profileId} removeDependents={this.state.removeDependents} />
     } else if (this.state.addPayment || this.state.markPaid) {
-      return <BillPayment bill={updateBill} markPaid={this.state.markPaid} profileId={profileId}/>
+      return <BillPayment bill={this.state.billPayment} markPaid={this.state.markPaid} profileId={profileId}/>
     } else if (this.state.viewPayment) {
-      return <ViewPayment bill={updateBill} />
+      return <ViewPayment bill={this.state.billPayment}  profileId={profileId} cancel={this.handleViewPayment} />
     } else {
-      return <div>{this.displayAllBills(visible, bills)}{danger && this.deleteBillModel()}</div>
+      return <div>{this.displayAllBills(visible, bills)}{danger && this.deleteBillModel()}{this.state.showPaymentOptions && this.loadPaymentModel()}</div>
     }
   }
 
@@ -361,6 +369,30 @@ class Bills extends Component {
     return <span className="float-right" style={{marginTop: 4}} >
       {ShowServiceComponet.loadEditRemoveButtons(bill, this.updateBillAction, this.setBillId, this.toggleDanger)}     
     </span>
+  }
+  loadPaymentModel = () => {
+    return <Modal isOpen={this.state.showPaymentOptions} toggle={this.handleShowPayment} style={{ paddingTop: "20%" }} backdrop={true}>
+    <ModalHeader toggle={this.handleShowPayment}>Payments</ModalHeader>
+    <ModalBody>
+      <FormGroup check >
+        <Label check>
+          <Input type="radio" name="radio2" value="true" onChange={this.handleAddPayment} checked={this.state.addPayment} />{' '}
+          Payment
+          </Label> <br />
+        <Label check>
+          <Input type="radio" name="radio2" value="false" onChange={this.handleMarkAsPaid} checked={this.state.markPaid} />{' '}
+          Mark as paid this bill
+          </Label><br />
+        <Label check>
+          <Input type="radio" name="radio2" value="false" onChange={this.handleViewPayment} checked={this.state.viewPayment} />{' '}
+          View payment list
+          </Label>
+      </FormGroup>
+    </ModalBody>
+    <ModalFooter>
+      <Button color="secondary" onClick={this.handleShowPayment}>Cancel</Button>
+    </ModalFooter>
+  </Modal>
   }
 
   //this method calls the delete model

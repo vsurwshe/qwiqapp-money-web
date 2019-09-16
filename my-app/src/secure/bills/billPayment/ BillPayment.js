@@ -1,17 +1,22 @@
 import React, { Component } from 'react';
 import { AvForm, AvField } from 'availity-reactstrap-validation';
-import { FormGroup, Button,  Col, Card, CardBody, CardHeader, Container, Input, Label,Row } from 'reactstrap';
+import { FormGroup, Button,  Col, Card, CardBody, CardHeader, Container, Input, Label, Row, Alert } from 'reactstrap';
 import Bills from '../../bills/Bills';
 import PaymentApi from '../../../services/PaymentApi';
+import Store from '../../../data/Store';
+import Config from '../../../data/Config';
 
 class BillPayment extends Component {
     constructor(props) {
         super(props);
         this.state = {
             bill: props.bill,
-            amount: props.bill.amount,
+            currencies: Store.getCurrencies(),
+            billAmount: props.bill.amount,
+            payAmount: props.markPaid ? props.bill.amount : 0,
+            payDate: props.markPaid ? this.handlePaidDate() : '',
             alertColor: '',
-            content: '',
+            alertMessage: '',
             billType: props.bill.amount > 0
         };
     }
@@ -23,6 +28,33 @@ class BillPayment extends Component {
         }
     }
 
+    handleSubmitValue=async (event, errors, values)=>{
+        if (errors.length === 0) {
+            this.setState({ doubleClick: true });
+            let date = values.date.split("-")[0]+values.date.split("-")[1]+values.date.split("-")[2];
+            let data = {...values, "date": date }
+            await new PaymentApi().addBillPayment(this.handleSuccessCall, this.handleErrorCall, this.props.profileId, this.props.bill.id, data);
+        } else {
+            this.setState({ doubleClick: false });
+        }
+    }
+
+    handleSuccessCall = (response) => {
+        this.setState({ alertColor: "success", alertMessage: "your bill payment is succesfull" });
+        setTimeout(()=>{
+            this.setState({ cancelPayment: true, alertColor:"", alertMessage: "" });
+        }, Config.apiTimeoutMillis)
+
+    }
+    handleErrorCall = (error) => {
+        console.log(error);
+        this.setState({ doubleClick: false });
+    }
+
+    handlePaidDate = () => {
+        let today = new Date()
+        return new Intl.DateTimeFormat('sv-SE', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(today);
+    }
     calculate = () => { this.setState({ calculate: !this.state.calculate }); }
 
     cancelPayment = () => { this.setState({ cancelPayment: true }); }
@@ -32,26 +64,20 @@ class BillPayment extends Component {
     }
 
     render() {
-        const { cancelPayment, amount } = this.state
+        const { cancelPayment, currencies } = this.state
         const { bill } = this.props
-        return cancelPayment ? <Bills /> : <div> {this.loadPayment(bill, amount)} </div>
+        let selectedCurrency = currencies.filter((currency, index)=>{return currency.code === bill.currency})
+        return cancelPayment ? <Bills /> : <div> {this.loadPayment(bill, selectedCurrency[0])} </div>
     }
 
-    handleSubmitValue=async (event, errors, values)=>{
-        if (errors.length === 0) {
-            let date = values.date.split("-")[0]+values.date.split("-")[1]+values.date.split("-")[2];
-            let data = {...values, "date": date }
-            await new PaymentApi().addBillPayment((json)=>{console.log("Result ",json)},(error)=>{console.log("Error ",error)},this.props.profileId,this.props.bill.id,data);
-        }
-    }
-
-    loadPayment = (bill, amount) => {
+    loadPayment = (bill, selectedCurrency) => {
         const name= bill.description ? bill.description : bill.categoryName.name
         let billDate = (bill.billDate +"").slice(0,4)+"-"+ (bill.billDate +"").slice(4,6)+"-"+ (bill.billDate +"").slice(6, 8);
         return <Card className="card-accent-primary">
             <CardHeader> Bill Payment</CardHeader>
             <CardBody>
                 <Container>
+                    {this.state.alertMessage && <Alert color={this.state.alertColor} >{this.state.alertMessage}</Alert>}
                     <div className="control Container">
                         <Row>
                             <Col sm={3}>
@@ -67,7 +93,7 @@ class BillPayment extends Component {
                     <AvForm onSubmit={this.handleSubmitValue}>
                         <Row>
                             <Col sm ={3} md ={3} xl={3} lg ={3}>Bill amount:</Col>
-                            <Col> {bill.currency} &nbsp;{amount} </Col>
+                            <Col> {bill.currency} &nbsp;{this.state.billAmount} </Col>
                         </Row> <br />
                         <Row>
                             <Col sm ={3} md ={3} xl={3} lg ={3}>Bill date:</Col>
@@ -79,12 +105,12 @@ class BillPayment extends Component {
                         </Row> <br /><br />
                         <Row>
                             <Col xs="12" sm="5">
-                            <Label >Bill Pay Amount</Label>
-                            <AvField type="number" name="amount" placeholder="Amount" value={amount} required />
+                            <Label >Bill Pay Amount</Label> &nbsp;({selectedCurrency.symbol})
+                            <AvField type="number" name="amount" placeholder="Amount" value={this.state.payAmount} required />
                             </Col>
                             <Col xs="6" sm="4">
-                            <Label >Bill Date</Label>
-                            <AvField type="date" name="date" required />                            
+                            <Label >Pay Date</Label>
+                            <AvField type="date" name="date" value={this.state.payDate} required />                            
                             </Col>
                             <Col xs="6" sm="3">
                             <Label >Bill Notes</Label>

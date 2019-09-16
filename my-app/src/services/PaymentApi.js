@@ -5,12 +5,13 @@ import LoginApi from "./LoginApi";
 class PaymentApi {
   //This Method Create Bill
   addBillPayment(success, failure, pid, billId,data) {
-    process(success, failure, pid + "/bills/"+ billId+"/payments", "POST", pid, data);
+    process(success, failure, pid + "/bills/"+ billId+"/payments", "POST", pid, data, null, billId);
   }
 
   //This Method Get All Bills
-  getBillPayment(success, failure, pid, billId,value) {
-    Store.getBillPayment() === null || value === "True" ? process(success, failure,  pid + "/bills/"+ billId+"/payments", "GET") : success(Store.getBillPayment());
+  getBillPayment(success, failure, pid, billId, value) {
+    process(success, failure,  pid + "/bills/"+ billId+"/payments", "GET");
+    // Store.getBillPayment() === null || value === "True" ? process(success, failure,  pid + "/bills/"+ billId+"/payments", "GET") : success(Store.getBillPayment());
   }
 
   //This Method Get Bill By ID
@@ -31,16 +32,16 @@ class PaymentApi {
 
 export default PaymentApi;
 
-async function process(success, failure, Uurl, Umethod, profileId, data, reload) {
+async function process(success, failure, Uurl, Umethod, profileId, data, reload, billId) {
   let HTTP = httpCall(Uurl, Umethod);
   let promise;
   try {
     data === null ? promise = await HTTP.request() : promise = await HTTP.request({data});
     if (Umethod === "GET") {
-      Store.saveBillPayment(promise.data);
+      // Store.saveBillPayment(promise.data);
       validResponse(promise, success)
     } else {
-      await new PaymentApi().getBillPayment(success, failure, profileId, "True");
+      await new PaymentApi().getBillPayment(success, failure, profileId, billId, "True");
     }
   }
   //TODO: handle user error   
