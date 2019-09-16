@@ -98,25 +98,25 @@ class Dashboard extends Component {
         {/* Upcoming Bills */}
         <Col xs="12" sm="6" lg="3">
           <Card className="text-white bg-warning">
-            {this.loadBillDivision(this.state.upcomingBills, "Upcoming Bills", '/listBills/Upcoming')}
+            {this.loadBillDivision(this.state.upcomingBills, "Upcoming Bills", '/listBills/upcoming')}
           </Card>
         </Col>
         {/* Overdue Bills */}
         <Col xs="12" sm="6" lg="3">
           <Card className="text-white bg-danger">
-            {this.loadBillDivision(this.state.overdueBills, "OverDue Bills", '/listBills/Overdue')}
+            {this.loadBillDivision(this.state.overdueBills, "OverDue Bills", '/listBills/overdue')}
           </Card>
         </Col>
         {/* Paid Bills */}
         <Col xs="12" sm="6" lg="3">
           <Card className="text-white bg-success">
-            {this.loadBillDivision(this.state.paidBills, "Paid Bills", '/listBills/Paid')}
+            {this.loadBillDivision(this.state.paidBills, "Paid Bills", '/listBills/paid')}
           </Card>
         </Col>
         {/* Unpaid Bills */}
         <Col xs="12" sm="6" lg="3">
           <Card className="text-white bg-info">
-            {this.loadBillDivision(this.state.unpaidBills, "Unpaid Bills", '/listBills/Unpaid')}
+            {this.loadBillDivision(this.state.unpaidBills, "Unpaid Bills", '/listBills/unpaid')}
           </Card>
         </Col>
       </Row>

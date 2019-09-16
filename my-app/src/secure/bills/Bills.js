@@ -81,16 +81,16 @@ class Bills extends Component {
     else {
       if (this.props.match.params.value) {
         switch (this.props.match.params.value) {
-          case "Upcoming":
+          case "upcoming":
             newBills = bills.filter(bill => this.loadDateFormat(bill.dueDate_) >= new Date());
             break;
-          case "Overdue":
+          case "overdue":
             newBills = bills.filter(bill => this.loadDateFormat(bill.dueDate_) < new Date());
             break;
-          case "Paid":
+          case "paid":
             newBills = bills.filter(bill => bill.paid === true);
             break;
-          case "Unpaid":
+          case "unpaid":
             newBills = bills.filter(bill => bill.paid === false);
             break;
           default:

@@ -179,7 +179,7 @@ class CreateBill extends Component {
   }
 
   render() {
-    const { alertColor, content, categories, cancelCreateBill, contacts, billCreated } = this.state;
+    const { alertColor, content, categories, cancelCreateBill, contacts, billCreated} = this.state;
     if (cancelCreateBill) {
       return <Bills />
     } else {
@@ -192,6 +192,7 @@ class CreateBill extends Component {
   }
 
   billFormField = (alertColor, labels, content, categories, contacts) => {
+    const {currencies, billDate, userDueDate, dueDate, moreOptions, doubleClick  } =this.state
     return (
       <div className="animated fadeIn" >
         <Card>
@@ -204,7 +205,7 @@ class CreateBill extends Component {
                   <Col sm={3}>
                     <AvField type="select" id="symbol" name="currency" label="Currency" errorMessage="Select Currency" required>
                       <option value="">Select</option>
-                      {this.state.currencies.map((currencies, key) => {
+                      {currencies.map((currencies, key) => {
                         return <option key={key} value={currencies.code}
                           data={currencies.symbol} symbol={currencies.symbol} >{currencies.symbol}</option>
                       })}
@@ -228,7 +229,7 @@ class CreateBill extends Component {
                     <label>Category</label>
                     <Select options={Data.categories(categories)} styles={Data.singleStyles} placeholder="Select Categories "
                       onChange={this.categorySelected} required /></Col>
-                  <Col><AvField name="billDate" label="Bill Date" value={this.state.billDate} type="date" onChange={(e) => { this.handleBillDate(e) }} errorMessage="Invalid Date" validate={{
+                  <Col><AvField name="billDate" label="Bill Date" value={billDate} type="date" onChange={(e) => { this.handleBillDate(e) }} errorMessage="Invalid Date" validate={{
                     date: { format: 'dd/MM/yyyy' },
                     dateRange: { format: 'YYYY/MM/DD', start: { value: '1900/01/01' }, end: { value: '9999/12/31' } },
                     required: { value: true }
@@ -236,10 +237,10 @@ class CreateBill extends Component {
                 </Row>
                 <Row>
                   <Col>
-                    <AvField name="dueDays" label="Due Days" placeholder="No.of Days" onChange={e => { this.handleDueDate(e) }} value={this.state.userDueDate} type="number" errorMessage="Invalid Days" />
+                    <AvField name="dueDays" label="Due Days" placeholder="No.of Days" onChange={e => { this.handleDueDate(e) }} value={userDueDate} type="number" errorMessage="Invalid Days" />
                   </Col>
                   <Col>
-                    <AvField name="dueDate" label="Due Date" disabled value={this.state.dueDate} type="date" errorMessage="Invalid Date" validate={{ date: { format: 'dd/MM/yyyy' } }} />
+                    <AvField name="dueDate" label="Due Date" disabled value={dueDate} type="date" errorMessage="Invalid Date" validate={{ date: { format: 'dd/MM/yyyy' } }} />
                   </Col>
                 </Row>
                 <Row>
@@ -247,12 +248,12 @@ class CreateBill extends Component {
                     <label>Description/Notes</label>
                     <AvField name="description" type="text" list="colors" placeholder="Ex: Recharge" errorMessage="Invalid Notes" /></Col>
                 </Row>
-                <Button className="m-0 p-0" color="link" onClick={() => this.toggleCustom()} aria-expanded={this.state.moreOptions} aria-controls="exampleAccordion1">
+                <Button className="m-0 p-0" color="link" onClick={() => this.toggleCustom()} aria-expanded={moreOptions} aria-controls="exampleAccordion1">
                   More Options
                 </Button>
                 {this.loadMoreOptions(labels, contacts)} <br />     <br />
                 <FormGroup >
-                  <Button color="success" disabled={this.state.doubleClick}> Save  </Button> &nbsp;&nbsp;
+                  <Button color="success" disabled={doubleClick}> Save  </Button> &nbsp;&nbsp;
                 <Button type="button" onClick={this.cancelCreateBill}>Cancel</Button>
                 </FormGroup>
               </AvForm>
