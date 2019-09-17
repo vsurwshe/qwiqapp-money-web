@@ -19,7 +19,7 @@ class BillApi {
   }
 
   //This Method Update Bill 
-  updateBill(success, failure, data, profileId, billId) {
+  updateBill(success, failure, profileId, billId,  data) {
     process(success, failure, profileId + "/bills/" + billId, "PUT", profileId, data);
   }
 

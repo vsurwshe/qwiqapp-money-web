@@ -65,7 +65,9 @@ class UpdateBill extends Component {
     if (errors.length === 0) {
       let billDate = values.billDate.split("-")[0] + values.billDate.split("-")[1] + values.billDate.split("-")[2];
       let newData = {
-        ...values, "billDate": billDate, "categoryId": categoryOptionUpdate ? categoryOption.value : categoryOption,
+        ...values, 
+        "billDate": billDate, 
+        "categoryId": categoryOptionUpdate ? categoryOption.value : categoryOption,
         "contactId": contactOptionUpdate ? contactOption.value : contactOption,
         "amount": values.label + values.amount,
         "notificationEnabled": this.state.checked,

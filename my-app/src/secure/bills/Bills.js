@@ -1,9 +1,8 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import { Card, CardBody, Alert, Table, Button, FormGroup, Label, Input } from "reactstrap";
-import Loader from 'react-loader-spinner'
-import UpdateBill from "./UpdateBill";
-import CreateBill from "./CreateBill";
+import Loader from 'react-loader-spinner';
+import BillForm from "./BillForm";
 import BillApi from "../../services/BillApi";
 import Store from "../../data/Store";
 import CategoryApi from "../../services/CategoryApi";
@@ -223,9 +222,9 @@ class Bills extends Component {
         // If bills not there, it will show Empty message
       (bills.length === 0 ? this.emptyBills() : "")}</div>
     } else if (createBillRequest) {
-      return <CreateBill pid={profileId} label={labels} categories={categories} contacts={contacts} />
+      return <BillForm pid={profileId} labels={labels} categories={categories} contacts={contacts} />
     } else if (updateBillRequest) {
-      return <UpdateBill pid={profileId} bill={updateBill} lables={labels} categories={categories} contacts={contacts} />
+      return <BillForm pid={profileId} bill={updateBill} labels={labels} categories={categories} contacts={contacts} />
     } else if (deleteBillRequest) {
       return <DeleteBill id={id} pid={profileId} removeDependents={this.state.removeDependents} />
     } else {
