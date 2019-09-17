@@ -2,12 +2,15 @@ import React, { Component } from 'react';
 import { Card, CardHeader, CardBody, Button, Table } from 'reactstrap';
 import PaymentApi from '../../../services/PaymentApi';
 import Store from '../../../data/Store';
+import UpdateBillPayment from './UpdateBillPayment';
+import DeleteBillPayment from './DeleteBillPayment';
+import BillApi from '../../../services/BillApi';
 
 class ViewPayment extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      payments : [],
+      payments: [],
       bill: this.props.bill,
       currencies: Store.getCurrencies(),
       dropdownOpen: [],
@@ -17,15 +20,15 @@ class ViewPayment extends Component {
     };
   }
 
-  componentDidMount=()=>{
-   this.getPayments();
+  componentDidMount = () => {
+    this.getPayments();
   }
 
-  getPayments=()=>{
-    new PaymentApi().getBillPayment(this.paymentSuccessCall, this.errorCall, this.props.profileId, this.state.bill.id)
+  getPayments = () => {
+    new PaymentApi().getBillPayments(this.paymentSuccessCall, this.errorCall, this.props.profileId, this.state.bill.id)
   }
 
-  paymentSuccessCall= async (payments)=>{
+  paymentSuccessCall = async (payments) => {
     await this.setState({ payments });
     this.loadCollapse();
   }
@@ -40,8 +43,8 @@ class ViewPayment extends Component {
     });
   }
 
-  errorCall=(error)=>{
-    console.error("Error : ",error);
+  errorCall = (error) => {
+    console.error("Error : ", error);
   }
 
   hoverAccordion = (keyIndex) => {
@@ -50,62 +53,93 @@ class ViewPayment extends Component {
     this.setState({ hoverAccord: state });
   }
 
-  onHover = (e, keyIndex) => {
-    this.setState({ onHover: true });
-    this.hoverAccordion(keyIndex)
+  handleUpdateBillPayment = (updatePayment, currency) => {
+    this.setState({ updateBillPayment: true, updatePayment, currency });
   }
 
-  onHoverOff = (e, keyIndex) => {
-    this.setState({ onHover: false });
-    this.hoverAccordion(keyIndex)
+  handleDeleteBillPayment = (deleteTxId) => {
+    this.setState({ deleteBillPayment: true, deleteTxId });
   }
 
   render() {
-    const {payments, bill, currencies} = this.state;
+    const { payments, bill, currencies } = this.state;
     let selectedCurrency;
-    if( payments.length === 0 ){
+    if (payments.length === 0) {
       return this.noPaymentsAdded();
+    } else if (this.state.updateBillPayment) {
+      return <UpdateBillPayment profileId={this.props.profileId} bill={this.state.bill} updatePayment={this.state.updatePayment} currency={this.state.currency}
+        paymentDate={this.dateFormat} />
+    } else if (this.state.deleteBillPayment) {
+      return <DeleteBillPayment profileId={this.props.profileId} bill={this.state.bill} taxId={this.state.deleteTxId} />
     } else {
-      selectedCurrency = currencies.filter((currency, index)=>{return currency.code === bill.currency})
+      selectedCurrency = currencies.filter((currency, index) => { return currency.code === bill.currency })
       return this.loadBillPayments(payments, selectedCurrency);
     }
   }
 
   loadBillPayments = (payments, selectedCurrency) => {
-    // return <Container>
+    let totalAmount = 0, paymentAmount = 0, billAmount = 0;
+    billAmount = this.state.bill.amount > 0 ? this.state.bill.amount : -(this.state.bill.amount)
+    const paymentStyle = {
+      fontSize: 15,
+      paddingLeft: 20
+    }
     return <Card>
-        {this.loadHeader("Bill Payments")}
-        <CardBody>
-          <Table style={{ bordercolor: "#DEE9F2" }}>
-            <thead className="table-header-color" >
-              <tr>
-                <th> Bill Id </th>
-                <th>Bill Amount</th>
-                <th>Paid Amount</th>
-                <th>Notes</th>
-              </tr>
-            </thead>
-            <tbody>
-              {payments.map((payment, index)=>{
-                return this.loadSinglePayment(payment, index, selectedCurrency)
-              })}
-            </tbody>
-          </Table>
-          </CardBody>
-        </Card>
-      // </Container>
+      {this.loadHeader("Bill Payments")}
+
+      <Table style={{ bordercolor: "#DEE9F2" }}>
+        <thead className="table-header-color" >
+          <tr>
+            <th>S.No </th>
+            <th>Description/Notes</th>
+            <th>Bill Date</th>
+            <th>Paid Amount</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {payments.map((payment, key) => {
+            paymentAmount = payment.amount > 0 ? payment.amount : -(payment.amount)
+            totalAmount = totalAmount + paymentAmount;
+            return this.loadSinglePayment(payment, selectedCurrency, key, paymentAmount)
+          })}
+          <tr>
+            <td></td>
+            <td></td>
+            <td>TOTAL </td>
+            <td>{selectedCurrency[0].symbol} {totalAmount}</td>
+          </tr>
+        </tbody>
+      </Table>
+      <br />
+      {totalAmount === billAmount ? <><b style={{ color: "green" }}>Congratulations! This bill is paid.</b></> :
+        <b style={paymentStyle}>{selectedCurrency[0].symbol}{billAmount - totalAmount} to pay on total due of {selectedCurrency[0].symbol}{billAmount}.</b>}
+    </Card>
   }
 
-  loadSinglePayment = (payment, index, selectedCurrency) => {
-    return <tr onPointerEnter={(e) => this.onHover(e, index)} onPointerLeave={(e) => this.onHoverOff(e, index)} width={50} key={index}>
-      <td>{this.state.bill.id}</td>
-      <td>{selectedCurrency[0].symbol} {this.state.bill.amount}</td>
-      <td> {selectedCurrency[0].symbol}{payment.amount} </td>
-      <td> {payment.notes} </td>
+  callBillsApi = async () => {
+    await new BillApi().getBills(() => { console.log("successcall") }, () => { console.log("errorCall") }, this.props.profileId, "True")
+  }
+
+  loadSinglePayment = (payment, selectedCurrency, key, paymentAmount) => {
+    return <tr width={50} key={key}>
+      <td>{key + 1}</td>
+      <td>{payment.notes}</td>
+      <td>{this.dateFormat(payment.date)}</td>
+      <td> {selectedCurrency[0].symbol} {paymentAmount} </td>
+      <td><Button color="primary" onClick={() => this.handleUpdateBillPayment(payment, selectedCurrency[0].symbol)}>Update</Button>
+        <Button color="danger" onClick={() => this.handleDeleteBillPayment(payment.txId)}>Delete</Button></td>
     </tr>
   }
 
-  noPaymentsAdded = () =>{
+  dateFormat = (userDate) => {
+    let date = "" + userDate
+    let dateString = date.substring(0, 4) + "-" + date.substring(4, 6) + "-" + date.substring(6, 8)
+    const formatDate = new Intl.DateTimeFormat('en-gb', { month: 'short', weekday: 'short', day: '2-digit' }).format(new Date(dateString));
+    return formatDate;
+  }
+
+  noPaymentsAdded = () => {
     return <div>
       <Card>
         {this.loadHeader("Bill Payments")}
@@ -118,10 +152,10 @@ class ViewPayment extends Component {
     </div>
   }
 
-  loadHeader = (headerMessage) =>{
+  loadHeader = (headerMessage) => {
     return <CardHeader>
-        <strong>{headerMessage}</strong>
-        <Button color="success" className="float-right" onClick={this.props.cancel}> Goto Bills </Button>
+      <strong>{headerMessage}</strong>
+      <Button color="success" className="float-right" onClick={this.props.cancel}> Goto Bills </Button>
     </CardHeader>
   }
 }

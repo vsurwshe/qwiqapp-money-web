@@ -81,7 +81,7 @@ class Bills extends Component {
     let newBills;
     if (bills.length === 0) {
       this.setState({ bills: [] })
-    } 
+    }
     else {
       if (this.props.match.params.value) {
         switch (this.props.match.params.value) {
@@ -214,24 +214,25 @@ class Bills extends Component {
     this.setState({ value: '' })
   }
 
-  handleShowPayment = (bill) => { 
-    this.setState({ showPaymentOptions: !this.state.showPaymentOptions, billPayment: bill }); 
+  handleShowPayment = (bill) => {
+    this.setState({ showPaymentOptions: !this.state.showPaymentOptions, billPayment: bill });
   }
-  handleAddPayment = () => { this.setState({ addPayment: true }); } 
-  handleMarkAsPaid = () => { this.setState({ markPaid: true }); } 
-  handleViewPayment = () => { this.setState({ viewPayment: !this.state.viewPayment }); } 
+
+  handleAddPayment = () => { this.setState({ addPayment: true }); }
+  handleMarkAsPaid = () => { this.setState({ markPaid: true }); }
+  handleViewPayment = () => { this.setState({ viewPayment: !this.state.viewPayment }); }
 
   render() {
     const { bills, createBillRequest, updateBillRequest, id, deleteBillRequest, visible, profileId, updateBill, spinner, labels, categories, contacts, danger } = this.state;
     if (!profileId) {
       return <ProfileEmptyMessage />
     } else if (bills.length === 0 && !createBillRequest) {  // Checks for bills not there and no bill create Request, then executes
-      return <div> 
-      {/*  If spinner is true and bills are there, it shows the loader function, until bills are loaded */}
-      {(spinner && bills.length !== 0) ? <>{visible && <Alert isOpen={visible} color={this.state.color}>{this.state.content}</Alert>} {this.loadLoader()} </>
-        : 
-        // If bills not there, it will show Empty message
-      (bills.length === 0 ? this.emptyBills() : "")}</div>
+      return <div>
+        {/*  If spinner is true and bills are there, it shows the loader function, until bills are loaded */}
+        {(spinner && bills.length !== 0) ? <>{visible && <Alert isOpen={visible} color={this.state.color}>{this.state.content}</Alert>} {this.loadLoader()} </>
+          :
+          // If bills not there, it will show Empty message
+          (bills.length === 0 ? this.emptyBills() : "")}</div>
     } else if (createBillRequest) {
       return <BillForm pid={profileId} labels={labels} categories={categories} contacts={contacts} />
     } else if (updateBillRequest) {
@@ -239,9 +240,9 @@ class Bills extends Component {
     } else if (deleteBillRequest) {
       return <DeleteBill id={id} pid={profileId} removeDependents={this.state.removeDependents} />
     } else if (this.state.addPayment || this.state.markPaid) {
-      return <BillPayment bill={this.state.billPayment} markPaid={this.state.markPaid} profileId={profileId}/>
+      return <BillPayment bill={this.state.billPayment} markPaid={this.state.markPaid} profileId={profileId} />
     } else if (this.state.viewPayment) {
-      return <ViewPayment bill={this.state.billPayment}  profileId={profileId} cancel={this.handleViewPayment} />
+      return <ViewPayment bill={this.state.billPayment} profileId={profileId} cancel={this.handleViewPayment} />
     } else {
       return <div>{this.displayAllBills(visible, bills)}{danger && this.deleteBillModel()}{this.state.showPaymentOptions && this.loadPaymentModel()}</div>
     }
@@ -370,29 +371,30 @@ class Bills extends Component {
       {ShowServiceComponet.loadEditRemoveButtons(bill, this.updateBillAction, this.setBillId, this.toggleDanger)}     
     </span>
   }
+
   loadPaymentModel = () => {
     return <Modal isOpen={this.state.showPaymentOptions} toggle={this.handleShowPayment} style={{ paddingTop: "20%" }} backdrop={true}>
-    <ModalHeader toggle={this.handleShowPayment}>Payments</ModalHeader>
-    <ModalBody>
-      <FormGroup check >
-        <Label check>
-          <Input type="radio" name="radio2" value="true" onChange={this.handleAddPayment} checked={this.state.addPayment} />{' '}
-          Payment
+      <ModalHeader toggle={this.handleShowPayment}>Payments</ModalHeader>
+      <ModalBody>
+        <FormGroup check >
+          <Label check>
+            <Input type="radio" name="radio2" value="true" onChange={this.handleAddPayment} checked={this.state.addPayment} />{' '}
+            Add Payment
           </Label> <br />
-        <Label check>
-          <Input type="radio" name="radio2" value="false" onChange={this.handleMarkAsPaid} checked={this.state.markPaid} />{' '}
-          Mark as paid this bill
+          <Label check>
+            <Input type="radio" name="radio2" value="false" onChange={this.handleMarkAsPaid} checked={this.state.markPaid} />{' '}
+            Mark as paid
           </Label><br />
-        <Label check>
-          <Input type="radio" name="radio2" value="false" onChange={this.handleViewPayment} checked={this.state.viewPayment} />{' '}
-          View payment list
+          <Label check>
+            <Input type="radio" name="radio2" value="false" onChange={this.handleViewPayment} checked={this.state.viewPayment} />{' '}
+            View payment list
           </Label>
-      </FormGroup>
-    </ModalBody>
-    <ModalFooter>
-      <Button color="secondary" onClick={this.handleShowPayment}>Cancel</Button>
-    </ModalFooter>
-  </Modal>
+        </FormGroup>
+      </ModalBody>
+      <ModalFooter>
+        <Button color="secondary" onClick={this.handleShowPayment}>Cancel</Button>
+      </ModalFooter>
+    </Modal>
   }
 
   //this method calls the delete model
