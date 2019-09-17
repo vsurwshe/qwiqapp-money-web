@@ -28,9 +28,9 @@ class BillForm extends Component {
       categoryOptionUpdate: false,
       labelOptionUpdate: false,
       contactOptionUpdate: false,
-      notifyDate: '',
+      notifyDate: props.bill ? this.loadDateFormat(props.bill.notifyDate_): '',
       dueDays: props.bill ? props.bill.dueDays : 0 ,
-      dueDate :  props.bill ? this.loadDateFormat(props.bill.dueDate_): '',
+      dueDate : props.bill ? this.loadDateFormat(props.bill.dueDate_): '',
       billDate: props.bill ? this.loadDateFormat(props.bill.billDate): '',
       amount:  props.bill ? this.setBillAmount(props.bill.amount) : 0,
       contactOption: props.bill ? props.bill.contactId : '',
@@ -42,7 +42,6 @@ class BillForm extends Component {
       taxAmount: props.bill ? this.setBillAmount(props.bill.taxAmount_): 0,
       notifyDays: props.bill ?props.bill.notifyDays :0 ,
       billType: props.bill ? (props.bill.amount < 0 ? '-' : '+') : '',
-      
     };
   }
 
@@ -64,39 +63,30 @@ class BillForm extends Component {
 
   //this method handle form submit values and errors
   handleSubmitValue = (event, errors, values) => {
-    const { labelOption, categoryOption, contactOption ,categoryOptionUpdate, labelOptionUpdate, contactOptionUpdate } = this.state
+    const { labelOption, categoryOption, contactOption ,labelOptionUpdate, contactOptionUpdate } = this.state
     if (categoryOption === null) {
       this.callAlertTimer("warning", "Please Select Category...");
     } else if (errors.length === 0) {
       let billDateValue;
       billDateValue = values.billDate.split("-")[0] + values.billDate.split("-")[1] + values.billDate.split("-")[2];
-    
+      let custData={ ...values,
+        "billDate": billDateValue,
+        "categoryId": categoryOption.value,
+        "contactId": contactOptionUpdate ? contactOption.value : (contactOption ? contactOption.value: ''),
+        "amount": values.label + values.amount,
+        "notificationEnabled": this.state.checked,
+        "taxPercent": values.taxPercent ? values.taxPercent : 0,
+        "labelIds": labelOption === null || labelOption === [] ? null :
+             (labelOptionUpdate || this.props.bill === undefined ? labelOption.map(opt => { return opt.value }) : labelOption),
+      }
       if(this.props.bill){
-        let billDate = values.billDate.split("-")[0] + values.billDate.split("-")[1] + values.billDate.split("-")[2];
         let newData = {
-          ...values, 
-          "billDate": billDate, 
-          "categoryId": categoryOptionUpdate ? categoryOption.value : categoryOption,
-          "contactId": contactOptionUpdate ? contactOption.value : contactOption,
-          "amount": values.label + values.amount,
-          "notificationEnabled": this.state.checked,
-          "taxPercent": values.taxPercent === "" ? 0 : values.taxPercent,
-          "labelIds": labelOption === null || labelOption === [] ? null : (labelOptionUpdate ? labelOption.map(opt => { return opt.value }) : labelOption),
+          ...custData, 
           "version": this.props.bill.version
         }
-         this.handleUpdateBill(event, newData);
-      }else{
-        let newData = {
-          ...values,
-          "taxPercent": values.taxPercent ? values.taxPercent : 0,
-          "amount": values.label + values.amount,
-          "billDate": billDateValue,
-          "categoryId": categoryOption.value,
-          "contactId": contactOption ? contactOption.value: '',
-          "notificationEnabled": this.state.checked,
-          "labelIds": labelOption === null ? [] : labelOption.map(opt => { return opt.value }),
-        }
-         this.handleCreateBillPost(event, newData);
+        this.handleUpdateBill(event, newData);
+      } else {
+        this.handleCreateBillPost(event, custData);
       }
     }
   }
@@ -201,7 +191,6 @@ class BillForm extends Component {
   }
 
   contactSelected = (contactOption) => {
-    console.log(contactOption);
     this.props.bill ? this.setState({ contactOption, contactOptionUpdate: true }) : this.setState({ contactOption });
   }
 
@@ -244,7 +233,6 @@ class BillForm extends Component {
     }
     let headerMessage = this.props.bill ? "Update Bill " : "Create Bill"
      return this.loadBillForm(FormData,alertColor,content,headerMessage)
-   
   }
 
   loadBillForm =(formData,alertColor,content,headerMessage)=>{
@@ -310,7 +298,7 @@ class BillForm extends Component {
         </Row> <br />
         {this.state.checked &&
           <Row>
-            <Col><AvField name="notifyDays" label="Notify Days" placeholder="Ex: 2" type="number" onChange={(e) => { this.handleDate(e) }} errorMessage="Invalid notify-days" /></Col>
+            <Col><AvField name="notifyDays" label="Notify Days" value={this.state.notifyDays} placeholder="Ex: 2" type="number" onChange={(e) => { this.handleDate(e) }} errorMessage="Invalid notify-days" /></Col>
             <Col><AvField name="notifyDate" label="notify Date" disabled value={this.state.notifyDate} type="date" errorMessage="Invalid Date" validate={{ date: { format: 'dd/MM/yyyy' } }} /></Col>
           </Row>
         }
