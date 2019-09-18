@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { AvForm, AvField } from 'availity-reactstrap-validation';
-import { FormGroup, Button, Col, Card, CardBody, CardHeader, Container, Input, Label, Row, Alert } from 'reactstrap';
+import { FormGroup, Button, Col, Card, CardBody, CardHeader, Container, Row, Alert } from 'reactstrap';
 import Bills from '../../bills/Bills';
 import PaymentApi from '../../../services/PaymentApi';
 import Store from '../../../data/Store';
@@ -17,7 +17,7 @@ class BillPayment extends Component {
             payDate: props.markPaid ? this.handlePaidDate() : '',
             alertColor: '',
             alertMessage: '',
-            billType: props.bill.amount > 0
+            billType: props.bill.amount > 0,
         };
     }
 
@@ -32,8 +32,7 @@ class BillPayment extends Component {
         if (errors.length === 0) {
             this.setState({ doubleClick: true });
             let date = values.date.split("-")[0] + values.date.split("-")[1] + values.date.split("-")[2];
-            let amount = this.state.billType ? values.amount : -(values.amount)
-            let data = { ...values, "date": date, "amount": amount }
+            let data = { ...values, "date": date, "amount": this.props.bill.amount < 0 ? -values.amount : values.amount }
             await new PaymentApi().addBillPayment(this.handleSuccessCall, this.handleErrorCall, this.props.profileId, this.props.bill.id, data);
         } else {
             this.setState({ doubleClick: false });
@@ -80,54 +79,70 @@ class BillPayment extends Component {
             <CardBody>
                 <Container>
                     {this.state.alertMessage && <Alert color={this.state.alertColor} >{this.state.alertMessage}</Alert>}
-                    <div className="control Container">
                         <Row>
-                            <Col sm={3}>
-                                <Label>Bill Type</Label>
-                            </Col>
-                            <Col sm={5}><Label className="radio">
-                                <p style={{ color: "#cc0000" }}><Input type="radio" checked={!this.state.billType} onChange={this.handleBillType} /> Paid</p>
-                            </Label> &nbsp; &nbsp; &nbsp; &nbsp;
-                          <Label className="radio">
-                                    <p style={{ color: "#006600" }}><Input type="radio" checked={this.state.billType} onChange={this.handleBillType} /> Receivable</p>
-                                </Label></Col></Row>
-                    </div>
-                    <AvForm onSubmit={this.handleSubmitValue}>
-                        <Row>
-                            <Col sm={3} md={3} xl={3} lg={3}>Bill amount:</Col>
-                            <Col> {bill.currency} &nbsp;{bill.amount > 0 ? bill.amount : -(bill.amount)} </Col>
+                            <Col sm={3} md={3} xl={3} lg={3}>Bill Amount:</Col>
+                            <Col> {selectedCurrency.symbol} &nbsp;{bill.amount > 0 ? bill.amount : -(bill.amount)} </Col>
                         </Row> <br />
                         <Row>
-                            <Col sm={3} md={3} xl={3} lg={3}>Bill date:</Col>
+                            <Col sm={3} md={3} xl={3} lg={3}>Bill Date:</Col>
                             <Col>{billDate}</Col>
                         </Row> <br />
                         <Row>
-                            <Col sm={3} md={3} xl={3} lg={3}>notes / description: </Col>
+                            <Col sm={3} md={3} xl={3} lg={3}>Bill Notes / Description: </Col>
                             <Col>{name}</Col>
-                        </Row> <br /><br />
-                        <Row>
-                            <Col xs="12" sm="5">
-                                <Label >Bill Pay Amount</Label> &nbsp;({selectedCurrency.symbol})
-                            <AvField type="number" name="amount" placeholder="Amount" value={this.state.payAmount > 0 ? this.state.payAmount : -(this.state.payAmount)} required />
-                            </Col>
-                            <Col xs="6" sm="4">
-                                <Label >Pay Date</Label>
-                                <AvField type="date" name="date" value={this.state.payDate} required />
-                            </Col>
-                            <Col xs="6" sm="3">
-                                <Label >Bill Notes</Label>
-                                <AvField type="text" name="notes" placeholder=" Bill payment discriptions" />
-                            </Col>
-                        </Row>
-                        <FormGroup >
-                            <center>
-                                <Button color="success" disabled={this.state.doubleClick}> Save  </Button> &nbsp;&nbsp;
-                            <Button type="button" onClick={this.cancelPayment}>Cancel</Button></center>
-                        </FormGroup>
-                    </AvForm>
+                        </Row> <br />
+                        {bill.paid ? this.loadPaidMessage() : this.loadBillPaymentForm(selectedCurrency, bill)}
+                        
                 </Container>
             </CardBody>
         </Card>
+    }
+
+    loadPaidMessage=()=>{
+        return <>
+         <br />
+         <br />
+        <h3> Congratulations! This bill is paid.</h3> <br/>
+        <Button type="button" onClick={this.cancelPayment}>Cancel</Button>
+        </>
+    }
+
+    loadBillPaymentForm =(selectedCurrency,bill)=>{
+        return <>
+        <AvForm onSubmit={this.handleSubmitValue}>
+                        <Row>
+                            <Col xs="12" sm="5">
+                                <AvField type="number" name="amount" label={`Payment Amount (${selectedCurrency.symbol})`} placeholder="Amount" value={this.calculateRemAmt(bill.amount, this.props.paidAmount)} errorMessage="Enter payment amount" required />
+                            </Col>
+                            <Col xs="6" sm="4">
+                                <AvField type="date" name="date" label="Payment Date" value={this.state.payDate} errorMessage="Select payment date" required />
+                            </Col>
+                            <Col xs="6" sm="3" >
+                                <AvField type="select" name="type" label="Payment Type" errorMessage="Select type of payment" required>
+                                    <option value="">Select type of payment</option>
+                                    <option value="Paid">Paid</option>
+                                    <option value="Received">Received</option>
+                                </AvField>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col>
+                                <AvField type="textarea" name="notes" label="Payment Notes / Description" placeholder="Payment description" />
+                            </Col>
+                        </Row>
+                        <FormGroup >
+                                <Button color="success" disabled={this.state.doubleClick}> Save  </Button> &nbsp;&nbsp;
+                                <Button type="button" onClick={this.cancelPayment}>Cancel</Button>
+                        </FormGroup>
+                    </AvForm>
+        </>
+    }
+
+    calculateRemAmt = (billAmount, paidAmount) =>{
+       if(billAmount < 0){
+           billAmount = -(billAmount)
+       }
+       return billAmount - paidAmount;
     }
 }
 

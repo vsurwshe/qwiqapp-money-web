@@ -82,11 +82,10 @@ class ViewPayment extends Component {
     billAmount = this.state.bill.amount > 0 ? this.state.bill.amount : -(this.state.bill.amount)
     const paymentStyle = {
       fontSize: 15,
-      paddingLeft: 20
+      paddingLeft: 30
     }
     return <Card>
       {this.loadHeader("Bill Payments")}
-
       <Table style={{ bordercolor: "#DEE9F2" }}>
         <thead className="table-header-color" >
           <tr>
@@ -112,13 +111,13 @@ class ViewPayment extends Component {
         </tbody>
       </Table>
       <br />
-      {totalAmount === billAmount ? <><b style={{ color: "green" }}>Congratulations! This bill is paid.</b></> :
-        <b style={paymentStyle}>{selectedCurrency[0].symbol}{billAmount - totalAmount} to pay on total due of {selectedCurrency[0].symbol}{billAmount}.</b>}
+      {totalAmount >= billAmount ? <center style={{ color: "green" }}>Congratulations! This bill is paid.{this.callBillsApi()}</center> :
+        <b style={paymentStyle}> * {selectedCurrency[0].symbol}{billAmount - totalAmount} to pay on total due of {selectedCurrency[0].symbol}{billAmount}.</b>}
     </Card>
   }
 
-  callBillsApi = async () => {
-    await new BillApi().getBills(() => { console.log("successcall") }, () => { console.log("errorCall") }, this.props.profileId, "True")
+  callBillsApi = () => {
+    new BillApi().getBills(() => { console.log("successcall") }, () => { console.log("errorCall") }, this.props.profileId, "True")
   }
 
   loadSinglePayment = (payment, selectedCurrency, key, paymentAmount) => {

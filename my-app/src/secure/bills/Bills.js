@@ -19,6 +19,7 @@ import ViewPayment from "./billPayment/ViewPayment";
 import PaymentApi from "../../services/PaymentApi";
 
 class Bills extends Component {
+  
   constructor(props) {
     super(props);
     this.state = {
@@ -31,9 +32,6 @@ class Bills extends Component {
       updateBillRequest: false,
       deleteBillRequest: false,
       visible: props.visible,
-      // dropdownOpen: [],
-      // hoverAccord: [],
-      // accordion: [],
       profileId: "",
       danger: false,
       onHover: false,
@@ -43,10 +41,11 @@ class Bills extends Component {
       removeDependents: true,
       value: '',
       showPaymentOptions: false,
-      billPayments: []
+      billPayments: [],
+      paidAmount :0
     };
   }
-
+ 
   componentDidMount = () => {
     this.setProfileId();
   }
@@ -112,7 +111,29 @@ class Bills extends Component {
       this.loadCollapse();
     }
   }
-  
+
+  getBillPayments = async () => {
+    let previousPayments = [];
+    this.state.bills.map(async (bill, key) => {
+      this.getPayments(bill.id, previousPayments)
+    })
+  }
+
+  getPayments = async (billId, previousPayments) => {
+    await new PaymentApi().getBillPayments((payments) => {
+      let newRespData = {
+        payments: payments,
+        billId: billId
+      }
+      this.successCallPayments(newRespData, previousPayments)
+    }, err => { console.log("error") }, this.state.profileId, billId)
+  }
+
+  successCallPayments = async (payments, previousPayments) => {
+    previousPayments.push(payments)
+    return await this.setState({ billPayments: previousPayments })
+  }
+
   // category name color append to bills
   billsWithcategoryNameColor = (bills) => {
     const prevState = bills;
@@ -195,6 +216,10 @@ class Bills extends Component {
   }
 
   handleShowPayment = (bill) => {
+    let lastPaid = this.calculateLastPaid(bill.id);
+    if(lastPaid){
+      this.setState({ showPaymentOptions: !this.state.showPaymentOptions, billPayment: bill, paidAmount : lastPaid.paidAmount });
+    }
     this.setState({ showPaymentOptions: !this.state.showPaymentOptions, billPayment: bill });
   }
 
@@ -206,9 +231,17 @@ class Bills extends Component {
     if (this.state.billPayments.length > 0) {
       let filteredBillPayment = this.state.billPayments.filter(billPayment => billPayment.billId === billId);
       if (filteredBillPayment !== undefined && filteredBillPayment.length && filteredBillPayment[0].payments.length) {
+        let paidAmount=0;
+        filteredBillPayment[0].payments.forEach((payment)=>{
+          if(payment.amount < 0 ){
+            payment.amount= -(payment.amount)
+          }
+          paidAmount += payment.amount;
+        })
         let lastPaid = {
-          date: filteredBillPayment[0].payments.sort()[0].date ,
-          payment: filteredBillPayment[0].payments.sort()[0].amount 
+          date: filteredBillPayment[0].payments.sort()[0].date,
+          payment: filteredBillPayment[0].payments.sort()[0].amount,
+          paidAmount : paidAmount
         }
         return lastPaid;
       }
@@ -216,7 +249,7 @@ class Bills extends Component {
   }
 
   render() {
-    const { bills, createBillRequest, updateBillRequest, id, deleteBillRequest, visible, profileId, updateBill, spinner, labels, categories, contacts, danger } = this.state;
+    const { bills, createBillRequest, updateBillRequest, id, deleteBillRequest, visible, profileId, updateBill, spinner, labels, categories, contacts, danger, paidAmount, billPayment, markPaid } = this.state;
     if (!profileId) {
       return <ProfileEmptyMessage />
     } else if (bills.length === 0 && !createBillRequest) {  // Checks for bills not there and no bill create Request, then executes
@@ -233,11 +266,11 @@ class Bills extends Component {
     } else if (deleteBillRequest) {
       return <DeleteBill id={id} pid={profileId} removeDependents={this.state.removeDependents} />
     } else if (this.state.addPayment || this.state.markPaid) {
-      return <BillPayment bill={this.state.billPayment} markPaid={this.state.markPaid} profileId={profileId} />
+      return <BillPayment bill={billPayment} markPaid={markPaid} paidAmount={paidAmount} profileId={profileId} />
     } else if (this.state.viewPayment) {
       return <ViewPayment bill={this.state.billPayment} profileId={profileId} cancel={this.handleViewPayment} />
     } else {
-      return <div>{this.displayAllBills(visible, bills)}{danger && this.deleteBillModel()}{this.state.showPaymentOptions && this.loadPaymentModel()}</div>
+      return <div>{this.displayAllBills(visible, bills)}{danger && this.deleteBillModel()}{this.state.showPaymentOptions && this.loadPaymentModel(bills)}</div>
     }
   }
 
@@ -401,11 +434,11 @@ class Bills extends Component {
     return <>
       <FormGroup check >
         <Label check>
-          <Input type="radio" name="radio2" value="true" onChange={this.handleRemoveDependents} checked={this.state.removeDependents === true} />{' '}
+          <Input type="radio" name="radio2" value="true" onChange={this.handleRemoveDependents} checked={this.state.removeDependents === true} />
           Delete this Bill along with the Recurring bills associated with it ?
           </Label>
         <Label check>
-          <Input type="radio" name="radio2" value="false" onChange={this.handleRemoveDependents} checked={this.state.removeDependents === false} />{' '}
+          <Input type="radio" name="radio2" value="false" onChange={this.handleRemoveDependents} checked={this.state.removeDependents === false} />
           Delete this Bill without deleting the associated Recurring bills ?
           </Label>
       </FormGroup>

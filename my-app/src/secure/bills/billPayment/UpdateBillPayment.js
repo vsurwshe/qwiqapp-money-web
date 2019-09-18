@@ -19,6 +19,8 @@ class UpdateBillPayment extends Component {
             let date = values.date.split("-")[0] + values.date.split("-")[1] + values.date.split("-")[2];
             let amount = this.state.billType ? values.amount : -(values.amount)
             let data = { ...values, "date": date, "amount": amount }
+            console.log(data)
+            console.log(this.props.updatePayment.txId)
             await new PaymentApi().updateBillPayment(this.handleSuccessCall, this.handleErrorCall, this.props.profileId, this.props.bill.id, this.props.updatePayment.txId, data);
         } else {
             this.setState({ doubleClick: false });

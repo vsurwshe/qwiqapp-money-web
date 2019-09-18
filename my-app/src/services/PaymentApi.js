@@ -35,7 +35,7 @@ async function process(success, failure, Uurl, Umethod, profileId, data, reload,
   }
   //TODO: handle user error   
   catch (err) {
-    handleAccessTokenError(profileId, err, failure, Uurl, Umethod, data, success, reload,billId);
+    handleAccessTokenError(profileId, err, failure, Uurl, Umethod, data, success, reload, billId);
   }
 }
 
