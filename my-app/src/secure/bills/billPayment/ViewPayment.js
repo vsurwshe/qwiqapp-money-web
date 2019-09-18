@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Card, CardHeader, CardBody, Button, Table } from 'reactstrap';
-import PaymentApi from '../../../services/PaymentApi';
 import Store from '../../../data/Store';
 import UpdateBillPayment from './UpdateBillPayment';
 import DeleteBillPayment from './DeleteBillPayment';
@@ -10,7 +9,7 @@ class ViewPayment extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      payments: [],
+      payments: this.props.payments,
       bill: this.props.bill,
       currencies: Store.getCurrencies(),
       dropdownOpen: [],
@@ -20,38 +19,6 @@ class ViewPayment extends Component {
     };
   }
 
-  componentDidMount = () => {
-    this.getPayments();
-  }
-
-  getPayments = () => {
-    new PaymentApi().getBillPayments(this.paymentSuccessCall, this.errorCall, this.props.profileId, this.state.bill.id)
-  }
-
-  paymentSuccessCall = async (payments) => {
-    await this.setState({ payments });
-    this.loadCollapse();
-  }
-
-  loadCollapse = async () => {
-    await this.state.payments.map(payments => {
-      return this.setState(prevState => ({
-        accordion: [...prevState.accordion, false],
-        hoverAccord: [...prevState.hoverAccord, false],
-        dropdownOpen: [...prevState.dropdownOpen, false]
-      }))
-    });
-  }
-
-  errorCall = (error) => {
-    console.error("Error : ", error);
-  }
-
-  hoverAccordion = (keyIndex) => {
-    const prevState = this.state.hoverAccord;
-    const state = prevState.map((value, index) => keyIndex === index ? !value : false);
-    this.setState({ hoverAccord: state });
-  }
 
   handleUpdateBillPayment = (updatePayment, currency) => {
     this.setState({ updateBillPayment: true, updatePayment, currency });
@@ -86,9 +53,10 @@ class ViewPayment extends Component {
     }
     return <Card>
       {this.loadHeader("Bill Payments")}
-      <Table style={{ bordercolor: "#DEE9F2" }}>
-        <thead className="table-header-color" >
-          <tr>
+      <CardBody className="card-align">
+            <Table frame="box" style={{ borderColor: "#DEE9F2" }}>
+              <thead className="table-header-color" >
+                <tr>
             <th>S.No </th>
             <th>Description/Notes</th>
             <th>Bill Date</th>
@@ -105,15 +73,27 @@ class ViewPayment extends Component {
           <tr>
             <td></td>
             <td></td>
-            <td>TOTAL </td>
-            <td>{selectedCurrency[0].symbol} {totalAmount}</td>
+            <td>TOTAL PAID AMOUNT</td>
+            <td><b>{selectedCurrency[0].symbol} {totalAmount}</b></td>
+            <td></td>
           </tr>
         </tbody>
       </Table>
+      <br /> {this.state.bill.paid ? this.loadPaidMessage() :this.loadDueMessage(selectedCurrency[0],billAmount,totalAmount,paymentStyle)}
       <br />
-      {totalAmount >= billAmount ? <center style={{ color: "green" }}>Congratulations! This bill is paid.{this.callBillsApi()}</center> :
-        <b style={paymentStyle}> * {selectedCurrency[0].symbol}{billAmount - totalAmount} to pay on total due of {selectedCurrency[0].symbol}{billAmount}.</b>}
+      <br />
+      </CardBody>
     </Card>
+  }
+
+  loadPaidMessage =()=>{
+    return <> <h4 style={{paddingLeft :15}}> Congratulations! This bill is paid. </h4> </>
+  }
+
+  loadDueMessage=(selectedCurrency,billAmount,totalAmount,paymentStyle)=>{
+    return <b style={paymentStyle}> 
+    * {selectedCurrency.symbol}{billAmount - totalAmount} to pay on total due of {selectedCurrency.symbol}{billAmount}.
+    </b>
   }
 
   callBillsApi = () => {
@@ -126,8 +106,9 @@ class ViewPayment extends Component {
       <td>{payment.notes}</td>
       <td>{this.dateFormat(payment.date)}</td>
       <td> {selectedCurrency[0].symbol} {paymentAmount} </td>
-      <td><Button color="primary" onClick={() => this.handleUpdateBillPayment(payment, selectedCurrency[0].symbol)}>Update</Button>
-        <Button color="danger" onClick={() => this.handleDeleteBillPayment(payment.txId)}>Delete</Button></td>
+      <td>
+        <Button style={{ backgroundColor: "transparent", borderColor: '#green', color: "green" }} onClick={() => this.handleUpdateBillPayment(payment, selectedCurrency[0].symbol)}>Edit</Button> &nbsp; 
+        <Button style={{ backgroundColor: "transparent", borderColor: '#red', color: "red" }} onClick={() => this.handleDeleteBillPayment(payment.txId)}>Remove</Button></td>
     </tr>
   }
 

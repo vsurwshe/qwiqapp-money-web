@@ -42,7 +42,8 @@ class Bills extends Component {
       value: '',
       showPaymentOptions: false,
       billPayments: [],
-      paidAmount :0
+      paidAmount :0,
+      reqViewPayments : []
     };
   }
  
@@ -218,9 +219,9 @@ class Bills extends Component {
   handleShowPayment = (bill) => {
     let lastPaid = this.calculateLastPaid(bill.id);
     if(lastPaid){
-      this.setState({ showPaymentOptions: !this.state.showPaymentOptions, billPayment: bill, paidAmount : lastPaid.paidAmount });
+      this.setState({ showPaymentOptions: !this.state.showPaymentOptions, requiredBill: bill, paidAmount : lastPaid.paidAmount , reqViewPayments : lastPaid.payments });
     }
-    this.setState({ showPaymentOptions: !this.state.showPaymentOptions, billPayment: bill });
+    this.setState({ showPaymentOptions: !this.state.showPaymentOptions, requiredBill: bill });
   }
 
   handleAddPayment = () => { this.setState({ addPayment: true }); }
@@ -229,9 +230,11 @@ class Bills extends Component {
 
   calculateLastPaid = (billId) => {
     if (this.state.billPayments.length > 0) {
+      // Filtering billpayments according to billId
       let filteredBillPayment = this.state.billPayments.filter(billPayment => billPayment.billId === billId);
       if (filteredBillPayment !== undefined && filteredBillPayment.length && filteredBillPayment[0].payments.length) {
         let paidAmount=0;
+        // Calculating the total paidAmount of all billpayments
         filteredBillPayment[0].payments.forEach((payment)=>{
           if(payment.amount < 0 ){
             payment.amount= -(payment.amount)
@@ -239,9 +242,10 @@ class Bills extends Component {
           paidAmount += payment.amount;
         })
         let lastPaid = {
-          date: filteredBillPayment[0].payments.sort()[0].date,
-          payment: filteredBillPayment[0].payments.sort()[0].amount,
-          paidAmount : paidAmount
+          payments: filteredBillPayment[0].payments, //  Getting payments list of a specific bill
+          date: filteredBillPayment[0].payments.sort()[0].date,  // Sorting and getting last payment date
+          paymentAmt: filteredBillPayment[0].payments.sort()[0].amount,  // Sorting and getting last payment amount
+          paidAmount : paidAmount // setting the total paid amount
         }
         return lastPaid;
       }
@@ -249,7 +253,7 @@ class Bills extends Component {
   }
 
   render() {
-    const { bills, createBillRequest, updateBillRequest, id, deleteBillRequest, visible, profileId, updateBill, spinner, labels, categories, contacts, danger, paidAmount, billPayment, markPaid } = this.state;
+    const { bills, createBillRequest, updateBillRequest, id, deleteBillRequest, visible, profileId, updateBill, spinner, labels, categories, contacts, danger, paidAmount, requiredBill, markPaid ,reqViewPayments } = this.state;
     if (!profileId) {
       return <ProfileEmptyMessage />
     } else if (bills.length === 0 && !createBillRequest) {  // Checks for bills not there and no bill create Request, then executes
@@ -266,9 +270,9 @@ class Bills extends Component {
     } else if (deleteBillRequest) {
       return <DeleteBill id={id} pid={profileId} removeDependents={this.state.removeDependents} />
     } else if (this.state.addPayment || this.state.markPaid) {
-      return <BillPayment bill={billPayment} markPaid={markPaid} paidAmount={paidAmount} profileId={profileId} />
+      return <BillPayment bill={requiredBill} markPaid={markPaid} paidAmount={paidAmount} profileId={profileId} />
     } else if (this.state.viewPayment) {
-      return <ViewPayment bill={this.state.billPayment} profileId={profileId} cancel={this.handleViewPayment} />
+      return <ViewPayment bill={this.state.requiredBill}  profileId={profileId} payments={reqViewPayments} cancel={this.handleViewPayment} />
     } else {
       return <div>{this.displayAllBills(visible, bills)}{danger && this.deleteBillModel()}{this.state.showPaymentOptions && this.loadPaymentModel(bills)}</div>
     }
