@@ -24,7 +24,7 @@ class CreateRecurringBill extends Component {
       alertColor: "",
       alertMessage: "",
       notifyRecurBill: false,
-      billType: "EXPENCE_PAYABLE",
+      billType: "EXPENSE_PAYABLE",
       billTypeReq: false,
       billTypecolor: "red",
       selectRepeatEvery: "DAY",
@@ -50,7 +50,7 @@ class CreateRecurringBill extends Component {
     } else if (errors.length === 0) {
       actualBillDate = values.billDate.split("-")[0] + values.billDate.split("-")[1] + values.billDate.split("-")[2] // crearte bill date
       recurBillDate = values.nextBillDate.split("-")[0] + values.nextBillDate.split("-")[1] + values.nextBillDate.split("-")[2]; // create recurBill date
-      let endsonDate = values.endsOn.split("-")[0] + values.endsOn.split("-")[1] + values.endsOn.split("-")[2]
+      let endsonDate = values.endsOn.split("-")[0] + values.endsOn.split("-")[1] + values.endsOn.split("-")[2];
       const newData = {
         ...values,
         "billDate": actualBillDate, // Bill BillDate
@@ -79,7 +79,10 @@ class CreateRecurringBill extends Component {
   }
 
   //this handle the error response the when api calling
-  errorCall = err => { this.callAlertTimer("danger", "Unable to process request, Please try later...."); };
+  errorCall = err => { 
+    console.log(err)
+    this.setState({ doubleClick: false });
+    this.callAlertTimer("danger", "Unable to process request, Please try later...."); };
 
   //this method Notifies the user after every request
   callAlertTimer = (alertColor, alertMessage) => {
@@ -91,19 +94,19 @@ class CreateRecurringBill extends Component {
     }
   };
 
-  handleBillType = async () => {
-    this.setState({ billTypeReq: !this.state.billTypeReq });
-    await this.billTypeText()
-  }
+  // handleBillType = async () => {
+  //   this.setState({ billTypeReq: !this.state.billTypeReq });
+  //   await this.billTypeText()
+  // }
 
-  billTypeText = async () => {
-    const { billTypeReq } = this.state
-    if (billTypeReq) {
-      await this.setState({ billType: "EXPENSE_PAYABLE", billTypecolor: "red" });
-    } else {
-      await this.setState({ billType: "INCOME_RECEIVABLE", billTypecolor: "green" });
-    }
-  }
+  // billTypeText = async () => {
+  //   const { billTypeReq } = this.state
+  //   if (billTypeReq) {
+  //     await this.setState({ billType: "EXPENSE_PAYABLE", billTypecolor: "red" });
+  //   } else {
+  //     await this.setState({ billType: "INCOME_RECEIVABLE", billTypecolor: "green" });
+  //   }
+  // }
 
   handleSetAmount = e => {
     this.setState({ amount: e.target.value });
@@ -202,6 +205,14 @@ class CreateRecurringBill extends Component {
     this.setState({ endDate: this.defaultEndDateSet(type, number) });
   }
 
+  categorySelected = (categoryOption) => {
+    this.setState({ categoryOption, alertColor: '', alertMessage: '' })
+  }
+
+  contactSelected = (contactOption) => {
+    this.setState({ contactOption })
+  }
+
   render() {
     const { alertColor, alertMessage, cancelCreateBill, billCreated } = this.state;
     if (cancelCreateBill) {
@@ -271,10 +282,11 @@ class CreateRecurringBill extends Component {
                     </AvField>
                   </Col>
                   <Col sm={3}>
-                    <AvField type="select" name="label" label="Type of Bill" value={billType} errorMessage="Select Type of Bill" required>
-                      <option value="">Select Type of Bill</option>
-                      <option value="-">Payable</option>
-                      <option value="+">Receivable</option>
+                    <AvField type="select" name="type" label="Type of Bill" value={billType} errorMessage="Select Type of Bill" required>
+                    {/* <AvField type="select" name="label" label="Type of Bill" value={billType} errorMessage="Select Type of Bill" required> */}
+                      {/* <option value="">Select Type of Bill</option> */}
+                      <option value="EXPENSE_PAYABLE">Payable</option>
+                      <option value="INCOME_RECEIVABLE">Receivable</option>
                     </AvField>
                   </Col>
                   <Col sm={6}>
@@ -301,7 +313,7 @@ class CreateRecurringBill extends Component {
                   <Col><AvField name="billDate" label="Bill Date" value={userBillDate} type="date"
                     onChange={(e) => { this.handleBillDate(e) }} errorMessage="Invalid Date" validate={{
                       date: { format: 'dd/MM/yyyy' },
-                      dateRange: { format: 'YYYY/MM/DD', start: { value: '1900/01/01' }, end: { value: '9999/12/31' } },
+                      // dateRange: { format: 'YYYY/MM/DD', start: { value: '1900/01/01' }, end: { value: '9999/12/31' } },
                       required: { value: true }
                     }} /></Col>
                   <Col><AvField name="dueDays" label="Due Days" placeholder="No.of Days" onChange={e => { this.handleDueDate(e) }} value={dueDays} type="number" errorMessage="Invalid Days" /></Col>
@@ -374,7 +386,7 @@ class CreateRecurringBill extends Component {
               }} /></Col>
                  {/* EndDate dependents on end's months/year's   */}
           <Col> 
-          <AvField type="select" name="repeatType" value={RECURRINGBILLSELECTION.ONE_MONTH} label="Select Every" onChange={(e) => { this.handleSelectRecurBillEndDateType(e) }}
+          <AvField type="select" name="endRecurDate" value={RECURRINGBILLSELECTION.ONE_MONTH} label="Select Every" onChange={(e) => { this.handleSelectRecurBillEndDateType(e) }}
           errorMessage="Select any Option" required>
           <option value={RECURRINGBILLSELECTION.ONE_MONTH}>One month</option>
           <option value={RECURRINGBILLSELECTION.TWO_MONTHS}>Two months</option>
