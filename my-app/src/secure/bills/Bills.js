@@ -16,6 +16,7 @@ import '../../css/style.css';
 import Config from "../../data/Config";
 import BillPayment from "./billPayment/ BillPayment";
 import ViewPayment from "./billPayment/ViewPayment";
+import PaymentApi from "../../services/PaymentApi";
 
 class Bills extends Component {
   constructor(props) {
@@ -30,9 +31,9 @@ class Bills extends Component {
       updateBillRequest: false,
       deleteBillRequest: false,
       visible: props.visible,
-      dropdownOpen: [],
-      hoverAccord: [],
-      accordion: [],
+      // dropdownOpen: [],
+      // hoverAccord: [],
+      // accordion: [],
       profileId: "",
       danger: false,
       onHover: false,
@@ -41,7 +42,8 @@ class Bills extends Component {
       searchName: false,
       removeDependents: true,
       value: '',
-      showPaymentOptions: false
+      showPaymentOptions: false,
+      billPayments: []
     };
   }
 
@@ -106,6 +108,7 @@ class Bills extends Component {
         newBills = bills;
       }
       await this.billsWithcategoryNameColor(newBills);
+      await this.getBillPayments()
       this.loadCollapse();
     }
   }
@@ -120,13 +123,6 @@ class Bills extends Component {
   }
 
   loadCollapse = async () => {
-    await this.state.bills.map(labels => {
-      return this.setState(prevState => ({
-        accordion: [...prevState.accordion, false],
-        hoverAccord: [...prevState.hoverAccord, false],
-        dropdownOpen: [...prevState.dropdownOpen, false]
-      }))
-    });
     new LabelApi().getSublabels(this.successCallLabel, this.errorCall, this.state.profileId);
   }
 
@@ -175,22 +171,6 @@ class Bills extends Component {
     this.setState({ deleteBillRequest: true })
   };
 
-  hoverAccordion = (keyIndex) => {
-    const prevState = this.state.hoverAccord;
-    const state = prevState.map((value, index) => keyIndex === index ? !value : false);
-    this.setState({ hoverAccord: state });
-  }
-
-  onHover = (e, keyIndex) => {
-    this.setState({ onHover: true });
-    this.hoverAccordion(keyIndex)
-  }
-
-  onHoverOff = (e, keyIndex) => {
-    this.setState({ onHover: false });
-    this.hoverAccordion(keyIndex)
-  }
-
   setBillId = (bill) => {
     let data = {
       "deletBillDescription": bill.description,
@@ -220,7 +200,20 @@ class Bills extends Component {
 
   handleAddPayment = () => { this.setState({ addPayment: true }); }
   handleMarkAsPaid = () => { this.setState({ markPaid: true }); }
-  handleViewPayment = () => { this.setState({ viewPayment: !this.state.viewPayment }); }
+  handleViewPayment = () => { this.setState({ viewPayment: !this.state.viewPayment, showPaymentOptions: false }); }
+
+  calculateLastPaid = (billId) => {
+    if (this.state.billPayments.length > 0) {
+      let filteredBillPayment = this.state.billPayments.filter(billPayment => billPayment.billId === billId);
+      if (filteredBillPayment !== undefined && filteredBillPayment.length && filteredBillPayment[0].payments.length) {
+        let lastPaid = {
+          date: filteredBillPayment[0].payments.sort()[0].date ,
+          payment: filteredBillPayment[0].payments.sort()[0].amount 
+        }
+        return lastPaid;
+      }
+    }
+  }
 
   render() {
     const { bills, createBillRequest, updateBillRequest, id, deleteBillRequest, visible, profileId, updateBill, spinner, labels, categories, contacts, danger } = this.state;
@@ -310,10 +303,9 @@ class Bills extends Component {
                 </tr>
               </thead>
               <tbody>
-                {bills.filter(this.searchingFor(this.state.selectedOption)).map((bill, key) => { 
-                  return this.loadSingleBill(bill, key); 
-                  })
-                  }
+                {bills.filter(this.searchingFor(this.state.selectedOption)).map((bill, key) => {
+                  return this.loadSingleBill(bill, key);
+                })}
               </tbody>
             </Table>
           </CardBody>

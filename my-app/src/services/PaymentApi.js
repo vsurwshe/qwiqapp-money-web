@@ -10,7 +10,7 @@ class PaymentApi {
 
   //This Method Get All Bills
   getBillPayments(success, failure, profileId, billId) {
-    process(success, failure, profileId + "/bills/" + billId + "/payments", "GET");
+    process(success, failure, profileId + "/bills/" + billId + "/payments", "GET", profileId, null, null, billId);
   }
 
   //This Method Update Bill 
@@ -31,22 +31,18 @@ async function process(success, failure, Uurl, Umethod, profileId, data, reload,
   let promise;
   try {
     data === null ? promise = await HTTP.request() : promise = await HTTP.request({ data });
-    if (Umethod === "GET") {
-      validResponse(promise, success)
-    } else {
-      await new PaymentApi().getBillPayments(success, failure, profileId, billId);
-    }
+    validResponse(promise, success)
   }
   //TODO: handle user error   
   catch (err) {
-    handleAccessTokenError(profileId, err, failure, Uurl, Umethod, data, success, reload);
+    handleAccessTokenError(profileId, err, failure, Uurl, Umethod, data, success, reload,billId);
   }
 }
 
 //this method slove the Exprie Token Problem.
-let handleAccessTokenError = function (profileId, err, failure, Uurl, Umethod, data, success, reload) {
+let handleAccessTokenError = function (profileId, err, failure, Uurl, Umethod, data, success, reload, billId) {
   if (err.request.status === 0) {
-    new PaymentApi().getBillPayments(success, failure, profileId, "True");
+    new PaymentApi().getBillPayments(success, failure, profileId, billId);
   } else if (err.response.status === 403 || err.response.status === 401) {
     if (!reload) {
       new LoginApi().refresh(() => {
