@@ -71,10 +71,13 @@ class Bills extends Component {
     if (categories === []) {
       this.setState({ categories: [0] })
     } else {
-      await this.setState({ categories })
-      if (this.state.profileId) {
+      await this.setState({ categories: categories })
+      if(this.props.paid){
+        await new BillApi().getBills(this.successCallBill, this.errorCall, this.state.profileId, "True");
+      } else{
         await new BillApi().getBills(this.successCallBill, this.errorCall, this.state.profileId);
       }
+    
     }
   };
 
@@ -212,12 +215,13 @@ class Bills extends Component {
   handleRemoveDependents = () => {
     this.setState({ removeDependents: !this.state.removeDependents });
   }
+
   setValue = () => {
     this.setState({ value: '' })
   }
 
   handleShowPayment = (bill) => {
-    let lastPaid = this.calculateLastPaid(bill.id);
+    let lastPaid = this.calculateLastPaid(bill.id, bill.amount);
     if(lastPaid){
       this.setState({ showPaymentOptions: !this.state.showPaymentOptions, requiredBill: bill, paidAmount : lastPaid.paidAmount , reqViewPayments : lastPaid.payments });
     }
@@ -228,12 +232,12 @@ class Bills extends Component {
   handleMarkAsPaid = () => { this.setState({ markPaid: true }); }
   handleViewPayment = () => { this.setState({ viewPayment: !this.state.viewPayment, showPaymentOptions: false }); }
 
-  calculateLastPaid = (billId) => {
+  calculateLastPaid = (billId, billAmount) => {
     if (this.state.billPayments.length > 0) {
       // Filtering billpayments according to billId
       let filteredBillPayment = this.state.billPayments.filter(billPayment => billPayment.billId === billId);
       if (filteredBillPayment !== undefined && filteredBillPayment.length && filteredBillPayment[0].payments.length) {
-        let paidAmount=0;
+        let paidAmount=0, paid;
         // Calculating the total paidAmount of all billpayments
         filteredBillPayment[0].payments.forEach((payment)=>{
           if(payment.amount < 0 ){
@@ -241,11 +245,17 @@ class Bills extends Component {
           }
           paidAmount += payment.amount;
         })
+        if(paidAmount === billAmount){
+          paid = true
+        } else{
+          paid= false
+        }
         let lastPaid = {
           payments: filteredBillPayment[0].payments, //  Getting payments list of a specific bill
           date: filteredBillPayment[0].payments.sort()[0].date,  // Sorting and getting last payment date
           paymentAmt: filteredBillPayment[0].payments.sort()[0].amount,  // Sorting and getting last payment amount
-          paidAmount : paidAmount // setting the total paid amount
+          paidAmount : paidAmount,   // setting the total paid amount
+          paid : paid 
         }
         return lastPaid;
       }

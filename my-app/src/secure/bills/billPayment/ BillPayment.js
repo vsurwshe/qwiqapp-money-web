@@ -18,6 +18,7 @@ class BillPayment extends Component {
             alertColor: '',
             alertMessage: '',
             billType: props.bill.amount > 0,
+            paidAmount : props.paidAmount,
         };
     }
 
@@ -29,18 +30,26 @@ class BillPayment extends Component {
     }
 
     handleSubmitValue = async (event, errors, values) => {
+        let amount;
         if (errors.length === 0) {
+            amount = values.amount
             this.setState({ doubleClick: true });
             let date = values.date.split("-")[0] + values.date.split("-")[1] + values.date.split("-")[2];
             let data = { ...values, "date": date, "amount": this.props.bill.amount < 0 ? -values.amount : values.amount }
-            await new PaymentApi().addBillPayment(this.handleSuccessCall, this.handleErrorCall, this.props.profileId, this.props.bill.id, data);
+            await new PaymentApi().addBillPayment((response)=>{this.handleSuccessCall(response, this.state.billAmount, this.state.paidAmount, amount)}, this.handleErrorCall, this.props.profileId, this.props.bill.id, data);
         } else {
             this.setState({ doubleClick: false });
         }
     }
 
-    handleSuccessCall = (response) => {
-        this.setState({ alertColor: "success", alertMessage: "BillPayment added succesfully !!" });
+    handleSuccessCall = (response, billAmount, paidAmount, amount) => {
+        billAmount = billAmount <0 ? -(billAmount) : billAmount
+        if( billAmount === (paidAmount+amount)){
+            this.setState({ alertColor: "success", alertMessage: "BillPayment added succesfully !!" , paid: true});
+        } else{
+            this.setState({ alertColor: "success", alertMessage: "BillPayment added succesfully !!" });
+        }
+       
         setTimeout(() => {
             this.setState({ cancelPayment: true, alertColor: "", alertMessage: "" });
         }, Config.apiTimeoutMillis)
@@ -68,7 +77,7 @@ class BillPayment extends Component {
         const { cancelPayment, currencies } = this.state
         const { bill } = this.props
         let selectedCurrency = currencies.filter((currency, index) => { return currency.code === bill.currency })
-        return cancelPayment ? <Bills /> : <div> {this.loadPayment(bill, selectedCurrency[0])} </div>
+        return cancelPayment ? <Bills paid={this.state.paid} /> : <div> {this.loadPayment(bill, selectedCurrency[0])} </div>
     }
 
     loadPayment = (bill, selectedCurrency) => {
@@ -142,7 +151,8 @@ class BillPayment extends Component {
        if(billAmount < 0){
            billAmount = -(billAmount)
        }
-       return billAmount - paidAmount;
+       return  paidAmount ? billAmount - paidAmount : billAmount
+       
     }
 }
 
