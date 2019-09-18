@@ -115,6 +115,11 @@ const Data = {
       return options.push({ value: contact.id, label: <b>{contact.name}</b> })
     })
     return options
-  }
+  },
+
+  datePassToAPI:function(date){
+    return date.split("-")[0] + date.split("-")[1] + date.split("-")[2]
+  },
+  
 }
 export default Data;

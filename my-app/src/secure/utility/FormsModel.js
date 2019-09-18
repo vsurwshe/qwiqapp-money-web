@@ -7,7 +7,7 @@ import Data from '../../data/SelectData';
 // ======================= This Bill Form Code =======
 export const BillFormUI = (props) => {
   let categoryName;
-  const {currencies, doubleClick, dueDate, labels, contacts, categories, billDate, moreOptions ,bill, billType,amount, dueDays} = props.data;
+  const {currencies, doubleClick, dueDate, labels, contacts, categories, billDate, moreOptions, bill, billType,amount, dueDays} = props.data;
   const { currency, description } = bill ? bill  : '';
   if (bill) {
     categoryName = Data.categories(categories).filter(item => { return item.value === bill.categoryId })
@@ -64,10 +64,12 @@ export const BillFormUI = (props) => {
   <Button className="m-0 p-0" color="link" onClick={() => props.toggleCustom()} aria-expanded={moreOptions} aria-controls="exampleAccordion1">
     More Options
   </Button>
-  {props.loadMoreOptions(labels, contacts)} <br />     <br />
+  {props.loadMoreOptions(labels, contacts)} <br /> 
   <FormGroup >
-    <Button color="success" disabled={doubleClick}> {props.buttonText}  </Button> &nbsp;&nbsp;
-  <Button type="button" onClick={props.cancel}>Cancel</Button>
+    <center>
+      <Button color="success" disabled={doubleClick}> {props.buttonText}  </Button> &nbsp;&nbsp;
+      <Button type="button" onClick={props.cancel}>Cancel</Button>
+    </center>
   </FormGroup>
 </AvForm>
 }
