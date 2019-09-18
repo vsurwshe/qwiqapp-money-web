@@ -35,14 +35,14 @@ async function process(success, failure, Uurl, Umethod, profileId, data, reload)
   let HTTP = httpCall(Uurl, Umethod);
   let promise;
   try {
-    data === null ? promise = await HTTP.request() : promise = await HTTP.request({data});
-    if (Umethod === "GET") {
-      Store.saveBills(promise.data);
-      validResponse(promise, success)
-    } else {
-      await new BillApi().getBills(success, failure, profileId, "True");
+      data === null ? promise = await HTTP.request() : promise = await HTTP.request({data});
+      if (Umethod === "GET") {
+        Store.saveBills(promise.data);
+        validResponse(promise, success)
+      } else {
+        await new BillApi().getBills(success, failure, profileId, "True");
+      }
     }
-  }
   //TODO: handle user error   
   catch (err) {
     handleAccessTokenError(profileId, err, failure, Uurl, Umethod, data, success, reload);
@@ -51,9 +51,9 @@ async function process(success, failure, Uurl, Umethod, profileId, data, reload)
 
 //this method slove the Exprie Token Problem.
 let handleAccessTokenError = function (profileId, err, failure, Uurl, Umethod, data, success, reload) {
-  if (err.request.status === 0) {
+  if (err.request && err.request.status === 0) {
     new BillApi().getBills(success, failure, profileId, "True");
-  } else if (err.response.status === 403 || err.response.status === 401) {
+  } else if (err.response&& (err.response.status === 403 || err.response.status === 401)) {
     if (!reload) {
       new LoginApi().refresh(() => {
         process(success, failure, Uurl, Umethod, profileId, data, "restrict")

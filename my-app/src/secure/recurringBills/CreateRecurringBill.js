@@ -43,21 +43,17 @@ class CreateRecurringBill extends Component {
   cancelCreateBill = () => { this.setState({ cancelCreateBill: true }) }
 
   handleSubmitValue = (event, errors, values) => {
-    let actualBillDate, recurBillDate;
     const { labelOption, categoryOption, contactOption, notifyRecurBill, billType } = this.state
     if (categoryOption === null) {
       this.callAlertTimer("warning", "Please Select Category...");
     } else if (errors.length === 0) {
-      actualBillDate = values.billDate.split("-")[0] + values.billDate.split("-")[1] + values.billDate.split("-")[2] // crearte bill date
-      recurBillDate = values.nextBillDate.split("-")[0] + values.nextBillDate.split("-")[1] + values.nextBillDate.split("-")[2]; // create recurBill date
-      let endsonDate = values.endsOn.split("-")[0] + values.endsOn.split("-")[1] + values.endsOn.split("-")[2];
       const newData = {
         ...values,
-        "billDate": actualBillDate, // Bill BillDate
-        "nextBillDate": recurBillDate,
+        "billDate": Data.datePassToAPI(values.billDate),
+        "nextBillDate": Data.datePassToAPI(values.nextBillDate),
         "notificationEnabled": notifyRecurBill,
         "type": billType,
-        "endsOn": endsonDate,
+        "endsOn": Data.datePassToAPI(values.endsOn),
         "categoryId": categoryOption.value,
         "contactId": contactOption.value,
         "labelIds": labelOption === [] ? '' : labelOption.map(opt => { return opt.value })

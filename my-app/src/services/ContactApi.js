@@ -51,7 +51,7 @@ async function process(success, failure, Uurl, Umethod, profileId, data, reload)
 //this method slove the Exprie Token Problem.
 let handleAccessTokenError = function (profileId, err, failure, Uurl, Umethod, data, success, reload) {
   if (err.request.status === 0) {
-    new ContactApi().getSublabels(success, failure, profileId, "True");
+    new ContactApi().getContacts(success, failure, profileId, "True");
   } else if (err.response.status === 403 || err.response.status === 401) {
     if (!reload) {
       new LoginApi().refresh(() => { process(success, failure, Uurl, Umethod, data, "reload") }, errorResponse(err, failure));
