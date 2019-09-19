@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { AvForm, AvField } from 'availity-reactstrap-validation';
-import { FormGroup, Button, Col, Card, CardBody, CardHeader, Container, Input, Label, Row, Alert } from 'reactstrap';
+import { FormGroup, Button, Col, Card, CardBody, CardHeader, Container, Row, Alert } from 'reactstrap';
 import PaymentApi from '../../../services/PaymentApi';
 import Config from '../../../data/Config';
 import ViewPayment from './ViewPayment';
@@ -14,14 +14,12 @@ class UpdateBillPayment extends Component {
     }
 
     handleSubmitValue = async (event, errors, values) => {
+        const { profileId, updatePayment, bill } = this.props
         if (errors.length === 0) {
             this.setState({ doubleClick: true });
             let date = values.date.split("-")[0] + values.date.split("-")[1] + values.date.split("-")[2];
-            let amount = this.state.billType ? values.amount : -(values.amount)
-            let data = { ...values, "date": date, "amount": amount }
-            console.log(data)
-            console.log(this.props.updatePayment.txId)
-            await new PaymentApi().updateBillPayment(this.handleSuccessCall, this.handleErrorCall, this.props.profileId, this.props.bill.id, this.props.updatePayment.txId, data);
+            let newData = { ...values, "date": date }
+            await new PaymentApi().updateBillPayment(this.handleSuccessCall, this.handleErrorCall, profileId, bill.id, updatePayment.txId, newData);
         } else {
             this.setState({ doubleClick: false });
         }
@@ -32,31 +30,22 @@ class UpdateBillPayment extends Component {
         setTimeout(() => {
             this.setState({ cancelPayment: true, alertColor: "", alertMessage: "" });
         }, Config.apiTimeoutMillis)
-
     }
 
-    handleErrorCall = (error) => {
-        this.setState({ doubleClick: false });
-    }
+    handleErrorCall = (error) => { this.setState({ doubleClick: false }); }
 
-    handlePaidDate = () => {
-        let today = new Date()
-        return new Intl.DateTimeFormat('sv-SE', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(today);
-    }
+    handlePaidDate = () => { return new Intl.DateTimeFormat('sv-SE', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(new Date()); }
 
     calculate = () => { this.setState({ calculate: !this.state.calculate }); }
 
     cancelPayment = () => { this.setState({ cancelPayment: true }); }
 
-    handleBillType = () => {
-        this.setState({ billType: !this.state.billType });
-    }
+    handleBillType = () => { this.setState({ billType: !this.state.billType }); }
 
     render() {
         const { bill, currency, updatePayment } = this.props
         return this.state.cancelPayment ?
-            <ViewPayment bill={bill} profileId={this.props.profileId} />
-            // <Bills />
+            <ViewPayment bill={bill} profileId={this.props.profileId} cancel={this.props.cancelViewPay} />
             : <div> {this.loadPayment(bill, currency, updatePayment)} </div>
     }
 
@@ -68,54 +57,51 @@ class UpdateBillPayment extends Component {
             <CardBody>
                 <Container>
                     {this.state.alertMessage && <Alert color={this.state.alertColor} >{this.state.alertMessage}</Alert>}
-                    <div className="control Container">
-                        <Row>
-                            <Col sm={3}>
-                                <Label>Bill Type</Label>
-                            </Col>
-                            <Col sm={5}><Label className="radio">
-                                <p style={{ color: "#cc0000" }}><Input type="radio" checked={!this.state.billType} onChange={this.handleBillType} /> Paid</p>
-                            </Label> &nbsp; &nbsp; &nbsp; &nbsp;
-                          <Label className="radio">
-                                    <p style={{ color: "#006600" }}><Input type="radio" checked={this.state.billType} onChange={this.handleBillType} /> Receivable</p>
-                                </Label></Col></Row>
-                    </div>
-                    <AvForm onSubmit={this.handleSubmitValue}>
-                        <Row>
-                            <Col sm={3} md={3} xl={3} lg={3}>Bill amount:</Col>
-                            <Col> {currency} &nbsp;{bill.amount > 0 ? bill.amount : -(bill.amount)} </Col>
-                        </Row> <br />
-                        <Row>
-                            <Col sm={3} md={3} xl={3} lg={3}>Bill date:</Col>
-                            <Col>{billDate}</Col>
-                        </Row> <br />
-                        <Row>
-                            <Col sm={3} md={3} xl={3} lg={3}>note/ description: </Col>
-                            <Col>{name}</Col>
-                        </Row> <br /><br />
-                        <Row>
-                            <Col xs="12" sm="5">
-                                <Label >Bill Pay Amount</Label> &nbsp;({currency})
-                            <AvField type="number" name="amount" placeholder="Amount" value={updatePayment.amount > 0 ? updatePayment.amount : -(updatePayment.amount)} required />
-                            </Col>
-                            <Col xs="6" sm="4">
-                                <Label >Pay Date</Label>
-                                <AvField type="date" name="date" value={this.loadDateFormat(updatePayment.date)} required />
-                            </Col>
-                            <Col xs="6" sm="3">
-                                <Label >Bill Notes</Label>
-                                <AvField type="text" name="notes" value={updatePayment.notes} placeholder=" Bill payment descriptions" />
-                            </Col>
-                        </Row>
-                        <FormGroup >
-                            <center>
-                                <Button color="success" disabled={this.state.doubleClick}> Save  </Button> &nbsp;&nbsp;
-                            <Button type="button" onClick={this.cancelPayment}>Cancel</Button></center>
-                        </FormGroup>
-                    </AvForm>
+                    <Row>
+                        <Col sm={3} md={3} xl={3} lg={3}>Bill Amount:</Col>
+                        <Col> {currency.symbol} &nbsp;{bill.amount > 0 ? bill.amount : -(bill.amount)} </Col>
+                    </Row> <br />
+                    <Row>
+                        <Col sm={3} md={3} xl={3} lg={3}>Bill Date:</Col>
+                        <Col>{billDate}</Col>
+                    </Row> <br />
+                    <Row>
+                        <Col sm={3} md={3} xl={3} lg={3}>Bill Notes / Description: </Col>
+                        <Col>{name}</Col>
+                    </Row> <br />
+                    {this.loadBillPaymentForm(currency, bill, updatePayment)}
                 </Container>
             </CardBody>
         </Card>
+    }
+
+    loadBillPaymentForm = (selectedCurrency, bill, updatePayment) => {
+        return <AvForm onSubmit={this.handleSubmitValue}>
+            <Row>
+                <Col xs="12" sm="5">
+                    <AvField type="number" name="amount" label={`Payment Amount (${selectedCurrency.symbol})`} placeholder="Amount" value={updatePayment.amount > 0 ? updatePayment.amount : -(updatePayment.amount)} errorMessage="Invaild payment amount" required />
+                </Col>
+                <Col xs="6" sm="4">
+                    <AvField type="date" name="date" label="Payment Date" value={this.loadDateFormat(updatePayment.date)} errorMessage="Select payment date" required />
+                </Col>
+                <Col xs="6" sm="3" >
+                    <AvField type="select" name="type" label="Payment Type" errorMessage="Select type of payment" value={updatePayment.type} required>
+                        <option value="">Select type of payment</option>
+                        <option value="Paid">Paid</option>
+                        <option value="Received">Received</option>
+                    </AvField>
+                </Col>
+            </Row>
+            <Row>
+                <Col>
+                    <AvField type="textarea" name="notes" label="Payment Notes / Description" value={updatePayment.notes} placeholder="Payment description" />
+                </Col>
+            </Row>
+            <FormGroup >
+                <Button color="success" disabled={this.state.doubleClick}> Save  </Button> &nbsp;&nbsp;
+                    <Button type="button" onClick={this.cancelPayment}>Cancel</Button>
+            </FormGroup>
+        </AvForm>
     }
 
     loadDateFormat = (dateParam) => {

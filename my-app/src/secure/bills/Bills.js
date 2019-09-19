@@ -19,7 +19,7 @@ import ViewPayment from "./billPayment/ViewPayment";
 import PaymentApi from "../../services/PaymentApi";
 
 class Bills extends Component {
-  
+
   constructor(props) {
     super(props);
     this.state = {
@@ -39,14 +39,12 @@ class Bills extends Component {
       selectedOption: '',
       searchName: false,
       removeDependents: true,
-      value: '',
       showPaymentOptions: false,
       billPayments: [],
-      paidAmount :0,
-      reqViewPayments : []
+      paidAmount: 0
     };
   }
- 
+
   componentDidMount = () => {
     this.setProfileId();
   }
@@ -72,24 +70,25 @@ class Bills extends Component {
       this.setState({ categories: [0] })
     } else {
       await this.setState({ categories: categories })
-      if(this.props.paid){
+      if (this.props.paid) {
         await new BillApi().getBills(this.successCallBill, this.errorCall, this.state.profileId, "True");
-      } else{
+      } else {
         await new BillApi().getBills(this.successCallBill, this.errorCall, this.state.profileId);
       }
-    
+
     }
   };
 
   // bills response
   successCallBill = async bills => {
     let newBills;
+    const { value } = this.props.match.params
     if (bills.length === 0) {
       this.setState({ bills: [] })
     }
     else {
-      if (this.props.match.params.value) {
-        switch (this.props.match.params.value) {
+      if (value) {
+        switch (value) {
           case "upcoming":
             newBills = bills.filter(bill => this.loadDateFormat(bill.dueDate_) >= new Date());
             break;
@@ -216,14 +215,10 @@ class Bills extends Component {
     this.setState({ removeDependents: !this.state.removeDependents });
   }
 
-  setValue = () => {
-    this.setState({ value: '' })
-  }
-
   handleShowPayment = (bill) => {
-    let lastPaid = this.calculateLastPaid(bill.id, bill.amount);
-    if(lastPaid){
-      this.setState({ showPaymentOptions: !this.state.showPaymentOptions, requiredBill: bill, paidAmount : lastPaid.paidAmount , reqViewPayments : lastPaid.payments });
+    let lastPaid = this.calculateLastPaid(bill, bill.amount);
+    if (lastPaid) {
+      this.setState({ showPaymentOptions: !this.state.showPaymentOptions, requiredBill: bill, paidAmount: lastPaid.paidAmount });
     }
     this.setState({ showPaymentOptions: !this.state.showPaymentOptions, requiredBill: bill });
   }
@@ -232,30 +227,22 @@ class Bills extends Component {
   handleMarkAsPaid = () => { this.setState({ markPaid: true }); }
   handleViewPayment = () => { this.setState({ viewPayment: !this.state.viewPayment, showPaymentOptions: false }); }
 
-  calculateLastPaid = (billId, billAmount) => {
+  calculateLastPaid = (bill, billAmount) => {
     if (this.state.billPayments.length > 0) {
       // Filtering billpayments according to billId
-      let filteredBillPayment = this.state.billPayments.filter(billPayment => billPayment.billId === billId);
+      let filteredBillPayment = this.state.billPayments.filter(billPayment => billPayment.billId === bill.id);
+      let paidAmount = bill.amount, paid;
       if (filteredBillPayment !== undefined && filteredBillPayment.length && filteredBillPayment[0].payments.length) {
-        let paidAmount=0, paid;
         // Calculating the total paidAmount of all billpayments
-        filteredBillPayment[0].payments.forEach((payment)=>{
-          if(payment.amount < 0 ){
-            payment.amount= -(payment.amount)
-          }
-          paidAmount += payment.amount;
+        filteredBillPayment[0].payments.forEach((payment) => {
+          paidAmount = paidAmount - (payment.amount);
         })
-        if(paidAmount === billAmount){
-          paid = true
-        } else{
-          paid= false
-        }
         let lastPaid = {
           payments: filteredBillPayment[0].payments, //  Getting payments list of a specific bill
-          date: filteredBillPayment[0].payments.sort()[0].date,  // Sorting and getting last payment date
-          paymentAmt: filteredBillPayment[0].payments.sort()[0].amount,  // Sorting and getting last payment amount
-          paidAmount : paidAmount,   // setting the total paid amount
-          paid : paid 
+          date: filteredBillPayment[0].payments.sort((a, b) => (a.txId > b.txId ? -1 : 1))[0].date,  // Sorting by payment id in desc order and getting last payment date
+          paymentAmt: filteredBillPayment[0].payments.sort((a, b) => (a.txId > b.txId ? -1 : 1))[0].amount,  // Sorting by payment id in desc order and getting last payment amount
+          paidAmount: paidAmount,   // setting the total paid amount
+          paid: paid
         }
         return lastPaid;
       }
@@ -263,7 +250,7 @@ class Bills extends Component {
   }
 
   render() {
-    const { bills, createBillRequest, updateBillRequest, id, deleteBillRequest, visible, profileId, updateBill, spinner, labels, categories, contacts, danger, paidAmount, requiredBill, markPaid ,reqViewPayments } = this.state;
+    const { bills, createBillRequest, updateBillRequest, id, deleteBillRequest, visible, profileId, updateBill, spinner, labels, categories, contacts, danger, paidAmount, requiredBill, markPaid } = this.state;
     if (!profileId) {
       return <ProfileEmptyMessage />
     } else if (bills.length === 0 && !createBillRequest) {  // Checks for bills not there and no bill create Request, then executes
@@ -282,7 +269,7 @@ class Bills extends Component {
     } else if (this.state.addPayment || this.state.markPaid) {
       return <BillPayment bill={requiredBill} markPaid={markPaid} paidAmount={paidAmount} profileId={profileId} />
     } else if (this.state.viewPayment) {
-      return <ViewPayment bill={this.state.requiredBill}  profileId={profileId} payments={reqViewPayments} cancel={this.handleViewPayment} />
+      return <ViewPayment bill={this.state.requiredBill} profileId={profileId} cancel={this.handleViewPayment} />
     } else {
       return <div>{this.displayAllBills(visible, bills)}{danger && this.deleteBillModel()}{this.state.showPaymentOptions && this.loadPaymentModel(bills)}</div>
     }
@@ -417,15 +404,15 @@ class Bills extends Component {
       <ModalBody>
         <FormGroup check >
           <Label check>
-            <Input type="radio" name="radio2" value="true" onChange={this.handleAddPayment} checked={this.state.addPayment} />{' '}
+            <Input type="radio" name="radio2" value="true" onChange={this.handleAddPayment} checked={this.state.addPayment} />
             Add Payment
           </Label> <br />
           <Label check>
-            <Input type="radio" name="radio2" value="false" onChange={this.handleMarkAsPaid} checked={this.state.markPaid} />{' '}
+            <Input type="radio" name="radio2" value="false" onChange={this.handleMarkAsPaid} checked={this.state.markPaid} />
             Mark as paid
           </Label><br />
           <Label check>
-            <Input type="radio" name="radio2" value="false" onChange={this.handleViewPayment} checked={this.state.viewPayment} />{' '}
+            <Input type="radio" name="radio2" value="false" onChange={this.handleViewPayment} checked={this.state.viewPayment} />
             View payment list
           </Label>
         </FormGroup>

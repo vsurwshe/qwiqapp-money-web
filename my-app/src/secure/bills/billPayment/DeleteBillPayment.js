@@ -34,14 +34,14 @@ class DeleteBillPayment extends Component {
 
   render() {
     const { labelDeleted, content, color } = this.state;
-    return <div>{labelDeleted ? <ViewPayment bill={this.props.bill} profileId={this.props.profileId} /> : this.deleteBillPayment(color, content)}</div>
+    return <div>{labelDeleted ? <ViewPayment bill={this.props.bill} profileId={this.props.profileId} cancel={this.props.cancelViewPay} /> : this.deleteBillPayment(color, content)}</div>
   }
 
   deleteBillPayment = (color, content) => {
     return (
       <div className="animated fadeIn">
         <Card>
-          <CardHeader><strong>Delete Bill</strong></CardHeader>
+          <CardHeader><strong>Delete Bill Payment</strong></CardHeader>
           <CardBody>
             <Col sm="12" md={{ size: 5, offset: 4 }}><Alert color={color}>{content}</Alert></Col>
           </CardBody>
