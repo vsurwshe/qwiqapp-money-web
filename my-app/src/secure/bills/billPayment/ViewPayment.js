@@ -5,6 +5,7 @@ import UpdateBillPayment from './UpdateBillPayment';
 import DeleteBillPayment from './DeleteBillPayment';
 import BillApi from '../../../services/BillApi';
 import PaymentApi from '../../../services/PaymentApi';
+import BillPayment from './ BillPayment';
 
 class ViewPayment extends Component {
   constructor(props) {
@@ -43,8 +44,10 @@ class ViewPayment extends Component {
   render() {
     const { payments, bill, currencies } = this.state;
     let selectedCurrency;
-    if (payments === undefined) {
+    if (payments.length === 0) {
       return this.noPaymentsAdded();
+    } else if (this.state.addBillPayment) {
+      return <BillPayment bill={this.state.bill} paidAmount={this.props.paidAmount} profileId={this.props.profileId}/>
     } else if (this.state.updateBillPayment) {
       return <UpdateBillPayment profileId={this.props.profileId} bill={this.state.bill} updatePayment={this.state.updatePayment} cancelViewPay={this.props.cancel} currency={this.state.currency}
         paymentDate={this.dateFormat} />
@@ -84,7 +87,7 @@ class ViewPayment extends Component {
               return this.loadSinglePayment(payment, selectedCurrency, key, paymentAmount)
             })}
             <tr>
-              <td  colspan="3"></td> 
+              <td  colSpan="3"></td> 
               <td>TOTAL PAID AMOUNT</td>
               <td><b>{selectedCurrency[0].symbol} {totalAmount}</b></td>
               <td ></td>
@@ -92,6 +95,7 @@ class ViewPayment extends Component {
           </tbody>
         </Table>
         <br /> {this.state.bill.paid ? this.loadPaidMessage() : this.loadDueMessage(selectedCurrency[0], billAmount, totalAmount, paymentStyle)}
+        
       </CardBody>
     </Card>
   }
@@ -103,8 +107,11 @@ class ViewPayment extends Component {
   loadDueMessage = (selectedCurrency, billAmount, totalAmount, paymentStyle) => {
     return <b style={paymentStyle}>
       * {selectedCurrency.symbol}{billAmount - totalAmount} to pay on total due of {selectedCurrency.symbol}{billAmount}.
+      <Button color="info" style={{marginLeft: 20}} onClick={this.handleAddPayment}> Add payment </Button>
     </b>
   }
+
+  handleAddPayment = () => { this.setState({ addBillPayment: true }); }
 
   callBillsApi = () => {
     new BillApi().getBills(() => { console.log("successcall") }, () => { console.log("errorCall") }, this.props.profileId, "True")

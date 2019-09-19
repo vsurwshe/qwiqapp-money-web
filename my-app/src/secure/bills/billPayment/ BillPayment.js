@@ -10,11 +10,9 @@ class BillPayment extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            bill: props.bill,
             currencies: Store.getCurrencies(),
             alertColor: '',
             alertMessage: '',
-            billType: props.bill.amount > 0,
             paidAmount: props.paidAmount,
         };
     }
@@ -39,9 +37,9 @@ class BillPayment extends Component {
     }
 
     handleSuccessCall = (response) => {
-        let paidAmountRes = this.props.paidAmount === 0 ? this.state.bill.amount : this.props.paidAmount;
+        let paidAmountResult = this.props.paidAmount === 0 ? this.props.bill.amount : this.props.paidAmount;
         // Checking Full payment paid or not.
-        if (response.amount - (paidAmountRes) === 0) {
+        if (response.amount - (paidAmountResult) === 0) {
             this.setState({ alertColor: "success", alertMessage: "BillPayment added succesfully !!", paid: true });
         } else {
             this.setState({ alertColor: "success", alertMessage: "BillPayment added succesfully !!" });
@@ -60,8 +58,6 @@ class BillPayment extends Component {
     calculate = () => { this.setState({ calculate: !this.state.calculate }); }
 
     cancelPayment = () => { this.setState({ cancelPayment: true }); }
-
-    handleBillType = () => { this.setState({ billType: !this.state.billType }); }
 
     render() {
         const { cancelPayment, currencies } = this.state
