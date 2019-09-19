@@ -10,22 +10,22 @@ class BillApi {
 
   //This Method Get All Bills
   getBills(success, failure, profileId, value) {
-    Store.getBills() === null || value === "True" ? process(success, failure, profileId + "/bills", "GET") : success(Store.getBills());
+    Store.getBills() === null || value === "True" ? process(success, failure, profileId + "/bills", "GET", profileId) : success(Store.getBills());
   }
 
   //This Method Get Bill By ID
   getBillById(success, failure, profileId, billId) {
-    process(success, failure, profileId + "/bills/" + billId, "GET");
+    process(success, failure, profileId + "/bills/" + billId, "GET", profileId);
   }
 
   //This Method Update Bill 
-  updateBill(success, failure, profileId, billId,  data) {
+  updateBill(success, failure, profileId, billId, data) {
     process(success, failure, profileId + "/bills/" + billId, "PUT", profileId, data);
   }
 
   //This Method Delete Bill
   deleteBill(success, failure, profileId, billId) {
-    process(success, failure, profileId + "/bills/" + billId+"?removeDependency=true", "DELETE", profileId);
+    process(success, failure, profileId + "/bills/" + billId + "?removeDependency=true", "DELETE", profileId);
   }
 }
 
@@ -35,14 +35,14 @@ async function process(success, failure, Uurl, Umethod, profileId, data, reload)
   let HTTP = httpCall(Uurl, Umethod);
   let promise;
   try {
-      data === null ? promise = await HTTP.request() : promise = await HTTP.request({data});
-      if (Umethod === "GET") {
-        Store.saveBills(promise.data);
-        validResponse(promise, success)
-      } else {
-        await new BillApi().getBills(success, failure, profileId, "True");
-      }
+    data === null ? promise = await HTTP.request() : promise = await HTTP.request({ data });
+    if (Umethod === "GET") {
+      Store.saveBills(promise.data);
+      validResponse(promise, success)
+    } else {
+      await new BillApi().getBills(success, failure, profileId, "True");
     }
+  }
   //TODO: handle user error   
   catch (err) {
     handleAccessTokenError(profileId, err, failure, Uurl, Umethod, data, success, reload);
@@ -53,7 +53,7 @@ async function process(success, failure, Uurl, Umethod, profileId, data, reload)
 let handleAccessTokenError = function (profileId, err, failure, Uurl, Umethod, data, success, reload) {
   if (err.request && err.request.status === 0) {
     new BillApi().getBills(success, failure, profileId, "True");
-  } else if (err.response&& (err.response.status === 403 || err.response.status === 401)) {
+  } else if (err.response && (err.response.status === 403 || err.response.status === 401)) {
     if (!reload) {
       new LoginApi().refresh(() => {
         process(success, failure, Uurl, Umethod, profileId, data, "restrict")

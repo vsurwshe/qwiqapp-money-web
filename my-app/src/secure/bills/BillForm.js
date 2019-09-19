@@ -23,7 +23,7 @@ class BillForm extends Component {
       profileId: props.pid,
       alertColor: "",
       alertMessage: "",
-      currencies: [],
+      currencies: Store.getCurrencies() ? Store.getCurrencies() : [],
       cancelCreateBill: false,
       doubleClick: false,
       categoryOptionUpdate: false,
@@ -42,23 +42,18 @@ class BillForm extends Component {
       taxPercent: props.bill ? props.bill.taxPercent : 0,
       taxAmount: props.bill ? this.setBillAmount(props.bill.taxAmount_) : 0,
       notifyDays: props.bill ? props.bill.notifyDays : 0,
-      billType: props.bill ? (props.bill.amount < 0 ? '-' : '+') : '',
-      moreOptions: this.handleMoreOptios(props.bill),
+      type: props.bill ? props.bill.type : '',
+      moreOptions: this.handleMoreOptions(props.bill),
     };
   }
 
-  handleMoreOptios = (bill) =>{
-    const {taxPercent, contactId, labelIds, notificationEnabled } = bill ? bill : ""
+  handleMoreOptions = (bill) => {
+    const { taxPercent, contactId, labelIds, notificationEnabled } = bill ? bill : ""
     if (bill && (taxPercent || contactId || labelIds || notificationEnabled)) {
       return true
     } else {
       return false
     }
-  }
-
-  componentDidMount = () => {
-    const currencies = Store.getCurrencies();
-    this.setState({ currencies })
   }
 
   setBillAmount = (amount) => {
@@ -81,8 +76,6 @@ class BillForm extends Component {
         "billDate": Data.datePassToAPI(values.billDate),
         "categoryId": categoryOption.value,
         "contactId": contactOptionUpdate ? contactOption.value : (contactOption ? contactOption.value : ''),
-        "amount": values.amount,
-        "type": values.label === "-" ? "EXPENSE_PAYABLE" : "INCOME_RECEIVABLE",
         "notificationEnabled": this.state.checked,
         "taxPercent": values.taxPercent ? values.taxPercent : 0,
         "labelIds": !labelOption || labelOption === [] ? null :
@@ -104,35 +97,26 @@ class BillForm extends Component {
   handleCreateBillPost = async (e, data) => {
     e.persist();
     this.setState({ doubleClick: true })
-    if (this.state.profileId) {
-      await new BillApi().createBill(this.successCreateBill, this.errorCall, this.state.profileId, data);
-    } else {
-      this.errorCall("profile Id undefined")
-    }
+    await new BillApi().createBill(this.successCreateBill, this.errorCall, this.state.profileId, data);
   };
 
   handleUpdateBill = (e, data) => {
     e.persist();
     this.setState({ doubleClick: true })
-    if (this.state.profileId) {
-      new BillApi().updateBill(this.successUpdateBill, this.errorCall, this.state.profileId, this.props.bill.id, data)
-    } else {
-      this.errorCall("profile Id undefined")
-    }
+    new BillApi().updateBill(this.successUpdateBill, this.errorCall, this.state.profileId, this.props.bill.id, data)
   };
 
   //this method call when labels created successfully
-  successCreateBill = (response) => {
+  successCreateBill = () => {
     this.callAlertTimer("success", "New Bill Created....");
   }
   // updated bill
-  successUpdateBill = response => {
+  successUpdateBill = () => {
     this.callAlertTimer("success", "Bill Updated Successfully !! ");
   };
 
   //this handle the error response the when api calling
   errorCall = err => {
-    console.log(err);
     this.callAlertTimer("danger", "Unable to Process Request, Please try Again....");
   };
 
@@ -156,10 +140,10 @@ class BillForm extends Component {
 
   handleTaxAmount = (e) => {
     e.preventDefault()
-    this.handleTax(this.state.amount, e.target.value, null );
+    this.handleTax(this.state.amount, e.target.value, null);
   }
 
-  handleTax = (amount, taxPercent, taxAmount ) => {
+  handleTax = (amount, taxPercent, taxAmount) => {
     let result = {
       "taxPercent": 0,
       "taxAmount": 0
@@ -192,7 +176,7 @@ class BillForm extends Component {
   }
 
   setDate = (billDate, days, type) => {
-    if (billDate && days>0) {
+    if (billDate && days > 0) {
       if (this.state.alertColor) { this.setState({ alertColor: '', alertMessage: '' }) }
       let billDate = new Date(this.state.billDate);
       if (parseInt(days) === 0) {
@@ -207,10 +191,10 @@ class BillForm extends Component {
       if (!this.state.billDate) {
         this.callAlertTimer("danger", "Please enter Bill Date... ");
       } else if (type === 'dueDays') {
-        this.setState({dueDate: ""});
+        this.setState({ dueDate: "" });
         this.callAlertTimer("danger", "Please enter valid Due days... ");
       } else {
-        this.setState({notifyDate: ""});
+        this.setState({ notifyDate: "" });
         this.callAlertTimer("danger", "Please enter Notify Days... ");
       }
     }
@@ -238,16 +222,12 @@ class BillForm extends Component {
     if (cancelCreateBill) {
       return <Bills />
     } else {
-      return <div>{billCreated ? <Bills /> : this.selectLabels(alertColor, alertMessage, labels, categories, contacts)}</div>
+      return <div>{billCreated ? <Bills /> : this.billFormField(alertColor, alertMessage, labels, categories, contacts)}</div>
     }
   }
 
-  selectLabels = (alertColor, alertMessage, labels, categories, contacts) => {
-    return this.billFormField(alertColor, labels, alertMessage, categories, contacts);
-  }
-
-  billFormField = (alertColor, labels, alertMessage, categories, contacts) => {
-    const { currencies, billDate, dueDate, moreOptions, doubleClick, taxPercent, taxAmount, checked, billType, amount, dueDays } = this.state
+  billFormField = (alertColor, alertMessage, labels, categories, contacts) => {
+    const { currencies, billDate, dueDate, moreOptions, doubleClick, taxPercent, taxAmount, checked, type, amount, dueDays } = this.state
     const { bill } = this.props
     let FormData = {
       bill: bill,
@@ -264,7 +244,7 @@ class BillForm extends Component {
       taxPercent: taxPercent,
       taxAmount: taxAmount,
       checked: checked,
-      billType: billType
+      type: type
     }
     let headerMessage = this.props.bill ? "Update Bill " : "Create Bill"
     return this.loadBillForm(FormData, alertColor, alertMessage, headerMessage)
@@ -276,7 +256,7 @@ class BillForm extends Component {
         <h4 className="padding-top"><b><center>{headerMessage}</center></b></h4>
         <Container>
           <Col>
-            <Alert color={alertColor}>{alertMessage}</Alert>
+            {alertColor && <Alert color={alertColor}>{alertMessage}</Alert> }
             <BillFormUI data={formData}
               handleSubmitValue={this.handleSubmitValue}
               handleSetAmount={this.handleSetAmount}
@@ -300,7 +280,6 @@ class BillForm extends Component {
     let labelName, contactName;
     if (this.props.bill) {
       const options = Data.labels(this.props.labels);
-
       labelName = this.props.bill.labelIds === null ? '' : this.props.bill.labelIds.map(id => { return options.filter(item => { return item.value === id }) }).flat();
       contactName = Data.contacts(this.props.contacts).filter(item => { return item.value === this.props.bill.contactId })
     }
@@ -311,7 +290,6 @@ class BillForm extends Component {
             label="Tax (in %)" type="number" onChange={(e) => { this.handleTaxAmount(e) }} />
         </Col>
         <Col>
-        {/* value={Math.round(this.state.taxAmount * 100) / 100} */}
           <AvField name='dummy' label="Tax Amount" value={Math.round(this.state.taxAmount * 100) / 100} placeholder="0" type="number" onChange={(e) => { this.handleTaxPercent(e) }} />
         </Col>
       </Row>
@@ -319,7 +297,7 @@ class BillForm extends Component {
         <Col>
           {/* Labels loading in select options filed */}
           <label>Select Labels</label>
-          <Select isMulti options={Data.labels(this.props.labels)} styles={Data.colourStyles} defaultValue={labelName} placeholder="Select Labels " onChange={this.labelSelected} /></Col>
+          <Select isMulti options={Data.labels(this.props.labels)} styles={Data.colourStyles} defaultValue={labelName} placeholder="Select Labels" onChange={this.labelSelected} /></Col>
         <Col>
           {/* Contacts loading in select options filed */}
           <label>Select Contacts</label>
@@ -332,7 +310,7 @@ class BillForm extends Component {
       </Row> <br />
       {this.state.checked &&
         <Row>
-          <Col><AvField name="notifyDays" label="Notify Days" value={this.state.notifyDays} placeholder="Ex: 2" type="number" onChange={(e) => { this.handleDate(e) }} errorMessage="Invalid notify-days" /></Col>
+          <Col><AvField name="notifyDays" label="Notify Days" value={this.state.notifyDays} placeholder="Ex: 1" type="number" onChange={(e) => { this.handleDate(e) }} errorMessage="Invalid notify-days" /></Col>
           <Col><AvField name="notifyDate" label="notify Date" disabled value={this.state.notifyDate} type="date" errorMessage="Invalid Date" validate={{ date: { format: 'dd/MM/yyyy' } }} /></Col>
         </Row>
       }

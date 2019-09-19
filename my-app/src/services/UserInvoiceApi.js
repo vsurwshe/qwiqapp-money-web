@@ -8,6 +8,7 @@ export class UserInvoiceApi {
     process(success, failure, "/invoices/" + invoceId, "GET")
   }
 }
+
 function process(success, failure, requestUrl, requestMethod, reload) {
   let HTTP = httpCall(requestUrl, requestMethod);
   let promise;
