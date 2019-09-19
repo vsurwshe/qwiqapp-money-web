@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Card, FormGroup, Button, Alert, Col } from 'reactstrap';
 import AttachmentApi from '../../../services/AttachmentApi';
-import { ReUseComponents } from '../../utility/ReUseComponents';
+import { ShowServiceComponet } from '../../utility/ShowServiceComponet';
 import Contacts from '../Contacts';
 
 class AddAttachment extends Component {
@@ -68,7 +68,7 @@ class AddAttachment extends Component {
   loadAddAttachment = () => {
     return (
       <Card>
-        {ReUseComponents.loadHeader("Add Attachment")}
+        {ShowServiceComponet.loadHeader("Add Attachment")}
         <FormGroup>
           <center>
             <Col sm={6}><Alert color={this.state.color} >{this.state.content}</Alert></Col>

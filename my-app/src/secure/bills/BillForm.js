@@ -9,7 +9,7 @@ import Config from "../../data/Config";
 import Store from "../../data/Store";
 import { BillFormUI } from "../utility/FormsModel";
 import '../../css/style.css';
-import { ReUseComponents } from "../utility/ReUseComponents";
+import { ShowServiceComponet } from "../utility/ShowServiceComponet";
 
 class BillForm extends Component {
   constructor(props) {
@@ -29,10 +29,10 @@ class BillForm extends Component {
       categoryOptionUpdate: false,
       labelOptionUpdate: false,
       contactOptionUpdate: false,
-      notifyDate: props.bill ? ReUseComponents.customDate(props.bill.notifyDate_) : '',
+      notifyDate: props.bill ? ShowServiceComponet.customDate(props.bill.notifyDate_) : '',
       dueDays: props.bill ? props.bill.dueDays : 0,
-      dueDate: props.bill ? ReUseComponents.customDate(props.bill.dueDate_) : '',
-      billDate: props.bill ? ReUseComponents.customDate(props.bill.billDate) : '',
+      dueDate: props.bill ? ShowServiceComponet.customDate(props.bill.dueDate_) : '',
+      billDate: props.bill ? ShowServiceComponet.customDate(props.bill.billDate) : '',
       amount: props.bill ? this.setBillAmount(props.bill.amount) : 0,
       contactOption: props.bill ? props.bill.contactId : '',
       categoryOption: props.bill ? props.bill.categoryId : null,
@@ -180,8 +180,10 @@ class BillForm extends Component {
   }
 
   handleBillDate = async (e) => {
-    await this.setState({ billDate: e.target.value });;
-    this.setDate(this.state.billDate, this.state.dueDays)
+    await this.setState({ billDate: e.target.value });
+    if (this.props.bill) {
+      this.setDate(this.state.billDate, this.state.dueDays);
+    }
   }
 
   handleDate = (e) => {
@@ -190,7 +192,7 @@ class BillForm extends Component {
   }
 
   setDate = (billDate, days, type) => {
-    if (billDate && days) {
+    if (billDate && days>0) {
       if (this.state.alertColor) { this.setState({ alertColor: '', alertMessage: '' }) }
       let billDate = new Date(this.state.billDate);
       if (parseInt(days) === 0) {
@@ -203,9 +205,13 @@ class BillForm extends Component {
       type === 'dueDays' ? this.setState({ dueDate: date }) : this.setState({ notifyDate: date })
     } else {
       if (!this.state.billDate) {
-        this.callAlertTimer("danger", "Please enter Bill Date... ")
+        this.callAlertTimer("danger", "Please enter Bill Date... ");
+      } else if (type === 'dueDays') {
+        this.setState({dueDate: ""});
+        this.callAlertTimer("danger", "Please enter valid Due days... ");
       } else {
-        this.callAlertTimer("danger", "Please enter Due days, Notify Days... ")
+        this.setState({notifyDate: ""});
+        this.callAlertTimer("danger", "Please enter Notify Days... ");
       }
     }
   }
@@ -279,8 +285,6 @@ class BillForm extends Component {
               toggleCustom={this.toggleCustom}
               loadMoreOptions={this.loadMoreOptions}
               cancel={this.cancelCreateBill}
-              handleTaxAmount={this.handleTaxAmount}
-              handleTaxPercent={this.handleTaxPercent}
               labelSelected={this.labelSelected}
               contactSelected={this.contactSelected}
               categorySelected={this.categorySelected}

@@ -5,7 +5,7 @@ import Avatar from 'react-avatar';
 import { FaSearch, FaAngleDown } from 'react-icons/fa';
 import '../../css/style.css';
 
-export const ReUseComponents = {
+export const ShowServiceComponet = {
   loadDeleting: function (headerMsg, bodyMessage, color) {
     return (
       <div className="animated fadeIn">

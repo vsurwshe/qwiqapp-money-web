@@ -11,7 +11,7 @@ import DeleteBill from "./DeleteBill";
 import ContactApi from '../../services/ContactApi';
 import { ProfileEmptyMessage } from "../utility/ProfileEmptyMessage";
 import { DeleteModel } from "../utility/DeleteModel";
-import { ReUseComponents } from "../utility/ReUseComponents";
+import { ShowServiceComponet } from "../utility/ShowServiceComponet";
 import '../../css/style.css';
 import Config from "../../data/Config";
 
@@ -244,7 +244,7 @@ class Bills extends Component {
   }
 
   loadHeader = (bills) => {
-    return new ReUseComponents.loadHeaderWithSearch("BILLS", bills, this.searchSelected, "Search Bills.....", this.createBillAction);
+    return new ShowServiceComponet.loadHeaderWithSearch("BILLS", bills, this.searchSelected, "Search Bills.....", this.createBillAction);
   }
 
   loadLoader = () => {
@@ -310,12 +310,12 @@ class Bills extends Component {
   // Show the Single Bill 
   loadSingleBill = (bill, key) => {
     return <tr onPointerEnter={(e) => this.onHover(e, key)} onPointerLeave={(e) => this.onHoverOff(e, key)} width={50} key={key}>
-      <td>{ReUseComponents.customDate(bill.dueDate_, true)}</td>
-      <td>{ReUseComponents.customDate(bill.billDate, true)}</td>
+      <td>{ShowServiceComponet.customDate(bill.dueDate_, true)}</td>
+      <td>{ShowServiceComponet.customDate(bill.billDate, true)}</td>
       <td>{bill.description ? bill.description : bill.categoryName.name}</td>
-      <td>{ReUseComponents.billTypeAmount(bill.currency,bill.amount) }</td>
+      <td>{ShowServiceComponet.billTypeAmount(bill.currency,bill.amount) }</td>
       <td>
-        <p>Last paid: {ReUseComponents.billTypeAmount(bill.currency,0)}</p>
+        <p>Last paid: {ShowServiceComponet.billTypeAmount(bill.currency,0)}</p>
       </td>
       <td><h6>{this.loadDropDown(bill, key)}</h6></td>
     </tr>
@@ -353,7 +353,7 @@ class Bills extends Component {
   //this Method loads Browser DropDown
   loadDropDown = (bill, key) => {
     return <span className="float-right" style={{marginTop: 4}} >
-      {ReUseComponents.loadEditRemoveButtons(bill, this.updateBillAction, this.setBillId, this.toggleDanger)}     
+      {ShowServiceComponet.loadEditRemoveButtons(bill, this.updateBillAction, this.setBillId, this.toggleDanger)}     
     </span>
   }
 
