@@ -126,7 +126,8 @@ class ViewPayment extends Component {
       <td> {selectedCurrency[0].symbol} {paymentAmount} </td>
       <td>
         <Button style={{ backgroundColor: "transparent", borderColor: '#green', color: "green" }} onClick={() => this.handleUpdateBillPayment(payment, selectedCurrency[0].symbol)}>Edit</Button> &nbsp;
-        <Button style={{ backgroundColor: "transparent", borderColor: '#red', color: "red" }} onClick={() => this.handleDeleteBillPayment(payment.txId)}>Remove</Button></td>
+        {/* <Button style={{ backgroundColor: "transparent", borderColor: '#red', color: "red" }} onClick={() => this.handleDeleteBillPayment(payment.txId)}>Remove</Button> */}
+        </td>
     </tr>
   }
 
@@ -152,7 +153,7 @@ class ViewPayment extends Component {
 
   loadHeader = (headerMessage) => {
     return <CardHeader>
-      <strong>{headerMessage}</strong>
+      <strong>{headerMessage} {this.state.bill  && this.state.bill.amount}</strong>
       <Button color="success" className="float-right" onClick={this.props.cancel}> Goto Bills </Button>
     </CardHeader>
   }

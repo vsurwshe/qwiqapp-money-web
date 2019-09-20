@@ -13,7 +13,7 @@ class BillPayment extends Component {
             currencies: Store.getCurrencies(),
             alertColor: '',
             alertMessage: '',
-            paidAmount: props.paidAmount,
+            paidAmount: props.paidAmount
         };
     }
 
@@ -54,8 +54,6 @@ class BillPayment extends Component {
     handlePaidDate = () => {
         return new Intl.DateTimeFormat('sv-SE', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(new Date());
     }
-
-    calculate = () => { this.setState({ calculate: !this.state.calculate }); }
 
     cancelPayment = () => { this.setState({ cancelPayment: true }); }
 

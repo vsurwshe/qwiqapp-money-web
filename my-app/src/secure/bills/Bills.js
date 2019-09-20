@@ -19,7 +19,6 @@ import ViewPayment from "./billPayment/ViewPayment";
 import PaymentApi from "../../services/PaymentApi";
 
 class Bills extends Component {
-
   constructor(props) {
     super(props);
     this.state = {
@@ -115,7 +114,7 @@ class Bills extends Component {
     }
   }
 
-  getBillPayments = async () => {
+getBillPayments = async () => {
     let previousPayments = [];
     this.state.bills.map(async (bill, key) => {
       this.getPayments(bill.id, previousPayments)
@@ -216,7 +215,7 @@ class Bills extends Component {
   }
 
   handleShowPayment = (bill) => {
-    let lastPaid = this.calculateLastPaid(bill, bill.amount);
+    let lastPaid = this.calculateLastPaid(bill);
     if (lastPaid) {
       this.setState({ showPaymentOptions: !this.state.showPaymentOptions, requiredBill: bill, paidAmount: lastPaid.paidAmount });
     }
@@ -226,8 +225,9 @@ class Bills extends Component {
   handleAddPayment = () => { this.setState({ addPayment: true }); }
   handleMarkAsPaid = () => { this.setState({ markPaid: true }); }
   handleViewPayment = () => { this.setState({ viewPayment: !this.state.viewPayment, showPaymentOptions: false }); }
+  handleMarkAsUnpaidPayment = () => { this.setState({markAsUnPaid: true, showPaymentOptions: false }) }
 
-  calculateLastPaid = (bill, billAmount) => {
+  calculateLastPaid = (bill) => {
     if (this.state.billPayments.length > 0) {
       // Filtering billpayments according to billId
       let filteredBillPayment = this.state.billPayments.filter(billPayment => billPayment.billId === bill.id);
@@ -237,17 +237,24 @@ class Bills extends Component {
         filteredBillPayment[0].payments.forEach((payment) => {
           paidAmount = paidAmount - (payment.amount);
         })
+        let sortedPayment = filteredBillPayment[0].payments.sort((a, b) => (a.date > b.date ? -1 : 1))[0]
         let lastPaid = {
           payments: filteredBillPayment[0].payments, //  Getting payments list of a specific bill
-          date: filteredBillPayment[0].payments.sort((a, b) => (a.txId > b.txId ? -1 : 1))[0].date,  // Sorting by payment id in desc order and getting last payment date
-          paymentAmt: filteredBillPayment[0].payments.sort((a, b) => (a.txId > b.txId ? -1 : 1))[0].amount,  // Sorting by payment id in desc order and getting last payment amount
+          date: sortedPayment.date,  // Sorting and getting last payment date
+          paymentAmt: sortedPayment.amount,  // Sorting and getting last payment amount
           paidAmount: paidAmount,   // setting the total paid amount
         }
-        return lastPaid;
+        return lastPaid;      
       }
     }
   }
-
+  handleMarkAsUnPaid = () => {
+    new BillApi().markAsUnPaid(this.successUnpaidBill, this.failureCall, this.state.profileId, this.state.requiredBill.id);
+  }
+  successUnpaidBill = ()=>{this.callAlertTimer("success", "Your bill succefully made as unpaid bill")}
+  failureCall = (error)=>{
+    this.callAlertTimer("success", "unable to process your request, please try again..")
+  }
   render() {
     const { bills, createBillRequest, updateBillRequest, id, deleteBillRequest, visible, profileId, updateBill, spinner, labels, categories, contacts, danger, paidAmount, requiredBill, markPaid } = this.state;
     if (!profileId) {
@@ -255,10 +262,10 @@ class Bills extends Component {
     } else if (bills.length === 0 && !createBillRequest) {  // Checks for bills not there and no bill create Request, then executes
       return <div>
         {/*  If spinner is true and bills are there, it shows the loader function, until bills are loaded */}
-        {(spinner && bills.length !== 0) ? <>{visible && <Alert isOpen={visible} color={this.state.color}>{this.state.content}</Alert>} {this.loadLoader()} </>
-          :
-          // If bills not there, it will show Empty message
-          (bills.length === 0 ? this.emptyBills() : "")}</div>
+        {(spinner && bills.length !== 0) ? <>{visible && <Alert isOpen={visible} color={this.state.color}>{this.state.content}</Alert>} {this.loadLoader()} 
+               </>:bills.length === 0 && this.emptyBills() // If bills not there, it will show Empty message 
+        }  
+          </div>
     } else if (createBillRequest) {
       return <BillForm pid={profileId} labels={labels} categories={categories} contacts={contacts} />
     } else if (updateBillRequest) {
@@ -270,7 +277,7 @@ class Bills extends Component {
     } else if (this.state.viewPayment) {
       return <ViewPayment bill={this.state.requiredBill} paidAmount={paidAmount} profileId={profileId} cancel={this.handleViewPayment} />
     } else {
-      return <div>{this.displayAllBills(visible, bills)}{danger && this.deleteBillModel()}{this.state.showPaymentOptions && this.loadPaymentModel(bills)}</div>
+      return <div>{this.displayAllBills(visible, bills)}{danger && this.deleteBillModel()}{this.state.showPaymentOptions && this.loadPaymentModel()} {this.state.markAsUnPaid && this.handleMarkAsUnPaid()} </div>
     }
   }
 
@@ -349,16 +356,47 @@ class Bills extends Component {
 
   // Show the Single Bill 
   loadSingleBill = (bill, key) => {
-    return <tr onPointerEnter={(e) => this.onHover(e, key)} onPointerLeave={(e) => this.onHoverOff(e, key)} width={50} key={key}>
-      <td>{ShowServiceComponet.customDate(bill.dueDate_, true)}</td>
-      <td>{ShowServiceComponet.customDate(bill.billDate, true)}</td>
-      <td>{bill.description ? bill.description : bill.categoryName.name}</td>
-      <td>{ShowServiceComponet.billTypeAmount(bill.currency,bill.amount) }</td>
+    let strike = bill.paid
+    let lastPaid = this.calculateLastPaid(bill, bill.amount);
+    let billDescription = bill.description ? bill.description : bill.categoryName.name
+    return <tr width={50} key={key}>
+      <td>{strike ? <strike>{this.dateFormat(bill.dueDate_)}</strike>: this.dateFormat(bill.dueDate_)}</td>
+      <td>{strike ? <strike> {this.dateFormat(bill.billDate)} </strike> : this.dateFormat(bill.billDate)}</td>
+      <td>{strike ? <strike> {billDescription} </strike> : billDescription}</td>
+      <td>{bill.amount > 0 ?
+        <b className="bill-amount-color">
+          {strike ? <strike>{this.loadBillAmount(bill.currency, bill.amount)}</strike> : this.loadBillAmount(bill.currency, bill.amount)}
+        </b> :
+        <b className="text-color">
+          {strike ? <strike>{this.loadBillAmount(bill.currency, bill.amount)}</strike> : this.loadBillAmount(bill.currency, bill.amount)}
+        </b>
+      }</td>
       <td>
-        <p>Last paid: {ShowServiceComponet.billTypeAmount(bill.currency,0)}</p>
+        {lastPaid ?
+          <h6 className="bill-amount-color">
+            {strike ? <strike> {this.loadPaymentDateAndAmount(bill, lastPaid)} </strike> : this.loadPaymentDateAndAmount(bill, lastPaid)}
+          </h6> : ''
+        }
       </td>
       <td><h6>{this.loadDropDown(bill, key)}</h6></td>
     </tr>
+  }
+
+
+  loadPaymentDateAndAmount = (bill, lastPaid) => {
+    return <> <b>Last paid</b> {this.dateFormat(lastPaid.date)} &nbsp; { this.loadBillAmount(bill.currency, lastPaid.paymentAmt)
+    } </>
+  }
+
+  loadBillAmount = (currency, amount) => {
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: currency }).format(amount)
+  }
+
+  dateFormat = (userDate) => {
+    let date = "" + userDate
+    let dateString = date.substring(0, 4) + "-" + date.substring(4, 6) + "-" + date.substring(6, 8)
+    const formatDate = new Intl.DateTimeFormat('en-gb', { month: 'short', weekday: 'short', day: '2-digit' }).format(new Date(dateString));
+    return formatDate;
   }
 
   loadDateFormat = (dateParam) => {
@@ -399,21 +437,25 @@ class Bills extends Component {
 
   loadPaymentModel = () => {
     return <Modal isOpen={this.state.showPaymentOptions} toggle={this.handleShowPayment} style={{ paddingTop: "20%" }} backdrop={true}>
-      <ModalHeader toggle={this.handleShowPayment}>Payments</ModalHeader>
+      <ModalHeader toggle={this.handleShowPayment}>Payments {this.state.requiredBill.id}</ModalHeader>
       <ModalBody>
         <FormGroup check >
           <Label check>
             <Input type="radio" name="radio2" value="true" onChange={this.handleAddPayment} checked={this.state.addPayment} />
             Add Payment
           </Label> <br />
-          <Label check>
-            <Input type="radio" name="radio2" value="false" onChange={this.handleMarkAsPaid} checked={this.state.markPaid} />
-            Mark as paid
-          </Label><br />
+        {this.state.requiredBill.paid ? <Label check>
+            <Input type="checkbox" name="radio2" value="false" onChange={this.handleMarkAsUnpaidPayment} checked={this.state.markAsPaid} />
+            Mark As unPaid
+          </Label>
+          : <Label check>
+          <Input type="radio" name="radio2" value="false" onChange={this.handleMarkAsPaid} checked={this.state.markPaid} />
+          Mark as paid
+        </Label>}<br />
           <Label check>
             <Input type="radio" name="radio2" value="false" onChange={this.handleViewPayment} checked={this.state.viewPayment} />
             View payment list
-          </Label>
+          </Label>       
         </FormGroup>
       </ModalBody>
       <ModalFooter>
