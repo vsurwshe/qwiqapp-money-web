@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import { AvForm, AvField } from 'availity-reactstrap-validation';
-import { FormGroup, Button, Col, Card, CardBody, CardHeader, Container, Row, Alert } from 'reactstrap';
+import { Button, Col, Card, CardBody, CardHeader, Container, Row, Alert } from 'reactstrap';
 import Bills from '../../bills/Bills';
 import PaymentApi from '../../../services/PaymentApi';
 import Store from '../../../data/Store';
 import Config from '../../../data/Config';
+import {BillPaymentForm} from './FormModel'
 
 class BillPayment extends Component {
     constructor(props) {
@@ -51,8 +51,8 @@ class BillPayment extends Component {
 
     handleErrorCall = (error) => { this.setState({ doubleClick: false }); }
 
-    handlePaidDate = () => {
-        return new Intl.DateTimeFormat('sv-SE', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(new Date());
+    handlePaidDate = (date) => {
+        return new Intl.DateTimeFormat('sv-SE', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(date);
     }
 
     cancelPayment = () => { this.setState({ cancelPayment: true }); }
@@ -98,32 +98,19 @@ class BillPayment extends Component {
     }
 
     loadBillPaymentForm = (selectedCurrency, bill) => {
-        return <AvForm onSubmit={this.handleSubmitValue}>
-            <Row>
-                <Col xs="12" sm="5">
-                    <AvField type="number" name="amount" label={`Payment Amount (${selectedCurrency.symbol})`} placeholder="Amount" value={this.calculateRemAmt(this.props.paidAmount)} errorMessage="Invaild payment amount" required />
-                </Col>
-                <Col xs="6" sm="4">
-                    <AvField type="date" name="date" label="Payment Date" value={this.handlePaidDate()} errorMessage="Select payment date" required />
-                </Col>
-                <Col xs="6" sm="3" >
-                    <AvField type="select" name="type" label="Payment Type" errorMessage="Select type of payment" value={bill.type === 'EXPENSE_PAYABLE' ? "Paid" : "Received"} required>
-                        <option value="">Select type of payment</option>
-                        <option value="Paid">Paid</option>
-                        <option value="Received">Received</option>
-                    </AvField>
-                </Col>
-            </Row>
-            <Row>
-                <Col>
-                    <AvField type="textarea" name="notes" label="Payment Notes / Description" placeholder="Payment description" />
-                </Col>
-            </Row>
-            <FormGroup >
-                <Button color="success" disabled={this.state.doubleClick}> Save  </Button> &nbsp;&nbsp;
-                    <Button type="button" onClick={this.cancelPayment}>Cancel</Button>
-            </FormGroup>
-        </AvForm>
+        let formData = {
+            bill: bill,
+            paidAmount: this.calculateRemAmt(this.props.paidAmount),
+            paymentType: bill.type === 'EXPENSE_PAYABLE' ? "Paid" : "Received",
+            doubleClick: this.state.doubleClick,
+            amountLable: "Payment Amount ("+ selectedCurrency.symbol +")"
+        }
+        return <BillPaymentForm data = {formData}
+            handleSubmitValue = {this.handleSubmitValue}
+            calculateRemAmt = {this.calculateRemAmt}
+            handlePaidDate = {this.handlePaidDate}
+            cancelPayment= {this.cancelPayment}
+        />
     }
 
     calculateRemAmt = (paidAmount) => {
