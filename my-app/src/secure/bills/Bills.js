@@ -55,28 +55,66 @@ class Bills extends Component {
   setProfileId = async () => {
     if (Store.getProfile()) {
       await this.setState({ profileId: Store.getProfile().id });
-      this.getCategory();
+      // This condition checking whether api call first time or reptely 
+      this.state.categories !== undefined && this.state.categories.length <= 0 ? this.getCategory(): this.forceUpdate();
     }
   }
 
+  // This Method execute the Category API Call
   getCategory = () => {
     new CategoryApi().getCategories(this.successCallCategory, this.errorCall, this.state.profileId);
   }
 
-  // Categories response
+  // Handle Categories response
   successCallCategory = async categories => {
-    if (categories === []) {
-      this.setState({ categories: [0] })
+    if (categories.length === 0 && this.state.categories !== undefined) {
+      this.setState({ categories: undefined})
     } else {
       await this.setState({ categories: categories })
-      if (this.props.paid) {
-        await new BillApi().getBills(this.successCallBill, this.errorCall, this.state.profileId, "True");
-      } else {
-        await new BillApi().getBills(this.successCallBill, this.errorCall, this.state.profileId);
-      }
-
     }
+    this.getLabel() 
   };
+
+  // This Method execute the Label API Call
+  getLabel = async () => {
+    new LabelApi().getSublabels(this.successCallLabel, this.errorCall, this.state.profileId);
+  }
+
+  // Handle Label response
+  successCallLabel = async (label) => {
+    this.setState({ spinner: true })
+    if (label.length === 0 &&  this.state.labels !== undefined) {
+      this.setState({ labels: undefined })
+    } else {
+      await this.setState({ labels: label });
+    }
+    this.getContacts();
+  };
+
+  // This Method execute the Contacts API Call
+  getContacts=()=>{
+    new ContactApi().getContacts(this.successCallContact, this.errorCall, this.state.profileId);
+  }
+
+  // Handle Contacts response
+  successCallContact = async (contacts) => {
+    this.setState({ spinner: true })
+    if (contacts.length === 0 && this.state.contacts !== undefined ) {
+      this.setState({ contacts: undefined })
+    } else {
+      await this.setState({ contacts });
+    }
+    this.getBills();
+  };
+
+  // This Method execute the Bill API Call
+  getBills= async ()=>{
+    if (this.props.paid) {
+      await new BillApi().getBills(this.successCallBill, this.errorCall, this.state.profileId, "True");
+    }else{
+      await new BillApi().getBills(this.successCallBill, this.errorCall, this.state.profileId);
+    }
+  }
 
   // bills response
   successCallBill = async bills => {
@@ -109,25 +147,27 @@ class Bills extends Component {
         newBills = bills;
       }
       await this.billsWithcategoryNameColor(newBills);
-      await this.getBillPayments()
-      this.loadCollapse();
     }
   }
 
-getBillPayments = async () => {
+  // category name color append to bills
+  billsWithcategoryNameColor = (bills) => {
     let previousPayments = [];
-    this.state.bills.map(async (bill, key) => {
+    const prevState = bills;
+    const state = prevState.map((bill, index) => {
       this.getPayments(bill.id, previousPayments)
-    })
+      return { ...bill, categoryName: this.displayCategoryName(bill.categoryId) }
+    });
+    this.setState({ bills: state });
   }
-
+  
   getPayments = async (billId, previousPayments) => {
     await new PaymentApi().getBillPayments((payments) => {
       let newRespData = {
         payments: payments,
         billId: billId
       }
-      this.successCallPayments(newRespData, previousPayments)
+       this.successCallPayments(newRespData, previousPayments)
     }, err => { console.log("error") }, this.state.profileId, billId)
   }
 
@@ -136,38 +176,13 @@ getBillPayments = async () => {
     return await this.setState({ billPayments: previousPayments })
   }
 
-  // category name color append to bills
-  billsWithcategoryNameColor = (bills) => {
-    const prevState = bills;
-    const state = prevState.map((bill, index) => {
-      return { ...bill, categoryName: this.displayCategoryName(bill.categoryId) }
-    });
-    this.setState({ bills: state });
+  handleMarkAsUnPaid = () => {
+    new BillApi().markAsUnPaid(this.successUnpaidBill, this.errorCall, this.state.profileId, this.state.requiredBill.id);
   }
+  
+  successUnpaidBill = ()=>{this.callAlertTimer("success", "Your bill succefully made as unpaid bill")}
 
-  loadCollapse = async () => {
-    new LabelApi().getSublabels(this.successCallLabel, this.errorCall, this.state.profileId);
-  }
-
-  successCallLabel = async (label) => {
-    this.setState({ spinner: true })
-    if (label === []) {
-      this.setState({ labels: [0] })
-    } else {
-      await this.setState({ labels: label });
-      new ContactApi().getContacts(this.successCallContact, this.errorCall, this.state.profileId);
-    }
-  };
-
-  successCallContact = async (contacts) => {
-    this.setState({ spinner: true })
-    if (contacts === []) {
-      this.setState({ contacts: [0] })
-    } else {
-      await this.setState({ contacts });
-    }
-  };
-
+  // This method handle Error Call of API 
   errorCall = (err) => {
     if (err.response && (err.response.status === 500 && err.response.data.error.debugMessage)) {
       this.setState({ visible: true, color: 'danger', content: 'Something went wrong, unable to fetch bills...' });
@@ -184,15 +199,10 @@ getBillPayments = async () => {
     this.setState({ danger: !this.state.danger });
   }
 
+  // This Method Execute the Bill Form Executions.
   createBillAction = () => { this.setState({ createBillRequest: true }) }
-
-  updateBillAction = updateBill => {
-    this.setState({ updateBillRequest: true, updateBill })
-  };
-
-  deleteBillAction = () => {
-    this.setState({ deleteBillRequest: true })
-  };
+  updateBillAction = updateBill => { this.setState({ updateBillRequest: true, updateBill })};
+  deleteBillAction = () => { this.setState({ deleteBillRequest: true })};
 
   setBillId = (bill) => {
     let data = {
@@ -210,9 +220,7 @@ getBillPayments = async () => {
     }
   };
 
-  handleRemoveDependents = () => {
-    this.setState({ removeDependents: !this.state.removeDependents });
-  }
+  handleRemoveDependents = () => { this.setState({ removeDependents: !this.state.removeDependents });}
 
   handleShowPayment = (bill) => {
     let lastPaid = this.calculateLastPaid(bill);
@@ -248,13 +256,7 @@ getBillPayments = async () => {
       }
     }
   }
-  handleMarkAsUnPaid = () => {
-    new BillApi().markAsUnPaid(this.successUnpaidBill, this.failureCall, this.state.profileId, this.state.requiredBill.id);
-  }
-  successUnpaidBill = ()=>{this.callAlertTimer("success", "Your bill succefully made as unpaid bill")}
-  failureCall = (error)=>{
-    this.callAlertTimer("success", "unable to process your request, please try again..")
-  }
+
   render() {
     const { bills, createBillRequest, updateBillRequest, id, deleteBillRequest, visible, profileId, updateBill, spinner, labels, categories, contacts, danger, paidAmount, requiredBill, markPaid } = this.state;
     if (!profileId) {
@@ -384,13 +386,10 @@ getBillPayments = async () => {
 
 
   loadPaymentDateAndAmount = (bill, lastPaid) => {
-    return <> <b>Last paid</b> {this.dateFormat(lastPaid.date)} &nbsp; { this.loadBillAmount(bill.currency, lastPaid.paymentAmt)
-    } </>
+    return <> <b>Last paid</b> {this.dateFormat(lastPaid.date)} &nbsp; { this.loadBillAmount(bill.currency, lastPaid.paymentAmt)} </>
   }
 
-  loadBillAmount = (currency, amount) => {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: currency }).format(amount)
-  }
+  loadBillAmount = (currency, amount) => { return new Intl.NumberFormat('en-US', { style: 'currency', currency: currency }).format(amount) }
 
   dateFormat = (userDate) => {
     let date = "" + userDate

@@ -89,7 +89,7 @@ class ViewPayment extends Component {
             <tr>
               <td  colSpan="3"></td> 
               <td>TOTAL PAID AMOUNT</td>
-              <td><b>{selectedCurrency[0].symbol} {totalAmount}</b></td>
+              <td><b>{selectedCurrency[0].symbol} { totalAmount <0 ? -(totalAmount) : totalAmount }</b></td>
               <td ></td>
             </tr>
           </tbody>
@@ -106,7 +106,7 @@ class ViewPayment extends Component {
 
   loadDueMessage = (selectedCurrency, billAmount, totalAmount, paymentStyle) => {
     return <b style={paymentStyle}>
-      * {selectedCurrency.symbol}{billAmount - totalAmount} to pay on total due of {selectedCurrency.symbol}{billAmount}.
+      * {selectedCurrency.symbol}{billAmount - totalAmount < 0 ? -(billAmount - totalAmount) : billAmount - totalAmount} to pay on total due of {selectedCurrency.symbol}{billAmount < 0 ? -(billAmount) : billAmount}.
       <Button color="info" style={{marginLeft: 20}} onClick={this.handleAddPayment}> Add payment </Button>
     </b>
   }
@@ -123,7 +123,7 @@ class ViewPayment extends Component {
       <td>{payment.notes}</td>
       <td>{this.dateFormat(payment.date)}</td>
       <td>{payment.type}</td>
-      <td> {selectedCurrency[0].symbol} {paymentAmount} </td>
+      <td> {selectedCurrency[0].symbol} { paymentAmount < 0 ? -(paymentAmount) : paymentAmount} </td>
       <td>
         <Button style={{ backgroundColor: "transparent", borderColor: '#green', color: "green" }} onClick={() => this.handleUpdateBillPayment(payment, selectedCurrency[0].symbol)}>Edit</Button> &nbsp;
         {/* <Button style={{ backgroundColor: "transparent", borderColor: '#red', color: "red" }} onClick={() => this.handleDeleteBillPayment(payment.txId)}>Remove</Button> */}
