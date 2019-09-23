@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
-import { Card, CardBody, Alert, Table, FormGroup, Label, Input } from "reactstrap";
+import { Card, CardBody, Alert, Table, FormGroup, Label, Input, Modal, ModalHeader, ModalBody, ModalFooter, Button } from "reactstrap";
 import Loader from 'react-loader-spinner';
 import BillForm from "./BillForm";
 import BillApi from "../../services/BillApi";
@@ -362,24 +362,11 @@ class Bills extends Component {
     let lastPaid = this.calculateLastPaid(bill, bill.amount);
     let billDescription = bill.description ? bill.description : bill.categoryName.name
     return <tr width={50} key={key}>
-      <td>{strike ? <strike>{this.dateFormat(bill.dueDate_)}</strike>: this.dateFormat(bill.dueDate_)}</td>
-      <td>{strike ? <strike> {this.dateFormat(bill.billDate)} </strike> : this.dateFormat(bill.billDate)}</td>
+      <td>{strike ? <strike>{ShowServiceComponet.customDate(bill.dueDate_, true)}</strike>: ShowServiceComponet.customDate(bill.dueDate_, true)}</td>
+      <td>{strike ? <strike> {ShowServiceComponet.customDate(bill.billDate, true)} </strike> : ShowServiceComponet.customDate(bill.billDate, true)}</td>
       <td>{strike ? <strike> {billDescription} </strike> : billDescription}</td>
-      <td>{bill.amount > 0 ?
-        <b className="bill-amount-color">
-          {strike ? <strike>{this.loadBillAmount(bill.currency, bill.amount)}</strike> : this.loadBillAmount(bill.currency, bill.amount)}
-        </b> :
-        <b className="text-color">
-          {strike ? <strike>{this.loadBillAmount(bill.currency, bill.amount)}</strike> : this.loadBillAmount(bill.currency, bill.amount)}
-        </b>
-      }</td>
-      <td>
-        {lastPaid ?
-          <h6 className="bill-amount-color">
-            {strike ? <strike> {this.loadPaymentDateAndAmount(bill, lastPaid)} </strike> : this.loadPaymentDateAndAmount(bill, lastPaid)}
-          </h6> : ''
-        }
-      </td>
+      <td>{strike ?  <strike>{ShowServiceComponet.billTypeAmount(bill.currency,bill.amount)}</strike> :ShowServiceComponet.billTypeAmount(bill.currency,bill.amount)}</td>
+      <td> {lastPaid ? <h6 className="bill-amount-color"> {this.loadPaymentDateAndAmount(bill, lastPaid)}</h6> : ''} </td>
       <td><h6>{this.loadDropDown(bill, key)}</h6></td>
     </tr>
   }
@@ -430,7 +417,7 @@ class Bills extends Component {
   //this Method loads Browser DropDown
   loadDropDown = (bill, key) => {
     return <span className="float-right" style={{marginTop: 4}} >
-      {ShowServiceComponet.loadEditRemoveButtons(bill, this.updateBillAction, this.setBillId, this.toggleDanger)}     
+      {ShowServiceComponet.loadEditRemoveButtons(bill, this.handleShowPayment , this.updateBillAction, this.setBillId, this.toggleDanger)}     
     </span>
   }
 

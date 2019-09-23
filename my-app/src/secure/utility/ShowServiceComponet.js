@@ -42,10 +42,11 @@ export const ShowServiceComponet = {
       </div>)
   },
 
-  loadEditRemoveButtons: function (bill, updateAction, setId, toggleDanger) {
+  loadEditRemoveButtons: function (bill, handleShowPayment, updateAction, setId, toggleDanger) {
     return <>
-      <small><button className="bill-edit-button" onClick={() => { updateAction(bill) }}> EDIT </button></small> &nbsp;
-      <small><button className="bill-remove-button" onClick={() => { setId(bill); toggleDanger(); }}> REMOVE </button></small>
+      <Button className="rounded" style={{ backgroundColor: "transparent", borderColor: '#blue', color: "blue", width: 90 }} onClick={() => { handleShowPayment(bill) }}>Payment</Button> &nbsp;
+      <Button className="rounded" style={{ backgroundColor: "transparent", borderColor: '#ada397', color: "green", width: 67 }} onClick={() => { updateAction(bill) }}>Edit</Button> &nbsp;
+      <Button className="rounded" style={{ backgroundColor: "transparent", borderColor: '#eea29a', color: "red", width: 92 }} onClick={() => { setId(bill); toggleDanger(); }}>Remove</Button>
     </>
   },
 
