@@ -87,6 +87,18 @@ dropdown-align {
 .padding-left {
     padding-left: 20px
 }
+.bill-edit-button {
+    background-color: "transparent";
+    border-color: forestgreen;
+    color: forestgreen; 
+}
+.bill-remove-button {
+    background-color: "transparent";
+    /* border-color: rgb(170, 9, 9);
+    color: rgb(170, 9, 9);  */
+    color: red; 
+    border-color: red;
+}
 /* ============ End Bils styles=========*/
 /* ============ start Category styles=========*/
 .update-category{

@@ -5,7 +5,7 @@ import Avatar from 'react-avatar';
 import { FaSearch, FaAngleDown } from 'react-icons/fa';
 import '../../css/style.css';
 
-export const ReUseComponents = {
+export const ShowServiceComponet = {
   loadDeleting: function (headerMsg, bodyMessage, color) {
     return (
       <div className="animated fadeIn">
@@ -40,6 +40,13 @@ export const ReUseComponents = {
           </center>
         </Card>
       </div>)
+  },
+
+  loadEditRemoveButtons: function (bill, updateAction, setId, toggleDanger) {
+    return <>
+      <small><button className="bill-edit-button" onClick={() => { updateAction(bill) }}> EDIT </button></small> &nbsp;
+      <small><button className="bill-remove-button" onClick={() => { setId(bill); toggleDanger(); }}> REMOVE </button></small>
+    </>
   },
 
   //Searches Items based on user given SearchTerm
@@ -85,6 +92,34 @@ export const ReUseComponents = {
         </Col>
       </Row>
     </CardHeader>
+  },
+
+  customDate: function(dateParam, day) {
+    let toStr = "" + dateParam
+    let dateString = toStr.substring(0, 4) + "-" + toStr.substring(4, 6) + "-" + toStr.substring(6, 8)
+    if (day) {
+      return this.billDateFormat(new Date(dateString));
+    } else {
+      return this.loadDateFormat(new Date(dateString));
+    }
+  },
+
+  loadDateFormat: function(date) {
+    return new Intl.DateTimeFormat('sv-SE', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(date);
+  },
+  billDateFormat: function (date){
+    return  new Intl.DateTimeFormat('en-gb', { month: 'short', weekday: 'short', day: '2-digit' }).format(date);
+  },
+
+  billTypeAmount:function(currency,amount){
+    if(amount>0){   
+      return <b className="bill-amount-color">
+      {new Intl.NumberFormat('en-US', { style: 'currency', currency}).format(amount)}
+        </b> }
+        else{
+          return <b className="text-color">
+      {new Intl.NumberFormat('en-US', { style: 'currency', currency}).format(amount)}
+    </b>}
   },
 
   //This method Shows Categories/labels as Items

@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import CategoryApi from "../../services/CategoryApi";
 import Categories from "./Categories";
 import Config from "../../data/Config";
-import { ReUseComponents } from "../utility/ReUseComponents";
+import { ShowServiceComponet } from "../utility/ShowServiceComponet";
 
 class DeleteCategory extends Component {
   constructor(props) {
@@ -43,7 +43,7 @@ class DeleteCategory extends Component {
   render() {
     const { categoryDeleted, color, content } = this.state;
     return categoryDeleted ? <Categories color={color} content={content} visible={true} />
-      : ReUseComponents.loadDeleting("CATEGORIES", content, color)
+      : ShowServiceComponet.loadDeleting("CATEGORIES", content, color)
   }
 }
 

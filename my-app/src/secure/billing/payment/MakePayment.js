@@ -7,7 +7,7 @@ import Store from "../../../data/Store";
 import BillingAddressApi from '../../../services/BillingAddressApi';
 import PaymentSuccessMessage from './PaymentSuccessMessage';
 import UserApi from '../../../services/UserApi';
-import { ReUseComponents } from '../../utility/ReUseComponents';
+import { ShowServiceComponet } from '../../utility/ShowServiceComponet';
 import '../../../css/style.css';
 
 const PAYPAL_URL = 'https://www.paypal.com/sdk/js?'
@@ -79,7 +79,7 @@ class MakePayment extends Component {
     const { paymentSuccess, paymentResponse, loader, billingItems } = this.state
     if (billingItems.length === 0) {
       if (loader) {
-        return ReUseComponents.loadSpinner("MakePayment")
+        return ShowServiceComponet.loadSpinner("MakePayment")
       } else {
         return this.loadBillingItemError();
       }

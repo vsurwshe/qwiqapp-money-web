@@ -1,9 +1,8 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
-import { Card, CardBody, Alert, Table, Button, FormGroup, Label, Input } from "reactstrap";
-import Loader from 'react-loader-spinner'
-import UpdateBill from "./UpdateBill";
-import CreateBill from "./CreateBill";
+import { Card, CardBody, Alert, Table, FormGroup, Label, Input } from "reactstrap";
+import Loader from 'react-loader-spinner';
+import BillForm from "./BillForm";
 import BillApi from "../../services/BillApi";
 import Store from "../../data/Store";
 import CategoryApi from "../../services/CategoryApi";
@@ -12,7 +11,7 @@ import DeleteBill from "./DeleteBill";
 import ContactApi from '../../services/ContactApi';
 import { ProfileEmptyMessage } from "../utility/ProfileEmptyMessage";
 import { DeleteModel } from "../utility/DeleteModel";
-import { ReUseComponents } from "../utility/ReUseComponents";
+import { ShowServiceComponet } from "../utility/ShowServiceComponet";
 import '../../css/style.css';
 import Config from "../../data/Config";
 
@@ -67,8 +66,10 @@ class Bills extends Component {
     if (categories === []) {
       this.setState({ categories: [0] })
     } else {
-      await this.setState({ categories: categories })
-      await new BillApi().getBills(this.successCallBill, this.errorCall, this.state.profileId);
+      await this.setState({ categories })
+      if (this.state.profileId) {
+        await new BillApi().getBills(this.successCallBill, this.errorCall, this.state.profileId);
+      }
     }
   };
 
@@ -106,7 +107,6 @@ class Bills extends Component {
     }
   }
   
-
   // category name color append to bills
   billsWithcategoryNameColor = (bills) => {
     const prevState = bills;
@@ -147,7 +147,7 @@ class Bills extends Component {
   };
 
   errorCall = (err) => {
-    if (err.response.status === 500 && err.response.data.error.debugMessage) {
+    if (err.response && (err.response.status === 500 && err.response.data.error.debugMessage)) {
       this.setState({ visible: true, color: 'danger', content: 'Something went wrong, unable to fetch bills...' });
       setTimeout(() => {
         this.setState({ visible: false, spinner: true });
@@ -223,9 +223,9 @@ class Bills extends Component {
         // If bills not there, it will show Empty message
       (bills.length === 0 ? this.emptyBills() : "")}</div>
     } else if (createBillRequest) {
-      return <CreateBill pid={profileId} label={labels} categories={categories} contacts={contacts} />
+      return <BillForm pid={profileId} labels={labels} categories={categories} contacts={contacts} />
     } else if (updateBillRequest) {
-      return <UpdateBill pid={profileId} bill={updateBill} lables={labels} categories={categories} contacts={contacts} />
+      return <BillForm pid={profileId} bill={updateBill} labels={labels} categories={categories} contacts={contacts} />
     } else if (deleteBillRequest) {
       return <DeleteBill id={id} pid={profileId} removeDependents={this.state.removeDependents} />
     } else {
@@ -244,7 +244,7 @@ class Bills extends Component {
   }
 
   loadHeader = (bills) => {
-    return new ReUseComponents.loadHeaderWithSearch("BILLS", bills, this.searchSelected, "Search Bills.....", this.createBillAction);
+    return new ShowServiceComponet.loadHeaderWithSearch("BILLS", bills, this.searchSelected, "Search Bills.....", this.createBillAction);
   }
 
   loadLoader = () => {
@@ -269,7 +269,7 @@ class Bills extends Component {
       </Card>
     </div>
   }
-
+  
   // Displays all the Bills one by one
   displayAllBills = (visible, bills) => {
     const color = this.props.color;
@@ -295,7 +295,10 @@ class Bills extends Component {
                 </tr>
               </thead>
               <tbody>
-                {bills.filter(this.searchingFor(this.state.selectedOption)).map((bill, key) => { return this.loadSingleBill(bill, key); })}
+                {bills.filter(this.searchingFor(this.state.selectedOption)).map((bill, key) => { 
+                  return this.loadSingleBill(bill, key); 
+                  })
+                  }
               </tbody>
             </Table>
           </CardBody>
@@ -307,36 +310,15 @@ class Bills extends Component {
   // Show the Single Bill 
   loadSingleBill = (bill, key) => {
     return <tr onPointerEnter={(e) => this.onHover(e, key)} onPointerLeave={(e) => this.onHoverOff(e, key)} width={50} key={key}>
-      <td>{this.dateFormat(bill.dueDate_)}</td>
-      <td>{this.dateFormat(bill.billDate)}</td>
+      <td>{ShowServiceComponet.customDate(bill.dueDate_, true)}</td>
+      <td>{ShowServiceComponet.customDate(bill.billDate, true)}</td>
       <td>{bill.description ? bill.description : bill.categoryName.name}</td>
-      <td>{bill.amount > 0 ?
-        <b className="bill-amount-color">
-          {new Intl.NumberFormat('en-US', { style: 'currency', currency: bill.currency }).format(bill.amount)}
-        </b> :
-        <b className="text-color">
-          {new Intl.NumberFormat('en-US', { style: 'currency', currency: bill.currency }).format(bill.amount)}
-        </b>
-      }</td>
+      <td>{ShowServiceComponet.billTypeAmount(bill.currency,bill.amount) }</td>
       <td>
-        {bill.amount > 0 ?
-          <h6 className="bill-amount-color">
-            <b>Last paid</b> {this.dateFormat(bill.billDate)} &nbsp; {new Intl.NumberFormat('en-US', { style: 'currency', currency: bill.currency }).format(0)}
-          </h6> :
-          <h6 className="bill-amount-color">
-            <b>Last paid</b> {this.dateFormat(bill.billDate)} {new Intl.NumberFormat('en-US', { style: 'currency', currency: bill.currency }).format(0)}
-          </h6>
-        }
+        <p>Last paid: {ShowServiceComponet.billTypeAmount(bill.currency,0)}</p>
       </td>
       <td><h6>{this.loadDropDown(bill, key)}</h6></td>
     </tr>
-  }
-
-  dateFormat = (userDate) => {
-    let date = "" + userDate
-    let dateString = date.substring(0, 4) + "-" + date.substring(4, 6) + "-" + date.substring(6, 8)
-    const formatDate = new Intl.DateTimeFormat('en-gb', { month: 'short', weekday: 'short', day: '2-digit' }).format(new Date(dateString));
-    return formatDate;
   }
 
   loadDateFormat = (dateParam) => {
@@ -370,10 +352,9 @@ class Bills extends Component {
 
   //this Method loads Browser DropDown
   loadDropDown = (bill, key) => {
-    return <>
-      <Button className="rounded" style={{ backgroundColor: "transparent", borderColor: ' #ada397', color: "green", width: 77 }} onClick={() => { this.updateBillAction(bill) }}>Edit</Button> &nbsp;
-      <Button className="rounded" style={{ backgroundColor: "transparent", borderColor: '#eea29a', color: "red", width: 92 }} onClick={() => { this.setBillId(bill); this.toggleDanger(); }}>Remove</Button>
-    </>
+    return <span className="float-right" style={{marginTop: 4}} >
+      {ShowServiceComponet.loadEditRemoveButtons(bill, this.updateBillAction, this.setBillId, this.toggleDanger)}     
+    </span>
   }
 
   //this method calls the delete model

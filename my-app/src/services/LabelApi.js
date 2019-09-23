@@ -4,33 +4,33 @@ import LoginApi from "./LoginApi";
 
 class LabelApi {
   //This Method Create label 
-  createLabel(success, failure, pid, data) {
-    process(success, failure, pid + "/labels", "POST", pid, data);
+  createLabel(success, failure, profileId, data) {
+    process(success, failure, profileId + "/labels", "POST", profileId, data);
   }
 
   //This Method Get All labels
-  getlabels(success, failure, pid) {
-    Store.getLabels() === null ? process(success, failure, pid + "/labels?sublabels=true", "GET") : success(Store.getLabels());
+  getlabels(success, failure, profileId) {
+    Store.getLabels() === null ? process(success, failure, profileId + "/labels?sublabels=true", "GET", profileId) : success(Store.getLabels());
   }
 
   //This Method Get All labels
-  getlabelsById(success, failure, pid, lid) {
-    process(success, failure, pid + "/labels/" + lid, "GET");
+  getlabelsById(success, failure, profileId, lid) {
+    process(success, failure, profileId + "/labels/" + lid, "GET", profileId);
   }
 
   //This Method Get All Sub-labels
-  getSublabels(success, failure, pid, value) {
-    Store.getLabels() === null || value === "True" ? process(success, failure, pid + "/labels?sublabels=true", "GET") : success(Store.getLabels());
+  getSublabels(success, failure, profileId, value) {
+    Store.getLabels() === null || value === "True" ? process(success, failure, profileId + "/labels?sublabels=true", "GET", profileId) : success(Store.getLabels());
   }
 
   //This Method Update labels 
-  updateLabel(success, failure, data, pid, lid) {
-    process(success, failure, pid + "/labels/" + lid, "PUT", pid, data);
+  updateLabel(success, failure, data, profileId, lid) {
+    process(success, failure, profileId + "/labels/" + lid, "PUT", profileId, data);
   }
 
   //This Method Delete the lables
-  deleteLabel(success, failure, pid, lid) {
-    process(success, failure, pid + "/labels/" + lid, "DELETE", pid);
+  deleteLabel(success, failure, profileId, lid) {
+    process(success, failure, profileId + "/labels/" + lid, "DELETE", profileId);
   }
 }
 

@@ -6,7 +6,7 @@ import AddCategory from './AddCategory';
 import EditCategory from './EditCategory';
 import DeleteCategory from "./DeleteCategory";
 import { ProfileEmptyMessage } from "../utility/ProfileEmptyMessage";
-import { ReUseComponents } from "../utility/ReUseComponents";
+import { ShowServiceComponet } from "../utility/ShowServiceComponet";
 import { DeleteModel } from "../utility/DeleteModel";
 
 
@@ -139,7 +139,7 @@ class Categories extends Component {
     if (!profile) {
       return <ProfileEmptyMessage />
     } else if (categories.length === 0 && !spinner) {
-      return ReUseComponents.loadSpinner("Categories : " + categories.length)
+      return ShowServiceComponet.loadSpinner("Categories : " + categories.length)
     } else if (createCategory) {
       return <AddCategory category={categories} id={profileId} />
     } else if (updateCategory) {
@@ -161,7 +161,7 @@ class Categories extends Component {
     if (color) {
       this.callAlertTimer()
     }
-    return ReUseComponents.loadItems(categories, this.setSearch, search, this.callAddCategory, visible,
+    return ShowServiceComponet.loadItems(categories, this.setSearch, search, this.callAddCategory, visible,
       this.toggleAccordion, this.state.accordion, this.setCategoryID, this.toggleDanger, this.updateCategory,
       this.state.dropDownAccord, this.dropDownAccordion, color, this.props.content,this.state.subCategoryHover, this.subCategoryAccordion);
   }
@@ -172,7 +172,7 @@ class Categories extends Component {
   }
 
   showDropdown = (category, uKey) => {
-    return ReUseComponents.loadDropDown(category, this.updateCategory, this.setCategoryID, this.toggleDanger)
+    return ShowServiceComponet.loadDropDown(category, this.updateCategory, this.setCategoryID, this.toggleDanger)
   }
 
   setCategoryID = category => {

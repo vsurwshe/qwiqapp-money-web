@@ -230,12 +230,16 @@ const Store = {
         db.removeItem("USERDATA");
     },
 
+    clearBills: function(){
+        db.removeItem("BILL");
+    },
+
     // when refersh button call(userDataClear)
     userDataClear: function () {
+        this.clearBills();
         db.removeItem("CATEGORIES");
         db.removeItem("LABELS");
         db.removeItem("CONTACTS");
-        db.removeItem("BILL");
     }
 }
 export default Store;
