@@ -27,6 +27,10 @@ class BillApi {
   deleteBill(success, failure, profileId, billId) {
     process(success, failure, profileId + "/bills/" + billId + "?removeDependency=true", "DELETE", profileId);
   }
+  
+  markAsUnPaid(success, failure, profileId, billId) {
+    process(success, failure, profileId + "/bills/" + billId + "/unpaid", "PUT", profileId );
+  }
 }
 
 export default BillApi;

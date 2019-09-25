@@ -15,9 +15,9 @@ class BillForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      labels: props.labels,
-      contacts: props.contacts,
-      categories: props.categories,
+      labels: props.labels ? props.labels : [] ,
+      contacts: props.contacts ? props.contacts : [] ,
+      categories: props.categories ? props.categories : [],
       bill: props.bill,
       billCreated: false,
       profileId: props.pid,
@@ -227,6 +227,7 @@ class BillForm extends Component {
   }
 
   billFormField = (alertColor, alertMessage, labels, categories, contacts) => {
+    console.log("contacts ",contacts)
     const { currencies, billDate, dueDate, moreOptions, doubleClick, taxPercent, taxAmount, checked, type, amount, dueDays } = this.state
     const { bill } = this.props
     let FormData = {
@@ -276,7 +277,8 @@ class BillForm extends Component {
     </div>;
   }
 
-  loadMoreOptions = (labels, contacts) => {
+  loadMoreOptions = () => {
+    const {labels, contacts}=this.state
     let labelName, contactName;
     if (this.props.bill) {
       const options = Data.labels(this.props.labels);
@@ -297,7 +299,7 @@ class BillForm extends Component {
         <Col>
           {/* Labels loading in select options filed */}
           <label>Select Labels</label>
-          <Select isMulti options={Data.labels(this.props.labels)} styles={Data.colourStyles} defaultValue={labelName} placeholder="Select Labels" onChange={this.labelSelected} /></Col>
+          <Select isMulti options={Data.labels(labels)} styles={Data.colourStyles} defaultValue={labelName} placeholder="Select Labels" onChange={this.labelSelected} /></Col>
         <Col>
           {/* Contacts loading in select options filed */}
           <label>Select Contacts</label>
