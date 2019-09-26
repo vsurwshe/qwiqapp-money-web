@@ -15,8 +15,8 @@ class BillForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      labels: props.labels ? props.labels : [] ,
-      contacts: props.contacts ? props.contacts : [] ,
+      labels: props.labels ? props.labels : [],
+      contacts: props.contacts ? props.contacts : [],
       categories: props.categories ? props.categories : [],
       bill: props.bill,
       billCreated: false,
@@ -227,7 +227,7 @@ class BillForm extends Component {
   }
 
   billFormField = (alertColor, alertMessage, labels, categories, contacts) => {
-    console.log("contacts ",contacts)
+    console.log("contacts ", contacts)
     const { currencies, billDate, dueDate, moreOptions, doubleClick, taxPercent, taxAmount, checked, type, amount, dueDays } = this.state
     const { bill } = this.props
     let FormData = {
@@ -257,7 +257,7 @@ class BillForm extends Component {
         <h4 className="padding-top"><b><center>{headerMessage}</center></b></h4>
         <Container>
           <Col>
-            {alertColor && <Alert color={alertColor}>{alertMessage}</Alert> }
+            {alertColor && <Alert color={alertColor}>{alertMessage}</Alert>}
             <BillFormUI data={formData}
               handleSubmitValue={this.handleSubmitValue}
               handleSetAmount={this.handleSetAmount}
@@ -278,11 +278,11 @@ class BillForm extends Component {
   }
 
   loadMoreOptions = () => {
-    const {labels, contacts}=this.state
+    const { labels, contacts } = this.state
     let labelName, contactName;
     if (this.props.bill) {
       const options = Data.labels(this.props.labels);
-      labelName = this.props.bill.labelIds === null ? '' : this.props.bill.labelIds.map(id => { return options.filter(item => { return item.value === id }) }).flat();
+      labelName = this.props.bill.labelIds ? this.props.bill.labelIds.map(id => { return options.filter(item => { return item.value === id }) }).flat() : '';
       contactName = Data.contacts(this.props.contacts).filter(item => { return item.value === this.props.bill.contactId })
     }
     return <Collapse isOpen={this.state.moreOptions} data-parent="#exampleAccordion" id="exampleAccordion1">

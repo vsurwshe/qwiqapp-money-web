@@ -124,13 +124,7 @@ export const ShowServiceComponet = {
   },
 
   //This method Shows Categories/labels as Items
-  loadItems: function (items, setSearch, search, addItem, visible, toggleAccordion, accordion, setItemId, toggleDanger, handleUpdate, stateDrodownAccord, dropDownAccordion, color, content, subArray, subItemAccordion) {
-    let itemType;
-    if (items[0].subLabels !== undefined) {
-      itemType = "Labels"
-    } else {
-      itemType = "Categories"
-    }
+  loadItems: function (itemType, items, setSearch, search, addItem, visible, toggleAccordion, accordion, setItemId, toggleDanger, handleUpdate, stateDrodownAccord, dropDownAccordion, color, content, subArray, subItemAccordion) {
     let placeHolder = "Search " + itemType + "..."
     return <div className="animated fadeIn">
       <Card>
