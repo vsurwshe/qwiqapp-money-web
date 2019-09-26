@@ -3,53 +3,53 @@ import Store from "../data/Store";
 import LoginApi from './LoginApi';
 
 class CategoryApi {
-  createCategory(success, failure, pid, data) {
-    process(success, failure, pid + "/categories", "POST", pid, data);
+  createCategory(success, failure, profileId, data) {
+    process(success, failure, profileId + "/categories", "POST", profileId, data);
   }
 
-  getCategories(success, failure, pid, value) {
-    Store.getCategories() === null || value === 'true'
-      ? process(success, failure, pid + "/categories?subcategories=true", 'GET', pid)
+  getCategories(success, failure, profileId, value) {
+    !Store.getCategories() || value === 'true'
+      ? process(success, failure, profileId + "/categories?subcategories=true", 'GET', profileId)
       : success(Store.getCategories())
   }
 
-  getCategoriesById(success, failure, pid, cid) {
-    process(success, failure, pid + "/categories/" + cid, "GET", pid);
+  getCategoriesById(success, failure, profileId, categoryId) {
+    process(success, failure, profileId + "/categories/" + categoryId, "GET", profileId);
   }
 
-  updateCategory(success, failure, data, pid, cid) {
-    process(success, failure, pid + "/categories/" + cid, "PUT", pid, data);
+  updateCategory(success, failure, data, profileId, categoryId) {
+    process(success, failure, profileId + "/categories/" + categoryId, "PUT", profileId, data);
   }
 
-  deleteCategory(success, failure, pid, cid) {
-    process(success, failure, pid + "/categories/" + cid, "DELETE", pid);
+  deleteCategory(success, failure, profileId, categoryId) {
+    process(success, failure, profileId + "/categories/" + categoryId, "DELETE", profileId);
   }
 }
 
 export default CategoryApi;
 
-async function process(success, failure, Uurl, Umethod, pid, data, reload) {
+async function process(success, failure, Uurl, Umethod, profileId, data, reload) {
   let HTTP = httpCall(Uurl, Umethod);
   let promise;
   try {
-    data === null ? promise = await HTTP.request() : promise = await HTTP.request({ data })
+    !data ? promise = await HTTP.request() : promise = await HTTP.request({ data })
     if (Umethod === 'GET') {
       Store.saveCategories(promise.data)
     } else {
-      new CategoryApi().getCategories(success, failure, pid, 'true')
+      new CategoryApi().getCategories(success, failure, profileId, 'true')
     }
     validResponse(promise, success);
   } catch (error) {
-    handleAccessTokenError(error, failure, Uurl, Umethod, pid, data, success, reload)
+    handleAccessTokenError(error, failure, Uurl, Umethod, profileId, data, success, reload)
   }
 }
 
-let handleAccessTokenError = (err, failure, Uurl, Umethod, pid, data, success, reload) => {
+let handleAccessTokenError = (err, failure, Uurl, Umethod, profileId, data, success, reload) => {
   if (err.request.status === 0) {
     errorResponse(err, failure)
   } else if (err.response.status === 401 || err.response.status === 403) {
       if (!reload) {
-      new LoginApi().refresh(() => process(success, failure, Uurl, Umethod, pid, data, "ristrict"), errorResponse(err, failure));
+      new LoginApi().refresh(() => process(success, failure, Uurl, Umethod, profileId, data, "restrict"), errorResponse(err, failure));
     } else {
       errorResponse(err, failure);
     }

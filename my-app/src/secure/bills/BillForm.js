@@ -9,7 +9,7 @@ import Config from "../../data/Config";
 import Store from "../../data/Store";
 import { BillFormUI } from "../utility/FormsModel";
 import '../../css/style.css';
-import { ShowServiceComponet } from "../utility/ShowServiceComponet";
+import { ShowServiceComponent } from "../utility/ShowServiceComponent";
 
 class BillForm extends Component {
   constructor(props) {
@@ -29,10 +29,10 @@ class BillForm extends Component {
       categoryOptionUpdate: false,
       labelOptionUpdate: false,
       contactOptionUpdate: false,
-      notifyDate: props.bill ? ShowServiceComponet.customDate(props.bill.notifyDate_) : '',
+      notifyDate: props.bill ? ShowServiceComponent.customDate(props.bill.notifyDate_) : '',
       dueDays: props.bill ? props.bill.dueDays : 0,
-      dueDate: props.bill ? ShowServiceComponet.customDate(props.bill.dueDate_) : '',
-      billDate: props.bill ? ShowServiceComponet.customDate(props.bill.billDate) : '',
+      dueDate: props.bill ? ShowServiceComponent.customDate(props.bill.dueDate_) : '',
+      billDate: props.bill ? ShowServiceComponent.customDate(props.bill.billDate) : '',
       amount: props.bill ? this.setBillAmount(props.bill.amount) : 0,
       contactOption: props.bill ? props.bill.contactId : '',
       categoryOption: props.bill ? props.bill.categoryId : null,
@@ -227,7 +227,6 @@ class BillForm extends Component {
   }
 
   billFormField = (alertColor, alertMessage, labels, categories, contacts) => {
-    console.log("contacts ", contacts)
     const { currencies, billDate, dueDate, moreOptions, doubleClick, taxPercent, taxAmount, checked, type, amount, dueDays } = this.state
     const { bill } = this.props
     let FormData = {

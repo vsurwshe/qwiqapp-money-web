@@ -27,12 +27,10 @@ const Data = {
 
     multiValue: (styles, { data }) => {
       const color = chroma(data.color);
-      //if (color === null || color !== null) {
       return {
         ...styles,
         backgroundColor: color.alpha(0.1).css(),
       };
-      //}
     },
 
     multiValueLabel: (styles, { data }) => ({
@@ -79,7 +77,7 @@ const Data = {
 
   labels: function (labels) {
     const options = [];
-    labels.map(label => {
+     labels && labels.map(label => {
       if (label.subLabels) {
         options.push({ label: label.name, color: !label.color ? "#000000" : label.color, value: label.id })
         label.subLabels.map(subLabel => {
@@ -95,7 +93,7 @@ const Data = {
 
   categories: function (categories) {
     const options = [];
-    categories.map(category => {
+    categories && categories.map(category => {
       if (category.subCategories) {
         options.push({ value: category.id, label: <b>{category.name}</b>, color: !category.color ? "#000000" : category.color })
         category.subCategories.map(subCategory => {
@@ -111,7 +109,7 @@ const Data = {
 
   contacts: function (contacts) {
     const options = [];
-    contacts.map(contact => {
+    contacts && contacts.map(contact => {
       return options.push({ value: contact.id, label: <b>{contact.name}</b> })
     })
     return options

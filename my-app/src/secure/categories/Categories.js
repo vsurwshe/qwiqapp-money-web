@@ -6,7 +6,7 @@ import AddCategory from './AddCategory';
 import EditCategory from './EditCategory';
 import DeleteCategory from "./DeleteCategory";
 import { ProfileEmptyMessage } from "../utility/ProfileEmptyMessage";
-import { ShowServiceComponet } from "../utility/ShowServiceComponet";
+import { ShowServiceComponent } from "../utility/ShowServiceComponent";
 import { DeleteModel } from "../utility/DeleteModel";
 
 
@@ -27,8 +27,8 @@ class Categories extends Component {
       visible: props.visible,
       spinner: false,
       search: '',
-      index:'',
-      subCategoryHover:[]
+      index: '',
+      subCategoryHover: []
     };
   }
 
@@ -39,11 +39,11 @@ class Categories extends Component {
   setProfileId = async () => {
     if (Store.getProfile()) {
       await this.setState({ profileId: Store.getProfile().id });
-      this.getCategory();
+      this.getCategories();
     }
   }
 
-  getCategory = () => {
+  getCategories = () => {
     new CategoryApi().getCategories(this.successCall, this.errorCall, this.state.profileId);
   }
 
@@ -62,7 +62,7 @@ class Categories extends Component {
   }
 
   displaySubCategoryName = (categories) => {
-    if (categories.subCategories !== null) {
+    if (categories.subCategories) {
       const name = categories.subCategories.map(sub => sub.name);
       return name;
     } else {
@@ -72,11 +72,11 @@ class Categories extends Component {
 
   loadCollapse = () => {
     this.state.categories.map(category => {
-      if(Array.isArray(category.subCategories)){
+      if (Array.isArray(category.subCategories)) {
         category.subCategories.map(sub => {
-          return this.setState(prevState => ({ subCategoryHover: [...prevState.subCategoryHover, false]}))
+          return this.setState(prevState => ({ subCategoryHover: [...prevState.subCategoryHover, false] }))
         })
-      } 
+      }
       return this.setState(prevState => ({
         accordion: [...prevState.accordion, false],
         dropDownAccord: [...prevState.dropDownAccord, false]
@@ -139,17 +139,17 @@ class Categories extends Component {
     if (!profile) {
       return <ProfileEmptyMessage />
     } else if (categories.length === 0 && !spinner) {
-      return ShowServiceComponet.loadSpinner("Categories : " + categories.length)
+      return ShowServiceComponent.loadSpinner("Categories : " + categories.length)
     } else if (createCategory) {
       return <AddCategory category={categories} id={profileId} />
     } else if (updateCategory) {
-      return <EditCategory  index={index} categories={categories} category={requiredCategory} id={profileId} />
+      return <EditCategory index={index} categories={categories} category={requiredCategory} id={profileId} />
     } else if (deleteCategory) {
       return <DeleteCategory cid={categoryId} pid={profileId} />
-    } 
-    else{
-        return <div>{ danger && this.loadDeleteCategory()} { this.loadCategories(categories, visible, search)}</div>
-    } 
+    }
+    else {
+      return <div>{danger && this.loadDeleteCategory()} {this.loadCategories(categories, visible, search)}</div>
+    }
   }
 
   setSearch = e => {
@@ -158,12 +158,12 @@ class Categories extends Component {
 
   loadCategories = (categories, visible, search) => {
     const color = this.props.color;
-    if (color) {
-      this.callAlertTimer()
+     if (color) {
+       this.callAlertTimer()
     }
-    return ShowServiceComponet.loadItems(categories, this.setSearch, search, this.callAddCategory, visible,
+    return ShowServiceComponent.loadItems("Categories",categories, this.setSearch, search, this.callAddCategory, visible,
       this.toggleAccordion, this.state.accordion, this.setCategoryID, this.toggleDanger, this.updateCategory,
-      this.state.dropDownAccord, this.dropDownAccordion, color, this.props.content,this.state.subCategoryHover, this.subCategoryAccordion);
+      this.state.dropDownAccord, this.dropDownAccordion, color, this.props.content, this.state.subCategoryHover, this.subCategoryAccordion);
   }
 
   loadDeleteCategory = () => {
@@ -172,7 +172,7 @@ class Categories extends Component {
   }
 
   showDropdown = (category, uKey) => {
-    return ShowServiceComponet.loadDropDown(category, this.updateCategory, this.setCategoryID, this.toggleDanger)
+    return ShowServiceComponent.loadDropDown(category, this.updateCategory, this.setCategoryID, this.toggleDanger)
   }
 
   setCategoryID = category => {

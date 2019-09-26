@@ -7,7 +7,7 @@ import DeleteLabel from "./DeleteLabel";
 import LabelApi from "../../services/LabelApi";
 import Store from "../../data/Store";
 import { ProfileEmptyMessage } from "../utility/ProfileEmptyMessage";
-import { ShowServiceComponet } from "../utility/ShowServiceComponet";
+import { ShowServiceComponent } from "../utility/ShowServiceComponent";
 import { DeleteModel } from "../utility/DeleteModel";
 import Config from "../../data/Config";
 
@@ -190,7 +190,7 @@ class Lables extends Component {
     if (color) {
       this.callAlertTimer()
     }
-    return ShowServiceComponet.loadItems("Labels",labels, this.setSearch, search, this.callCreateLabel, visible, this.toggleAccordion,
+    return ShowServiceComponent.loadItems("Labels",labels, this.setSearch, search, this.callCreateLabel, visible, this.toggleAccordion,
       this.state.accordion, this.setLabelId, this.toggleDanger, this.updateLabel,
       this.state.dropdownOpen, this.toggleDropDown, color, this.props.content, this.state.subLabelHover, this.subLabelAccordion);
   }

@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import LabelApi from "../../services/LabelApi";
 import Lables from "./Labels";
 import Config from "../../data/Config";
-import { ShowServiceComponet } from "../utility/ShowServiceComponet";
+import { ShowServiceComponent } from "../utility/ShowServiceComponent";
 
 class DeleteLabel extends Component {
   constructor(props) {
@@ -37,7 +37,7 @@ class DeleteLabel extends Component {
 
   render() {
     const { labelDeleted, content, color } = this.state;
-    return <div>{labelDeleted ? <Lables color={color} content={content} visible={true} /> : ShowServiceComponet.loadDeleting("Labels", content, color)}</div>
+    return <div>{labelDeleted ? <Lables color={color} content={content} visible={true} /> : ShowServiceComponent.loadDeleting("Labels", content, color)}</div>
   }
 }
 

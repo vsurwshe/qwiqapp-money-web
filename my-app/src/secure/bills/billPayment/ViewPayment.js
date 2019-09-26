@@ -126,8 +126,7 @@ class ViewPayment extends Component {
       <td> {selectedCurrency[0].symbol} { paymentAmount < 0 ? -(paymentAmount) : paymentAmount} </td>
       <td>
         <Button style={{ backgroundColor: "transparent", borderColor: '#green', color: "green" }} onClick={() => this.handleUpdateBillPayment(payment, selectedCurrency[0].symbol)}>Edit</Button> &nbsp;
-        {/* <Button style={{ backgroundColor: "transparent", borderColor: '#red', color: "red" }} onClick={() => this.handleDeleteBillPayment(payment.txId)}>Remove</Button> */}
-        </td>
+      </td>
     </tr>
   }
 
