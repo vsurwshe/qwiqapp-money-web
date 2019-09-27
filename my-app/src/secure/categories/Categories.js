@@ -38,7 +38,7 @@ class Categories extends Component {
 
   setProfileId = async () => {
     if (Store.getProfile()) {
-      await this.setState({ profileId: Store.getProfile().id });
+      await this.setState({ profileId: Store.getProfile().id , spinner: true});
       this.getCategories();
     }
   }
@@ -72,7 +72,7 @@ class Categories extends Component {
 
   loadCollapse = () => {
     this.state.categories.map(category => {
-      if (Array.isArray(category.subCategories)) {
+      if (category.subCategories) {
         category.subCategories.map(sub => {
           return this.setState(prevState => ({ subCategoryHover: [...prevState.subCategoryHover, false] }))
         })
@@ -118,7 +118,7 @@ class Categories extends Component {
   toggleAccordion = (specificIndex) => {
     const prevState = this.state.accordion;
     const state = prevState.map((x, index) => specificIndex === index ? !x : false);
-    this.setState({ accordion: state, index: specificIndex });
+    this.setState({ accordion: state, index: specificIndex, spinner:false });
   }
 
   dropDownAccordion = (dKey) => {
@@ -135,10 +135,9 @@ class Categories extends Component {
 
   render() {
     const { requiredCategory, createCategory, updateCategory, deleteCategory, profileId, categoryId, visible, spinner, search, categories, index, danger } = this.state;
-    let profile = Store.getProfile()
-    if (!profile) {
+    if (!profileId) {
       return <ProfileEmptyMessage />
-    } else if (categories.length === 0 && !spinner) {
+    } else if (spinner) {
       return ShowServiceComponent.loadSpinner("Categories : " + categories.length)
     } else if (createCategory) {
       return <AddCategory category={categories} id={profileId} />

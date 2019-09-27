@@ -39,7 +39,7 @@ async function process(success, failure, Uurl, Umethod, profileId, data, reload)
   let HTTP = httpCall(Uurl, Umethod);
   let promise;
   try {
-    data === null ? promise = await HTTP.request() : promise = await HTTP.request({ data });
+    !data ? promise = await HTTP.request() : promise = await HTTP.request({ data });
     if (Umethod === "GET") {
       Store.saveBills(promise.data);
       validResponse(promise, success)
@@ -59,9 +59,7 @@ let handleAccessTokenError = function (profileId, err, failure, Uurl, Umethod, d
     new BillApi().getBills(success, failure, profileId, "True");
   } else if (err.response && (err.response.status === 403 || err.response.status === 401)) {
     if (!reload) {
-      new LoginApi().refresh(() => {
-        process(success, failure, Uurl, Umethod, profileId, data, "restrict")
-      }, errorResponse(err, failure))
+      new LoginApi().refresh(() => { process(success, failure, Uurl, Umethod, profileId, data, "restrict")}, errorResponse(err, failure))
     } else {
       errorResponse(err, failure)
     }

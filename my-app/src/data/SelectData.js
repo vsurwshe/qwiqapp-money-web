@@ -75,36 +75,33 @@ const Data = {
     singleValue: (styles, { data }) => ({ ...styles, color: data.color }),
   },
 
-  labels: function (labels) {
+  categoriesOrLabels: function (items) {
     const options = [];
-     labels && labels.map(label => {
-      if (label.subLabels) {
-        options.push({ label: label.name, color: !label.color ? "#000000" : label.color, value: label.id })
-        label.subLabels.map(subLabel => {
-          return options.push({ label: <b>{label.name + "/" + subLabel.name}</b>, color: !subLabel.color ? "#000000" : subLabel.color, value: subLabel.id })
-        })
-      } else {
-        return options.push({ value: label.id, label: <b>{label.name}</b>, color: !label.color ? "#000000" : label.color })
+    if (items) {
+      this.returnLabelOrCategories(items, options)
+    }
+    return options;
+  },
+  
+  returnLabelOrCategories: function (items, options ) {
+    items.map(item => {
+      options.push({label: <b>{item.name}</b>, color: !item.color ? "#000000" : item.color, value: item.id });
+      if (item.subCategories) {
+        item.subCategories.map(subItem => {
+          return this.returnSubItemOption(item, subItem, options);
+        });
+      } else if (item.subLabels) {
+        item.subLabels.map(subItem => {
+          return this.returnSubItemOption(item, subItem, options);
+        });
       }
       return 0;
-    })
+    });
     return options;
   },
 
-  categories: function (categories) {
-    const options = [];
-    categories && categories.map(category => {
-      if (category.subCategories) {
-        options.push({ value: category.id, label: <b>{category.name}</b>, color: !category.color ? "#000000" : category.color })
-        category.subCategories.map(subCategory => {
-          return options.push({ label: <><span style={{ color: category.color }}>{category.name}</span> / {subCategory.name}</>, color: !subCategory.color ? "#000000" : subCategory.color, value: subCategory.id })
-        })
-      } else {
-        return options.push({ value: category.id, label: <b>{category.name}</b>, color: !category.color ? "#000000" : category.color })
-      }
-      return 0;
-    })
-    return options;
+  returnSubItemOption: function (item, subItem, options) {
+    return options.push({label: <span>{item.name + "/" + subItem.name}</span>, color: !subItem.color ? "#000000" : subItem.color, value: subItem.id });
   },
 
   contacts: function (contacts) {

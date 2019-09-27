@@ -11,7 +11,8 @@ export const BillFormUI = (props) => {
   const { currency, description } = bill ? bill : '';
 
   if (bill) {
-    categoryName = Data.categories(categories).filter(item => { return item.value === bill.categoryId })
+    categoryName = Data.categoriesOrLabels(categories).filter(item => { return item.value === bill.categoryId })
+    // categoryName = Data.categories(categories).filter(item => { return item.value === bill.categoryId })
   }
   return <AvForm onSubmit={props.handleSubmitValue}>
     <Row>
@@ -40,7 +41,8 @@ export const BillFormUI = (props) => {
       <Col>
         {/* Categories loading in select options filed */}
         <label>Category</label>
-        <Select options={Data.categories(categories)} styles={Data.singleStyles} defaultValue={categoryName} placeholder="Select Categories " onChange={props.categorySelected} required /></Col>
+        <Select options={Data.categoriesOrLabels(categories)} styles={Data.singleStyles} defaultValue={categoryName} placeholder="Select Categories " onChange={props.categorySelected} required /></Col>
+        {/* <Select options={Data.categories(categories)} styles={Data.singleStyles} defaultValue={categoryName} placeholder="Select Categories " onChange={props.categorySelected} required /></Col> */}
       <Col>
         <AvField name="billDate" label="Bill Date" value={billDate} type="date" onChange={(e) => { props.handleBillDate(e) }} errorMessage="Invalid Date" validate={{
           date: { format: 'dd/MM/yyyy' },

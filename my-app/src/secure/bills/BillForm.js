@@ -15,9 +15,9 @@ class BillForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      labels: props.labels ? props.labels : [],
-      contacts: props.contacts ? props.contacts : [],
-      categories: props.categories ? props.categories : [],
+      labels: props.labels,
+      contacts: props.contacts,
+      categories: props.categories,
       bill: props.bill,
       billCreated: false,
       profileId: props.pid,
@@ -179,12 +179,8 @@ class BillForm extends Component {
     if (billDate && days > 0) {
       if (this.state.alertColor) { this.setState({ alertColor: '', alertMessage: '' }) }
       let billDate = new Date(this.state.billDate);
-      if (parseInt(days) === 0) {
-        billDate.setDate(billDate.getDate())
-      }
-      else {
-        billDate.setDate(billDate.getDate() + parseInt(days - 1))
-      }
+      if (parseInt(days) === 0) { billDate.setDate(billDate.getDate()) }
+      else { billDate.setDate(billDate.getDate() + parseInt(days - 1)) }
       let date = new Intl.DateTimeFormat('sv-SE', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(billDate);
       type === 'dueDays' ? this.setState({ dueDate: date }) : this.setState({ notifyDate: date })
     } else {
@@ -277,10 +273,10 @@ class BillForm extends Component {
   }
 
   loadMoreOptions = () => {
-    const { labels, contacts } = this.state
+    const { labels, contacts } = this.state;
     let labelName, contactName;
     if (this.props.bill) {
-      const options = Data.labels(this.props.labels);
+      const options = Data.categoriesOrLabels(this.props.labels);
       labelName = this.props.bill.labelIds ? this.props.bill.labelIds.map(id => { return options.filter(item => { return item.value === id }) }).flat() : '';
       contactName = Data.contacts(this.props.contacts).filter(item => { return item.value === this.props.bill.contactId })
     }
@@ -296,18 +292,17 @@ class BillForm extends Component {
       </Row>
       <Row>
         <Col>
-          {/* Labels loading in select options filed */}
-          <label>Select Labels</label>
-          <Select isMulti options={Data.labels(labels)} styles={Data.colourStyles} defaultValue={labelName} placeholder="Select Labels" onChange={this.labelSelected} /></Col>
+          {labels ? <> <label>Select Labels</label>
+            <Select isMulti options={Data.categoriesOrLabels(labels)} styles={Data.colourStyles} defaultValue={labelName} placeholder="Select Labels" onChange={this.labelSelected} /></> : <p>You don't have Labels</p>}        </Col>
         <Col>
-          {/* Contacts loading in select options filed */}
-          <label>Select Contacts</label>
-          <Select options={Data.contacts(contacts)} defaultValue={contactName} placeholder="Select Contacts" onChange={this.contactSelected} /></Col>
+          {contacts ? <>
+            <label>Select Contacts</label>
+            <Select options={Data.contacts(contacts)} defaultValue={contactName} placeholder="Select Contacts" onChange={this.contactSelected} /></> : <p>You don't have Contacts</p>}
+        </Col>
       </Row><br />
       <Row style={{ marginLeft: 7 }}>
         <Col>
-          <Input name="check" type="checkbox" checked={this.state.checked} value={this.state.checked}
-            onChange={this.handleNotificationCheck} />Notification enabled</Col>
+          <Input name="check" type="checkbox" checked={this.state.checked} value={this.state.checked} onChange={this.handleNotificationCheck} />Notification enabled</Col>
       </Row> <br />
       {this.state.checked &&
         <Row>
