@@ -45,11 +45,17 @@ class Bills extends Component {
   }
 
   componentDidMount = () => {
-    this.setProfileId();
+      this.setProfileId();
   }
 
   componentWillReceiveProps = () => {
-    this.setProfileId();
+    if(this.state.categories !== undefined && this.state.categories.length <= 0){
+      this.setProfileId();
+    }else{
+      this.props.match.params.value = undefined;
+      this.successCallBill(Store.getBills());
+    }
+    
   }
 
   setProfileId = async () => {
@@ -122,30 +128,29 @@ class Bills extends Component {
     const { value } = this.props.match.params
     if (bills.length === 0) {
       this.setState({ bills: [] })
-    }
-    else {
-      if (value) {
-        switch (value) {
-          case "upcoming":
-            newBills = bills.filter(bill => this.loadDateFormat(bill.dueDate_) >= new Date());
-            break;
-          case "overdue":
-            newBills = bills.filter(bill => this.loadDateFormat(bill.dueDate_) < new Date());
-            break;
-          case "paid":
-            newBills = bills.filter(bill => bill.paid === true);
-            break;
-          case "unpaid":
-            newBills = bills.filter(bill => bill.paid === false);
-            break;
-          default:
-            newBills = bills;
-            break;
+    } else {
+        if (value) {
+          switch (value) {
+            case "upcoming":
+              newBills = bills.filter(bill => (!bill.paid && this.loadDateFormat(bill.dueDate_) >= new Date()));
+              break;
+            case "overdue":
+              newBills = bills.filter(bill => (!bill.paid && this.loadDateFormat(bill.dueDate_) < new Date()));
+              break;
+            case "paid":
+              newBills = bills.filter(bill => bill.paid);
+              break;
+            case "unpaid":
+              newBills = bills.filter(bill => !bill.paid);
+              break;
+            default:
+              newBills = bills;
+              break;
+          }
         }
-      }
-      else {
-        newBills = bills;
-      }
+        else {
+          newBills = bills;
+        }
       await this.billsWithcategoryNameColor(newBills);
     }
   }

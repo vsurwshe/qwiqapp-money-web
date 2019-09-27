@@ -63,7 +63,9 @@ class Dashboard extends Component {
   // Calculate Overdue, Upcoming bills for bills, recurring bills
   calcOverDueUpcomingBills = (bills) => {
     let overdueBills = 0, upcomingBills = 0;
-    bills.map(bill => this.loadDateFormat(bill.dueDate_) >= new Date() ? upcomingBills++ : overdueBills++)
+    bills.map(bill =>
+       !bill.paid && (this.loadDateFormat(bill.dueDate_) >= new Date() ? upcomingBills++ : overdueBills++)
+       )
     this.setState({ overdueBills: this.state.overdueBills + overdueBills, upcomingBills: this.state.upcomingBills + upcomingBills });
   }
 
