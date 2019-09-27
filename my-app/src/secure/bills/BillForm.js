@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Link } from 'react-router-dom';
 import { AvField } from 'availity-reactstrap-validation';
 import { Alert, Card, Col, Row, Container, Input, Collapse } from "reactstrap";
 import Select from 'react-select';
@@ -293,11 +294,12 @@ class BillForm extends Component {
       <Row>
         <Col>
           {labels ? <> <label>Select Labels</label>
-            <Select isMulti options={Data.categoriesOrLabels(labels)} styles={Data.colourStyles} defaultValue={labelName} placeholder="Select Labels" onChange={this.labelSelected} /></> : <p>You don't have Labels</p>}        </Col>
+            <Select isMulti options={Data.categoriesOrLabels(labels)} styles={Data.colourStyles} defaultValue={labelName} placeholder="Select Labels" onChange={this.labelSelected} /></> : <p>You don't have Labels, Click here to  <Link to='/label/labels'>Create</Link> </p>}       
+        </Col>
         <Col>
           {contacts ? <>
             <label>Select Contacts</label>
-            <Select options={Data.contacts(contacts)} defaultValue={contactName} placeholder="Select Contacts" onChange={this.contactSelected} /></> : <p>You don't have Contacts</p>}
+            <Select options={Data.contacts(contacts)} defaultValue={contactName} placeholder="Select Contacts" onChange={this.contactSelected} /></> : <p> You don't have Contacts, Click here to  <Link to='/contact/viewContacts'>Create</Link></p>}
         </Col>
       </Row><br />
       <Row style={{ marginLeft: 7 }}>
