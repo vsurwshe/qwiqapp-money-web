@@ -5,6 +5,7 @@ import PaymentApi from '../../../services/PaymentApi';
 import Store from '../../../data/Store';
 import Config from '../../../data/Config';
 import {BillPaymentForm} from './FormModel'
+import { ShowServiceComponent } from '../../utility/ShowServiceComponent';
 
 class BillPayment extends Component {
     constructor(props) {
@@ -52,7 +53,7 @@ class BillPayment extends Component {
     handleErrorCall = (error) => { this.setState({ doubleClick: false }); }
 
     handlePaidDate = (date) => {
-        return new Intl.DateTimeFormat('sv-SE', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(date);
+        return ShowServiceComponent.loadDateFormat(date);
     }
 
     cancelPayment = () => { this.setState({ cancelPayment: true }); }

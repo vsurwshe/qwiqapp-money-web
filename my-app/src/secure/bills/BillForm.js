@@ -179,10 +179,13 @@ class BillForm extends Component {
   setDate = (billDate, days, type) => {
     if (billDate && days > 0) {
       if (this.state.alertColor) { this.setState({ alertColor: '', alertMessage: '' }) }
-      let billDate = new Date(this.state.billDate);
-      if (parseInt(days) === 0) { billDate.setDate(billDate.getDate()) }
-      else { billDate.setDate(billDate.getDate() + parseInt(days - 1)) }
-      let date = new Intl.DateTimeFormat('sv-SE', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(billDate);
+      let newBillDate = new Date(billDate)
+      if (parseInt(days) === 0) { 
+        newBillDate.setDate(newBillDate.getDate());
+      } else { 
+        newBillDate.setDate(newBillDate.getDate() + parseInt(days - 1));
+      }
+      let date = ShowServiceComponent.loadDateFormat(newBillDate);
       type === 'dueDays' ? this.setState({ dueDate: date }) : this.setState({ notifyDate: date })
     } else {
       if (!this.state.billDate) {
