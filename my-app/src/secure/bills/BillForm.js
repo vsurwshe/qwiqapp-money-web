@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Link } from 'react-router-dom';
 import { AvField } from 'availity-reactstrap-validation';
 import { Alert, Card, Col, Row, Container, Input, Collapse } from "reactstrap";
 import Select from 'react-select';
@@ -9,15 +10,15 @@ import Config from "../../data/Config";
 import Store from "../../data/Store";
 import { BillFormUI } from "../utility/FormsModel";
 import '../../css/style.css';
-import { ShowServiceComponet } from "../utility/ShowServiceComponet";
+import { ShowServiceComponent } from "../utility/ShowServiceComponent";
 
 class BillForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      labels: props.labels ? props.labels : [] ,
-      contacts: props.contacts ? props.contacts : [] ,
-      categories: props.categories ? props.categories : [],
+      labels: props.labels,
+      contacts: props.contacts,
+      categories: props.categories,
       bill: props.bill,
       billCreated: false,
       profileId: props.pid,
@@ -29,10 +30,10 @@ class BillForm extends Component {
       categoryOptionUpdate: false,
       labelOptionUpdate: false,
       contactOptionUpdate: false,
-      notifyDate: props.bill ? ShowServiceComponet.customDate(props.bill.notifyDate_) : '',
+      notifyDate: props.bill ? ShowServiceComponent.customDate(props.bill.notifyDate_) : '',
       dueDays: props.bill ? props.bill.dueDays : 0,
-      dueDate: props.bill ? ShowServiceComponet.customDate(props.bill.dueDate_) : '',
-      billDate: props.bill ? ShowServiceComponet.customDate(props.bill.billDate) : '',
+      dueDate: props.bill ? ShowServiceComponent.customDate(props.bill.dueDate_) : '',
+      billDate: props.bill ? ShowServiceComponent.customDate(props.bill.billDate) : '',
       amount: props.bill ? this.setBillAmount(props.bill.amount) : 0,
       contactOption: props.bill ? props.bill.contactId : '',
       categoryOption: props.bill ? props.bill.categoryId : null,
@@ -178,14 +179,13 @@ class BillForm extends Component {
   setDate = (billDate, days, type) => {
     if (billDate && days > 0) {
       if (this.state.alertColor) { this.setState({ alertColor: '', alertMessage: '' }) }
-      let billDate = new Date(this.state.billDate);
-      if (parseInt(days) === 0) {
-        billDate.setDate(billDate.getDate())
+      let newBillDate = new Date(billDate)
+      if (parseInt(days) === 0) { 
+        newBillDate.setDate(newBillDate.getDate());
+      } else { 
+        newBillDate.setDate(newBillDate.getDate() + parseInt(days - 1));
       }
-      else {
-        billDate.setDate(billDate.getDate() + parseInt(days - 1))
-      }
-      let date = new Intl.DateTimeFormat('sv-SE', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(billDate);
+      let date = ShowServiceComponent.loadDateFormat(newBillDate);
       type === 'dueDays' ? this.setState({ dueDate: date }) : this.setState({ notifyDate: date })
     } else {
       if (!this.state.billDate) {
@@ -227,7 +227,6 @@ class BillForm extends Component {
   }
 
   billFormField = (alertColor, alertMessage, labels, categories, contacts) => {
-    console.log("contacts ",contacts)
     const { currencies, billDate, dueDate, moreOptions, doubleClick, taxPercent, taxAmount, checked, type, amount, dueDays } = this.state
     const { bill } = this.props
     let FormData = {
@@ -257,7 +256,7 @@ class BillForm extends Component {
         <h4 className="padding-top"><b><center>{headerMessage}</center></b></h4>
         <Container>
           <Col>
-            {alertColor && <Alert color={alertColor}>{alertMessage}</Alert> }
+            {alertColor && <Alert color={alertColor}>{alertMessage}</Alert>}
             <BillFormUI data={formData}
               handleSubmitValue={this.handleSubmitValue}
               handleSetAmount={this.handleSetAmount}
@@ -278,11 +277,11 @@ class BillForm extends Component {
   }
 
   loadMoreOptions = () => {
-    const {labels, contacts}=this.state
+    const { labels, contacts } = this.state;
     let labelName, contactName;
     if (this.props.bill) {
-      const options = Data.labels(this.props.labels);
-      labelName = this.props.bill.labelIds === null ? '' : this.props.bill.labelIds.map(id => { return options.filter(item => { return item.value === id }) }).flat();
+      const options = Data.categoriesOrLabels(this.props.labels);
+      labelName = this.props.bill.labelIds ? this.props.bill.labelIds.map(id => { return options.filter(item => { return item.value === id }) }).flat() : '';
       contactName = Data.contacts(this.props.contacts).filter(item => { return item.value === this.props.bill.contactId })
     }
     return <Collapse isOpen={this.state.moreOptions} data-parent="#exampleAccordion" id="exampleAccordion1">
@@ -297,18 +296,18 @@ class BillForm extends Component {
       </Row>
       <Row>
         <Col>
-          {/* Labels loading in select options filed */}
-          <label>Select Labels</label>
-          <Select isMulti options={Data.labels(labels)} styles={Data.colourStyles} defaultValue={labelName} placeholder="Select Labels" onChange={this.labelSelected} /></Col>
+          {labels ? <> <label>Select Labels</label>
+            <Select isMulti options={Data.categoriesOrLabels(labels)} styles={Data.colourStyles} defaultValue={labelName} placeholder="Select Labels" onChange={this.labelSelected} /></> : <p>You don't have Labels, Click here to  <Link to='/label/labels'>Create</Link> </p>}       
+        </Col>
         <Col>
-          {/* Contacts loading in select options filed */}
-          <label>Select Contacts</label>
-          <Select options={Data.contacts(contacts)} defaultValue={contactName} placeholder="Select Contacts" onChange={this.contactSelected} /></Col>
+          {contacts ? <>
+            <label>Select Contacts</label>
+            <Select options={Data.contacts(contacts)} defaultValue={contactName} placeholder="Select Contacts" onChange={this.contactSelected} /></> : <p> You don't have Contacts, Click here to  <Link to='/contact/viewContacts'>Create</Link></p>}
+        </Col>
       </Row><br />
       <Row style={{ marginLeft: 7 }}>
         <Col>
-          <Input name="check" type="checkbox" checked={this.state.checked} value={this.state.checked}
-            onChange={this.handleNotificationCheck} />Notification enabled</Col>
+          <Input name="check" type="checkbox" checked={this.state.checked} value={this.state.checked} onChange={this.handleNotificationCheck} />Notification enabled</Col>
       </Row> <br />
       {this.state.checked &&
         <Row>

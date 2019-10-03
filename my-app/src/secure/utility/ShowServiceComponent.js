@@ -5,7 +5,7 @@ import Avatar from 'react-avatar';
 import { FaSearch, FaAngleDown } from 'react-icons/fa';
 import '../../css/style.css';
 
-export const ShowServiceComponet = {
+export const ShowServiceComponent = {
   loadDeleting: function (headerMsg, bodyMessage, color) {
     return (
       <div className="animated fadeIn">
@@ -54,7 +54,7 @@ export const ShowServiceComponet = {
   searchingFor: function (searchTerm) {
     return function (item) {
       let subItemName = '';
-      if (item.childName !== null) {
+      if (item.childName) {
         subItemName = subItemName + item.childName.map(item => item)
       }
       return (item.name.toLowerCase() + subItemName.toLowerCase()).includes(searchTerm.toLowerCase()) || !searchTerm
@@ -124,13 +124,7 @@ export const ShowServiceComponet = {
   },
 
   //This method Shows Categories/labels as Items
-  loadItems: function (items, setSearch, search, addItem, visible, toggleAccordion, accordion, setItemId, toggleDanger, handleUpdate, stateDrodownAccord, dropDownAccordion, color, content, subArray, subItemAccordion) {
-    let itemType;
-    if (items[0].subLabels !== undefined) {
-      itemType = "Labels"
-    } else {
-      itemType = "Categories"
-    }
+  loadItems: function (itemType, items, setSearch, search, addItem, visible, toggleAccordion, accordion, setItemId, toggleDanger, handleUpdate, stateDrodownAccord, dropDownAccordion, color, content, subArray, subItemAccordion) {
     let placeHolder = "Search " + itemType + "..."
     return <div className="animated fadeIn">
       <Card>

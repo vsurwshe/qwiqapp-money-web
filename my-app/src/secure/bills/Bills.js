@@ -11,7 +11,7 @@ import DeleteBill from "./DeleteBill";
 import ContactApi from '../../services/ContactApi';
 import { ProfileEmptyMessage } from "../utility/ProfileEmptyMessage";
 import { DeleteModel } from "../utility/DeleteModel";
-import { ShowServiceComponet } from "../utility/ShowServiceComponet";
+import { ShowServiceComponent } from "../utility/ShowServiceComponent";
 import '../../css/style.css';
 import Config from "../../data/Config";
 import BillPayment from "./billPayment/ BillPayment";
@@ -45,11 +45,17 @@ class Bills extends Component {
   }
 
   componentDidMount = () => {
-    this.setProfileId();
+      this.setProfileId();
   }
 
   componentWillReceiveProps = () => {
-    this.setProfileId();
+    if(this.state.categories !== undefined && this.state.categories.length <= 0){
+      this.setProfileId();
+    }else{
+      this.props.match.params.value = undefined;
+      this.successCallBill(Store.getBills());
+    }
+    
   }
 
   setProfileId = async () => {
@@ -122,30 +128,29 @@ class Bills extends Component {
     const { value } = this.props.match.params
     if (bills.length === 0) {
       this.setState({ bills: [] })
-    }
-    else {
-      if (value) {
-        switch (value) {
-          case "upcoming":
-            newBills = bills.filter(bill => this.loadDateFormat(bill.dueDate_) >= new Date());
-            break;
-          case "overdue":
-            newBills = bills.filter(bill => this.loadDateFormat(bill.dueDate_) < new Date());
-            break;
-          case "paid":
-            newBills = bills.filter(bill => bill.paid === true);
-            break;
-          case "unpaid":
-            newBills = bills.filter(bill => bill.paid === false);
-            break;
-          default:
-            newBills = bills;
-            break;
+    } else {
+        if (value) {
+          switch (value) {
+            case "upcoming":
+              newBills = bills.filter(bill => (!bill.paid && this.loadDateFormat(bill.dueDate_) >= new Date()));
+              break;
+            case "overdue":
+              newBills = bills.filter(bill => (!bill.paid && this.loadDateFormat(bill.dueDate_) < new Date()));
+              break;
+            case "paid":
+              newBills = bills.filter(bill => bill.paid);
+              break;
+            case "unpaid":
+              newBills = bills.filter(bill => !bill.paid);
+              break;
+            default:
+              newBills = bills;
+              break;
+          }
         }
-      }
-      else {
-        newBills = bills;
-      }
+        else {
+          newBills = bills;
+        }
       await this.billsWithcategoryNameColor(newBills);
     }
   }
@@ -294,7 +299,7 @@ class Bills extends Component {
   }
 
   loadHeader = (bills) => {
-    return new ShowServiceComponet.loadHeaderWithSearch("BILLS", bills, this.searchSelected, "Search Bills.....", this.createBillAction);
+    return new ShowServiceComponent.loadHeaderWithSearch("BILLS", bills, this.searchSelected, "Search Bills.....", this.createBillAction);
   }
 
   loadLoader = () => {
@@ -362,10 +367,10 @@ class Bills extends Component {
     let lastPaid = this.calculateLastPaid(bill, bill.amount);
     let billDescription = bill.description ? bill.description : bill.categoryName.name
     return <tr width={50} key={key}>
-      <td>{strike ? <strike>{ShowServiceComponet.customDate(bill.dueDate_, true)}</strike>: ShowServiceComponet.customDate(bill.dueDate_, true)}</td>
-      <td>{strike ? <strike> {ShowServiceComponet.customDate(bill.billDate, true)} </strike> : ShowServiceComponet.customDate(bill.billDate, true)}</td>
+      <td>{strike ? <strike>{ShowServiceComponent.customDate(bill.dueDate_, true)}</strike>: ShowServiceComponent.customDate(bill.dueDate_, true)}</td>
+      <td>{strike ? <strike> {ShowServiceComponent.customDate(bill.billDate, true)} </strike> : ShowServiceComponent.customDate(bill.billDate, true)}</td>
       <td>{strike ? <strike> {billDescription} </strike> : billDescription}</td>
-      <td>{strike ?  <strike>{ShowServiceComponet.billTypeAmount(bill.currency,bill.amount)}</strike> :ShowServiceComponet.billTypeAmount(bill.currency,bill.amount)}</td>
+      <td>{strike ?  <strike>{ShowServiceComponent.billTypeAmount(bill.currency,bill.amount)}</strike> :ShowServiceComponent.billTypeAmount(bill.currency,bill.amount)}</td>
       <td> {lastPaid ? <h6 className="bill-amount-color"> {this.loadPaymentDateAndAmount(bill, lastPaid)}</h6> : ''} </td>
       <td><h6>{this.loadDropDown(bill, key)}</h6></td>
     </tr>
@@ -417,7 +422,7 @@ class Bills extends Component {
   //this Method loads Browser DropDown
   loadDropDown = (bill, key) => {
     return <span className="float-right" style={{marginTop: 4}} >
-      {ShowServiceComponet.loadEditRemoveButtons(bill, this.handleShowPayment , this.updateBillAction, this.setBillId, this.toggleDanger)}     
+      {ShowServiceComponent.loadEditRemoveButtons(bill, this.handleShowPayment , this.updateBillAction, this.setBillId, this.toggleDanger)}     
     </span>
   }
 

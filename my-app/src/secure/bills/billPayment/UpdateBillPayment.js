@@ -4,6 +4,7 @@ import PaymentApi from '../../../services/PaymentApi';
 import Config from '../../../data/Config';
 import ViewPayment from './ViewPayment';
 import { BillPaymentForm } from './FormModel';
+import { ShowServiceComponent } from '../../utility/ShowServiceComponent';
 
 class UpdateBillPayment extends Component {
     constructor(props) {
@@ -33,8 +34,6 @@ class UpdateBillPayment extends Component {
     }
 
     handleErrorCall = (error) => { this.setState({ doubleClick: false }); }
-
-    handlePaidDate = () => { return new Intl.DateTimeFormat('sv-SE', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(new Date()); }
 
     calculate = () => { this.setState({ calculate: !this.state.calculate }); }
 
@@ -93,10 +92,7 @@ class UpdateBillPayment extends Component {
     }
 
     loadDateFormat = (dateParam) => {
-        let toStr = "" + dateParam
-        let dateString = toStr.substring(0, 4) + "-" + toStr.substring(4, 6) + "-" + toStr.substring(6, 8)
-        let date = new Date(dateString);
-        return new Intl.DateTimeFormat('sv-SE', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(date);  //finalDate;
+        return ShowServiceComponent.customDate(dateParam);
     }
 }
 

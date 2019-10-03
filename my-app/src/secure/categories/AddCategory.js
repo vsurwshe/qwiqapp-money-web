@@ -23,7 +23,6 @@ class AddCategory extends Component {
       content: '',
       collapse: false,
       categoryCreated: false,
-      cancelAddCategory: false,
       doubleClick: false,
     }
   }
@@ -36,8 +35,7 @@ class AddCategory extends Component {
     this.setState({ userToken: Store.getAppUserAccessToken() });
   }
 
-  handleSubmitValue = (event, errors, values) => {
-    if (errors.length === 0) { }
+  handleSubmitValue = (event, values) => {
     this.handlePostData(event, values);
   }
 
@@ -99,7 +97,7 @@ class AddCategory extends Component {
         <Col sm="12" md={{ size: 5, offset: 4 }}>
           <Alert color={alertColor} >{content}</Alert>
           <h5><b>CREATE CATEGORY</b></h5><br />
-          <AvForm onSubmit={this.handleSubmitValue}>
+          <AvForm onValidSubmit={this.handleSubmitValue}>
             <AvField name="name" type="text" errorMessage="Category Name Required" placeholder="Enter Category name" required />
             <AvField name="color" type="color" list="colors" placeholder="Enter Category Color" />
             <FormGroup check className="checkbox">
@@ -107,13 +105,14 @@ class AddCategory extends Component {
               <Label check className="form-check-label" htmlFor="checkbox1"> &nbsp;Nest Category under </Label>
             </FormGroup><br />
             <Collapse isOpen={collapse}>
-              <Input type="select" name="parentId" id="exampleSelect" onChange={e => { this.handleInput(e) }}>
+              <AvField type="select" name="parentId" onChange={e => { this.handleInput(e) }} required={this.state.collapse}>
+                <option value="">Select Category</option>
                 {categories.map((category, key) => { return <option key={key} value={category.id}>{category.name}</option> })}
-              </Input>
+              </AvField>
             </Collapse><br />
             <FormGroup>
               <Button color="info" disabled={doubleClick} > Save </Button> &nbsp;&nbsp;
-               <Button active color="light" type="button" aria-pressed="true" onClick={this.cancelAddCategory}  >Cancel</Button>
+               <Button active color="light" type="button" aria-pressed="true" onClick={this.cancelAddCategory} >Cancel</Button>
             </FormGroup>
           </AvForm>
         </Col>

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import Contacts from "./Contacts";
 import ContactApi from "../../services/ContactApi";
-import { ShowServiceComponet } from "../utility/ShowServiceComponet";
+import { ShowServiceComponent } from "../utility/ShowServiceComponent";
 import Config from "../../data/Config";
 
 class DeleteContact extends Component {
@@ -37,7 +37,7 @@ class DeleteContact extends Component {
   render() {
     const { contactDeleted, content, color } = this.state;
     return <div>{contactDeleted ? <Contacts color={color} content={content} visible={true} />
-      : ShowServiceComponet.loadDeleting("Contacts", content, color)}</div>
+      : ShowServiceComponent.loadDeleting("Contacts", content, color)}</div>
   }
 }
 

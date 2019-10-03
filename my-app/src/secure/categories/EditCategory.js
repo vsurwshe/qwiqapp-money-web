@@ -72,15 +72,15 @@ class EditCategory extends Component {
   }
 
   render() {
-    const { updateCategoryName, categoryColor, color, content, updateSuccess, cancelUpdateCategory, parentId, categories, index } = this.state;
-    values = categories.filter(categories => categories.id === parentId).map(item => item.name)
+    const { updateCategoryName, categoryColor, color, content, updateSuccess, cancelUpdateCategory, categories, index } = this.state;
+    values = categories.filter(category => category.name !== updateCategoryName).map(item => item)
     if (cancelUpdateCategory) {
       return <div><Categories /></div>
     } else {
       return <div>
-        {updateSuccess ? <Categories index={index} /> : this.props.category.parentId === null ?
-          <div>{this.loadCategoryToUpdate(updateCategoryName, categoryColor, color, content, values)}</div>
-          : <div>{this.loadSubCategoryToUpdate(updateCategoryName, categoryColor, color, content, values)}</div>}
+        {updateSuccess ? <Categories index={index} /> : this.props.category.parentId ?
+             <div>{this.loadSubCategoryToUpdate(updateCategoryName, categoryColor, color, content, values)}</div>
+          :  <div>{this.loadCategoryToUpdate(updateCategoryName, categoryColor, color, content, values)}</div>}
       </div>
     }
   }
@@ -97,7 +97,7 @@ class EditCategory extends Component {
               <Input className="update-category" type="text" name="updateCategoryName" value={updateCategoryName} autoFocus={true} onChange={e => { this.setState({ updateCategoryName: e.target.value }) }} />
               <br />
               <Input name="categoryColor" type="color" list="colors" value={`${categoryColor}`} onChange={e => { this.handleInput(e) }} /><br />
-              {this.props.category.subCategories === null ? <><Input name="check" type="checkbox" onClick={() => { this.toggle() }} /><Label for="mark">Nest Under Category</Label> <br /></> : ""}
+              {!this.props.category.subCategories ? <><Input name="check" type="checkbox" onClick={() => { this.toggle() }} /><Label for="mark">Nest Under Category</Label> <br /></> : ""}
               {this.loadCollapse(values)}
               <Button color="success" disabled={!updateCategoryName} onClick={this.handleUpdate} >Edit</Button>&nbsp;&nbsp;&nbsp;
                <Link className="link-text" to="/listCategories" >
@@ -121,12 +121,13 @@ class EditCategory extends Component {
               <Input className="update-category" type="text" name="updateCategoryName" value={updateCategoryName} autoFocus={true} onChange={e => { this.setState({ updateCategoryName: e.target.value }) }} />
               <br />
               <Input name="categoryColor" type="color" list="colors" value={`${categoryColor}`} onChange={e => { this.handleInput(e) }} /><br />
-              <Input name="check" type="checkbox" onClick={() => { this.toggle() }} /><Label for="mark">Make it as Parent</Label> <br />
+                <div>
+                  <Input name="check" type="checkbox" onClick={() => { this.toggle() }} />
+                  <Label for="mark">Make it as Parent</Label> <br />
+                </div>
               <Collapse isOpen={this.state.collapse}>
                 <FormGroup>
-                  <Input type="select" name="parentId" id="exampleSelect" onChange={e => { this.handleInput(e) }}>
-                    <option className="option-select" value="" >{values}</option>
-                    {this.state.categories.filter(category => category.id !== this.state.parentId).map(category => { return <option key={category.id} value={category.id}>{category.name}</option> })}
+                  <Input type="select" name="parentId" id="exampleSelect"  value={this.state.parentId} onChange={e => { this.handleInput(e) }}>{values.map(category => { return <option key={category.id} value={category.id}>{category.name}</option> })}
                   </Input>
                 </FormGroup>
               </Collapse>
@@ -143,8 +144,9 @@ class EditCategory extends Component {
       <Collapse isOpen={!this.state.collapse}>
         <FormGroup>
           <Input type="select" name="parentId" id="exampleSelect" onChange={e => { this.handleInput(e) }}>
-            {this.state.categoryNameValid ? <option className="option-select" value="" >{values}</option> : <option value="" >Select Category</option>}
-            {this.state.categories.map(category => { return <option key={category.id} value={category.id}>{category.name}</option> })}
+            {values.map(category => { 
+               return <option key={category.id} value={category.id}>{category.name}</option> 
+              })}
           </Input>
         </FormGroup>
       </Collapse>

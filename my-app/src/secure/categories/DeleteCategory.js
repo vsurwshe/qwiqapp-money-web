@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import CategoryApi from "../../services/CategoryApi";
 import Categories from "./Categories";
 import Config from "../../data/Config";
-import { ShowServiceComponet } from "../utility/ShowServiceComponet";
+import { ShowServiceComponent } from "../utility/ShowServiceComponent";
 
 class DeleteCategory extends Component {
   constructor(props) {
@@ -34,16 +34,15 @@ class DeleteCategory extends Component {
   };
 
   callAlertTimer = (color, content) => {
-    this.setState({ color, content });
     setTimeout(() => {
-      this.setState({ categoryDeleted: true });
+      this.setState({ color, content, categoryDeleted: true });
     }, Config.notificationMillis);
   };
 
   render() {
     const { categoryDeleted, color, content } = this.state;
-    return categoryDeleted ? <Categories color={color} content={content} visible={true} />
-      : ShowServiceComponet.loadDeleting("CATEGORIES", content, color)
+    return <div>{categoryDeleted ? <Categories color={color} content={content} visible={true} />
+      : ShowServiceComponent.loadDeleting("CATEGORIES", content, color)}</div>
   }
 }
 

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import ProfileApi from "../../services/ProfileApi";
 import Profiles from "./Profiles";
-import { ShowServiceComponet } from "../utility/ShowServiceComponet";
+import { ShowServiceComponent } from "../utility/ShowServiceComponent";
 import Config from "../../data/Config";
 
 class DeleteProfile extends Component {
@@ -36,7 +36,7 @@ class DeleteProfile extends Component {
 
   render() {
     const { profileDeleted, content, color } = this.state;
-    return <div>{profileDeleted ? <Profiles /> : ShowServiceComponet.loadDeleting("Profile", content, color)}</div>
+    return <div>{profileDeleted ? <Profiles /> : ShowServiceComponent.loadDeleting("Profile", content, color)}</div>
   }
 
 }
