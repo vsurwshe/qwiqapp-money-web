@@ -57,6 +57,7 @@ let validResponse =  function (resp, successMethod,payments) {
         } else if(payments!=="payments") {
             Store.saveBillingAddress(resp.data);
             successMethod(resp.data);
+            
         }else{
              successMethod(resp.data);
         }
