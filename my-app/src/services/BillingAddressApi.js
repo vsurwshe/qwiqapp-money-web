@@ -26,8 +26,9 @@ async function process(success, failure, Uurl, Umethod, data, reload, payments) 
     let HTTP = httpCall(Uurl, Umethod);
     let promise;
     try {
-        data === null ? promise = await HTTP.request() : promise = await HTTP.request({ data });
-        validResponse(promise, success,payments)
+        data ?  promise = await HTTP.request({ data }) :promise = await HTTP.request()
+        Umethod === "GET" ?  validResponse(promise.data, success,payments) : validResponse(data, success,payments)
+        // validResponse(data, success,payments)
     } catch (err) {
         handleAccessTokenError(err, failure, Uurl, Umethod, data, success, reload);
     }
@@ -37,36 +38,30 @@ async function process(success, failure, Uurl, Umethod, data, reload, payments) 
 let handleAccessTokenError = function (err, failure, Uurl, Umethod, data, success, reload) {
     if (err.request.status === 0) {
     } else if (err.response.status === 403 || err.response.status === 401) {
+        // This condtions restrict calling of api after geting 403 or 401 Error
         if (!reload) {
-            new LoginApi().refresh(() => {
-                process(success, failure, Uurl, Umethod, data, "restrict")
-            }, errorResponse(err, failure));
-        } else {
-            errorResponse(err, failure);
-        }
+            new LoginApi().refresh(() => { process(success, failure, Uurl, Umethod, data, "restrict") }, errorResponse(err, failure));
+        } 
     } else {
         errorResponse(err, failure)
     }
 }
 
-let validResponse =  function (resp, successMethod,payments) {
+let validResponse =  function (respData, successMethod,payments) {
     if (successMethod != null) {
-        if (resp.data === '') {
-            successMethod(null);
-           
-        } else if(payments!=="payments") {
-            Store.saveBillingAddress(resp.data);
-            successMethod(resp.data);
-            
+        // This condtion checking whether calling address api or payment api.   
+        if(payments!=="payments") {
+            Store.saveBillingAddress(respData);
+            successMethod(respData);
         }else{
-             successMethod(resp.data);
+            successMethod(respData);
         }
     }
 };
 
 let errorResponse = async function (error, failure) {
     let err = error.response;
-    if (err.status === 500 || err.status === 400) {
+    if (err.status === 500) {
         let data = {
             status: err.status,
             message: err.data.error.debugMessage

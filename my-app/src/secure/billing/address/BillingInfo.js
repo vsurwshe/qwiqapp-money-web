@@ -1,68 +1,91 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 import { Card, CardBody, CardHeader, Button, Alert } from 'reactstrap';
+import BillingAddressApi from '../../../services/BillingAddressApi';
 import EditBillingAddress from './EditBillingAddress';
 import Loader from 'react-loader-spinner';
 import '../../../css/style.css';
-import { loadBillingAddress, clickBillingAddressButton, shopNotification } from '../../../components/redux/actions/billingAddressActions';
-import { changeUserAction } from '../../../components/redux/actions/userAction';
-import Store from '../../../data/Store';
+import { connect } from 'react-redux';
+import { handleApiResponseMsg, buttonAction, setSpinnerValue, getBillingAddress, updateStatus } from '../../../redux/actions/billingAddressActions';
 import Config from '../../../data/Config';
+
+let emptyBillingAddress = {
+  addressLine1: '',
+  addressLine2: '',
+  city: '',
+  company: '',
+  country: '',
+  firstName: '',
+  lastName: '',
+  postCode: '',
+  region: ''
+}
 
 class BillingInfo extends Component {
 
-  componentDidMount() {
-    if(this.props.getBillingAddress){
-    this.props.dispatch(loadBillingAddress());
-    }
+  componentDidMount = async () => {
+    await new BillingAddressApi().getBillings(this.successcall, this.errorcall)
   }
-  changeUserAction = () => {
-    let user = Store.getUser();
-    if (user.action === "ADD_BILLING") {
-      this.props.dispatch(changeUserAction());
+
+  componentWillReceiveProps=async ()=>{
+    if(this.props.updateStatus){
+      this.props.dispatch(updateStatus(false))
+      await new BillingAddressApi().getBillings(this.successcall, this.errorcall)
     }
   }
 
+  successcall = async (billing) => {
+    if (billing) {
+      this.props.dispatch(getBillingAddress(billing))
+    } else {
+      this.props.dispatch(getBillingAddress(emptyBillingAddress))
+    }
+    this.props.dispatch(setSpinnerValue(true))
+  }
+
+  errorcall = (error) => {
+    this.props.dispatch(handleApiResponseMsg('Unable to process, Please try Again....','danger',true))
+  }
+
+  // handele edit billing address button actions  
   editBillingAddress = () => {
-    console.log("Click props ",this.props)
-    this.props.dispatch(clickBillingAddressButton());
+    this.props.dispatch(buttonAction(true,true))
+  }
+  // method execute cancle actions in edit billing address
+  cancelEditBillingAddress = () => {
+    this.props.dispatch(buttonAction(false,true))
   }
 
   render() {
-    const { getBillingAddress, spinner, addBilling, showAlert, message } = this.props;
+    const { getBillingAddress,addBilling, spinner } = this.props;
     if (addBilling) {
-      return <EditBillingAddress />
-    } else if (!getBillingAddress) {
-      if (!spinner) {
-        return this.showingNoBillingMessage();
-      } else {
+      return <EditBillingAddress handleCancelEditBillingAddress={this.cancelEditBillingAddress} />
+    } else if ( !getBillingAddress.country) {
+      if(!spinner){
+        return this.loadSpinner();
+      } else{
         return this.showingNoBillingMessage()
       }
-    } else if (getBillingAddress === [] || getBillingAddress === '') {
-      return this.showingNoBillingMessage()
     } else {
-      return this.billingAddress(getBillingAddress, showAlert, message);
+      return this.billingAddress(getBillingAddress);
     }
   }
 
-  loadSpinner = () => {
+  loadSpinner = () =>{
     return <div className="animated fadeIn">
-      <Card>
-        {this.loadHeader()}
-        <center className="padding-top">
-          <CardBody><Loader type="TailSpin" className="loader-color" height={60} width={60} /></CardBody>
-        </center>
-      </Card>
-    </div>
+        <Card>
+          {this.loadHeader()}
+          <center className="padding-top">
+            <CardBody><Loader type="TailSpin" className="loader-color" height={60} width={60} /></CardBody>
+          </center>
+        </Card>
+      </div>
   }
-  response = () => {
-    setTimeout(() => {
-      this.props.dispatch(shopNotification());
+
+  billingAddress = (billing) => {
+    const {showAlert,color,message}=this.props;
+    showAlert && setTimeout(() => {
+      this.props.dispatch(handleApiResponseMsg('','',false))
     }, Config.notificationMillis);
-  }
-  billingAddress = (getBillingAddress, showAlert, message) => {
-    console.log("&&&&&&&&&&&&&&", getBillingAddress)
-    const { firstName, lastName, company, addressLine1, addressLine2, region, postCode, country, city } = getBillingAddress ? getBillingAddress : '';
     return (
       <div className="animated fadeIn">
         <Card>
@@ -70,19 +93,21 @@ class BillingInfo extends Component {
             <Button color="success" className="float-right" onClick={this.editBillingAddress}> Edit Billing Address</Button>
           </CardHeader>
           <CardBody>
-            <Alert isOpen={showAlert} color={this.props.color}>{message}</Alert>
+            <Alert isOpen={showAlert} color={color}>{message} </Alert>
+            {billing &&
               <CardBody>
                 <center className="text-sm-left">
-                  <b>{(firstName && lastName) ? firstName + " " + lastName : company}</b><br />
+                  <b>{(billing.firstName && billing.lastName) ? billing.firstName + " " + billing.lastName : billing.company}</b><br />
                   <p>
-                    {addressLine1 + ', '}
-                    {addressLine2 && addressLine2 + ','} <br />
-                    {city && <>{city + ', '}<br /></>}
-                    {region ? <>{region + ', '}{postCode && " - " + postCode + ","}<br /></> : postCode && <>{postCode + ","}<br /></>}
-                    {country}
+                    {billing.addressLine1 + ', '}
+                    {billing.addressLine2 && billing.addressLine2 + ','} <br />
+                    {billing.city && <>{billing.city + ', '}<br /></>}
+                    {billing.region ? <>{billing.region + ', '}{billing.postCode && " - " + billing.postCode+","}<br /></> : billing.postCode && <>{billing.postCode+","}<br /></>}
+                    {billing.country} 
                   </p>
                 </center>
               </CardBody>
+            }
           </CardBody>
         </Card>
       </div>
@@ -98,18 +123,21 @@ class BillingInfo extends Component {
   }
 
   showingNoBillingMessage = () => {
-    return <div className="animated fadeIn">
-      <Card>
-        {this.loadHeader()}
-        <center className="padding-top" >
-          <CardBody> <b>No Billing Address added, Please Add Now...</b></CardBody>
-        </center>
-      </Card>
-    </div>
+    return (
+      <div className="animated fadeIn">
+        <Card>
+          {this.loadHeader()}
+          <center className="padding-top" >
+            <CardBody> <b>No Billing Address added, Please Add Now...</b></CardBody>
+          </center>
+        </Card>
+      </div>)
   }
 }
 
-const mapStateToProps = (state) => {
+
+const mapsStateToProps=(state)=>{
   return state;
 }
-export default connect(mapStateToProps)(BillingInfo);
+
+export default connect(mapsStateToProps)(BillingInfo);

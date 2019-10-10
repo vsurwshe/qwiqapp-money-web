@@ -127,13 +127,13 @@ const Store = {
         return JSON.parse(db.getItem('COUNTRIES'))
     },
 
-    // saveBillingAddress:function(billingAddress){
-    //     db.setItem("BILLING_ADDRESS",JSON.stringify(billingAddress));
-    // },
+    saveBillingAddress:function(billingAddress){
+        db.setItem("BILLING_ADDRESS",JSON.stringify(billingAddress));
+    },
 
-    // getBillingAddress:function(){
-    //     return JSON.parse(db.getItem("BILLING_ADDRESS"));
-    // },
+    getBillingAddress:function(){
+        return JSON.parse(db.getItem("BILLING_ADDRESS"));
+    },
 
     storeJson: function (keyName, jsonValue) {
         db.setItem(keyName, JSON.stringify(jsonValue));
