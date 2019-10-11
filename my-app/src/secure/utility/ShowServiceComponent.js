@@ -1,8 +1,9 @@
+
 import React from 'react';
-import { Card, CardHeader, CardBody, Col, Alert, Row, Input, InputGroup, InputGroupAddon, InputGroupText, Button, Collapse } from 'reactstrap';
+import { Card, CardHeader, CardBody, Col, Alert, Row, Input, InputGroup, InputGroupAddon, Button, Collapse, UncontrolledDropdown, DropdownMenu, DropdownItem, DropdownToggle } from 'reactstrap';
 import Loader from 'react-loader-spinner';
 import Avatar from 'react-avatar';
-import { FaSearch, FaAngleDown, FaUndoAlt } from 'react-icons/fa';
+import { FaAngleDown, FaUndoAlt } from 'react-icons/fa';
 import '../../css/style.css';
 
 export const ShowServiceComponent = {
@@ -46,8 +47,14 @@ export const ShowServiceComponent = {
     return <>
       { bill.recurId ? <FaUndoAlt /> :''} &nbsp;
       <Button className="rounded" style={{ backgroundColor: "transparent", borderColor: '#blue', color: "blue", width: 90 }} onClick={() => { handleShowPayment(bill) }}>Payment</Button> &nbsp;
+      {bill.recurId ? <FaUndoAlt /> : ''} &nbsp;
+      {/* <FaPlusCircle onClick={() => { handleShowPayment(bill) }}>Payment</FaPlusCircle> &nbsp;
+      <FaRegEdit className="rounded" style={{ backgroundColor: "transparent", borderColor: '#ada397', color: "green", width: 67 }} onClick={() => { updateAction(bill) }}>Edit</FaRegEdit> &nbsp;
+      <FaTrash className="rounded" style={{ backgroundColor: "transparent", borderColor: '#eea29a', color: "red", width: 92 }} onClick={() => { setId(bill); toggleDanger(); }}>Remove</FaTrash> */}
+      {/* <Button className="rounded" style={{ backgroundColor: "transparent", borderColor: '#blue', color: "blue", width: 90 }} onClick={() => { handleShowPayment(bill) }}>More options</Button> &nbsp; */}
       <Button className="rounded" style={{ backgroundColor: "transparent", borderColor: '#ada397', color: "green", width: 67 }} onClick={() => { updateAction(bill) }}>Edit</Button> &nbsp;
-      <Button className="rounded" style={{ backgroundColor: "transparent", borderColor: '#eea29a', color: "red", width: 92 }} onClick={() => { setId(bill); toggleDanger(); }}>Remove</Button>
+      <Button className="rounded" style={{ backgroundColor: "transparent", borderColor: '#blue', color: "blue", width: 90 }} onClick={() => { handleShowPayment(bill) }}>More...</Button> &nbsp;
+      {/* <Button className="rounded" style={{ backgroundColor: "transparent", borderColor: '#eea29a', color: "red", width: 92 }} onClick={() => { setId(bill); toggleDanger(); }}>Remove</Button> */}
     </>
   },
 
@@ -74,7 +81,7 @@ export const ShowServiceComponent = {
       </span></>
   },
 
-  loadHeaderWithSearch: function (headerMessage, items, setSearch, placeHolder, addItem) {
+  loadHeaderWithSearch: function (headerMessage, items, setSearch, placeHolder, addItem, filter, handleDateFilter) {
     return <CardHeader>
       <Row form>
         <Col className="marigin-top" >
@@ -85,10 +92,21 @@ export const ShowServiceComponent = {
             <InputGroup>
               <Input type="search" className="float-right" style={{ width: '20%' }} onChange={e => setSearch(e)} placeholder={placeHolder} />
               <InputGroupAddon addonType="append">
-                <InputGroupText className="dark"><FaSearch /></InputGroupText>
               </InputGroupAddon>
             </InputGroup>
           </Col>}
+        {(filter && (items && items.length)) && <>&nbsp;<UncontrolledDropdown>
+          <DropdownToggle caret>
+            Filter By Date
+        </DropdownToggle>
+          <DropdownMenu>
+            <DropdownItem onClick={() => { handleDateFilter('today') }}>Today</DropdownItem>
+            <DropdownItem onClick={() => { handleDateFilter(7) }} >Last 7 days</DropdownItem>
+            <DropdownItem onClick={() => { handleDateFilter(30) }} >Last 30 days </DropdownItem>
+            <DropdownItem onClick={() => { handleDateFilter("year") }}>This year</DropdownItem>
+            <DropdownItem onClick={() => { handleDateFilter('all') }}>All</DropdownItem>
+          </DropdownMenu>
+        </UncontrolledDropdown></>}
         <Col >
           <Button color="success" className="float-right" onClick={addItem}> + ADD </Button>
         </Col>
@@ -122,7 +140,7 @@ export const ShowServiceComponent = {
     }
     else {
       return <b className="text-color">
-        {new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(amount)}
+        {new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(-(amount))}
       </b>
     }
   },
