@@ -1,5 +1,11 @@
-import { CLICK_BUTTON, CANCEL_BUTTON, GET_BILLING_ADDRESS, SET_SPINNER, MESSAGE_CHANGE, UPDATE_STATUS, GET_COUNTRIES} from './actionTypes';
+/*
+  * componet dispatch mathods executing a specific method execute.
+  * specific action type and appended state calling reduces class. 
+*/
 
+import { CLICK_BUTTON, CANCEL_BUTTON, GET_BILLING_ADDRESS, SET_SPINNER, MESSAGE_CHANGE, UPDATE_STATUS, GET_COUNTRIES} from './actionTypes'; 
+
+// This redux actions seting button value and spinner value as you passed in parameters.
 export function buttonAction(action,spinnerValue) {
     return{
         type:CLICK_BUTTON,
@@ -7,15 +13,15 @@ export function buttonAction(action,spinnerValue) {
         spinner:spinnerValue
     }
 }
-
-export function setCountries(countires) {
+// This redux actions seting countries in reducers.
+export function setCountries(countries) {
     return {
         type: GET_COUNTRIES,
-        countries: countires
+        countries: countries
     }
 }
 
-
+// seting spinner in reducers.
 export function setSpinnerValue(value) {
     return {
         type: SET_SPINNER,
@@ -23,6 +29,7 @@ export function setSpinnerValue(value) {
     }
 }
 
+// getting BillingAddress from reducers.
 export function getBillingAddress(billingData) {
     return {
         type: GET_BILLING_ADDRESS,
@@ -30,6 +37,7 @@ export function getBillingAddress(billingData) {
     }
 }
 
+// alert messages 
 export function handleApiResponseMsg(message,color,value) {
     return {
         type: MESSAGE_CHANGE,
@@ -39,13 +47,14 @@ export function handleApiResponseMsg(message,color,value) {
     }
 }
 
+// updating every time bill address/ get billing address.
 export function updateStatus(value){
     return {
         type: UPDATE_STATUS,
         updateStatus: value
     }
 }
-
+// event handle calcel button
 export function cancelButton() {
     return {
         type: CANCEL_BUTTON,

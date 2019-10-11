@@ -78,6 +78,7 @@ class EditBillingAddress extends Component {
     if (user.action === "ADD_BILLING") {
       new UserApi().getUser((response) => Store.saveUser(response), this.errorCall);
     }
+    // This is Seting update status for calling getbilling address in billinginfo component
     this.props.dispatch(updateStatus(true))
   }
 

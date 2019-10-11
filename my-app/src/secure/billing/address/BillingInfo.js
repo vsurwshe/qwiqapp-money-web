@@ -27,6 +27,7 @@ class BillingInfo extends Component {
   }
 
   componentWillReceiveProps=async ()=>{
+     // This condtions after update billAddress get billingAddress list.
     if(this.props.updateStatus){
       this.props.dispatch(updateStatus(false))
       await new BillingAddressApi().getBillings(this.successcall, this.errorcall)

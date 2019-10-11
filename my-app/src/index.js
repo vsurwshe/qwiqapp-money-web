@@ -6,6 +6,11 @@ import configureStore from './redux/container/configureStore';
 import App from "./App";
 import "@coreui/coreui/dist/css/coreui.min.css";
 import "@coreui/coreui";
+/*
+* redux entir application holding state managnment poll, 
+* Provider supply store in App component... 
+*/ 
+
 const store=configureStore();
 
 render(

@@ -28,7 +28,6 @@ async function process(success, failure, Uurl, Umethod, data, reload, payments) 
     try {
         data ?  promise = await HTTP.request({ data }) :promise = await HTTP.request()
         Umethod === "GET" ?  validResponse(promise.data, success,payments) : validResponse(data, success,payments)
-        // validResponse(data, success,payments)
     } catch (err) {
         handleAccessTokenError(err, failure, Uurl, Umethod, data, success, reload);
     }
