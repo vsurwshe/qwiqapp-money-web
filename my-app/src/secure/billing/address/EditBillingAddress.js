@@ -1,14 +1,14 @@
 import React, { Component } from "react";
-import { AvForm, AvField } from 'availity-reactstrap-validation';
+import { connect } from "react-redux";
 import { Alert, Button, Card, FormGroup, Col, Row } from "reactstrap";
-import UserApi from '../../../services/UserApi';
-import BillingAddressApi from '../../../services/BillingAddressApi';
+import { AvForm, AvField } from 'availity-reactstrap-validation';
 import Config from "../../../data/Config";
 import Store from "../../../data/Store";
+import UserApi from '../../../services/UserApi';
+import BillingAddressApi from '../../../services/BillingAddressApi';
 import BillingInfo from "./BillingInfo";
-import '../../../css/style.css';
-import { connect } from "react-redux";
 import { handleApiResponseMsg, buttonAction, updateStatus, setCountries } from "../../../redux/actions/billingAddressActions";
+import '../../../css/style.css';
 
 const firstNameAndlastNameOrcompany = (value, field) => {
   if (!(field.firstName && field.lastName) && !field.company) {
@@ -26,7 +26,7 @@ class EditBillingAddress extends Component {
   }
 
   componentDidMount = () => {
-   this.props.dispatch(setCountries(Store.getCountries()))
+    this.props.dispatch(setCountries(Store.getCountries()))
   }
 
   handleInputValidate = (e) => {
@@ -84,32 +84,32 @@ class EditBillingAddress extends Component {
 
   //this handle the error response the when api calling
   errorCall = err => {
-    this.props.dispatch(handleApiResponseMsg('Unable to process, Please try Again....','danger',true))
+    this.props.dispatch(handleApiResponseMsg('Unable to process, Please try Again....', 'danger', true))
   };
 
   //this method Notifies the user after every request
   callAlertTimer = (alertColor, content) => {
-    this.props.dispatch(handleApiResponseMsg(content,alertColor,true))
+    this.props.dispatch(handleApiResponseMsg(content, alertColor, true))
     if (alertColor === 'success') {
       setTimeout(() => {
-        this.props.dispatch(handleApiResponseMsg('','',false))
-        this.props.dispatch(buttonAction(false,true))
+        this.props.dispatch(handleApiResponseMsg('', '', false))
+        this.props.dispatch(buttonAction(false, true))
       }, Config.notificationMillis);
     }
   };
 
   render() {
-    const {getBillingAddress,addBilling}=this.props;
+    const { billingAddress, addBilling } = this.props;
     if (!addBilling) {
       return <BillingInfo />
     } else {
-      return <div>{this.loadCreatingBill(getBillingAddress)}</div>
+      return <div>{this.loadCreatingBill(billingAddress)}</div>
     }
   }
 
   //this Method Call when Label Creation in porceess.
   loadCreatingBill = (updateBill) => {
-    const {showAlert,color,message}=this.props;
+    const { showAlert, color, message } = this.props;
     const placeholderStyle = { color: '#000000', fontSize: '1.0em', }
     return <div className="animated fadeIn" >
       <Card>
@@ -166,7 +166,7 @@ class EditBillingAddress extends Component {
   }
 }
 
-const mapStateToProps=(state)=>{
+const mapStateToProps = (state) => {
   return state;
 }
 export default connect(mapStateToProps)(EditBillingAddress);

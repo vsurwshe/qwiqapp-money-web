@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { Card, CardBody, CardHeader, Button, Alert } from 'reactstrap';
+import Loader from 'react-loader-spinner';
+import Config from '../../../data/Config';
 import BillingAddressApi from '../../../services/BillingAddressApi';
 import EditBillingAddress from './EditBillingAddress';
-import Loader from 'react-loader-spinner';
-import '../../../css/style.css';
-import { connect } from 'react-redux';
 import { handleApiResponseMsg, buttonAction, setSpinnerValue, getBillingAddress, updateStatus } from '../../../redux/actions/billingAddressActions';
-import Config from '../../../data/Config';
+import '../../../css/style.css';
 
 let emptyBillingAddress = {
   addressLine1: '',
@@ -26,9 +26,9 @@ class BillingInfo extends Component {
     await new BillingAddressApi().getBillings(this.successcall, this.errorcall)
   }
 
-  componentWillReceiveProps=async ()=>{
-     // This condtions after update billAddress get billingAddress list.
-    if(this.props.updateStatus){
+  componentWillReceiveProps = async () => {
+    // This condtions after update billAddress get billingAddress list.
+    if (this.props.updateStatus) {
       this.props.dispatch(updateStatus(false))
       await new BillingAddressApi().getBillings(this.successcall, this.errorcall)
     }
@@ -44,48 +44,46 @@ class BillingInfo extends Component {
   }
 
   errorcall = (error) => {
-    this.props.dispatch(handleApiResponseMsg('Unable to process, Please try Again....','danger',true))
+    this.props.dispatch(handleApiResponseMsg('Unable to process, Please try Again....', 'danger', true))
   }
 
   // handele edit billing address button actions  
   editBillingAddress = () => {
-    this.props.dispatch(buttonAction(true,true))
+    this.props.dispatch(buttonAction(true, true))
   }
   // method execute cancle actions in edit billing address
   cancelEditBillingAddress = () => {
-    this.props.dispatch(buttonAction(false,true))
+    this.props.dispatch(buttonAction(false, true))
   }
 
   render() {
-    const { getBillingAddress,addBilling, spinner } = this.props;
+    const { billingAddress, addBilling, spinner } = this.props;
     if (addBilling) {
       return <EditBillingAddress handleCancelEditBillingAddress={this.cancelEditBillingAddress} />
-    } else if ( !getBillingAddress.country) {
-      if(!spinner){
+    } else if (!billingAddress.country) {
+      if (!spinner) {
         return this.loadSpinner();
-      } else{
+      } else {
         return this.showingNoBillingMessage()
       }
     } else {
-      return this.billingAddress(getBillingAddress);
+      return this.billingAddress(billingAddress);
     }
   }
 
-  loadSpinner = () =>{
-    return <div className="animated fadeIn">
-        <Card>
-          {this.loadHeader()}
-          <center className="padding-top">
-            <CardBody><Loader type="TailSpin" className="loader-color" height={60} width={60} /></CardBody>
-          </center>
-        </Card>
-      </div>
-  }
+  loadSpinner = () =>  <div className="animated fadeIn">
+      <Card>
+        {this.loadHeader()}
+        <center className="padding-top">
+          <CardBody><Loader type="TailSpin" className="loader-color" height={60} width={60} /></CardBody>
+        </center>
+      </Card>
+    </div>
 
-  billingAddress = (billing) => {
-    const {showAlert,color,message}=this.props;
+  billingAddress = (billingAddress) => {
+    const { showAlert, color, message } = this.props;
     showAlert && setTimeout(() => {
-      this.props.dispatch(handleApiResponseMsg('','',false))
+      this.props.dispatch(handleApiResponseMsg('', '', false))
     }, Config.notificationMillis);
     return (
       <div className="animated fadeIn">
@@ -95,16 +93,16 @@ class BillingInfo extends Component {
           </CardHeader>
           <CardBody>
             <Alert isOpen={showAlert} color={color}>{message} </Alert>
-            {billing &&
+            {billingAddress &&
               <CardBody>
                 <center className="text-sm-left">
-                  <b>{(billing.firstName && billing.lastName) ? billing.firstName + " " + billing.lastName : billing.company}</b><br />
+                  <b>{(billingAddress.firstName && billingAddress.lastName) ? billingAddress.firstName + " " + billingAddress.lastName : billingAddress.company}</b><br />
                   <p>
-                    {billing.addressLine1 + ', '}
-                    {billing.addressLine2 && billing.addressLine2 + ','} <br />
-                    {billing.city && <>{billing.city + ', '}<br /></>}
-                    {billing.region ? <>{billing.region + ', '}{billing.postCode && " - " + billing.postCode+","}<br /></> : billing.postCode && <>{billing.postCode+","}<br /></>}
-                    {billing.country} 
+                    {billingAddress.addressLine1 + ', '}
+                    {billingAddress.addressLine2 && billingAddress.addressLine2 + ','} <br />
+                    {billingAddress.city && <>{billingAddress.city + ', '}<br /></>}
+                    {billingAddress.region ? <>{billingAddress.region + ', '}{billingAddress.postCode && " - " + billingAddress.postCode + ","}<br /></> : billingAddress.postCode && <>{billingAddress.postCode + ","}<br /></>}
+                    {billingAddress.country}
                   </p>
                 </center>
               </CardBody>
@@ -115,29 +113,23 @@ class BillingInfo extends Component {
     )
   }
 
-  loadHeader = () => {
-    return (
-      <CardHeader>
+  loadHeader = () => <CardHeader>
         <strong>Billing Address</strong>
         <Button color="success" className="float-right" onClick={this.editBillingAddress}> + Billing Address</Button>
-      </CardHeader>);
-  }
+      </CardHeader>
 
-  showingNoBillingMessage = () => {
-    return (
-      <div className="animated fadeIn">
+  showingNoBillingMessage = () => <div className="animated fadeIn">
         <Card>
           {this.loadHeader()}
           <center className="padding-top" >
             <CardBody> <b>No Billing Address added, Please Add Now...</b></CardBody>
           </center>
         </Card>
-      </div>)
-  }
+      </div>
 }
 
 
-const mapsStateToProps=(state)=>{
+const mapsStateToProps = (state) => {
   return state;
 }
 

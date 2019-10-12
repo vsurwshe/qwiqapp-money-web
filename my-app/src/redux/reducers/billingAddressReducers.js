@@ -5,7 +5,7 @@ const initialState = {
     color: '',
     showAlert: false,
     isLoading: false,
-    getBillingAddress: [],
+    billingAddress: [],
     spinner: false,
     addBilling: false,
     buttonCancle: false,
@@ -16,7 +16,7 @@ const initialState = {
 export default function billingReducer(state = initialState, action) {
     switch (action.type) {
         case GET_BILLING_ADDRESS:
-            return { ...state, getBillingAddress: action.payload }
+            return { ...state, billingAddress: action.payload }
         case CLICK_BUTTON:
             return { ...state, addBilling: action.addBilling }
         case CANCEL_BUTTON:

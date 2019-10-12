@@ -22,38 +22,38 @@ class BillingAddressApi {
 }
 export default BillingAddressApi;
 
-async function process(success, failure, Uurl, Umethod, data, reload, payments) {
-    let HTTP = httpCall(Uurl, Umethod);
+async function process(success, failure, apiPath, requestMethod, data, reload, payments) {
+    let HTTP = httpCall(apiPath, requestMethod);
     let promise;
     try {
         data ?  promise = await HTTP.request({ data }) :promise = await HTTP.request()
-        Umethod === "GET" ?  validResponse(promise.data, success,payments) : validResponse(data, success,payments)
+        requestMethod === "GET" ?  validResponse(promise.data, success,payments) : validResponse(data, success,payments)
     } catch (err) {
-        handleAccessTokenError(err, failure, Uurl, Umethod, data, success, reload);
+        handleAccessTokenError(err, failure, apiPath, requestMethod, data, success, reload);
     }
 }
 
 //this method slove the Exprie Token Problem.
-let handleAccessTokenError = function (err, failure, Uurl, Umethod, data, success, reload) {
+let handleAccessTokenError = function (err, failure, apiPath, requestMethod, data, success, reload) {
     if (err.request.status === 0) {
     } else if (err.response.status === 403 || err.response.status === 401) {
         // This condtions restrict calling of api after geting 403 or 401 Error
         if (!reload) {
-            new LoginApi().refresh(() => { process(success, failure, Uurl, Umethod, data, "restrict") }, errorResponse(err, failure));
+            new LoginApi().refresh(() => { process(success, failure, apiPath, requestMethod, data, "restrict") }, errorResponse(err, failure));
         } 
     } else {
         errorResponse(err, failure)
     }
 }
 
-let validResponse =  function (respData, successMethod,payments) {
+let validResponse =  function (response, successMethod,payments) {
     if (successMethod != null) {
         // This condtion checking whether calling address api or payment api.   
         if(payments!=="payments") {
-            Store.saveBillingAddress(respData);
-            successMethod(respData);
+            Store.saveBillingAddress(response);
+            successMethod(response);
         }else{
-            successMethod(respData);
+            successMethod(response);
         }
     }
 };
@@ -66,16 +66,16 @@ let errorResponse = async function (error, failure) {
             message: err.data.error.debugMessage
         }
         failure(data);
-    } else {
+    } else { // apart form 500, any response code else block will execute..
         failure(error);
     }
 };
 
-function httpCall(Uurl, Umethod) {
+function httpCall(apiPath, requestMethod) {
     let instance = Axios.create({
         baseURL: Config.settings().cloudBaseURL,
-        method: Umethod,
-        url: Uurl,
+        method: requestMethod,
+        url: apiPath,
         headers: {
             "content-type": "application/json",
             Authorization: "Bearer " + Store.getAppUserAccessToken()
