@@ -96,10 +96,8 @@ class Signup extends React.Component {
     const emailRex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     const { validate } = this.state;
     let email = e.target.value;
-    let data = { email: e.target.value };
     if (emailRex.test(email)) {
       validate.emailState = 'success'
-      new SignupApi().existsUser(this.successCallCheck, this.errorCallCheck, data)
       this.forceUpdate()
     } else {
       this.setState({ emailAlert: false })
@@ -119,6 +117,9 @@ class Signup extends React.Component {
     this.setState({ validate })
   }
 
+  handleFocusOutEvent = () => {
+    new SignupApi().existsUser(this.successCallCheck, this.errorCallCheck, {email: this.state.email});
+  }
   render() {
     const requiredLabel = { color: 'red' }
     const align = { textAlign: "left" }
@@ -168,7 +169,7 @@ class Signup extends React.Component {
             <FormGroup style={align}>
               <Label style={{ align }} for="Email">Email <span style={requiredLabel}>*</span></Label>
               <Input name="email" type="email" placeholder="Your Email" value={email} valid={emailState === 'success'}
-                invalid={emailState === 'danger'} onChange={e => { this.handleInput(e)}} />
+                invalid={emailState === 'danger'} onChange={e => { this.handleInput(e)}} onBlur={this.handleFocusOutEvent} />
               <FormFeedback > {emailAlert ? "Email already Exists, try another Email..." : "Uh oh! Incorrect email"}
               </FormFeedback>
             </FormGroup>
