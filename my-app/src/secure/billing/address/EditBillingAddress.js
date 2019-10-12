@@ -1,11 +1,13 @@
 import React, { Component } from "react";
-import { AvForm, AvField } from 'availity-reactstrap-validation';
+import { connect } from "react-redux";
 import { Alert, Button, Card, FormGroup, Col, Row } from "reactstrap";
-import UserApi from '../../../services/UserApi';
-import BillingAddressApi from '../../../services/BillingAddressApi';
+import { AvForm, AvField } from 'availity-reactstrap-validation';
 import Config from "../../../data/Config";
 import Store from "../../../data/Store";
+import UserApi from '../../../services/UserApi';
+import BillingAddressApi from '../../../services/BillingAddressApi';
 import BillingInfo from "./BillingInfo";
+import { handleApiResponseMsg, buttonAction, updateStatus, setCountries } from "../../../redux/actions/billingAddressActions";
 import '../../../css/style.css';
 
 const firstNameAndlastNameOrcompany = (value, field) => {
@@ -19,19 +21,13 @@ class EditBillingAddress extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      navigateToBilling: false,
-      alertColor: "",
-      content: "",
-      doubleClick: false,
-      countries: [],
-      updateBill: props.updateBill,
+      doubleClick: false
     };
   }
 
   componentDidMount = () => {
-    const countries = Store.getCountries();
-    this.setState({ countries });
-   }
+    this.props.dispatch(setCountries(Store.getCountries()))
+  }
 
   handleInputValidate = (e) => {
     if (e.target.name === "firstName") {
@@ -80,43 +76,46 @@ class EditBillingAddress extends Component {
     let user = Store.getUser();
     this.callAlertTimer("success", "Saved Billing Address");
     if (user.action === "ADD_BILLING") {
-      new UserApi().getUser((response) => Store.saveUser(response), (error) => { console.log(error) });
+      new UserApi().getUser((response) => Store.saveUser(response), this.errorCall);
     }
+    // This is Seting update status for calling getbilling address in billinginfo component
+    this.props.dispatch(updateStatus(true))
   }
 
   //this handle the error response the when api calling
   errorCall = err => {
-    this.callAlertTimer("danger", "Unable to Process Request, Please try Again....");
+    this.props.dispatch(handleApiResponseMsg('Unable to process, Please try Again....', 'danger', true))
   };
 
   //this method Notifies the user after every request
   callAlertTimer = (alertColor, content) => {
-    this.setState({ alertColor, content });
+    this.props.dispatch(handleApiResponseMsg(content, alertColor, true))
     if (alertColor === 'success') {
       setTimeout(() => {
-        this.setState({ name: "", content: "", alertColor: "", navigateToBilling: true, doubleClick: false });
+        this.props.dispatch(handleApiResponseMsg('', '', false))
+        this.props.dispatch(buttonAction(false, true))
       }, Config.notificationMillis);
     }
-
   };
 
   render() {
-    const { alertColor, content, navigateToBilling, updateBill } = this.state
-    if (navigateToBilling) {
+    const { billingAddress, addBilling } = this.props;
+    if (!addBilling) {
       return <BillingInfo />
     } else {
-      return <div>{this.loadCreatingBill(alertColor, content, updateBill)}</div>
+      return <div>{this.loadCreatingBill(billingAddress)}</div>
     }
   }
 
   //this Method Call when Label Creation in porceess.
-  loadCreatingBill = (alertColor, content, updateBill) => {
+  loadCreatingBill = (updateBill) => {
+    const { showAlert, color, message } = this.props;
     const placeholderStyle = { color: '#000000', fontSize: '1.0em', }
     return <div className="animated fadeIn" >
       <Card>
         <h4 className="padding-top"><b><center> BILLING ADDRESS</center></b></h4> <br />
         {updateBill && <Col >
-          {content && <Alert color={alertColor}>{content}</Alert>}
+          {<Alert isOpen={showAlert} color={color}>{message}</Alert>}
           <AvForm ref={refId => this.form = refId} onSubmit={this.handleSubmitValue}>
             <Row>
               <Col><AvField name="firstName" label="Firstname" placeholder="First Name" style={placeholderStyle} value={updateBill.firstName} validate={{ myValidation: firstNameAndlastNameOrcompany }} onChange={(e) => { this.handleInputValidate(e) }} /></Col>
@@ -136,7 +135,7 @@ class EditBillingAddress extends Component {
               <Col>
                 <AvField style={placeholderStyle} label="Country" type="select" id="country" name="country" value={updateBill.country} errorMessage="Select Country" onClick={() => this.setState({ alertColor: "", content: "" })} required >
                   {this.selectCountry(updateBill)}
-                  {this.state.countries.map((country, key) => { return <option key={key} value={country.code}>{country.name}</option> })}
+                  {this.props.countries.map((country, key) => { return <option key={key} value={country.code}>{country.name}</option> })}
                 </AvField>
               </Col>
             </Row>
@@ -156,7 +155,7 @@ class EditBillingAddress extends Component {
   selectCountry = (updateBill) => {
     return <>
       {updateBill.country === "" ? <option value="">Select Country</option>
-        : (this.state.countries.map((country, index) => {
+        : (this.props.countries.map((country, index) => {
           if (country.code === updateBill.country) {
             return <option key={index} value={updateBill.country}> {country.name} </option>
           }
@@ -166,4 +165,8 @@ class EditBillingAddress extends Component {
     </>
   }
 }
-export default EditBillingAddress;
+
+const mapStateToProps = (state) => {
+  return state;
+}
+export default connect(mapStateToProps)(EditBillingAddress);
