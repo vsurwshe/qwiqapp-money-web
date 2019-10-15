@@ -336,6 +336,20 @@ class BillForm extends Component {
     this.setState({ nextBillDate: e.target.value, endDate: this.setRepeatUntilDate(e.target.value, 2) });
   }
 
+  handleEndDate = (e) => {
+    this.setState({endDate: e.target.value, doubleClick: false});
+    this.validateEndDate(e.target.value)
+  }
+  validateEndDate = (endDate) => {
+    if (this.state.nextBillDate) {
+      let diffEndDateAndNxtBillDate = new Date(endDate)- new Date(this.state.nextBillDate);
+      if ((diffEndDateAndNxtBillDate / (1000*60*60*24)) < 0) {
+        this.setState({ doubleClick: true })
+        this.callAlertTimer("danger", "end date should be after the next bill date");
+      }
+    }
+  }
+
   render() {
     const { alertColor, alertMessage, cancelCreateBill, billCreated } = this.state;
     const { labels, contacts, categories } = this.props;
@@ -478,7 +492,7 @@ class BillForm extends Component {
             <Input name="check" type="checkbox" checked={recurBillForever === true} value={recurBillForever} onChange={this.handlRecurBillForever} />{recurBillForever ? "Repeat until" : "Repeating forever"}
             <br />
             {recurBillForever && <>
-              <AvField name="endsOn" value={endDate} type="date" errorMessage="Invalid Date" validate={{
+              <AvField name="endsOn" value={endDate} type="date" errorMessage="Invalid Date" onChange={(e)=>{this.handleEndDate(e)}} validate={{
                 date: { format: 'dd/MM/yyyy' },
                 dateRange: { format: 'YYYY/MM/DD', start: { value: '1900/01/01' }, end: { value: '9999/12/31' } },
                 required: { value: true }
@@ -488,5 +502,6 @@ class BillForm extends Component {
       </>
     )
   }
+  
 }
 export default BillForm;
