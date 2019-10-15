@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, CardHeader, CardBody, Col, Alert, Row, Input, InputGroup, InputGroupAddon, InputGroupText, Button, Collapse } from 'reactstrap';
 import Loader from 'react-loader-spinner';
 import Avatar from 'react-avatar';
-import { FaSearch, FaAngleDown } from 'react-icons/fa';
+import { FaSearch, FaAngleDown, FaUndoAlt } from 'react-icons/fa';
 import '../../css/style.css';
 
 export const ShowServiceComponent = {
@@ -24,9 +24,9 @@ export const ShowServiceComponent = {
 
   // Shows Header
   loadHeader: function (headerMessage) {
-    return (<div className="padding">
+    return <div className="padding">
       <center><strong> {headerMessage} </strong></center>
-    </div>)
+    </div>
   },
 
   //Shows Spinner 
@@ -43,7 +43,12 @@ export const ShowServiceComponent = {
   },
 
   loadEditRemoveButtons: function (bill, handleShowPayment, updateAction, setId, toggleDanger) {
+   // console.log("bill is: ",bill.recurId);
     return <>
+      { bill.recurId ? <FaUndoAlt /> :''} &nbsp;
+      {/* <FaPlusCircle onClick={() => { handleShowPayment(bill) }}>Payment</FaPlusCircle> &nbsp;
+      <FaRegEdit className="rounded" style={{ backgroundColor: "transparent", borderColor: '#ada397', color: "green", width: 67 }} onClick={() => { updateAction(bill) }}>Edit</FaRegEdit> &nbsp;
+      <FaTrash className="rounded" style={{ backgroundColor: "transparent", borderColor: '#eea29a', color: "red", width: 92 }} onClick={() => { setId(bill); toggleDanger(); }}>Remove</FaTrash> */}
       <Button className="rounded" style={{ backgroundColor: "transparent", borderColor: '#blue', color: "blue", width: 90 }} onClick={() => { handleShowPayment(bill) }}>Payment</Button> &nbsp;
       <Button className="rounded" style={{ backgroundColor: "transparent", borderColor: '#ada397', color: "green", width: 67 }} onClick={() => { updateAction(bill) }}>Edit</Button> &nbsp;
       <Button className="rounded" style={{ backgroundColor: "transparent", borderColor: '#eea29a', color: "red", width: 92 }} onClick={() => { setId(bill); toggleDanger(); }}>Remove</Button>
@@ -57,7 +62,7 @@ export const ShowServiceComponent = {
       if (item.childName) {
         subItemName = subItemName + item.childName.map(item => item)
       }
-      return (item.name.toLowerCase() + subItemName.toLowerCase()).includes(searchTerm.toLowerCase()) || !searchTerm
+      return (item.name ? item.name.toLowerCase() : '' + subItemName ? subItemName.toLowerCase() : '').includes(searchTerm.toLowerCase()) || !searchTerm
     }
   },
 
@@ -95,7 +100,7 @@ export const ShowServiceComponent = {
     </CardHeader>
   },
 
-  customDate: function(dateParam, day) {
+  customDate: function (dateParam, day) {
     let toStr = "" + dateParam
     let dateString = toStr.substring(0, 4) + "-" + toStr.substring(4, 6) + "-" + toStr.substring(6, 8)
     if (day) {
@@ -105,22 +110,40 @@ export const ShowServiceComponent = {
     }
   },
 
-  loadDateFormat: function(date) {
+  loadDateFormat: function (date) {
     return new Intl.DateTimeFormat('sv-SE', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(date);
   },
-  billDateFormat: function (date){
-    return  new Intl.DateTimeFormat('en-gb', { month: 'short', weekday: 'short', day: '2-digit' }).format(date);
+
+  billDateFormat: function (date) {
+    return new Intl.DateTimeFormat('en-gb', { month: 'short', weekday: 'short', day: '2-digit' }).format(date);
   },
 
-  billTypeAmount:function(currency,amount){
-    if(amount>0){   
+  billTypeAmount: function (currency, amount) {
+    if (amount > 0) {
       return <b className="bill-amount-color">
-      {new Intl.NumberFormat('en-US', { style: 'currency', currency}).format(amount)}
-        </b> }
-        else{
-          return <b className="text-color">
-      {new Intl.NumberFormat('en-US', { style: 'currency', currency}).format(amount)}
-    </b>}
+        {new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(amount)}
+      </b>
+    }
+    else {
+      return <b className="text-color">
+        {new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(amount)}
+      </b>
+    }
+  },
+
+  handleTax: function (amount, taxPercent, taxAmount) {
+    let result = {
+      "taxPercent": 0,
+      "taxAmount": 0
+    };
+    if (amount && taxPercent) {
+      result.taxAmount = (taxPercent * amount) / 100;
+      result.taxPercent = taxPercent;
+    } else if (amount && taxAmount) {
+      result.taxPercent = (taxAmount * 100) / (amount - taxAmount);
+      result.taxAmount = taxAmount;
+    }
+    return result;
   },
 
   //This method Shows Categories/labels as Items
