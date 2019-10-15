@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardHeader, CardBody, Col, Alert, Row, Input, InputGroup, InputGroupAddon, Button, Collapse, UncontrolledDropdown, DropdownMenu, DropdownItem, DropdownToggle } from 'reactstrap';
 import Loader from 'react-loader-spinner';
 import Avatar from 'react-avatar';
-import { FaAngleDown, FaUndoAlt } from 'react-icons/fa';
+import { FaAngleDown } from 'react-icons/fa';
 import '../../css/style.css';
 
 export const ShowServiceComponent = {
@@ -43,21 +43,6 @@ export const ShowServiceComponent = {
       </div>)
   },
 
-  loadEditRemoveButtons: function (bill, handleShowPayment, updateAction, setId, toggleDanger) {
-    return <>
-      { bill.recurId ? <FaUndoAlt /> :''} &nbsp;
-      <Button className="rounded" style={{ backgroundColor: "transparent", borderColor: '#blue', color: "blue", width: 90 }} onClick={() => { handleShowPayment(bill) }}>Payment</Button> &nbsp;
-      {bill.recurId ? <FaUndoAlt /> : ''} &nbsp;
-      {/* <FaPlusCircle onClick={() => { handleShowPayment(bill) }}>Payment</FaPlusCircle> &nbsp;
-      <FaRegEdit className="rounded" style={{ backgroundColor: "transparent", borderColor: '#ada397', color: "green", width: 67 }} onClick={() => { updateAction(bill) }}>Edit</FaRegEdit> &nbsp;
-      <FaTrash className="rounded" style={{ backgroundColor: "transparent", borderColor: '#eea29a', color: "red", width: 92 }} onClick={() => { setId(bill); toggleDanger(); }}>Remove</FaTrash> */}
-      {/* <Button className="rounded" style={{ backgroundColor: "transparent", borderColor: '#blue', color: "blue", width: 90 }} onClick={() => { handleShowPayment(bill) }}>More options</Button> &nbsp; */}
-      <Button className="rounded" style={{ backgroundColor: "transparent", borderColor: '#ada397', color: "green", width: 67 }} onClick={() => { updateAction(bill) }}>Edit</Button> &nbsp;
-      <Button className="rounded" style={{ backgroundColor: "transparent", borderColor: '#blue', color: "blue", width: 90 }} onClick={() => { handleShowPayment(bill) }}>More...</Button> &nbsp;
-      {/* <Button className="rounded" style={{ backgroundColor: "transparent", borderColor: '#eea29a', color: "red", width: 92 }} onClick={() => { setId(bill); toggleDanger(); }}>Remove</Button> */}
-    </>
-  },
-
   //Searches Items based on user given SearchTerm
   searchingFor: function (searchTerm) {
     return function (item) {
@@ -95,7 +80,7 @@ export const ShowServiceComponent = {
               </InputGroupAddon>
             </InputGroup>
           </Col>}
-        {(filter && (items && items.length)) && <>&nbsp;<UncontrolledDropdown>
+        {filter && <>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<UncontrolledDropdown >
           <DropdownToggle caret>
             Filter By Date
         </DropdownToggle>
@@ -133,16 +118,9 @@ export const ShowServiceComponent = {
   },
 
   billTypeAmount: function (currency, amount) {
-    if (amount > 0) {
-      return <b className="bill-amount-color">
-        {new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(amount)}
-      </b>
-    }
-    else {
-      return <b className="text-color">
-        {new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(-(amount))}
-      </b>
-    }
+    return <span>
+        {new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(amount>0 ? amount : -(amount))}
+      </span>
   },
 
   handleTax: function (amount, taxPercent, taxAmount) {

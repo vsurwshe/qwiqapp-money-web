@@ -31,15 +31,15 @@ class BillForm extends Component {
       categoryOptionUpdate: false,
       labelOptionUpdate: false,
       contactOptionUpdate: false,
-      notifyDate: props.bill ? ShowServiceComponent.customDate(props.bill.notifyDate_) : '',
+      notifyDate: props.bill ? ShowServiceComponent.customDate(props.bill.notifyDate_) : ShowServiceComponent.loadDateFormat(new Date()),
       dueDays: props.bill ? props.bill.dueDays : 0,
-      dueDate: props.bill ? ShowServiceComponent.customDate(props.bill.dueDate_) : '',
-      billDate: props.bill ? ShowServiceComponent.customDate(props.bill.billDate) : '',
       repeatEvery: '',
       repeatType: "DAY",
       nextBillDate: '',
       endDate: this.setRepeatUntilDate(new Date(), 2),
       recurId: props.bill ? props.bill.recurId : '',
+      dueDate: props.bill ? ShowServiceComponent.customDate(props.bill.dueDate_) : ShowServiceComponent.loadDateFormat(new Date()),  
+      billDate: props.bill ? ShowServiceComponent.customDate(props.bill.billDate) : ShowServiceComponent.loadDateFormat(new Date()),
       amount: props.bill ? this.setBillAmount(props.bill.amount) : 0,
       contactOption: props.bill ? props.bill.contactId : '',
       categoryOption: props.bill ? props.bill.categoryId : null,
@@ -380,7 +380,7 @@ class BillForm extends Component {
       checked: checked,
       type: type
     }
-    let headerMessage = this.props.bill ? "Update Bill " : "Create Bill"
+    let headerMessage = this.props.bill ? " " : " New Bill "
     return this.loadBillForm(FormData, alertColor, alertMessage, headerMessage)
   }
 
