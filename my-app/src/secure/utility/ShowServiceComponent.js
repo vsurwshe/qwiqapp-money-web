@@ -43,12 +43,8 @@ export const ShowServiceComponent = {
   },
 
   loadEditRemoveButtons: function (bill, handleShowPayment, updateAction, setId, toggleDanger) {
-   // console.log("bill is: ",bill.recurId);
     return <>
       { bill.recurId ? <FaUndoAlt /> :''} &nbsp;
-      {/* <FaPlusCircle onClick={() => { handleShowPayment(bill) }}>Payment</FaPlusCircle> &nbsp;
-      <FaRegEdit className="rounded" style={{ backgroundColor: "transparent", borderColor: '#ada397', color: "green", width: 67 }} onClick={() => { updateAction(bill) }}>Edit</FaRegEdit> &nbsp;
-      <FaTrash className="rounded" style={{ backgroundColor: "transparent", borderColor: '#eea29a', color: "red", width: 92 }} onClick={() => { setId(bill); toggleDanger(); }}>Remove</FaTrash> */}
       <Button className="rounded" style={{ backgroundColor: "transparent", borderColor: '#blue', color: "blue", width: 90 }} onClick={() => { handleShowPayment(bill) }}>Payment</Button> &nbsp;
       <Button className="rounded" style={{ backgroundColor: "transparent", borderColor: '#ada397', color: "green", width: 67 }} onClick={() => { updateAction(bill) }}>Edit</Button> &nbsp;
       <Button className="rounded" style={{ backgroundColor: "transparent", borderColor: '#eea29a', color: "red", width: 92 }} onClick={() => { setId(bill); toggleDanger(); }}>Remove</Button>

@@ -38,7 +38,7 @@ class BillForm extends Component {
       repeatEvery: '',
       repeatType: "DAY",
       nextBillDate: '',
-      endDate: this.setRepeatUntilDate(new Date(), 3),
+      endDate: this.setRepeatUntilDate(new Date(), 2),
       recurId: props.bill ? props.bill.recurId : '',
       amount: props.bill ? this.setBillAmount(props.bill.amount) : 0,
       contactOption: props.bill ? props.bill.contactId : '',
@@ -80,6 +80,7 @@ class BillForm extends Component {
 
   handleMoreOptions = (bill) => {
     const { taxPercent, contactId, labelIds, notificationEnabled, recurId } = bill ? bill : ""
+    //In update bill, if any of these has value, then we need to enable MoreOptions by returning true.
     if (bill && (taxPercent || contactId || labelIds || notificationEnabled || recurId)) {
       return true
     } else {
@@ -128,22 +129,20 @@ class BillForm extends Component {
             "recurId": null
           }
           this.handleUpdateBill(event, data);
+        } else if (this.state.recurConfig) {
+            data = {
+              ...newData,
+              "nextBillDate": Data.datePassToAPI(values.nextBillDate),
+              "endsOn": Data.datePassToAPI(this.state.endDate)
+            }
+            if (!this.props.bill.recurId) {
+              this.handleCreateRecurBill(event, data, true, this.props.bill.id)  // update Normal Bill with Recur Configuration Added
+            } else {
+              let result = { ...data, "version": this.state.recurBillVersion, "billVersion": this.props.bill.version }
+              this.handleUpdateRecurBill(event, result);
+            }
         } else {
-          data = {
-            ...newData,
-            "nextBillDate": Data.datePassToAPI(values.nextBillDate),
-            "endsOn": Data.datePassToAPI(this.state.endDate)
-          }
-          if (this.state.recurConfig && !this.props.bill.recurId) {
-            this.handleCreateRecurBill(event, data, true, this.props.bill.id)  // update Normal Bill with Recur Configuration Added
-          } else if (this.state.recurConfig && this.props.bill.recurId) {
-            let result = { ...data, "version": this.state.recurBillVersion, "billVersion": this.props.bill.version }
-            this.handleUpdateRecurBill(event, result);
-          }
-          else {
-            // update Normal Bill
-            this.handleUpdateBill(event, newData)
-          }
+          this.handleUpdateBill(event, newData)
         }
       }
       // This part is creating bill
@@ -246,7 +245,6 @@ class BillForm extends Component {
     if (this.state.notifyDays) {
       this.setDueOrNotifyDate(this.state.billDate, this.state.notifyDays, "notifyDays");
     }
-
   }
 
   handleDate = (e) => {
@@ -297,29 +295,17 @@ class BillForm extends Component {
 
   handleEveryRecurBill = (e) => {
     this.setState({ repeatEvery: e.target.value, alertColor: "", alertMessage: "" });
-    if (this.state.billDate) {
-      this.calculateingDate(e.target.value, this.state.repeatType);
-
-    } else {
-      this.setState({ billDate: "" });
-      this.callAlertTimer("danger", "please select bill date")
-    }
+    this.setNextBillDate(e.target.value, this.state.repeatType);
   }
 
   recurBillOption = (e) => {
-    if (this.props.bill && this.props.bill.recurId) {
-      this.handleUpdatedRecurBillwithRecurConfig();
-    }
     this.setState({ repeatType: e.target.value, alertColor: "", alertMessage: "" });
-    this.calculateingDate(this.state.repeatEvery, e.target.value)
+    this.setNextBillDate(this.state.repeatEvery, e.target.value)
   }
 
-  handleUpdatedRecurBillwithRecurConfig = () => {
-    this.setState({ updatedRecurBillwithRecurConfig: true });
-  }
-
-  calculateingDate = (repeatEvery, repeatEveryType) => {
-    let billDate = new Date(this.state.billDate);
+  setNextBillDate = (repeatEvery, repeatEveryType) => {
+    let date = this.state.billDate ? this.state.billDate : new Date();
+    let billDate = new Date(date);
     if (repeatEvery && repeatEveryType) {
       switch (repeatEveryType) {
         case 'WEEK':
@@ -340,15 +326,14 @@ class BillForm extends Component {
           break;
       }
       let dates = ShowServiceComponent.loadDateFormat(billDate);
-      this.setState({ nextBillDate: dates });
+      this.setState({ nextBillDate: dates, endDate: this.setRepeatUntilDate(dates, 2) });
     } else {
       this.callAlertTimer("danger", "Please select repeat every");
     }
   }
 
   handleNextDate = (e) => {
-    this.setState({ nextBillDate: e.target.value, endDate: this.setRepeatUntilDate(e.target.value, 3) });
-
+    this.setState({ nextBillDate: e.target.value, endDate: this.setRepeatUntilDate(e.target.value, 2) });
   }
 
   render() {
@@ -444,27 +429,28 @@ class BillForm extends Component {
         <Col>
           <Input name="check" type="checkbox" checked={this.state.checked} value={this.state.checked} onChange={this.handleNotificationCheck} />Enable Notification </Col>
       </Row> <br />
+      {this.state.checked &&
+        <Row>
+          <Col><AvField name="notifyDays" label="Notify Days" value={this.state.notifyDays} placeholder="Ex: 1" type="number" onChange={(e) => { this.handleDate(e) }} errorMessage="Invalid notify-days" /></Col>
+          <Col><AvField name="notifyDate" label="Notify Date" disabled value={this.state.notifyDate} type="date" errorMessage="Invalid Date" validate={{ date: { format: 'dd/MM/yyyy' } }} /></Col>
+        </Row>
+      }
       {Store.getProfile().type > 0 && <>
         <Row style={{ marginLeft: 7 }}>
           <Col>
             <Input name="check" type="checkbox" checked={this.state.recurConfig} value={this.state.recurConfig} onChange={this.handleRecurBillCheck} /> Recurring Bill</Col>
         </Row> <br />
         {this.state.recurConfig ? this.loadRecurBill() : ''}</>}
-      {this.state.checked &&
-        <Row>
-          <Col><AvField name="notifyDays" label="Notify Days" value={this.state.notifyDays} placeholder="Ex: 1" type="number" onChange={(e) => { this.handleDate(e) }} errorMessage="Invalid notify-days" /></Col>
-          <Col><AvField name="notifyDate" label="notify Date" disabled value={this.state.notifyDate} type="date" errorMessage="Invalid Date" validate={{ date: { format: 'dd/MM/yyyy' } }} /></Col>
-        </Row>
-      }
+
     </Collapse>
   }
 
   // This Method Load Recuring Config.
   loadRecurBill = () => {
-    const { repeatEvery, repeatType, nextBillDate, endDate, recurBillForever, updateNextDate } = this.state;
+    const { repeatEvery, repeatType, nextBillDate, endDate, recurBillForever } = this.state;
     return (
       <>
-        {updateNextDate && this.loadUpdateOptions()}
+        <p>USING BELOW RECURRING CONFIGURATION: </p>
         <Row >
           <Col sm={3}>
             <AvField name="every" label="Repeats Every" placeholder="Ex: 1" type="number" value={repeatEvery} onChange={(e) => { this.handleEveryRecurBill(e) }}
@@ -481,7 +467,7 @@ class BillForm extends Component {
             </AvField>
           </Col>
           <Col>
-            <AvField name="nextBillDate" label="Next BillDate" value={nextBillDate} type="date" errorMessage="Invalid Date" onChange={(e) => { this.handleNextDate(e) }}
+            <AvField name="nextBillDate" label="Next Bill Date" value={nextBillDate} type="date" errorMessage="Invalid Date" onChange={(e) => { this.handleNextDate(e) }}
               validate={{
                 date: { format: 'dd/MM/yyyy' },
                 dateRange: { format: 'YYYY/MM/DD', start: { value: '1900/01/01' }, end: { value: '9999/12/31' } },
