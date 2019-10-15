@@ -4,7 +4,7 @@ import Bills from '../../bills/Bills';
 import PaymentApi from '../../../services/PaymentApi';
 import Store from '../../../data/Store';
 import Config from '../../../data/Config';
-import {BillPaymentForm} from './FormModel'
+import {BillPaymentForm} from './BillPaymentForm'
 import { ShowServiceComponent } from '../../utility/ShowServiceComponent';
 
 class BillPayment extends Component {

@@ -1,8 +1,9 @@
 
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
-import { Card, CardBody, Alert, Table, FormGroup, Label, Input, Modal, ModalHeader, ModalBody, ModalFooter, Button, Row } from "reactstrap";
+import { Card, CardBody, Alert, Table, FormGroup, Label, Input, UncontrolledDropdown, Button, DropdownMenu, DropdownItem, DropdownToggle } from "reactstrap";
 import Loader from 'react-loader-spinner';
+import { FaUndoAlt } from 'react-icons/fa';
 import BillForm from "./BillForm";
 import BillApi from "../../services/BillApi";
 import Store from "../../data/Store";
@@ -39,7 +40,6 @@ class Bills extends Component {
       selectedOption: '',
       searchName: false,
       removeDependents: true,
-      showPaymentOptions: false,
       billPayments: [],
       paidAmount: 0,
       filter: false,
@@ -217,6 +217,7 @@ class Bills extends Component {
       "deletBillCategoryName": bill.categoryName.name
     }
     this.setState({ id: bill.id, deleteBillName: data });
+    this.toggleDanger();
   }
 
   callAlertTimer = (visible) => {
@@ -232,15 +233,17 @@ class Bills extends Component {
   handleShowPayment = (bill) => {
     let lastPaid = this.calculateLastPaid(bill);
     if (lastPaid) {
-      this.setState({ showPaymentOptions: !this.state.showPaymentOptions, requiredBill: bill, paidAmount: lastPaid.paidAmount });
+      this.setState({ requiredBill: bill, paidAmount: lastPaid.paidAmount });
     }
-    this.setState({ showPaymentOptions: !this.state.showPaymentOptions, requiredBill: bill });
+    this.setState({ requiredBill: bill });
   }
 
-  handleAddPayment = () => { this.setState({ addPayment: true }); }
+  handleAddPayment = () => {
+    this.setState({ addPayment: true });
+  }
   handleMarkAsPaid = () => { this.setState({ markPaid: true }); }
-  handleViewPayment = () => { this.setState({ viewPayment: !this.state.viewPayment, showPaymentOptions: false }); }
-  handleMarkAsUnpaidPayment = () => { this.setState({ markAsUnPaid: true, showPaymentOptions: false }) }
+  handleViewPayment = () => { this.setState({ viewPayment: !this.state.viewPayment }); }
+  handleMarkAsUnpaidPayment = () => { this.setState({ markAsUnPaid: true }) }
 
   calculateLastPaid = (bill) => {
     if (this.state.billPayments.length > 0) {
@@ -265,18 +268,18 @@ class Bills extends Component {
   }
 
   setBillsForFilter = (bill, filteredBills, id) => {
-    let diffrence = new Date(ShowServiceComponent.customDate(bill.billDate)) - new Date(this.state.filterDate);
-    let daysDiffrencess = diffrence/(1000*60*60*24);
-    if (daysDiffrencess >= 0 ) { 
+    let difference = new Date(ShowServiceComponent.customDate(bill.billDate)) - new Date(this.state.filterDate);
+    let daysDifference = difference / (1000 * 60 * 60 * 24);
+    if (daysDifference >= 0) {
       if (this.state.yearSelected) { // This for all the bills in current year
         let billDate = ShowServiceComponent.customDate(bill.billDate)
         let currentDate = new Date().getFullYear();
         if (new Date(billDate).getFullYear() === currentDate) {
           filteredBills.push(bill);
         }
-      } else if (daysDiffrencess === 0) { // This for all the bills of today
+      } else if (daysDifference === 0) { // This for all the bills of today
         filteredBills.push(bill);
-      } else if (daysDiffrencess <= this.state.filterValue) { // This for all the bills of last 7days (or) 30Days
+      } else if (daysDifference <= this.state.filterValue) { // This for all the bills of last 7days (or) 30Days
         filteredBills.push(bill);
       }
     }
@@ -286,18 +289,23 @@ class Bills extends Component {
   handleDateFilter = (dateFilter) => {
     let filterDate = new Date();
     switch (dateFilter) {
-      case 7: filterDate.setDate(filterDate.getDate() - 7)
+      case 7:
+        filterDate.setDate(filterDate.getDate() - 7)
         this.setState({ filterValue: 7 });
         break;
-      case 30: filterDate.setDate(filterDate.getDate() - 30)
+      case 30:
+        filterDate.setDate(filterDate.getDate() - 30)
         this.setState({ filterValue: 30 });
         break;
-      case 'year': filterDate = new Date(filterDate.getFullYear(), 0, 1)
+      case 'year':
+        filterDate = new Date(filterDate.getFullYear(), 0, 1)
         this.setState({ yearSelected: true });
         break;
-      case 'today': this.setState({ filterValue: 'today' }); 
+      case 'today':
+        this.setState({ filterValue: 'today' });
         break;
-      default: filterDate = null;
+      default:
+        filterDate = null;
         break;
     }
     if (filterDate) {
@@ -329,8 +337,10 @@ class Bills extends Component {
     } else if (this.state.viewPayment) {
       return <ViewPayment bill={this.state.requiredBill} paidAmount={paidAmount} profileId={profileId} cancel={this.handleViewPayment} />
     } else {
-      return <div>{this.displayAllBills(visible, bills)}{danger && this.deleteBillModel()}
-        {this.state.markAsUnPaid && this.handleMarkAsUnPaid()} </div>
+      return <div>
+        {this.displayAllBills(visible, bills)}{danger && this.deleteBillModel()}
+        {this.state.markAsUnPaid && this.handleMarkAsUnPaid()}
+      </div>
     }
   }
 
@@ -347,30 +357,26 @@ class Bills extends Component {
   loadHeader = (bills) => {
     return new ShowServiceComponent.loadHeaderWithSearch("BILLS", bills, this.searchSelected, "Search Bills.....", this.createBillAction, true, this.handleDateFilter);
   }
-  
-  loadLoader = () => {
-    return <div className="animated fadeIn">
-      <Card>
-        {this.loadHeader("")}
-        <center className="padding-top" >
-          <CardBody><Loader type="TailSpin" className="loader-color" height={60} width={60} /></CardBody>
-        </center>
-      </Card>
-    </div>
-  }
+
+  loadLoader = () => <div className="animated fadeIn">
+    <Card>
+      {this.loadHeader("")}
+      <center className="padding-top" >
+        <CardBody><Loader type="TailSpin" className="loader-color" height={60} width={60} /></CardBody>
+      </center>
+    </Card>
+  </div>
 
   // when bills is empty. 
-  emptyBills = () => {
-    return <div className="animated fadeIn">
-      <Card>
-        {this.loadHeader("")}
-        <center className="padding-top" >
-          <CardBody><h5><b>You don't have any {this.props.match.params.value ? this.props.match.params.value : ' '} Bills ... </b></h5><br /></CardBody>
-        </center>
-      </Card>
-    </div>
-  }
-  
+  emptyBills = () => <div className="animated fadeIn">
+    <Card>
+      {this.loadHeader("")}
+      <center className="padding-top" >
+        <CardBody><h5><b>You don't have any {this.props.match.params.value ? this.props.match.params.value : ' '} Bills ... </b></h5><br /></CardBody>
+      </center>
+    </Card>
+  </div>
+
   // Displays all the Bills one by one
   displayAllBills = (visible, bills) => {
     const color = this.props.color;
@@ -383,7 +389,7 @@ class Bills extends Component {
     });
     return <div className="animated fadeIn">
       <Card>
-        {this.state.filterDate ? this.loadHeader(filteredBills) : this.loadHeader(bills)}
+        {this.state.filterDate ? (filteredBills.length ? this.loadHeader(filteredBills) : this.loadHeader()) : this.loadHeader(bills)}
         <br />
         <div className="header-search">
           <h6>{visible && <Alert isOpen={visible} color={color}>{this.props.content}</Alert>}</h6>
@@ -396,6 +402,7 @@ class Bills extends Component {
                   <th>Description</th>
                   <th>Bill Amount</th>
                   <th>Status</th>
+                  <th>Last Transcation</th>
                   <th></th>
                 </tr>
               </thead>
@@ -418,7 +425,6 @@ class Bills extends Component {
   // Show the Single Bill 
   loadSingleBill = (bill, key) => {
     let strike = bill.paid
-    let billStatus = bill.paid ? "Paid" : "Unpaid";
     let lastPaid = this.calculateLastPaid(bill, bill.amount);
     let billDescription = bill.description ? bill.description : bill.categoryName.name
     return <tr width={50} key={key}>
@@ -426,23 +432,24 @@ class Bills extends Component {
       <td>{strike ? <strike> {ShowServiceComponent.customDate(bill.billDate, true)} </strike> : ShowServiceComponent.customDate(bill.billDate, true)}</td>
       <td>{strike ? <strike> {billDescription} </strike> : billDescription}</td>
       <td>{strike ? <strike>{this.handleSignedBillAmount(bill)}</strike> : this.handleSignedBillAmount(bill)}</td>
-      <td> {strike ? <strike><Row>{billStatus}</Row> <Row>{bill.paid && this.loadPaidStatus(bill, lastPaid)}</Row> </strike> : billStatus} </td>
+      <td style={{color: bill.paid ? 'green' : 'red'}}> {strike ? <strike>Paid</strike> : 'Unpaid' } </td>
+      <td> {strike ? <strike>{this.loadPaidStatus(bill, lastPaid)} </strike> : <>{this.loadPaidStatus(bill, lastPaid)}</>} </td>
       <td><h6>{this.loadDropDown(bill, key)}</h6></td>
-      {this.state.showPaymentOptions && this.loadPaymentModel(bill)}
     </tr>
   }
 
   loadPaidStatus = (bill, lastPaid) => {
     return <>
-      {lastPaid && <span style={{ color: bill.amount < 0 ? "red" : "green" }}>Last paid:  {ShowServiceComponent.customDate(lastPaid.date)} &nbsp;&nbsp;
-       Amount: {lastPaid.paymentAmt}
+      {lastPaid && <span style={{color:'#0080ff'}}>Last paid:  {ShowServiceComponent.billDateFormat(lastPaid.date)} &nbsp;&nbsp;
+       {ShowServiceComponent.billTypeAmount(bill.currency, lastPaid.paymentAmt, true)}
       </span>}
     </>
   }
 
   handleSignedBillAmount = (bill) => {
-    return bill.amount < 0 ? <> -({ShowServiceComponent.billTypeAmount(bill.currency, bill.amount)})</> : <>{ShowServiceComponent.billTypeAmount(bill.currency, bill.amount)}</>
+    return bill.amount < 0 ? <span className="text-color"> -({ShowServiceComponent.billTypeAmount(bill.currency, bill.amount)})</span> : <span className="bill-amount-color">{ShowServiceComponent.billTypeAmount(bill.currency, bill.amount)}</span>
   }
+
   loadPaymentDateAndAmount = (bill, lastPaid) => {
     return <> <b>Last paid</b> {this.dateFormat(lastPaid.date)} &nbsp; {this.loadBillAmount(bill.currency, lastPaid.paymentAmt)} </>
   }
@@ -486,43 +493,20 @@ class Bills extends Component {
   }
 
   //this Method loads Browser DropDown
-  loadDropDown = (bill, key) => {
-    return <span className="float-right" style={{ marginTop: -8, marginBottom: -9 }} >
-      {ShowServiceComponent.loadEditRemoveButtons(bill, this.handleShowPayment, this.updateBillAction, this.setBillId, this.toggleDanger)}
-    </span>
-  }
-
-  loadPaymentModel = (bill) => {
-    return <Modal isOpen={this.state.showPaymentOptions} toggle={this.handleShowPayment} style={{ paddingTop: "20%" }} backdrop={true}>
-      <ModalHeader toggle={this.handleShowPayment}>Payments </ModalHeader>
-      <ModalBody>
-        <FormGroup check >
-          <Label check>
-            <Input type="radio" name="radio2" value="true" onChange={this.handleAddPayment} checked={this.state.addPayment} />
-            Add Payment
-          </Label> <br />
-          {this.state.requiredBill.paid ? <Label check>
-            <Input type="checkbox" name="radio2" value="false" onChange={this.handleMarkAsUnpaidPayment} checked={this.state.markAsPaid} />
-            Mark As unPaid
-          </Label>
-            : <Label check>
-              <Input type="radio" name="radio2" value="false" onChange={this.handleMarkAsPaid} checked={this.state.markPaid} />
-              Mark as paid
-        </Label>}<br />
-          <Label check>
-            <Input type="radio" name="radio2" value="false" onChange={this.handleViewPayment} checked={this.state.viewPayment} />
-            View payment list
-          </Label>  <br />
-          <Label check>
-            <Button className="rounded" style={{ backgroundColor: "transparent", borderColor: 'transparent', color: "red", width: 92 }} onClick={() => { this.setBillId(bill); this.toggleDanger(); }}>Remove</Button><br />
-          </Label>
-        </FormGroup>
-      </ModalBody>
-      <ModalFooter>
-        <Button color="secondary" onClick={this.handleShowPayment}>Cancel</Button>
-      </ModalFooter>
-    </Modal>
-  }
+  loadDropDown = (bill, key) => <span className="float-right" style={{ marginTop: -8, marginBottom: -9 }} >
+    {bill.recurId ? <FaUndoAlt /> : ''} &nbsp;
+      <Button className="rounded" style={{ backgroundColor: "transparent", borderColor: '#ada397', color: "green", width: 67 }} onClick={() => this.updateBillAction(bill)}>Edit</Button> &nbsp;
+      <UncontrolledDropdown group>
+        <DropdownToggle caret onClick={() => this.handleShowPayment(bill)}> More ... </DropdownToggle>
+        <DropdownMenu>
+          <DropdownItem onClick={this.handleAddPayment} >Add Payment</DropdownItem>
+          <DropdownItem onClick={this.handleViewPayment}>View Payment</DropdownItem>
+          {!bill.paid ? <DropdownItem onClick={this.handleMarkAsPaid}>Mark As Paid</DropdownItem> :
+            <DropdownItem onClick={this.handleMarkAsUnpaidPayment}>Mark As Unpaid</DropdownItem>}
+          <DropdownItem onClick={() => this.setBillId(bill)}>Delete</DropdownItem>
+        </DropdownMenu>
+    </UncontrolledDropdown>
+  </span>
 
   //this method calls the delete model
   deleteBillModel = () => {
@@ -532,20 +516,16 @@ class Bills extends Component {
       delete={this.deleteBillAction} cancel={this.toggleDanger} loadDeleteOptions={this.loadDeleteOptions}>bill</DeleteModel>
   }
 
-  loadDeleteOptions = () => {
-    return <>
-      <FormGroup check >
-        <Label check>
-          <Input type="radio" name="radio2" value="true" onChange={this.handleRemoveDependents} checked={this.state.removeDependents === true} />
-          Delete this Bill along with the Recurring bills associated with it ?
+  loadDeleteOptions = () => <FormGroup check >
+    <Label check>
+      <Input type="radio" name="radio2" value="true" onChange={this.handleRemoveDependents} checked={this.state.removeDependents === true} />
+      Delete this Bill along with the Recurring bills associated with it ?
           </Label>
-        <Label check>
-          <Input type="radio" name="radio2" value="false" onChange={this.handleRemoveDependents} checked={this.state.removeDependents === false} />
-          Delete this Bill without deleting the associated Recurring bills ?
+    <Label check>
+      <Input type="radio" name="radio2" value="false" onChange={this.handleRemoveDependents} checked={this.state.removeDependents === false} />
+      Delete this Bill without deleting the associated Recurring bills ?
           </Label>
-      </FormGroup>
-    </>
-  }
+  </FormGroup>
 }
 
 export default withRouter(Bills);

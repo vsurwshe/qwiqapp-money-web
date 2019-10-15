@@ -48,7 +48,7 @@ export const BillFormUI = (props) => {
     </Row>
     <Row>
       <Col>
-        <AvField name="dueDays" label="Due Days" placeholder="No.of Days" onChange={e => { props.handleDate(e) }} value={dueDays} type="number" errorMessage="Invalid Days" />
+        <AvField name="dueDays" label="Due Days" placeholder="0" onChange={e => { props.handleDate(e) }} value={dueDays} type="number" errorMessage="Invalid Days" />
       </Col>
       <Col>
         <AvField name="dueDate" label="Due Date" disabled value={dueDate} type="date" errorMessage="Invalid Date" validate={{ date: { format: 'dd/MM/yyyy' } }} />
