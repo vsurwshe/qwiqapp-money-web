@@ -21,7 +21,8 @@ class CategoryForm extends Component {
       cancelCategory: false,
       doubleClick: false,
       categoryAction: false,
-      chkMakeParent: false
+      chkMakeParent: false,
+      index: props.index
     };
   }
 
@@ -102,11 +103,11 @@ class CategoryForm extends Component {
   };
 
   render() {
-    const { cancelCategory, categoryAction } = this.state;
+    const { cancelCategory, categoryAction, index} = this.state;
     if (cancelCategory) {
-      return <Categories />;
+      return <Categories index={index} />;
     } else {
-      return <div>{categoryAction ? <Categories /> : this.loadFrom()}</div>;
+      return <div>{categoryAction ? <Categories index={index} /> : this.loadFrom()}</div>;
     }
   }
 
