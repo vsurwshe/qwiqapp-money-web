@@ -143,7 +143,7 @@ class Categories extends Component {
     } else if (createCategory) {
       return <CategoryForm categories={categories} id={profileId} />
     } else if (updateCategory) {
-      return <EditCategory index={index} categories={categories} category={requiredCategory} id={profileId} />
+      return <CategoryForm index={index} categories={categories} category={requiredCategory} id={profileId} />
     } else if (deleteCategory) {
       return <DeleteCategory cid={categoryId} pid={profileId} />
     }
