@@ -8,6 +8,7 @@ import DeleteCategory from "./DeleteCategory";
 import { ProfileEmptyMessage } from "../utility/ProfileEmptyMessage";
 import { ShowServiceComponent } from "../utility/ShowServiceComponent";
 import { DeleteModel } from "../utility/DeleteModel";
+import CategoryForm from "./CategoryForm";
 
 
 class Categories extends Component {
@@ -140,7 +141,7 @@ class Categories extends Component {
     } else if (spinner) {
       return ShowServiceComponent.loadSpinner("Categories : " + categories.length)
     } else if (createCategory) {
-      return <AddCategory category={categories} id={profileId} />
+      return <CategoryForm categories={categories} id={profileId} />
     } else if (updateCategory) {
       return <EditCategory index={index} categories={categories} category={requiredCategory} id={profileId} />
     } else if (deleteCategory) {

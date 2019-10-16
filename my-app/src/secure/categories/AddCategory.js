@@ -13,7 +13,7 @@ class AddCategory extends Component {
     super(props)
     this.state = {
       profileId: props.id,
-      categories: props.category,
+      categories: props.categories,
       parentId: 0,
       name: '',
       userToken: '',
