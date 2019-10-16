@@ -408,7 +408,7 @@ class Bills extends Component {
               </thead>
               <tbody>
                 {this.state.filterDate ? this.loadFilterAndNonFilteredBills(filteredBills) : this.loadFilterAndNonFilteredBills(bills)}
-              </tbody>
+                </tbody>
             </Table>
           </CardBody>
         </div>
@@ -432,7 +432,7 @@ class Bills extends Component {
       <td>{strike ? <strike> {ShowServiceComponent.customDate(bill.billDate, true)} </strike> : ShowServiceComponent.customDate(bill.billDate, true)}</td>
       <td>{strike ? <strike> {billDescription} </strike> : billDescription}</td>
       <td>{strike ? <strike>{this.handleSignedBillAmount(bill)}</strike> : this.handleSignedBillAmount(bill)}</td>
-      <td style={{color: bill.paid ? 'green' : 'red'}}> {strike ? <strike>Paid</strike> : 'Unpaid' } </td>
+      <td style={{ color: bill.paid ? 'green' : 'red' }}> {strike ? <strike>Paid</strike> : 'Unpaid'} </td>
       <td> {strike ? <strike>{this.loadPaidStatus(bill, lastPaid)} </strike> : <>{this.loadPaidStatus(bill, lastPaid)}</>} </td>
       <td><h6>{this.loadDropDown(bill, key)}</h6></td>
     </tr>
@@ -440,7 +440,7 @@ class Bills extends Component {
 
   loadPaidStatus = (bill, lastPaid) => {
     return <>
-      {lastPaid && <span style={{color:'#0080ff'}}>Last paid:  {ShowServiceComponent.billDateFormat(lastPaid.date)} &nbsp;&nbsp;
+      {lastPaid && <span style={{ color: '#0080ff' }}>Last paid:  {ShowServiceComponent.billDateFormat(lastPaid.date)} &nbsp;&nbsp;
        {ShowServiceComponent.billTypeAmount(bill.currency, lastPaid.paymentAmt, true)}
       </span>}
     </>
@@ -497,14 +497,14 @@ class Bills extends Component {
     {bill.recurId ? <FaUndoAlt /> : ''} &nbsp;
       <Button className="rounded" style={{ backgroundColor: "transparent", borderColor: '#ada397', color: "green", width: 67 }} onClick={() => this.updateBillAction(bill)}>Edit</Button> &nbsp;
       <UncontrolledDropdown group>
-        <DropdownToggle caret onClick={() => this.handleShowPayment(bill)}> More ... </DropdownToggle>
-        <DropdownMenu>
-          <DropdownItem onClick={this.handleAddPayment} >Add Payment</DropdownItem>
-          <DropdownItem onClick={this.handleViewPayment}>View Payment</DropdownItem>
-          {!bill.paid ? <DropdownItem onClick={this.handleMarkAsPaid}>Mark As Paid</DropdownItem> :
-            <DropdownItem onClick={this.handleMarkAsUnpaidPayment}>Mark As Unpaid</DropdownItem>}
-          <DropdownItem onClick={() => this.setBillId(bill)}>Delete</DropdownItem>
-        </DropdownMenu>
+      <DropdownToggle caret onClick={() => this.handleShowPayment(bill)}> More ... </DropdownToggle>
+      <DropdownMenu>
+        <DropdownItem onClick={this.handleAddPayment} >Add Payment</DropdownItem>
+        <DropdownItem onClick={this.handleViewPayment}>View Payment</DropdownItem>
+        {!bill.paid ? <DropdownItem onClick={this.handleMarkAsPaid}>Mark As Paid</DropdownItem> :
+          <DropdownItem onClick={this.handleMarkAsUnpaidPayment}>Mark As Unpaid</DropdownItem>}
+        <DropdownItem onClick={() => this.setBillId(bill)}>Delete</DropdownItem>
+      </DropdownMenu>
     </UncontrolledDropdown>
   </span>
 
