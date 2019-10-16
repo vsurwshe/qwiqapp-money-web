@@ -39,7 +39,7 @@ class Categories extends Component {
 
   setProfileId = async () => {
     if (Store.getProfile()) {
-      await this.setState({ profileId: Store.getProfile().id , spinner: true});
+      await this.setState({ profileId: Store.getProfile().id, spinner: true });
       this.getCategories();
     }
   }
@@ -119,7 +119,7 @@ class Categories extends Component {
   toggleAccordion = (specificIndex) => {
     const prevState = this.state.accordion;
     const state = prevState.map((x, index) => specificIndex === index ? !x : false);
-    this.setState({ accordion: state, index: specificIndex, spinner:false });
+    this.setState({ accordion: state, index: specificIndex, spinner: false });
   }
 
   dropDownAccordion = (dKey) => {
@@ -158,10 +158,10 @@ class Categories extends Component {
 
   loadCategories = (categories, visible, search) => {
     const color = this.props.color;
-     if (color) {
-       this.callAlertTimer()
+    if (color) {
+      this.callAlertTimer()
     }
-    return ShowServiceComponent.loadItems("Categories",categories, this.setSearch, search, this.callAddCategory, visible,
+    return ShowServiceComponent.loadItems("Categories", categories, this.setSearch, search, this.callAddCategory, visible,
       this.toggleAccordion, this.state.accordion, this.setCategoryID, this.toggleDanger, this.updateCategory,
       this.state.dropDownAccord, this.dropDownAccordion, color, this.props.content, this.state.subCategoryHover, this.subCategoryAccordion);
   }

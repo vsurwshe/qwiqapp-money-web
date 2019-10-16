@@ -1,6 +1,6 @@
 import React from 'react';
-import { AvForm, AvField, AvGroup, AvInput } from 'availity-reactstrap-validation';
-import { Button, FormGroup, Col, Row, Input, Label, Collapse } from "reactstrap";
+import { AvForm, AvField, AvInput, AvGroup } from 'availity-reactstrap-validation';
+import { Button, FormGroup, Col, Row, Label, Collapse, Input } from "reactstrap";
 import Select from 'react-select';
 import Data from '../../data/SelectData';
 import Store from '../../data/Store';

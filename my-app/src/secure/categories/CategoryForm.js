@@ -12,26 +12,21 @@ class CategoryForm extends Component {
     this.state = {
       categories: props.categories,
       profileId: props.id,
-      categoryId: props.category ? props.category.id : "",
-      parentId: props.category ? props.category.parentId : "",
-      updateCategoryName: props.category ? props.category.name : "",
+      categoryName: props.category ? props.category.name : "",
       categoryColor: props.category ? (props.category.color === null ? "#000000" : props.category.color) : "#000000",
       code: props.category ? props.category.code : "",
-      version: props.category ? props.category.version : "",
       alertColor: "",
       content: "",
-      updateSuccess: false,
-      collapse: false,
-      categoryNameValid: false,
+      collapse: props.category ? (props.category.parentId ? true : false) : false,
       cancelCategory: false,
-      index: props.index,
       doubleClick: false,
-      categoryCreated: false
+      categoryAction: false,
+      chkMakeParent: false
     };
   }
 
   handleInput = e => {
-    this.setState({ [e.target.name]: e.target.value });
+    this.setState({ [e.target.name]: e.target.value, chkMakeParent: true });
   };
 
   handleSubmitValue = (event, values) => {
@@ -39,18 +34,36 @@ class CategoryForm extends Component {
   };
 
   handlePostData = async (e, data) => {
+    const { profileId } = this.state
+    const { category } = this.props
     this.setState({ doubleClick: true });
     await this.generateCode();
-    const newData = {
+    let commnData = {
       ...data,
-      parentId: this.state.parentId,
       code: this.state.code
     };
-    new CategoryApi().createCategory( this.successCall, this.errorCall, this.state.profileId, newData );
+    // This condition decides its category Creation or Updation
+    if (this.props.category) {
+      let newData = {
+        ...commnData,
+        version: category.version
+      }
+      // This condition checks if subCategory is made as Parent Category
+      if (data.makeParent) {
+        newData = {
+          ...newData,
+          parentId: null
+        }
+      }
+      new CategoryApi().updateCategory(this.successCall, this.errorCall, newData, profileId, category.id);
+    } else {
+      new CategoryApi().createCategory(this.successCall, this.errorCall, profileId, commnData);
+    }
+
   };
 
   generateCode = () => {
-    let characters =  "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxys0123456789";
+    let characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxys0123456789";
     var length = characters.length;
     var i = 0;
     var code = "#";
@@ -61,17 +74,22 @@ class CategoryForm extends Component {
   };
 
   successCall = () => {
-    this.callAlertTimer("success", "Category Added !");
+    if (this.props.category) {
+      this.callAlertTimer("success", "Category Updated Successfully !");
+    } else {
+      this.callAlertTimer("success", "Category Added Successfully!");
+    }
+
   };
 
   errorCall = err => {
-    this.callAlertTimer( "danger", "Unable to Process Request, Please Try Again" );
+    this.callAlertTimer("danger", "Unable to Process Request, Please Try Again");
   };
 
   callAlertTimer = (alertColor, content) => {
     this.setState({ alertColor, content });
     setTimeout(() => {
-      this.setState({ categoryCreated: true });
+      this.setState({ categoryAction: true });
     }, Config.notificationMillis);
   };
 
@@ -84,26 +102,28 @@ class CategoryForm extends Component {
   };
 
   render() {
-    const { cancelCategory, categoryCreated } = this.state;
+    const { cancelCategory, categoryAction } = this.state;
     if (cancelCategory) {
       return <Categories />;
     } else {
-      return <div>{categoryCreated ? <Categories /> : this.loadFrom()}</div>;
+      return <div>{categoryAction ? <Categories /> : this.loadFrom()}</div>;
     }
   }
 
   loadFrom = () => {
-    const { alertColor, content, categories, profileId, categoryId, parentId, updateCategoryName, categoryColor, updateSuccess, collapse, doubleClick } = this.state;
+    const { alertColor, content, categories, profileId, categoryId, categoryName, categoryColor, collapse, doubleClick, chkMakeParent } = this.state;
+    const { parentId } = this.props.category ? this.props.category : ''
+    let filteredCategories = this.props.category && categories.filter(category => category.id !== this.props.category.id)
     const categoryFields = {
-      categories: categories,
+      categories: this.props.category ? filteredCategories : categories,
       profileId: profileId,
       categoryId: categoryId,
       parentId: parentId,
-      updateCategoryName: updateCategoryName,
+      categoryName: categoryName,
       categoryColor: categoryColor,
-      updateSuccess: updateSuccess,
       collapse: collapse,
-      doubleClick: doubleClick
+      doubleClick: doubleClick,
+      chkMakeParent: chkMakeParent
     };
     return this.loadFileds(categoryFields, alertColor, content);
   };
@@ -115,18 +135,18 @@ class CategoryForm extends Component {
           <strong>Category</strong>
         </CardHeader>
         <CardBody>
-            <Col sm="1" md={{ size: 8, offset: 1 }}>
-                <center><h5> <b>{!this.props.category && "CREATE CATEGORY"}</b> </h5> </center>
-                 <Alert color={alertColor}>{content}</Alert>
-                 <CategoryFormUI
-                   data={categoryFields}
-                   handleSubmitValue={this.handleSubmitValue}
-                   handleInput={this.handleInput}
-                   toggle={this.toggle}
-                   cancelCategory={this.cancelCategory}
-                   buttonText={this.props.category ? "Edit Category" : "Save Category"}
-                 />
-            </Col>
+          <Col sm="1" md={{ size: 8, offset: 1 }}>
+            <center><h5> <b>{!this.props.category ? "NEW CATEGORY" : "EDIT CATEGORY"}</b> </h5> </center>
+            <Alert color={alertColor}>{content}</Alert>
+            <CategoryFormUI
+              data={categoryFields}
+              handleSubmitValue={this.handleSubmitValue}
+              handleInput={this.handleInput}
+              toggle={this.toggle}
+              cancelCategory={this.cancelCategory}
+              buttonText={this.props.category ? "Edit Category" : "Save Category"}
+            />
+          </Col>
         </CardBody>
       </Card>
     );
