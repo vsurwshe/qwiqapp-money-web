@@ -294,7 +294,7 @@ class Bills extends Component {
 
   searchingFor = (searchTerm) => {
     return function (bill) {
-      return ((bill.description.toLowerCase() + bill.amount + bill.categoryName.name.toLowerCase()).includes(searchTerm.toLowerCase())) || !searchTerm
+      return ((bill.description ? bill.description.toLowerCase() : '' + bill.amount + bill.categoryName.name ? bill.categoryName.name.toLowerCase() : '').includes(searchTerm.toLowerCase())) || !searchTerm
     }
   }
 
@@ -338,7 +338,7 @@ class Bills extends Component {
         <div className="header-search">
           <h6>{visible && <Alert isOpen={visible} color={color}>{this.props.content}</Alert>}</h6>
           <CardBody className="card-align">
-            <Table frame="box" style={{ borderColor: "#DEE9F2" }}>
+            <Table  striped frame="box" style={{ borderColor: "#DEE9F2" }}>
               <thead className="table-header-color" >
                 <tr>
                   <th>Due On</th>
@@ -386,7 +386,7 @@ class Bills extends Component {
   dateFormat = (userDate) => {
     let date = "" + userDate
     let dateString = date.substring(0, 4) + "-" + date.substring(4, 6) + "-" + date.substring(6, 8)
-    const formatDate = new Intl.DateTimeFormat('en-gb', { month: 'short', weekday: 'short', day: '2-digit' }).format(new Date(dateString));
+    const formatDate = ShowServiceComponent.billDateFormat(new Date(dateString));
     return formatDate;
   }
 
@@ -428,7 +428,7 @@ class Bills extends Component {
 
   loadPaymentModel = () => {
     return <Modal isOpen={this.state.showPaymentOptions} toggle={this.handleShowPayment} style={{ paddingTop: "20%" }} backdrop={true}>
-      <ModalHeader toggle={this.handleShowPayment}>Payments {this.state.requiredBill.id}</ModalHeader>
+      <ModalHeader toggle={this.handleShowPayment}>Payments </ModalHeader>
       <ModalBody>
         <FormGroup check >
           <Label check>
