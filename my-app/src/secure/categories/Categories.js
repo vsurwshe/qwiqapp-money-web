@@ -2,12 +2,11 @@ import React, { Component } from "react";
 import CategoryApi from "../../services/CategoryApi";
 import Store from "../../data/Store";
 import Config from "../../data/Config";
-import AddCategory from './AddCategory';
-import EditCategory from './EditCategory';
 import DeleteCategory from "./DeleteCategory";
 import { ProfileEmptyMessage } from "../utility/ProfileEmptyMessage";
 import { ShowServiceComponent } from "../utility/ShowServiceComponent";
 import { DeleteModel } from "../utility/DeleteModel";
+import CategoryForm from "./CategoryForm";
 
 
 class Categories extends Component {
@@ -38,7 +37,7 @@ class Categories extends Component {
 
   setProfileId = async () => {
     if (Store.getProfile()) {
-      await this.setState({ profileId: Store.getProfile().id , spinner: true});
+      await this.setState({ profileId: Store.getProfile().id, spinner: true });
       this.getCategories();
     }
   }
@@ -118,7 +117,7 @@ class Categories extends Component {
   toggleAccordion = (specificIndex) => {
     const prevState = this.state.accordion;
     const state = prevState.map((x, index) => specificIndex === index ? !x : false);
-    this.setState({ accordion: state, index: specificIndex, spinner:false });
+    this.setState({ accordion: state, index: specificIndex, spinner: false });
   }
 
   dropDownAccordion = (dKey) => {
@@ -133,6 +132,14 @@ class Categories extends Component {
     this.setState({ subCategoryHover: state });
   }
 
+  setSearch = e => {
+    this.setState({ search: e.target.value });
+  }
+
+  setCategoryID = category => {
+    this.setState({ categoryId: category.id, categoryName: category.name });
+  }
+
   render() {
     const { requiredCategory, createCategory, updateCategory, deleteCategory, profileId, categoryId, visible, spinner, search, categories, index, danger } = this.state;
     if (!profileId) {
@@ -140,27 +147,23 @@ class Categories extends Component {
     } else if (spinner) {
       return ShowServiceComponent.loadSpinner("Categories : " + categories.length)
     } else if (createCategory) {
-      return <AddCategory category={categories} id={profileId} />
+      return <CategoryForm categories={categories} id={profileId} />
     } else if (updateCategory) {
-      return <EditCategory index={index} categories={categories} category={requiredCategory} id={profileId} />
+      return <CategoryForm index={index} categories={categories} category={requiredCategory} id={profileId} />
     } else if (deleteCategory) {
-      return <DeleteCategory cid={categoryId} pid={profileId} />
+      return <DeleteCategory categoryId={categoryId} profileId={profileId} />
     }
     else {
       return <div>{danger && this.loadDeleteCategory()} {this.loadCategories(categories, visible, search)}</div>
     }
   }
 
-  setSearch = e => {
-    this.setState({ search: e.target.value });
-  }
-
   loadCategories = (categories, visible, search) => {
     const color = this.props.color;
-     if (color) {
-       this.callAlertTimer()
+    if (color) {
+      this.callAlertTimer()
     }
-    return ShowServiceComponent.loadItems("Categories",categories, this.setSearch, search, this.callAddCategory, visible,
+    return ShowServiceComponent.loadItems("Categories", categories, this.setSearch, search, this.callAddCategory, visible,
       this.toggleAccordion, this.state.accordion, this.setCategoryID, this.toggleDanger, this.updateCategory,
       this.state.dropDownAccord, this.dropDownAccordion, color, this.props.content, this.state.subCategoryHover, this.subCategoryAccordion);
   }
@@ -174,9 +177,6 @@ class Categories extends Component {
     return ShowServiceComponent.loadDropDown(category, this.updateCategory, this.setCategoryID, this.toggleDanger)
   }
 
-  setCategoryID = category => {
-    this.setState({ categoryId: category.id, categoryName: category.name });
-  }
 }
 
 export default Categories;

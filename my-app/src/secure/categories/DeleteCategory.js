@@ -8,8 +8,8 @@ class DeleteCategory extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      profileId: props.pid,
-      categoryId: props.cid,
+      profileId: props.profileId,
+      categoryId: props.categoryId,
       categoryDeleted: false,
       color: 'green',
       content: 'Deleting Category ...'
