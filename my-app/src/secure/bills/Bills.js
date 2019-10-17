@@ -19,6 +19,7 @@ import BillPayment from "./billPayment/ BillPayment";
 import ViewPayment from "./billPayment/ViewPayment";
 import PaymentApi from "../../services/PaymentApi";
 import '../../css/style.css';
+import BillAttachments from "./BillAttachments";
 
 class Bills extends Component {
   constructor(props) {
@@ -58,7 +59,8 @@ class Bills extends Component {
 
   setProfileId = async () => {
     if (Store.getProfile()) {
-      await this.setState({ profileId: Store.getProfile().id });
+      let profile =  Store.getProfile();
+      await this.setState({ profileId: profile.id, profileType: profile.type });
       // This condition checking whether api call first time or reptely 
       this.state.categories !== undefined && this.state.categories.length <= 0 ? this.getCategory() : this.forceUpdate();
     }
@@ -212,7 +214,7 @@ class Bills extends Component {
       "deletBillDescription": bill.description,
       "deletBillCategoryName": bill.categoryName.name
     }
-    this.setState({ id: bill.id, deleteBillName: data });
+    this.setState({ billId: bill.id, deleteBillName: data });
     this.toggleDanger();
   }
 
@@ -244,7 +246,7 @@ class Bills extends Component {
   calculateLastPaid = (bill) => {
     if (this.state.billPayments.length > 0) {
       // Filtering billpayments according to billId
-      let filteredBillPayment = this.state.billPayments.filter(billPayment => billPayment.billId === bill.id);
+      let filteredBillPayment = this.state.billPayments.filter(billPayment => billPayment.billId === bill.billId);
       let paidAmount = bill.amount;
       if (filteredBillPayment && filteredBillPayment.length && filteredBillPayment[0].payments.length) {
         // Calculating the total paidAmount of all billpayments
@@ -263,7 +265,7 @@ class Bills extends Component {
     }
   }
 
-  setBillsForFilter = (bill, filteredBills, id) => {
+  setBillsForFilter = (bill, filteredBills, key) => {
     let difference = new Date(ShowServiceComponent.customDate(bill.billDate)) - new Date(this.state.filterDate);
     let daysDifference = difference / (1000 * 60 * 60 * 24);
     if (daysDifference >= 0) {
@@ -312,7 +314,7 @@ class Bills extends Component {
   }
 
   render() {
-    const { bills, createBillRequest, updateBillRequest, id, deleteBillRequest, visible, profileId, updateBill, spinner, labels, categories, contacts, danger, paidAmount, requiredBill, markPaid } = this.state;
+    const { bills, createBillRequest, updateBillRequest, billId, deleteBillRequest, visible, profileId, updateBill, spinner, labels, categories, contacts, danger, paidAmount, requiredBill, markPaid } = this.state;
     if (!profileId) {
       return <ProfileEmptyMessage />
     } else if (bills.length === 0 && !createBillRequest) {  // Checks for bills not there and no bill create Request, then executes
@@ -323,16 +325,19 @@ class Bills extends Component {
         }
       </div>
     } else if (createBillRequest) {
-      return <BillForm pid={profileId} labels={labels} categories={categories} contacts={contacts} />
+      return <BillForm profileId={profileId} labels={labels} categories={categories} contacts={contacts} />
     } else if (updateBillRequest) {
-      return <BillForm pid={profileId} bill={updateBill} labels={labels} categories={categories} contacts={contacts} />
+      return <BillForm profileId={profileId} bill={updateBill} labels={labels} categories={categories} contacts={contacts} />
     } else if (deleteBillRequest) {
-      return <DeleteBill id={id} pid={profileId} removeDependents={this.state.removeDependents} />
+      return <DeleteBill billId={billId} profileId={profileId} removeDependents={this.state.removeDependents} />
     } else if (this.state.addPayment || this.state.markPaid) {
       return <BillPayment bill={requiredBill} markPaid={markPaid} paidAmount={paidAmount} profileId={profileId} />
     } else if (this.state.viewPayment) {
       return <ViewPayment bill={this.state.requiredBill} paidAmount={paidAmount} profileId={profileId} cancel={this.handleViewPayment} />
-    } else {
+    } else if (this.state.attachments) {
+      return <BillAttachments billId={billId} profileId={profileId} />
+    } 
+    else {
       return <div>
         {this.displayAllBills(visible, bills)}{danger && this.deleteBillModel()}
         {this.state.markAsUnPaid && this.handleMarkAsUnPaid()}
@@ -380,8 +385,8 @@ class Bills extends Component {
       this.callAlertTimer(visible)
     }
     let filteredBills = [];
-    this.state.filterDate && bills.map((bill, id) => {
-      return this.setBillsForFilter(bill, filteredBills, id);
+    this.state.filterDate && bills.map((bill, key) => {
+      return this.setBillsForFilter(bill, filteredBills, key);
     });
     return <div className="animated fadeIn">
       <Card>
@@ -499,10 +504,15 @@ class Bills extends Component {
         <DropdownItem onClick={this.handleViewPayment}>View Payment</DropdownItem>
         {!bill.paid ? <DropdownItem onClick={this.handleMarkAsPaid}>Mark As Paid</DropdownItem> :
           <DropdownItem onClick={this.handleMarkAsUnpaidPayment}>Mark As Unpaid</DropdownItem>}
+        {this.state.profileType > 1 ?  <DropdownItem onClick={() => this.billAttachments(key, bill.id)}>Attachments</DropdownItem> : '' }
         <DropdownItem onClick={() => this.setBillId(bill)}>Delete</DropdownItem>
       </DropdownMenu>
     </UncontrolledDropdown>
   </span>
+
+  billAttachments=(key, billId)=>{
+    this.setState({ billId : billId, attachments: true})
+  }
 
   //this method calls the delete model
   deleteBillModel = () => {
