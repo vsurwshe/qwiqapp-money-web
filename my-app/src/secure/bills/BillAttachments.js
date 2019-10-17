@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import { Card, CardBody, Button, Row, Col, Modal, ModalHeader } from 'reactstrap';
+import { Card, CardHeader, CardBody, Button, Row, Col, Modal, ModalHeader } from 'reactstrap';
 import { FaTrashAlt, FaCloudUploadAlt, FaEye } from 'react-icons/fa';
 import BillAttachmentsApi from '../../services/BillAttachmentsApi';
 import AddBillAttachment from './AddBillAttachment';
-import Attachment from '../contacts/attachments/Download_View_Delete_Attachment';
+import Attachment from '../utility/Download_View_Delete_Attachment';
 import { DeleteModel } from '../utility/DeleteModel';
 
 class BillAttachments extends Component {
@@ -55,8 +55,8 @@ class BillAttachments extends Component {
 
     deleteAttachmentRequest = async () => {
         this.setState({ danger: !this.state.danger });
-        const { profileId, contactId, attachmentId } = this.state;
-        await Attachment.deleteAttachment(this.success, this.errorCall, profileId, contactId, attachmentId)
+        const { profileId, billId, attachmentId } = this.state;
+        await Attachment.deleteAttachment(this.success, this.errorCall, profileId, billId, attachmentId,true)
     }
 
     success = (message) => {
@@ -98,9 +98,11 @@ class BillAttachments extends Component {
     loadAttachments(attachments) {
         return (
             <Card>
+                <CardHeader>
                 <div style={{ paddingTop: 10, color: '#000000' }}><strong><center>ATTACHMENTS<FaCloudUploadAlt style={{ marginRight: 10 }}
                     className="float-right" color="#020b71" size={20} onClick={this.handleAddFile} /></center></strong>
                 </div>
+                </CardHeader>
                 <CardBody>
                     {attachments.map((attachment, key) => { return <div key={key}>{this.loadAttachment(attachment, key)}</div> })}
                 </CardBody>

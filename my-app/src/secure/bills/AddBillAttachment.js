@@ -8,7 +8,7 @@ class AddBillAttachment extends Component {
   state = {
     file: '',
     profileId: this.props.profileId,
-    contactId: this.props.contactId,
+    billId: this.props.billId,
     addSuccess: false,
     color: '',
     content: '',
@@ -26,12 +26,12 @@ class AddBillAttachment extends Component {
 
   handleSubmit = (e) => {
     e.preventDefault();
-    const { profileId, contactId, file } = this.state;
+    const { profileId, billId, file } = this.state;
     let reader = new FormData()
     reader.append('file', file);
-    if (profileId || contactId) {
+    if (profileId || billId) {
       this.setState({ doubleClick: false });
-      new BillAttachmentsApi().createAttachment(this.successCall, this.errorCall, profileId, contactId, reader)
+      new BillAttachmentsApi().createAttachment(this.successCall, this.errorCall, profileId, billId, reader)
     }
   }
 

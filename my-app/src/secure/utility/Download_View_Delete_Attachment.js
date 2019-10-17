@@ -1,5 +1,6 @@
-import Store from '../../../data/Store';
-import AttachmentApi from '../../../services/AttachmentApi';
+import Store from '../../data/Store';
+import AttachmentApi from '../../services/AttachmentApi';
+import BillAttachmentsApi from '../../services/BillAttachmentsApi';
 
 const Attachment = {
     downloadAttachment: function (attachment) {
@@ -24,8 +25,12 @@ const Attachment = {
         })
     },
 
-    deleteAttachment: function (success, error, profileId, contactId, attachmentId) {
-        new AttachmentApi().deleteAttachment(success, error, profileId, contactId, attachmentId);
+    deleteAttachment: function (success, error, profileId, itemId, attachmentId, value) {
+        if(value){
+            new BillAttachmentsApi().deleteAttachment(success,error,profileId, itemId, attachmentId)
+        }else{
+        new AttachmentApi().deleteAttachment(success, error, profileId, itemId, attachmentId);
+        }
     },
 
     viewAttachment: function (attachment) {
