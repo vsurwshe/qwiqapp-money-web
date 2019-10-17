@@ -12,8 +12,6 @@ class CategoryForm extends Component {
     this.state = {
       categories: props.categories,
       profileId: props.id,
-      categoryName: props.category ? props.category.name : "",
-      categoryColor: props.category ? (props.category.color === null ? "#000000" : props.category.color) : "#000000",
       code: props.category ? props.category.code : "",
       alertColor: "",
       content: "",
@@ -113,15 +111,15 @@ class CategoryForm extends Component {
 
   loadFrom = () => {
     const { alertColor, content, categories, profileId, categoryId, categoryName, categoryColor, collapse, doubleClick, chkMakeParent } = this.state;
-    const { parentId, type } = this.props.category ? this.props.category : ''
+    const { parentId, type, name, color } = this.props.category ? this.props.category : ''
     let filteredCategories = this.props.category && categories.filter(category => category.id !== this.props.category.id)
     const categoryFields = {
       categories: this.props.category ? filteredCategories : categories,
       profileId: profileId,
       categoryId: categoryId,
       parentId: parentId,
-      categoryName: categoryName,
-      categoryColor: categoryColor,
+      categoryName: name,
+      categoryColor: color,
       collapse: collapse,
       doubleClick: doubleClick,
       chkMakeParent: chkMakeParent,
