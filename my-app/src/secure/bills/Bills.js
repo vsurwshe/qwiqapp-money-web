@@ -40,7 +40,7 @@ class Bills extends Component {
       spinner: false,
       selectedOption: '',
       removeDependents: true,
-      paidAmount: 0,
+      paidAmount: 0
     };
   }
 
@@ -76,9 +76,9 @@ class Bills extends Component {
     if (categories.length === 0 && this.state.categories !== undefined) {
       this.setState({ categories: undefined })
     } else {
-      await this.setState({ categories: categories })
+      await this.setState({ categories: categories });
     }
-    this.getLabel()
+    this.getLabel();
   };
 
   // This Method execute the Label API Call
@@ -90,7 +90,7 @@ class Bills extends Component {
   successCallLabel = async (label) => {
     this.setState({ spinner: true })
     if (label.length === 0 && this.state.labels !== undefined) {
-      this.setState({ labels: undefined })
+      this.setState({ labels: undefined });
     } else {
       await this.setState({ labels: label });
     }
@@ -104,9 +104,9 @@ class Bills extends Component {
 
   // Handle Contacts response
   successCallContact = async (contacts) => {
-    this.setState({ spinner: true })
+    this.setState({ spinner: true });
     if (contacts.length === 0 && this.state.contacts !== undefined) {
-      this.setState({ contacts: undefined })
+      this.setState({ contacts: undefined });
     } else {
       await this.setState({ contacts });
     }
@@ -125,7 +125,7 @@ class Bills extends Component {
   // bills response
   successCallBill = async bills => {
     let newBills;
-    const { value } = this.props.match.params
+    const { value } = this.props.match.params;
     if (bills.length === 0) {
       this.setState({ bills: [] })
     } else {
@@ -160,7 +160,7 @@ class Bills extends Component {
     let previousPayments = [];
     const prevState = bills;
     const state = prevState.map((bill, index) => {
-      this.getPayments(bill.id, previousPayments)
+      this.getPayments(bill.id, previousPayments);
       return { ...bill, categoryName: this.displayCategoryName(bill.categoryId) }
     });
     this.setState({ bills: state });
@@ -258,7 +258,7 @@ class Bills extends Component {
           payments: filteredBillPayment[0].payments, //  Getting payments list of a specific bill
           date: sortedPayment.date,  // Sorting and getting last payment date
           paymentAmt: sortedPayment.amount,  // Sorting and getting last payment amount
-          paidAmount: paidAmount,   // setting the total paid amount
+          paidAmount: paidAmount   // setting the total paid amount
         }
         return lastPaid;
       }
@@ -270,7 +270,7 @@ class Bills extends Component {
     let daysDifference = difference / (1000 * 60 * 60 * 24);
     if (daysDifference >= 0) {
       if (this.state.yearSelected) { // This for all the bills in current year
-        let billDate = ShowServiceComponent.customDate(bill.billDate)
+        let billDate = ShowServiceComponent.customDate(bill.billDate);
         let currentDate = new Date().getFullYear();
         if (new Date(billDate).getFullYear() === currentDate) {
           filteredBills.push(bill);
@@ -288,15 +288,15 @@ class Bills extends Component {
     let filterDate = new Date();
     switch (dateFilter) {
       case 7:
-        filterDate.setDate(filterDate.getDate() - 7)
+        filterDate.setDate(filterDate.getDate() - 7);
         this.setState({ filterValue: 7 });
         break;
       case 30:
-        filterDate.setDate(filterDate.getDate() - 30)
+        filterDate.setDate(filterDate.getDate() - 30);
         this.setState({ filterValue: 30 });
         break;
       case 'year':
-        filterDate = new Date(filterDate.getFullYear(), 0, 1)
+        filterDate = new Date(filterDate.getFullYear(), 0, 1);
         this.setState({ yearSelected: true });
         break;
       case 'today':
@@ -382,7 +382,7 @@ class Bills extends Component {
   displayAllBills = (visible, bills) => {
     const color = this.props.color;
     if (color) {
-      this.callAlertTimer(visible)
+      this.callAlertTimer(visible);
     }
     let filteredBills = [];
     this.state.filterDate && bills.map((bill, key) => {
@@ -425,9 +425,9 @@ class Bills extends Component {
 
   // Show the Single Bill 
   loadSingleBill = (bill, key) => {
-    let strike = bill.paid
+    let strike = bill.paid;
     let lastPaid = this.calculateLastPaid(bill, bill.amount);
-    let billDescription = bill.description ? bill.description : bill.categoryName.name
+    let billDescription = bill.description ? bill.description : bill.categoryName.name;
     return <tr width={50} key={key}>
       <td>{strike ? <strike>{ShowServiceComponent.customDate(bill.dueDate_, true)}</strike> : ShowServiceComponent.customDate(bill.dueDate_, true)}</td>
       <td>{strike ? <strike> {ShowServiceComponent.customDate(bill.billDate, true)} </strike> : ShowServiceComponent.customDate(bill.billDate, true)}</td>

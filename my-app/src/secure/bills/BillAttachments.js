@@ -21,7 +21,7 @@ class BillAttachments extends Component {
             viewLink: '',
             reattachment: '',
             display: false,
-            viewData: '',
+            viewData: ''
         }
     }
 
@@ -56,7 +56,7 @@ class BillAttachments extends Component {
     deleteAttachmentRequest = async () => {
         this.setState({ danger: !this.state.danger });
         const { profileId, billId, attachmentId } = this.state;
-        await Attachment.deleteAttachment(this.success, this.errorCall, profileId, billId, attachmentId,true)
+        await Attachment.deleteAttachment(this.success, this.errorCall, profileId, billId, attachmentId,true);
     }
 
     success = (message) => {
