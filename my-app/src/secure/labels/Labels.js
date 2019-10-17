@@ -10,6 +10,7 @@ import { ProfileEmptyMessage } from "../utility/ProfileEmptyMessage";
 import { ShowServiceComponent } from "../utility/ShowServiceComponent";
 import { DeleteModel } from "../utility/DeleteModel";
 import Config from "../../data/Config";
+import LabelForm from "./LabelForm";
 
 class Lables extends Component {
   constructor(props) {
@@ -137,9 +138,9 @@ class Lables extends Component {
         ? this.loadSpinner()
         : this.loadNotLabel()}</div>
     } else if (createLabel) {
-      return <CreateLabel pid={profileId} label={labels} />
+      return <LabelForm pid={profileId} lables={labels} />
     } else if (updateLabel) {
-      return <UpdateLabel pid={profileId} label={requiredLabel} lables={labels} index={index} />
+      return <LabelForm pid={profileId} label={requiredLabel} lables={labels} index={index} />
     } else if (deleteLabel) {
       return <DeleteLabel id={id} pid={profileId} />
     } else {
