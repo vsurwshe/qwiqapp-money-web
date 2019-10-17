@@ -1,21 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { withRouter, Link } from 'react-router-dom';
-import { AppSidebarToggler, AppHeaderDropdown, AppNavbarBrand } from "@coreui/react";
+import { AppSidebarToggler, AppHeaderDropdown } from "@coreui/react";
 import { Button, Nav, Modal, ModalHeader, ModalBody, ModalFooter, DropdownItem, DropdownMenu, DropdownToggle, } from "reactstrap";
-import { FaUserTie, FaKey, FaUserEdit, FaPowerOff, FaAngleDown, FaAddressCard, FaRegCalendarAlt, FaUserCircle, FaRegSun, FaUserPlus, FaSyncAlt } from "react-icons/fa";
+import { FaKey, FaUserEdit, FaPowerOff, FaAngleDown, FaAddressCard, FaRegCalendarAlt, FaUserCircle, FaRegSun, FaUserPlus, FaSyncAlt } from "react-icons/fa";
 import { AuthButton } from "../../App";
 import Config from "../../data/Config";
 import Store from "../../data/Store";
-
+import Avatar from "react-avatar";
+import '../../css/bills-reminder.css';
 const DefaultHeader = (props) => {
   let [profileName, setProfileName] = useState("Web Money");
 
   let [authButton, setAuthButton] = useState(false);
   let [icon, animatedIcon] = useState(false);
 
-  // let [changeUsername] = useState("");
-  // let [animatedIcon] = useState(false);
-  // let [flag, setFlagAction] = useState(false);
+  let [userName, changeUserName] = useState("");
 
   let profiles = Store.getUserProfiles();
 
@@ -35,6 +34,9 @@ const DefaultHeader = (props) => {
     setAuthButton(authButton = !authButton)
   }
 
+  //TODO:  handle profile error message
+  useEffect(() => { successCall(); getUserName() });
+
   const successCall = async () => {
     if (Store.getProfile() === null) {
       setProfileName(profileName = "Web Money");
@@ -43,15 +45,12 @@ const DefaultHeader = (props) => {
     }
   }
 
-  //TODO:  handle profile error message
-  useEffect(() => { successCall();  });
-
-  // const getUseName = () => {
-  //   let user = Store.getUser();
-  //   if (user) {
-  //     changeUsername(userName = user.name)
-  //   }
-  // };
+  const getUserName = () => {
+    let user = Store.getUser();
+    if (user) {
+      changeUserName(userName = user.name)
+    }
+  };
 
   const loadAuthButton = () => {
     return <Modal isOpen={authButton} toggle={toggleDanger} >
@@ -67,10 +66,10 @@ const DefaultHeader = (props) => {
   const loadUserDropdown = () => {
     return <>
       <DropdownToggle nav>
-        <FaUserTie style={{ marginLeft: 5, position: "relative" }} size={20} /><FaAngleDown size={18} style={{ color: "darkblue", marginRight: 25 }} />
+        <Avatar name={userName && userName.charAt(0)} style={{ marginRight: 25, position: "relative" }} size="40" round={true} />
       </DropdownToggle>
       <DropdownMenu right style={{ right: 'auto' }}>
-        <DropdownItem header tag="div" className="text-center"><strong> Settings</strong></DropdownItem>
+        <DropdownItem tag="div" className="text-center"><strong >{userName}</strong></DropdownItem>
         <DropdownItem tag={Link} to='/billing/address'><FaAddressCard style={{ color: "#F16939", marginRight: 15 }} />Billing Address</DropdownItem>
         <DropdownItem tag={Link} to="/billing/paymentHistory"><FaRegCalendarAlt style={{ color: "green", marginRight: 15 }} />Payment History</DropdownItem>
         <DropdownItem tag={Link} to="/editUser"><FaUserEdit style={{ color: "#AB2504", marginRight: 15 }} />Edit User</DropdownItem>
@@ -87,13 +86,12 @@ const DefaultHeader = (props) => {
         <FaAngleDown size={18} style={{ color: "darkblue", marginRight: 25 }} />
       </DropdownToggle>
       <DropdownMenu right style={{ right: 'auto' }}>
-        <DropdownItem header tag="div" className="text-center"><strong>Selecting Profile</strong></DropdownItem>
-        { profiles && profiles.map((profile, id) => {
+        {profiles && profiles.map((profile, id) => {
           let url = "/profiles/" + profile.id;
           return <DropdownItem key={id} tag={Link} to={url}>
             <FaUserCircle style={{ color: "#7F3BDB" }} /> &nbsp; {profile.name.length > 15 ? profileName.slice(0, 15) + "..." : profile.name}
           </DropdownItem>
-          })
+        })
         }
         <DropdownItem tag={Link} to="/profiles"> <FaRegSun style={{ color: "#4763B9" }} /> &nbsp;&nbsp;Manage Profiles</DropdownItem>
         <DropdownItem tag={Link} to="/createProfile"><FaUserPlus style={{ color: "#832476  " }} /> &nbsp; Create Profile </DropdownItem>
@@ -105,7 +103,11 @@ const DefaultHeader = (props) => {
 
   return <React.Fragment>
     <AppSidebarToggler className="d-lg-none" display="md" mobile />
-    <AppNavbarBrand />
+    <Link to="/dashboard"  style={{ color: "black", textDecoration: "none" }}>
+      <span>
+       <img src={process.env.PUBLIC_URL + '/img/logo.png'} className="bills-reminder-logo" alt="bills-reminder" />Bills Reminder
+        </span>
+      </Link>
     <Nav className="d-md-down-none" navbar />
     <Nav className="ml-auto" navbar>
       <AppHeaderDropdown direction="down">

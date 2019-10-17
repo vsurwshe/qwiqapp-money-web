@@ -27,20 +27,20 @@ class BillApi {
   deleteBill(success, failure, profileId, billId) {
     process(success, failure, profileId + "/bills/" + billId + "?removeDependency=true", "DELETE", profileId);
   }
-  
+
   markAsUnPaid(success, failure, profileId, billId) {
-    process(success, failure, profileId + "/bills/" + billId + "/unpaid", "PUT", profileId );
+    process(success, failure, profileId + "/bills/" + billId + "/unpaid", "PUT", profileId);
   }
 }
 
 export default BillApi;
 
-async function process(success, failure, Uurl, Umethod, profileId, data, reload) {
-  let HTTP = httpCall(Uurl, Umethod);
+async function process(success, failure, requestURL, requestMethod, profileId, data, reload) {
+  let HTTP = httpCall(requestURL, requestMethod);
   let promise;
   try {
     !data ? promise = await HTTP.request() : promise = await HTTP.request({ data });
-    if (Umethod === "GET") {
+    if (requestMethod === "GET") {
       Store.saveBills(promise.data);
       validResponse(promise, success)
     } else {
@@ -49,17 +49,17 @@ async function process(success, failure, Uurl, Umethod, profileId, data, reload)
   }
   //TODO: handle user error   
   catch (err) {
-    handleAccessTokenError(profileId, err, failure, Uurl, Umethod, data, success, reload);
+    handleAccessTokenError(profileId, err, failure, requestURL, requestMethod, data, success, reload);
   }
 }
 
 //this method slove the Exprie Token Problem.
-let handleAccessTokenError = function (profileId, err, failure, Uurl, Umethod, data, success, reload) {
+let handleAccessTokenError = function (profileId, err, failure, requestURL, requestMethod, data, success, reload) {
   if (err.request && err.request.status === 0) {
     new BillApi().getBills(success, failure, profileId, "True");
   } else if (err.response && (err.response.status === 403 || err.response.status === 401)) {
     if (!reload) {
-      new LoginApi().refresh(() => { process(success, failure, Uurl, Umethod, profileId, data, "restrict")}, errorResponse(err, failure))
+      new LoginApi().refresh(() => { process(success, failure, requestURL, requestMethod, profileId, data, "restrict") }, errorResponse(err, failure))
     } else {
       errorResponse(err, failure)
     }
@@ -80,12 +80,12 @@ let errorResponse = function (error, failure) {
   }
 };
 
-function httpCall(Uurl, Umethod) {
+function httpCall(requestURL, requestMethod) {
   let baseURL = Store.getProfile();
   let instance = Axios.create({
     baseURL: baseURL.url + "/profile/",
-    method: Umethod,
-    url: Uurl,
+    method: requestMethod,
+    url: requestURL,
     headers: {
       "content-type": "application/json",
       Authorization: "Bearer " + Store.getAppUserAccessToken()

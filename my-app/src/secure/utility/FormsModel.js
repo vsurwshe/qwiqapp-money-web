@@ -48,7 +48,7 @@ export const BillFormUI = (props) => {
     </Row>
     <Row>
       <Col>
-        <AvField name="dueDays" label="Due Days" placeholder="No.of Days" onChange={e => { props.handleDate(e) }} value={dueDays} type="number" errorMessage="Invalid Days" />
+        <AvField name="dueDays" label="Due Days" placeholder="0" onChange={e => { props.handleDate(e) }} value={dueDays} type="number" errorMessage="Invalid Days" />
       </Col>
       <Col>
         <AvField name="dueDate" label="Due Date" disabled value={dueDate} type="date" errorMessage="Invalid Date" validate={{ date: { format: 'dd/MM/yyyy' } }} />
@@ -59,9 +59,10 @@ export const BillFormUI = (props) => {
         <label>Description / Notes</label>
         <AvField name="description" type="text" list="colors" value={description} placeholder="Ex: Recharge" errorMessage="Invalid Notes" /></Col>
     </Row>
+    {!props.data.moreOptions && 
     <Button className="m-0 p-0" color="link" onClick={() => props.toggleCustom()} aria-expanded={moreOptions} aria-controls="exampleAccordion1">
       More Options
-    </Button>
+    </Button> }
     {props.loadMoreOptions(labels, contacts)} <br />
     <FormGroup >
       <center>

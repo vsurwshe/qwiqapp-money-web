@@ -1,8 +1,9 @@
+
 import React from 'react';
-import { Card, CardHeader, CardBody, Col, Alert, Row, Input, InputGroup, InputGroupAddon, InputGroupText, Button, Collapse } from 'reactstrap';
+import { Card, CardHeader, CardBody, Col, Alert, Row, Input, InputGroup, InputGroupAddon, Button, Collapse, UncontrolledDropdown, DropdownMenu, DropdownItem, DropdownToggle } from 'reactstrap';
 import Loader from 'react-loader-spinner';
 import Avatar from 'react-avatar';
-import { FaSearch, FaAngleDown, FaUndoAlt } from 'react-icons/fa';
+import { FaAngleDown } from 'react-icons/fa';
 import '../../css/style.css';
 
 export const ShowServiceComponent = {
@@ -42,15 +43,6 @@ export const ShowServiceComponent = {
       </div>)
   },
 
-  loadEditRemoveButtons: function (bill, handleShowPayment, updateAction, setId, toggleDanger) {
-    return <>
-      { bill.recurId ? <FaUndoAlt /> :''} &nbsp;
-      <Button className="rounded" style={{ backgroundColor: "transparent", borderColor: '#blue', color: "blue", width: 90 }} onClick={() => { handleShowPayment(bill) }}>Payment</Button> &nbsp;
-      <Button className="rounded" style={{ backgroundColor: "transparent", borderColor: '#ada397', color: "green", width: 67 }} onClick={() => { updateAction(bill) }}>Edit</Button> &nbsp;
-      <Button className="rounded" style={{ backgroundColor: "transparent", borderColor: '#eea29a', color: "red", width: 92 }} onClick={() => { setId(bill); toggleDanger(); }}>Remove</Button>
-    </>
-  },
-
   //Searches Items based on user given SearchTerm
   searchingFor: function (searchTerm) {
     return function (item) {
@@ -74,7 +66,7 @@ export const ShowServiceComponent = {
       </span></>
   },
 
-  loadHeaderWithSearch: function (headerMessage, items, setSearch, placeHolder, addItem) {
+  loadHeaderWithSearch: function (headerMessage, items, setSearch, placeHolder, addItem, filter, handleDateFilter) {
     return <CardHeader>
       <Row form>
         <Col className="marigin-top" >
@@ -85,17 +77,28 @@ export const ShowServiceComponent = {
             <InputGroup>
               <Input type="search" className="float-right" style={{ width: '20%' }} onChange={e => setSearch(e)} placeholder={placeHolder} />
               <InputGroupAddon addonType="append">
-                <InputGroupText className="dark"><FaSearch /></InputGroupText>
               </InputGroupAddon>
             </InputGroup>
           </Col>}
+        {filter && <>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<UncontrolledDropdown >
+          <DropdownToggle caret>
+            Filter bills by date
+        </DropdownToggle>
+          <DropdownMenu>
+            <DropdownItem onClick={() => { handleDateFilter('today') }}>Today</DropdownItem>
+            <DropdownItem onClick={() => { handleDateFilter(7) }} >Last 7 days</DropdownItem>
+            <DropdownItem onClick={() => { handleDateFilter(30) }} >Last 30 days </DropdownItem>
+            <DropdownItem onClick={() => { handleDateFilter("year") }}>This year</DropdownItem>
+            <DropdownItem onClick={() => { handleDateFilter('all') }}>All</DropdownItem>
+          </DropdownMenu>
+        </UncontrolledDropdown></>}
         <Col >
           <Button color="success" className="float-right" onClick={addItem}> + ADD </Button>
         </Col>
       </Row>
     </CardHeader>
   },
-
+  
   customDate: function (dateParam, day) {
     let toStr = "" + dateParam
     let dateString = toStr.substring(0, 4) + "-" + toStr.substring(4, 6) + "-" + toStr.substring(6, 8)
@@ -106,25 +109,19 @@ export const ShowServiceComponent = {
     }
   },
 
+  // date format like ex: DD/MM/YYYY
   loadDateFormat: function (date) {
     return new Intl.DateTimeFormat('sv-SE', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(date);
   },
-
+ // this method return formate date like ex: Mon, 03 DeC
   billDateFormat: function (date) {
-    return new Intl.DateTimeFormat('en-gb', { month: 'short', weekday: 'short', day: '2-digit' }).format(date);
+    return new Intl.DateTimeFormat('en-gb', { month: 'short', weekday: 'short', day: '2-digit' }).format(date); 
   },
 
   billTypeAmount: function (currency, amount) {
-    if (amount > 0) {
-      return <b className="bill-amount-color">
-        {new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(amount)}
-      </b>
-    }
-    else {
-      return <b className="text-color">
-        {new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(amount)}
-      </b>
-    }
+    return <span>
+        {new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(amount>0 ? amount : -(amount))}
+      </span>
   },
 
   handleTax: function (amount, taxPercent, taxAmount) {

@@ -3,7 +3,7 @@ import { Col, Card, CardBody, CardHeader, Container, Row, Alert } from 'reactstr
 import PaymentApi from '../../../services/PaymentApi';
 import Config from '../../../data/Config';
 import ViewPayment from './ViewPayment';
-import { BillPaymentForm } from './FormModel';
+import { BillPaymentForm } from './BillPaymentForm';
 import { ShowServiceComponent } from '../../utility/ShowServiceComponent';
 
 class UpdateBillPayment extends Component {

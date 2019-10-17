@@ -31,15 +31,15 @@ class BillForm extends Component {
       categoryOptionUpdate: false,
       labelOptionUpdate: false,
       contactOptionUpdate: false,
-      notifyDate: props.bill ? ShowServiceComponent.customDate(props.bill.notifyDate_) : '',
+      notifyDate: props.bill ? ShowServiceComponent.customDate(props.bill.notifyDate_) : ShowServiceComponent.loadDateFormat(new Date()),
       dueDays: props.bill ? props.bill.dueDays : 0,
-      dueDate: props.bill ? ShowServiceComponent.customDate(props.bill.dueDate_) : '',
-      billDate: props.bill ? ShowServiceComponent.customDate(props.bill.billDate) : '',
       repeatEvery: '',
       repeatType: "DAY",
       nextBillDate: '',
       endDate: this.setRepeatUntilDate(new Date(), 2),
       recurId: props.bill ? props.bill.recurId : '',
+      dueDate: props.bill ? ShowServiceComponent.customDate(props.bill.dueDate_) : ShowServiceComponent.loadDateFormat(new Date()),  
+      billDate: props.bill ? ShowServiceComponent.customDate(props.bill.billDate) : ShowServiceComponent.loadDateFormat(new Date()),
       amount: props.bill ? this.setBillAmount(props.bill.amount) : 0,
       contactOption: props.bill ? props.bill.contactId : '',
       categoryOption: props.bill ? props.bill.categoryId : null,
@@ -380,7 +380,7 @@ class BillForm extends Component {
       checked: checked,
       type: type
     }
-    let headerMessage = this.props.bill ? "Update Bill " : "Create Bill"
+    let headerMessage = this.props.bill ? " " : " New Bill Details "
     return this.loadBillForm(FormData, alertColor, alertMessage, headerMessage)
   }
 
@@ -430,13 +430,15 @@ class BillForm extends Component {
       </Row>
       <Row>
         <Col>
-          {labels ? <> <label>Select Labels</label>
-            <Select isMulti options={Data.categoriesOrLabels(labels)} styles={Data.colourStyles} defaultValue={labelName} placeholder="Select Labels" onChange={this.labelSelected} /></> : <p>You don't have Labels, Click here to  <Link to='/label/labels'>Create</Link> </p>}
+          <label>Labels</label>
+          {labels ? <> {/*  <label>Select Labels</label> */}
+            <Select isMulti options={Data.categoriesOrLabels(labels)} styles={Data.colourStyles} defaultValue={labelName} placeholder="Select Labels" onChange={this.labelSelected} /></> : <p style={{paddingTop: contacts && "10px"}}>You don't have Labels, Click here to  <Link to='/label/labels'>Create</Link> </p>}       
         </Col>
         <Col>
+        <label>Contacts</label>
           {contacts ? <>
-            <label>Select Contacts</label>
-            <Select options={Data.contacts(contacts)} defaultValue={contactName} placeholder="Select Contacts" onChange={this.contactSelected} /></> : <p> You don't have Contacts, Click here to  <Link to='/contact/viewContacts'>Create</Link></p>}
+            {/* <label>Select Contacts</label> */}
+            <Select options={Data.contacts(contacts)} defaultValue={contactName} placeholder="Select Contacts" onChange={this.contactSelected} /></> : <p style={{paddingTop: labels && "10px"}}> {labels && <span ></span>}You don't have Contacts, Click here to  <Link to='/contact/viewContacts'>Create</Link></p>}
         </Col>
       </Row><br />
       <Row style={{ marginLeft: 7 }}>
