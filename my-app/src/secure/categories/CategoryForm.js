@@ -113,7 +113,7 @@ class CategoryForm extends Component {
 
   loadFrom = () => {
     const { alertColor, content, categories, profileId, categoryId, categoryName, categoryColor, collapse, doubleClick, chkMakeParent } = this.state;
-    const { parentId } = this.props.category ? this.props.category : ''
+    const { parentId, type } = this.props.category ? this.props.category : ''
     let filteredCategories = this.props.category && categories.filter(category => category.id !== this.props.category.id)
     const categoryFields = {
       categories: this.props.category ? filteredCategories : categories,
@@ -124,7 +124,8 @@ class CategoryForm extends Component {
       categoryColor: categoryColor,
       collapse: collapse,
       doubleClick: doubleClick,
-      chkMakeParent: chkMakeParent
+      chkMakeParent: chkMakeParent,
+      type : type
     };
     return this.loadFileds(categoryFields, alertColor, content);
   };

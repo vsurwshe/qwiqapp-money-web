@@ -172,9 +172,13 @@ export const LoadNotifications = (props) => {
 // =============== Categories Form =============
 
 export const CategoryFormUI = (props) => {
-  const { doubleClick, collapse, categories, categoryName, categoryColor, parentId, chkMakeParent } = props.data
+  const { doubleClick, collapse, categories, categoryName, categoryColor, parentId, chkMakeParent, type } = props.data
   return <AvForm onValidSubmit={props.handleSubmitValue}>
     <AvField type="text" name="name" label="Category Name " errorMessage="Category Name Required" value={categoryName} placeholder="Enter Category name" required />
+    <AvField type="select" name="type" label="Type" value={type ? type : "EXPENSE_PAYABLE"} errorMessage="Select Type of Category" >
+          <option value="EXPENSE_PAYABLE">Payable</option>
+          <option value="INCOME_RECEIVABLE">Receivable</option>
+    </AvField>
     <AvField type="color" name="color" list="colors" label="Category Color" value={categoryColor} placeholder="Enter Category Color" />
     <AvGroup check>
       {  //While user wants to make it as subcategory while adding or editing category, Collapse is displayed based on this condition
