@@ -1,6 +1,5 @@
 import React, { Component } from "react";
-import { Alert, Button, Input, Card, CardHeader, FormGroup, Col, Collapse, Label } from "reactstrap";
-import { AvForm, AvField } from 'availity-reactstrap-validation';
+import { Alert, Card, CardHeader, Col} from "reactstrap";
 import LabelApi from "../../services/LabelApi";
 import Lables from './Labels';
 import Config from "../../data/Config";
@@ -12,32 +11,32 @@ class LabelForm extends Component {
     this.state = {
       labels: props.lables,
       profileId: props.pid,
-      parentId: '',
       alertColor: "",
       content: "",
       labelAction: false,
       collapse: props.label ? (props.label.parentId ? true : false) : false,
       cancelLabel: false,
       doubleClick: false,
-      chkMakeParent: false
+      chkMakeParent: false,
+      index: props.index
     };
   }
 
+  // handle the submission from user
   handleSubmitValue = (event, values) => {
-    this.handlePostData(event, values);
+    this.handleApiCalls(event, values);
   }
 
   cancelLabelAction = () => {
     this.setState({ cancelLabel: true });
   }
 
-  // handle the submission from user
-  handlePostData = async (e, data) => {
-    this.setState({ doubleClick: true });
-    e.persist();
+  // This method handel api calls
+  handleApiCalls = async (event, data) => {
     const { profileId } = this.state
     const { label } = this.props
     this.setState({ doubleClick: true });
+    event.persist();
     // This condition decides its label Creation or Updation
     if (label) {
       let newData = {
@@ -55,8 +54,6 @@ class LabelForm extends Component {
     } else {
       new LabelApi().createLabel(this.successCall, this.errorCall, profileId, data);
     }
-
-
   };
 
   // call when lables created successfully
@@ -80,22 +77,20 @@ class LabelForm extends Component {
   };
 
   //this method makes true or false for the collapse
-  toggle = () => {
-    this.setState({ collapse: !this.state.collapse });
-  }
+  toggle = () => { this.setState({ collapse: !this.state.collapse });}
 
   render() {
-    const { cancelLabel, labelAction } = this.state;
+    const { cancelLabel, labelAction, index } = this.state;
     if (cancelLabel) {
-      return <Lables />
+      return <Lables index={index} />
     } else {
-      return <div>{labelAction ? <Lables /> : this.loadCreatingLable()}</div>
+      return <div>{labelAction ? <Lables index={index} /> : this.loadCreatingLable()}</div>
     }
   }
 
   //this Method shows the input fields to Create a Label.
   loadCreatingLable = () => {
-    const { alertColor, content, profileId, categoryId, collapse, doubleClick, chkMakeParent, labels } = this.state;
+    const { alertColor, content, profileId, collapse, doubleClick, chkMakeParent, labels } = this.state;
     const { parentId, notes, name, color } = this.props.label ? this.props.label : ''
     let filteredLabels = this.props.label && labels.filter(label => label.id !== this.props.label.id)
     const labelFields = {
@@ -110,36 +105,23 @@ class LabelForm extends Component {
       notes: notes,
       componentType: "Label"
     };
-    return (<div className="animated fadeIn" >
-      <Card>
+    return <Card>
         <CardHeader>
           <strong>Label</strong>
         </CardHeader>
         <Col sm="1" md={{ size: 8, offset: 1 }}>
-        <center><h5> <b>{!this.props.label ? "NEW LABEL" : "EDIT LABEL"}</b> </h5> </center>
+          <center><h5> <b>{!this.props.label ? "NEW LABEL" : "EDIT LABEL"}</b> </h5> </center>
           {alertColor === "" ? "" : <Alert color={alertColor}>{content}</Alert>}
           <CategoryLabelForm
-              data={labelFields}
-              handleSubmitValue={this.handleSubmitValue}
-              handleInput={this.handleInput}
-              toggle={this.toggle}
-              cancelCategory={this.cancelLabelAction}
-              buttonText={this.props.label ? "Edit Label" : "Save Label"}
-            />
+            data={labelFields}
+            handleSubmitValue={this.handleSubmitValue}
+            handleInput={this.handleInput}
+            toggle={this.toggle}
+            cancelCategory={this.cancelLabelAction}
+            buttonText={this.props.label ? "Edit Label" : "Save Label"}
+          />
         </Col>
-      </Card>
-    </div>);
-  }
-
-  //This Method Called When Sublables Makes Enable true.
-  loadCollapse = () => {
-    const { collapse, labels } = this.state;
-    return <Collapse isOpen={collapse}>
-      <Input type="select" name="selectLg" id="selectLg" onChange={(event) => this.setState({ parentId: event.target.value })} bsSize="lg">
-        <option value="null">Please select Parent Lables</option>
-        {labels.length === 0 ? '' : labels.map((label, key) => { return (<option key={key} value={label.id}>{label.name}</option>) })}
-      </Input>
-    </Collapse>;
+      </Card>;
   }
 }
 
