@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { withRouter, Link } from 'react-router-dom';
-import { AppSidebarToggler, AppHeaderDropdown, AppNavbarBrand } from "@coreui/react";
+import { AppSidebarToggler, AppHeaderDropdown } from "@coreui/react";
 import { Button, Nav, Modal, ModalHeader, ModalBody, ModalFooter, DropdownItem, DropdownMenu, DropdownToggle, } from "reactstrap";
-import { FaKey, FaUserEdit, FaPowerOff, FaAngleDown, FaAddressCard, FaRegCalendarAlt, FaUserCircle, FaRegSun, FaUserPlus, FaSyncAlt, FaViacoin } from "react-icons/fa";
+import { FaKey, FaUserEdit, FaPowerOff, FaAngleDown, FaAddressCard, FaRegCalendarAlt, FaUserCircle, FaRegSun, FaUserPlus, FaSyncAlt } from "react-icons/fa";
 import { AuthButton } from "../../App";
 import Config from "../../data/Config";
 import Store from "../../data/Store";
@@ -103,13 +103,11 @@ const DefaultHeader = (props) => {
 
   return <React.Fragment>
     <AppSidebarToggler className="d-lg-none" display="md" mobile />
-    {/* <AppNavbarBrand> */}
-    <Link to="/dashboard">
-      <span style={{ color: "black", textDecoration: "none" }}>
-       <img src={process.env.PUBLIC_URL + '/img/logo.png'} className="bills-reminder-logo" alt="bills-reminder" />Bills reminder
+    <Link to="/dashboard"  style={{ color: "black", textDecoration: "none" }}>
+      <span>
+       <img src={process.env.PUBLIC_URL + '/img/logo.png'} className="bills-reminder-logo" alt="bills-reminder" />Bills Reminder
         </span>
       </Link>
-    {/* </AppNavbarBrand> */}
     <Nav className="d-md-down-none" navbar />
     <Nav className="ml-auto" navbar>
       <AppHeaderDropdown direction="down">

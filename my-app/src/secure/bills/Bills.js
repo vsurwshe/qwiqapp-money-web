@@ -29,20 +29,17 @@ class Bills extends Component {
       categories: [],
       contacts: [],
       updateBill: [],
+      billPayments: [],
       createBillRequest: false,
       updateBillRequest: false,
       deleteBillRequest: false,
       visible: props.visible,
       profileId: "",
       danger: false,
-      onHover: false,
       spinner: false,
       selectedOption: '',
-      searchName: false,
       removeDependents: true,
-      billPayments: [],
       paidAmount: 0,
-      filter: false,
     };
   }
 
@@ -57,7 +54,6 @@ class Bills extends Component {
       this.props.match.params.value = undefined;
       this.successCallBill(Store.getBills());
     }
-
   }
 
   setProfileId = async () => {

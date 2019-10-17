@@ -380,7 +380,7 @@ class BillForm extends Component {
       checked: checked,
       type: type
     }
-    let headerMessage = this.props.bill ? " " : " New Bill "
+    let headerMessage = this.props.bill ? " " : " New Bill Details "
     return this.loadBillForm(FormData, alertColor, alertMessage, headerMessage)
   }
 

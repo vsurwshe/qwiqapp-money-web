@@ -82,7 +82,7 @@ export const ShowServiceComponent = {
           </Col>}
         {filter && <>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<UncontrolledDropdown >
           <DropdownToggle caret>
-            Filter By Date
+            Filter bills by date
         </DropdownToggle>
           <DropdownMenu>
             <DropdownItem onClick={() => { handleDateFilter('today') }}>Today</DropdownItem>
@@ -98,7 +98,7 @@ export const ShowServiceComponent = {
       </Row>
     </CardHeader>
   },
-
+  
   customDate: function (dateParam, day) {
     let toStr = "" + dateParam
     let dateString = toStr.substring(0, 4) + "-" + toStr.substring(4, 6) + "-" + toStr.substring(6, 8)
@@ -109,12 +109,13 @@ export const ShowServiceComponent = {
     }
   },
 
+  // date format like ex: DD/MM/YYYY
   loadDateFormat: function (date) {
     return new Intl.DateTimeFormat('sv-SE', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(date);
   },
-
+ // this method return formate date like ex: Mon, 03 DeC
   billDateFormat: function (date) {
-    return new Intl.DateTimeFormat('en-gb', { month: 'short', weekday: 'short', day: '2-digit' }).format(date);
+    return new Intl.DateTimeFormat('en-gb', { month: 'short', weekday: 'short', day: '2-digit' }).format(date); 
   },
 
   billTypeAmount: function (currency, amount) {
