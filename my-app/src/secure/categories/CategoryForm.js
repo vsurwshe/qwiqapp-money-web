@@ -124,7 +124,8 @@ class CategoryForm extends Component {
       doubleClick: doubleClick,
       chkMakeParent: chkMakeParent,
       type : type,
-      componentType: "Category"
+      componentType: "Category",
+      updateItem: this.props.category
     };
     return this.loadFileds(categoryFields, alertColor, content);
   };

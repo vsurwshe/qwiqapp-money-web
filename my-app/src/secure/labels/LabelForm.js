@@ -41,15 +41,18 @@ class LabelForm extends Component {
     if (label) {
       let newData = {
         ...data,
-        version: label.version
+        version: label.version,
+        parentId: data.makeParent ? null : data.parentId
       }
       // This condition checks if subLabel is made as Parent Label
-      if (data.makeParent) {
-        newData = {
-          ...newData,
-          parentId: null
-        }
-      }
+      // if (data.makeParent) {
+      //   console.log(data, newData);
+      //   newData = {
+      //     ...newData,
+      //     parentId: null
+      //   }
+      //   console.log(data, newData);
+      // }
       new LabelApi().updateLabel(this.successCall, this.errorCall, newData, profileId, label.id);
     } else {
       new LabelApi().createLabel(this.successCall, this.errorCall, profileId, data);
@@ -103,7 +106,8 @@ class LabelForm extends Component {
       doubleClick: doubleClick,
       chkMakeParent: chkMakeParent,
       notes: notes,
-      componentType: "Label"
+      componentType: "Label",
+      updateItem: this.props.label
     };
     return <Card>
         <CardHeader>
