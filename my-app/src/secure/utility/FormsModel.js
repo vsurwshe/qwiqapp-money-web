@@ -172,15 +172,18 @@ export const LoadNotifications = (props) => {
 
 // =============== Categories Form =============
 
-export const CategoryFormUI = (props) => {
-  const { doubleClick, collapse, categories, categoryName, categoryColor, parentId, chkMakeParent, type } = props.data
+export const CategoryLabelForm = (props) => {
+  const { doubleClick, collapse, parentId, chkMakeParent, type, componentType, items, itemName, itemColor } = props.data
   return <AvForm onValidSubmit={props.handleSubmitValue}>
-    <AvField type="text" name="name" label="Category Name " errorMessage="Category Name Required" value={categoryName} placeholder="Enter Category name" required />
-    <AvField type="select" name="type" label="Type" value={type ? type : "EXPENSE_PAYABLE"} errorMessage="Select Type of Category" >
+    <AvField type="text" name="name" label={componentType+ " name"} errorMessage="Category Name Required" value={itemName} placeholder="Enter Category name" required />
+    { componentType === "label" ? <AvField type="text" name="notes" label="Description / Note"  /> 
+      : <AvField type="select" name="type" label="Type" value={type ? type : "EXPENSE_PAYABLE"} errorMessage="Select Type of Category" >
           <option value="EXPENSE_PAYABLE">Payable</option>
           <option value="INCOME_RECEIVABLE">Receivable</option>
     </AvField>
-    <AvField type="color" name="color" list="colors" label="Category Color" value={categoryColor} placeholder="Enter Category Color" />
+    }
+
+    <AvField type="color" name="color" list="colors" label={componentType+ " color"} value={itemColor} />
     <AvGroup check>
       {  //While user wants to make it as subcategory while adding or editing category, Collapse is displayed based on this condition
         !collapse && !parentId ?
@@ -190,9 +193,10 @@ export const CategoryFormUI = (props) => {
       }
     </AvGroup><br />
     <Collapse isOpen={collapse}>
-      <AvField type="select" name="parentId" label="SelectParent Category" onChange={e => { props.handleInput(e) }} value={parentId} required={collapse}>
-        <option value="">Select Category</option>
-        {categories.map((category, key) => { return <option key={key} value={category.id}>{category.name}</option> })}
+      <AvField type="select" name="parentId" label={"Select " +componentType+ " name"} onChange={e => { props.handleInput(e) }} value={parentId} required={collapse}>
+        <option value="">Select {componentType}</option>
+        {items.map((item, key) => { return <option key={key} value={item.id}>{item.name}</option> })}
+        {/* {categories.map((category, key) => { return <option key={key} value={category.id}>{category.name}</option> })} */}
       </AvField>
     </Collapse><br />
     <FormGroup>

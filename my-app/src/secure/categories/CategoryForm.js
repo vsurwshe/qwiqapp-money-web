@@ -4,7 +4,7 @@ import CategoryApi from "../../services/CategoryApi";
 import Config from "../../data/Config";
 import "../../css/style.css";
 import Categories from "./Categories";
-import { CategoryFormUI } from "../utility/FormsModel";
+import { CategoryLabelForm } from "../utility/FormsModel";
 
 class CategoryForm extends Component {
   constructor(props) {
@@ -114,7 +114,7 @@ class CategoryForm extends Component {
     const { parentId, type, name, color } = this.props.category ? this.props.category : ''
     let filteredCategories = this.props.category && categories.filter(category => category.id !== this.props.category.id)
     const categoryFields = {
-      categories: this.props.category ? filteredCategories : categories,
+      items: this.props.category ? filteredCategories : categories,
       profileId: profileId,
       categoryId: categoryId,
       parentId: parentId,
@@ -123,7 +123,8 @@ class CategoryForm extends Component {
       collapse: collapse,
       doubleClick: doubleClick,
       chkMakeParent: chkMakeParent,
-      type : type
+      type : type,
+      componentType: "Category"
     };
     return this.loadFileds(categoryFields, alertColor, content);
   };
@@ -138,7 +139,7 @@ class CategoryForm extends Component {
           <Col sm="1" md={{ size: 8, offset: 1 }}>
             <center><h5> <b>{!this.props.category ? "NEW CATEGORY" : "EDIT CATEGORY"}</b> </h5> </center>
             <Alert color={alertColor}>{content}</Alert>
-            <CategoryFormUI
+            <CategoryLabelForm
               data={categoryFields}
               handleSubmitValue={this.handleSubmitValue}
               handleInput={this.handleInput}
