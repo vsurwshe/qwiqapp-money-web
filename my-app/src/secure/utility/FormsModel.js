@@ -176,7 +176,7 @@ export const CategoryLabelForm = (props) => {
   const { doubleClick, collapse, parentId, chkMakeParent, type, componentType, items, itemName, itemColor, notes, updateItem } = props.data
   return <AvForm onValidSubmit={props.handleSubmitValue}>
     <AvField type="text" name="name" label={componentType+ " name"} errorMessage="Category Name Required" value={itemName} placeholder="Enter Category name" required />
-    { componentType === "Label" ? <AvField type="text" name="notes" value={notes} placeholder="Description / Note" label="Description / Note"  /> 
+    { componentType === "Label" ? <AvField type="text" name="notes" value={notes} placeholder="Description / Notes" label="Description / Note"  /> 
       : <AvField type="select" name="type" label="Type" value={type ? type : "EXPENSE_PAYABLE"} errorMessage="Select Type of Category" >
           <option value="EXPENSE_PAYABLE">Payable</option>
           <option value="INCOME_RECEIVABLE">Receivable</option>
@@ -191,23 +191,12 @@ export const CategoryLabelForm = (props) => {
         : !(updateItem.subLabels || updateItem.subCategories) && (!collapse && <><Label style={{paddingLeft: 20}} check> <AvInput type="checkbox" name="checkbox1" onChange={props.toggle} /> Nest {componentType} under </Label> <br /> </>)) //checking for subItems, if there dont show anything or else showing "Nest option"
       : <><Label style={{paddingLeft: 20}} check> <AvInput type="checkbox" name="checkbox1" onChange={props.toggle} /> Nest {componentType} under </Label> <br /></>) // If creating Label/ category then showing "Nest option"
     }
-    
-    {/* <AvGroup check>
-      {  //While user wants to make it as subcategory while adding or editing category, Collapse is displayed based on this condition
-        !collapse && !parentId ?
-          <Label check> <AvInput type="checkbox" name="checkbox1" onChange={props.toggle} /> Nest {componentType} under </Label> :
-          (parentId && !chkMakeParent) && <Label check> <AvInput type="checkbox" name="makeParent" onChange={props.toggle} /> Make it as Parent </Label>
-        //  While updating a subcategory(it has parentId), Make it as Parent option is shown depending on the 'chkMakeParent' value
-      }
-    </AvGroup><br /> */}
 
     <Collapse isOpen={collapse}> <br />
       <AvField type="select" name="parentId" label={"Select " +componentType+ " name"} 
-      // onChange={e => { props.handleInput(e) }} 
       value={parentId} required={collapse}>
         <option value="">Select {componentType}</option>
         {items.map((item, key) => { return <option key={key} value={item.id}>{item.name}</option> })}
-        {/* {categories.map((category, key) => { return <option key={key} value={category.id}>{category.name}</option> })} */}
       </AvField>
     </Collapse><br />
     <center>

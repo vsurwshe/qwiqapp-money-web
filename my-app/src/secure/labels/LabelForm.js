@@ -10,7 +10,6 @@ class LabelForm extends Component {
     super(props);
     this.state = {
       labels: props.lables,
-      profileId: props.pid,
       alertColor: "",
       content: "",
       labelAction: false,
@@ -33,7 +32,7 @@ class LabelForm extends Component {
 
   // This method handel api calls
   handleApiCalls = async (event, data) => {
-    const { profileId } = this.state
+    const { profileId } = this.props;
     const { label } = this.props
     this.setState({ doubleClick: true });
     event.persist();
@@ -44,15 +43,6 @@ class LabelForm extends Component {
         version: label.version,
         parentId: data.makeParent ? null : data.parentId
       }
-      // This condition checks if subLabel is made as Parent Label
-      // if (data.makeParent) {
-      //   console.log(data, newData);
-      //   newData = {
-      //     ...newData,
-      //     parentId: null
-      //   }
-      //   console.log(data, newData);
-      // }
       new LabelApi().updateLabel(this.successCall, this.errorCall, newData, profileId, label.id);
     } else {
       new LabelApi().createLabel(this.successCall, this.errorCall, profileId, data);
@@ -115,7 +105,7 @@ class LabelForm extends Component {
         </CardHeader>
         <Col sm="1" md={{ size: 8, offset: 1 }}>
           <center><h5> <b>{!this.props.label ? "NEW LABEL" : "EDIT LABEL"}</b> </h5> </center>
-          {alertColor === "" ? "" : <Alert color={alertColor}>{content}</Alert>}
+          {alertColor && <Alert color={alertColor}>{content}</Alert>}
           <CategoryLabelForm
             data={labelFields}
             handleSubmitValue={this.handleSubmitValue}
