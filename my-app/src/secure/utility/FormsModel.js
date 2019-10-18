@@ -176,7 +176,7 @@ export const CategoryLabelForm = (props) => {
   const { doubleClick, collapse, parentId, chkMakeParent, type, componentType, items, itemName, itemColor, notes, updateItem } = props.data
   return <AvForm onValidSubmit={props.handleSubmitValue}>
     <AvField type="text" name="name" label={componentType+ " name"} errorMessage="Category Name Required" value={itemName} placeholder="Enter Category name" required />
-    { componentType === "Label" ? <AvField type="text" name="notes" value={notes} label="Description / Note"  /> 
+    { componentType === "Label" ? <AvField type="text" name="notes" value={notes} placeholder="Description / Note" label="Description / Note"  /> 
       : <AvField type="select" name="type" label="Type" value={type ? type : "EXPENSE_PAYABLE"} errorMessage="Select Type of Category" >
           <option value="EXPENSE_PAYABLE">Payable</option>
           <option value="INCOME_RECEIVABLE">Receivable</option>
@@ -210,9 +210,11 @@ export const CategoryLabelForm = (props) => {
         {/* {categories.map((category, key) => { return <option key={key} value={category.id}>{category.name}</option> })} */}
       </AvField>
     </Collapse><br />
-    <FormGroup>
-      <Button color="info" disabled={doubleClick} > {props.buttonText} </Button> &nbsp;&nbsp;
-      <Button active color="light" type="button" onClick={props.cancelCategory} >Cancel</Button>
-    </FormGroup>
+    <center>
+      <FormGroup>
+        <Button color="info" disabled={doubleClick} > {props.buttonText} </Button> &nbsp;&nbsp;
+        <Button active color="light" type="button" onClick={props.cancelCategory} >Cancel</Button>
+      </FormGroup>
+    </center>
   </AvForm>
 }
