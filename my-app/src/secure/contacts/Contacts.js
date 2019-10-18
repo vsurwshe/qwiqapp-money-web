@@ -2,9 +2,7 @@ import React, { Component } from "react";
 import { Button, Row, Col, Card, CardBody, CardHeader, Alert, Input, InputGroup, InputGroupAddon, InputGroupText, ListGroupItem, ListGroup, Collapse } from "reactstrap";
 import { FaPaperclip, FaUserCircle, FaSearch, FaCaretDown } from 'react-icons/fa';
 import Loader from 'react-loader-spinner'
-import UpdateContact from "./UpdateContact";
 import DeleteContact from "./DeleteContact";
-import CreateContact from "./CreateContact";
 import LabelApi from "../../services/LabelApi";
 import Attachments from "./attachments/Attachments";
 import AddAttachment from "./attachments/AddAttachment";
@@ -12,6 +10,7 @@ import Store from "../../data/Store";
 import { DeleteModel } from "../utility/DeleteModel";
 import { ProfileEmptyMessage } from "../utility/ProfileEmptyMessage";
 import ContactApi from "../../services/ContactApi";
+import ContactForm from "./ContactForm";
 import '../../css/style.css';
 /* 
   * Presently we are showing attachments also
@@ -163,9 +162,9 @@ class Contacts extends Component {
       if (contacts.length === 0 && !createContact) {
         return <div>{contacts.length === 0 && !createContact && !spinner ? this.loadSpinner() : this.loadContactEmpty()}</div>
       } else if (createContact) {
-        return <CreateContact profileId={profileId} lables={labels} />
+        return <ContactForm profileId={profileId} lables={labels} />
       } else if (updateContact) {
-        return <UpdateContact profileId={profileId} contact={singleContact} lables={labels} />
+        return <ContactForm profileId={profileId} contact={singleContact} lables={labels} />
       } else if (deleteContact) {
         return <DeleteContact contactId={contactId} profileId={profileId} />
       } else if (addAttachRequest) {
