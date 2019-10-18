@@ -224,7 +224,7 @@ export const ContactFormUI = (props) => {
       <Col><AvField name="address2" placeholder="Address 2" value={address2} /></Col>
     </Row>
     <Row>
-      <Col><AvField name="postcode" placeholder="Postal Code" value={postcode} errorMessage="Enter Valid Postal Code" validate={{ pattern: { value: '^[0-9]{6}' } }} /></Col>
+      <Col><AvField name="postcode" placeholder="Postal Code" value={postcode} errorMessage="Enter Valid Postal Code" validate={{ pattern: { value: '^[0-9A-Za-z]' } }} /></Col>
       <Col><AvField name="state" placeholder="State" value={state}/></Col>
       <Col>
         <Input type="select" onChange={e => props.handleCountrySelect(e)} value={selectedCountry} placeholder="Select country" required>
