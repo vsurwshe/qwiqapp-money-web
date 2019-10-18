@@ -7,6 +7,7 @@ import Attachment from './Download_View_Delete_Attachment';
 import { DeleteModel } from '../../utility/DeleteModel';
 
 class Attachments extends Component {
+  _isMount = false;
   constructor(props) {
     super(props);
     this.state = {
@@ -22,12 +23,19 @@ class Attachments extends Component {
     }
   }
 
-  componentDidMount = () => {
+  componentDidMount () {
+    this._isMount = true;
     new AttachmentApi().getAttachments(this.successCall, this.errorCall, this.state.profileId, this.state.contactId);
   }
 
-  successCall = async (attachments) => {    
-    await this.setState({ attachments: attachments, count: attachments.length});
+  componentWillUnmount(){
+    this._isMount = false;
+  }
+
+  successCall =  (attachments) => {    
+    if(this._isMount){
+      this.setState({ attachments: attachments, count: attachments.length});
+    }
   }
 
   loadDropdown = () => {
