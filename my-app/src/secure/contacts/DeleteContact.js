@@ -24,7 +24,7 @@ class DeleteContact extends Component {
     this.callAlertTimer("success", "Contact Deleted Successfully....");
   };
 
-  errorCall = () => {
+  errorCall = (error) => {
     this.callAlertTimer("danger", "Unable to handle the request, Please Try Again...  ");
   };
 

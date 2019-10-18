@@ -187,7 +187,7 @@ export const CategoryLabelForm = (props) => {
     {items.length > 0 && // checking Label / Categories are there, then only showing "Nest option" while creating Label / Categories 
       (updateItem ? // checking the item(Label / Categories) is creating / updating, if creating then showing "Nest option"
         (updateItem.parentId ? // Checking whether Label / Categories has ParentId. If parentId is there then we are showing "Make it as Parent" or else checking for subLabel/subcategory 
-          (!chkMakeParent && <><Label style={{paddingLeft: 20}} check> <AvInput type="checkbox" name="makeParent" onChange={props.toggle} /> Make it as Parent </Label> <br /></>) // if selected make it as parent, then assigning "null" to "parentId"
+          (!chkMakeParent && <><Label style={{paddingLeft: 20}} check> <AvInput type="checkbox" name="makeParent" onChange={props.toggle} /> Make it as Parent </Label> <br /><br /></>) // if selected make it as parent, then assigning "null" to "parentId"
         : !(updateItem.subLabels || updateItem.subCategories) && (!collapse && <><Label style={{paddingLeft: 20}} check> <AvInput type="checkbox" name="checkbox1" onChange={props.toggle} /> Nest {componentType} under </Label> <br /> </>)) //checking for subItems, if there dont show anything or else showing "Nest option"
       : !collapse && <><Label style={{paddingLeft: 20}} check> <AvInput type="checkbox" name="checkbox1" onChange={props.toggle} /> Nest {componentType} under </Label> <br /> <br /></>) // If creating Label/ category then showing "Nest option"
     }

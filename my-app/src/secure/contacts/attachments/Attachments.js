@@ -13,15 +13,12 @@ class Attachments extends Component {
       profileId: props.profileId,
       contactId: props.contactId,
       getCount: props.getCount,
-      count: 0,
-      attachmentId: 0,
       attachments: [],
       dropdownOpen: [],
       addFile: false,
-      viewLink: '',
-      reattachment: '',
+      reAttachment: '',
       display: false,
-      viewData: '',
+      viewData: ''
     }
   }
 
@@ -29,8 +26,8 @@ class Attachments extends Component {
     new AttachmentApi().getAttachments(this.successCall, this.errorCall, this.state.profileId, this.state.contactId);
   }
 
-  successCall = async (attachments) => {
-    await this.setState({ attachments: attachments, count: attachments.length });
+  successCall = async (attachments) => {    
+    await this.setState({ attachments: attachments, count: attachments.length});
   }
 
   loadDropdown = () => {
@@ -42,15 +39,15 @@ class Attachments extends Component {
     });
   }
 
-  toggleDanger = (id, fileName) => {
+  toggleDanger = (attachmentId, fileName) => {
     this.setState({ danger: !this.state.danger });
-    if (id) {
-      this.setState({ attachmentId: id, fileName, })
+    if (attachmentId) {
+      this.setState({ attachmentId, fileName })
     }
   }
 
-  toggleView = (viewData, reattachment) => {
-    this.setState({ display: !this.state.display, viewData, reattachment });
+  toggleView = (viewData, reAttachment) => {
+    this.setState({ display: !this.state.display, viewData, reAttachment });
   }
 
   deleteAttachmentRequest = async () => {
@@ -67,12 +64,12 @@ class Attachments extends Component {
     console.log(err);
   }
 
-  downloadLink = async (reattachment) => {
-    Attachment.downloadAttachment(reattachment).then(response => console.log(response));
+  downloadLink = async (reAttachment) => {
+    Attachment.downloadAttachment(reAttachment).then(response => console.log(response));
   }
 
-  viewLink = (reattachment) => {
-    Attachment.viewAttachment(reattachment).then(response => this.toggleView(response, reattachment));
+  viewLink = (reAttachment) => {
+    Attachment.viewAttachment(reAttachment).then(response => this.toggleView(response, reAttachment));
   }
 
   handleAddFile = () => {
@@ -86,12 +83,12 @@ class Attachments extends Component {
         return null;
       }
       else { return <span style={{ color: '#000000' }}>&nbsp;( {count} Attachments )</span> }
-    } else if (count === 0 | this.state.addFile) {
+    } else if (count === 0 || this.state.addFile) {
       return <div><AddAttachment profileId={profileId} contactId={contactId} addFile={this.handleAddFile} /></div>
     } else if (danger) {
-      return <div>{this.deleteAttachment()} {this.loadAttachments(attachments, profileId, contactId)} </div>
+      return <div>{this.deleteAttachment()} {this.loadAttachments(attachments)} </div>
     } else {
-      return <div>{this.loadAttachments(attachments, profileId, contactId)}{this.displayAttachment()} </div>
+      return <div>{this.loadAttachments(attachments)}{this.displayAttachment()} </div>
     }
   }
 
@@ -134,9 +131,9 @@ class Attachments extends Component {
   }
 
   displayAttachment = () => {
-    const { display, viewData, reattachment } = this.state
+    const { display, viewData, reAttachment } = this.state;
     return (<Modal isOpen={display} size="xl" style={{ height: window.screen.height }} className={this.props.className} >
-      <ModalHeader toggle={() => { this.toggleView() }}>{reattachment && reattachment.filename}</ModalHeader>
+      <ModalHeader toggle={() => { this.toggleView() }}>{reAttachment && reAttachment.filename}</ModalHeader>
       <object size="xl" style={{ height: window.screen.height }} data={viewData} >
         <embed src={viewData} />
       </object>

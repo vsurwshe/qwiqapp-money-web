@@ -22,26 +22,12 @@ class Contacts extends Component {
     super(props);
     this.state = {
       contacts: [],
-      singleContact: [],
-      labels: [],
-      contactId: 0,
-      name: "",
-      createContact: false,
       visible: props.visible,
-      updateContact: false,
-      deleteContact: false,
-      profileId: 0,
       accordion: [],
-      danger: false,
-      isOpen: false,
-      addAttachRequest: false,
       dropdownOpen: [],
       attachDropdown: [],
-      onHover: false,
       hoverAccord: [],
-      spinner: false,
-      searchContact: '',
-      profileType: Store.getProfile().type
+      searchContact: ''
     };
   }
 
@@ -50,8 +36,9 @@ class Contacts extends Component {
   }
 
   setProfileId = async () => {
-    if (Store.getProfile()) {
-      await this.setState({ profileId: Store.getProfile().id });
+    const profile = Store.getProfile();
+    if (profile) {
+      await this.setState({ profileId: profile.id, profileType: profile.type });
       this.getContacts();
     }
   }
@@ -94,9 +81,9 @@ class Contacts extends Component {
       this.setState({ labels: json, spinner: true })
     }
   };
-
-  updateContact = (contact) => {
-    this.setState({ updateContact: true, singleContact: contact })
+  // update specific contact
+  updateContact = (singleContact) => {
+    this.setState({ updateContact: true, singleContact })
   };
 
   deleteContact = () => {
@@ -105,18 +92,6 @@ class Contacts extends Component {
 
   toggleDanger = () => {
     this.setState({ danger: !this.state.danger });
-  }
-
-  toggleAccordion = (tab) => {
-    const prevState = this.state.accordion;
-    const state = prevState.map((x, index) => tab === index ? !x : false);
-    this.setState({ accordion: state });
-  }
-
-  toggleDropDown = (tab) => {
-    const prevState = this.state.dropdownOpen;
-    const state = prevState.map((x, index) => tab === index ? !x : false);
-    this.setState({ dropdownOpen: state });
   }
 
   attachDropDown = (key, contactId) => {
@@ -135,29 +110,9 @@ class Contacts extends Component {
     this.setState({ hoverAccord: state });
   }
 
-  onHover = (e, key) => {
-    this.setState({ onHover: true });
-    this.hoverAccordion(key)
-  }
-
-  onHoverOff = (e, key) => {
-    this.setState({ onHover: false });
-    this.hoverAccordion(key)
-  }
-
-  addAttach = async (contactId, key) => {
-    await this.setState({ contactId: contactId, addAttachRequest: true });
-  }
-
-  changeBg() {
-    const { colors } = this.state;
-    const color = colors[Math.floor(Math.random() * colors.length)];
-    document.body.style.backgroundColor = color;
-  }
-
   render() {
     let profile = Store.getProfile();
-    const { contacts, singleContact, createContact, updateContact, deleteContact, addAttachRequest, contactId, visible, profileId, spinner, labels, danger } = this.state
+    const { contacts, singleContact, createContact, updateContact, deleteContact, addAttachRequest, contactId, profileId, spinner, labels, danger } = this.state
     if (profile) {
       if (contacts.length === 0 && !createContact) {
         return <div>{contacts.length === 0 && !createContact && !spinner ? this.loadSpinner() : this.loadContactEmpty()}</div>
@@ -170,7 +125,7 @@ class Contacts extends Component {
       } else if (addAttachRequest) {
         return <AddAttachment contacId={contactId} profileId={profileId} />
       } else {
-        return <div>{ danger && this.loadDeleteContact()} {this.loadShowContact(visible, contacts)}</div>
+        return <div>{danger && this.loadDeleteContact()} {this.loadShowContact()}</div>
       }
     } else {
       return <ProfileEmptyMessage />
@@ -182,8 +137,8 @@ class Contacts extends Component {
   }
 
   searchingFor(term) {
-    return function (x) {
-      return (x.name.toLowerCase() + x.organization.toLowerCase()).includes(term.toLowerCase()) || !term
+    return function (contact) {
+      return (contact.name.toLowerCase() + contact.organization.toLowerCase()).includes(term.toLowerCase()) || !term
     }
   }
 
@@ -231,7 +186,8 @@ class Contacts extends Component {
     }
   }
 
-  loadShowContact = (visible, contacts) => {
+  loadShowContact = () => {
+    const { visible, contacts } = this.state;
     if (this.props.color) { this.callAlertTimer(visible) }
     return <div className="animated fadeIn">
       <Card>
@@ -257,7 +213,6 @@ class Contacts extends Component {
               </b> &nbsp;
               {this.state.profileType > 1 ?
                 <>
-                  {/* <Attachments profileId={this.state.profileId} contactId={contact.id} getCount={true} /> */}
                   <FaPaperclip style={{ color: '#34aec1', marginTop: 0, marginLeft: 10 }} onClick={() => this.attachDropDown(contactKey, contact.id)} />
                 </> : <FaCaretDown />}
             </span>
@@ -276,11 +231,11 @@ class Contacts extends Component {
   // view update, delete 
   loadDropDown = (contact) => {
     return (<>
-      <Attachments profileId={this.state.profileId} contactId={contact.id} getCount={true} />
+      {this.state.profileType >= 2 && <Attachments profileId={this.state.profileId} contactId={contact.id} getCount={true} />}
       <span className="float-right" >
-      <small><button style={{ backgroundColor: "transparent", borderColor: 'green', color: "green" }} onClick={() => { this.updateContact(contact) }}> EDIT </button></small> &nbsp;
+        <small><button style={{ backgroundColor: "transparent", borderColor: 'green', color: "green" }} onClick={() => { this.updateContact(contact) }}> EDIT </button></small> &nbsp;
       <small><button style={{ backgroundColor: "transparent", borderColor: 'red', color: "red" }} onClick={() => { this.setContactID(contact); this.toggleDanger(); }}> REMOVE </button></small>
-    </span></>
+      </span></>
     )
   }
 
@@ -300,9 +255,7 @@ class Contacts extends Component {
         <b>Email: </b>{contact.email}<br />
         <b>Phone: </b>{contact.phone}<br />
       </span>
-      {this.state.profileType > 1 ?
-        <Attachments contactId={contactId} profileId={this.state.profileId} />
-        : ''}
+      {this.state.profileType >= 2 && <Attachments contactId={contactId} profileId={this.state.profileId} />}
     </div>
   }
 }
