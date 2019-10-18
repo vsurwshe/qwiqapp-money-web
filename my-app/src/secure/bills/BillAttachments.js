@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
-import { Card, CardHeader, CardBody, Button, Row, Col, Modal, ModalHeader } from 'reactstrap';
+import { Card, CardHeader, CardBody, Button, Row, Col, Modal, ModalHeader, Alert } from 'reactstrap';
 import { FaTrashAlt, FaCloudUploadAlt, FaEye } from 'react-icons/fa';
 import BillAttachmentsApi from '../../services/BillAttachmentsApi';
 import AddBillAttachment from './AddBillAttachment';
 import Attachment from '../utility/Download_View_Delete_Attachment';
 import { DeleteModel } from '../utility/DeleteModel';
+import { ShowServiceComponent } from '../utility/ShowServiceComponent';
+import Config from '../../data/Config';
 
 class BillAttachments extends Component {
     constructor(props) {
@@ -12,16 +14,15 @@ class BillAttachments extends Component {
         this.state = {
             profileId: props.profileId,
             billId: props.billId,
-            getCount: props.getCount,
-            count: 0,
             attachmentId: 0,
             attachments: [],
             dropdownOpen: [],
-            addFile: false,
             viewLink: '',
+            viewData: '',
             reattachment: '',
             display: false,
-            viewData: ''
+            addFile: false,
+            spinner: false
         }
     }
 
@@ -30,7 +31,7 @@ class BillAttachments extends Component {
     }
 
     successCall = async (attachments) => {
-        await this.setState({ attachments: attachments, count: attachments.length });
+        await this.setState({ attachments: attachments, spinner: true });
     }
 
     loadDropdown = () => {
@@ -56,15 +57,25 @@ class BillAttachments extends Component {
     deleteAttachmentRequest = async () => {
         this.setState({ danger: !this.state.danger });
         const { profileId, billId, attachmentId } = this.state;
-        await Attachment.deleteAttachment(this.success, this.errorCall, profileId, billId, attachmentId,true);
+        await Attachment.deleteAttachment(this.success, this.errorCall, profileId, billId, attachmentId, true);
     }
 
     success = (message) => {
-        window.location.reload();
+        this.callAlertTimer("success", 'Attachment Deleted !!');
     }
 
     errorCall = (err) => {
-        console.log(err);
+        this.callAlertTimer("danger", 'Unable to process request, please try later !!');
+        this.setState({ spinner: true });
+    }
+
+    callAlertTimer = (color, content) => {
+        this.setState({ color, content });
+        if (color === 'success') {
+            setTimeout(() => {
+                this.setState({ color: '', content: '' });
+            }, Config.apiTimeoutMillis)
+        }
     }
 
     downloadLink = async (reattachment) => {
@@ -80,47 +91,57 @@ class BillAttachments extends Component {
     }
 
     render() {
-        const { attachments, profileId, billId, getCount, count, danger } = this.state;
-        if (getCount) {
-            if (!count) {
-                return null;
-            }
-            else { return <span style={{ color: '#000000' }}>&nbsp;( {count} Attachments )</span> }
-        } else if (count === 0 | this.state.addFile) {
+        const { attachments, profileId, billId, danger, spinner, color, content } = this.state;
+        if (!spinner) {
+            return ShowServiceComponent.loadSpinner('ATTACHMENTS')
+        } else if (this.state.addFile) {
             return <div><AddBillAttachment profileId={profileId} billId={billId} addFile={this.handleAddFile} /></div>
+        } else if (!attachments.length) {
+            return this.showNoAttachments()
         } else if (danger) {
-            return <div>{this.deleteAttachment()} {this.loadAttachments(attachments, profileId, billId)} </div>
+            return <div>{this.deleteAttachment()} {this.loadAttachments(attachments, color, content)} </div>
         } else {
-            return <div>{this.loadAttachments(attachments, profileId, billId)}{this.displayAttachment()} </div>
+            return <div>{this.loadAttachments(attachments, color, content)}{this.displayAttachment()} </div>
         }
     }
 
-    loadAttachments(attachments) {
+    loadHeader = () => {
+        return <CardHeader>
+            <div style={{ paddingTop: 10, color: '#000000' }}><strong>ATTACHMENTS<FaCloudUploadAlt style={{ marginRight: 10 }}
+                className="float-right" color="#020b71" size={20} onClick={this.handleAddFile} /></strong>
+            </div>
+        </CardHeader>
+    }
+
+    showNoAttachments = () => {
+        return <Card>
+            {this.loadHeader()}
+            <center style={{ paddingTop: '20px' }}><CardBody> <h5><b>You haven't added any attachments for this Bill. Please add now...</b></h5><br /> </CardBody></center>
+        </Card>
+    }
+
+    loadAttachments(attachments, color, content) {
         return (
             <Card>
-                <CardHeader>
-                <div style={{ paddingTop: 10, color: '#000000' }}><strong><center>ATTACHMENTS<FaCloudUploadAlt style={{ marginRight: 10 }}
-                    className="float-right" color="#020b71" size={20} onClick={this.handleAddFile} /></center></strong>
-                </div>
-                </CardHeader>
+                {this.loadHeader()}
                 <CardBody>
+                    {color && <Alert color={color}>{content}</Alert>}
                     {attachments.map((attachment, key) => { return <div key={key}>{this.loadAttachment(attachment, key)}</div> })}
                 </CardBody>
             </Card>)
     }
 
     loadAttachment = (attachment, key) => {
-        const styles = { marginRight: 10 }
-        return (
-            <div className="list">
-                <div className="list-item" key={key}>
-                    <Row>
-                        <Col><Button onClick={() => { this.downloadLink(attachment) }} color="link">{attachment.filename}</Button> &nbsp;({this.attachmentFileSize(attachment.sizeBytes)})</Col>
-                        <FaEye color="#1E90FF" size={20} className="float-right" style={{ marginTop: -4, marginRight: 10 }} onClick={e => this.viewLink(attachment)} />{"    "}<span className="float-right">{"  "}</span>
-                        <FaTrashAlt color="#ff0000" className="float-right" style={styles} onClick={() => this.toggleDanger(attachment.id, attachment.filename)} /><span className="float-right">{"  "}</span>
-                    </Row>
-                </div>
-            </div>)
+        const styles = { marginRight: 10 };
+        return <div className="list">
+            <div className="list-item" key={key}>
+                <Row>
+                    <Col><Button onClick={() => { this.downloadLink(attachment) }} color="link">{attachment.filename}</Button> &nbsp;({this.attachmentFileSize(attachment.sizeBytes)})</Col>
+                    <FaEye color="#1E90FF" size={20} className="float-right" style={{ marginTop: -4, marginRight: 10 }} onClick={e => this.viewLink(attachment)} />{"    "}<span className="float-right">{"  "}</span>
+                    <FaTrashAlt color="#ff0000" className="float-right" style={styles} onClick={() => this.toggleDanger(attachment.id, attachment.filename)} /><span className="float-right">{"  "}</span>
+                </Row>
+            </div>
+        </div>
     }
 
     attachmentFileSize = (bytes) => {
@@ -136,14 +157,13 @@ class BillAttachments extends Component {
     }
 
     displayAttachment = () => {
-        const { display, viewData, reattachment } = this.state
-        return (<Modal isOpen={display} size="xl" style={{ height: window.screen.height }} className={this.props.className} >
+        const { display, viewData, reattachment } = this.state;
+        return <Modal isOpen={display} size="xl" style={{ height: window.screen.height }} className={this.props.className} >
             <ModalHeader toggle={() => { this.toggleView() }}>{reattachment && reattachment.filename}</ModalHeader>
             <object size="xl" style={{ height: window.screen.height }} data={viewData} >
                 <embed src={viewData} />
             </object>
         </Modal>
-        )
     }
 }
 

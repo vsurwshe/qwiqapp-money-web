@@ -37,11 +37,7 @@ async function process(success, failure, apiUrl, requestMethod, data, reload) {
     data === null ? promise = await HTTP.request() : promise = await HTTP.request({ data })
     validResponse(promise, success);
   } catch (error) {
-    if (error.request.status === 0) {
-      errorResponse(error.response, failure)
-    } else {
       handleAccessTokenError(error, failure, apiUrl, requestMethod, data, success,reload)
-    }
   }
 }
 

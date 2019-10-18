@@ -29,6 +29,7 @@ import ChangePassword from "../secure/editUser/ChangePassword";
 import ForgotPassword from '../components/ForgotPassword';
 import Invoice from "../secure/billing/invoice/Invoice";
 import Config from "../data/Config";
+import BillAttachments from "../secure/bills/BillAttachments";
 
 const DefaultFooter = React.lazy(() => import("../secure/sidebar/DefaultFooter"));
 
@@ -131,6 +132,7 @@ class Main extends Component {
         <PrivateRoute exact path="/profiles/:id" component={SetProfile} />
         <PrivateRoute exact path="/listBills" component={Bills} />
         <PrivateRoute exact path="/listBills/:value" component={Bills} />
+        <PrivateRoute exact path="/listbBills/billAttachments" component={BillAttachments}/>
         <PrivateRoute path="/label/labels" component={Lables} />
         <PrivateRoute path="/listCategories" component={Categories} />
         <PrivateRoute exact path="/contact/viewContacts" component={Contacts} />

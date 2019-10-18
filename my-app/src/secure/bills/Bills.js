@@ -59,7 +59,7 @@ class Bills extends Component {
 
   setProfileId = async () => {
     if (Store.getProfile()) {
-      let profile =  Store.getProfile();
+      let profile = Store.getProfile();
       await this.setState({ profileId: profile.id, profileType: profile.type });
       // This condition checking whether api call first time or reptely 
       this.state.categories !== undefined && this.state.categories.length <= 0 ? this.getCategory() : this.forceUpdate();
@@ -336,7 +336,7 @@ class Bills extends Component {
       return <ViewPayment bill={this.state.requiredBill} paidAmount={paidAmount} profileId={profileId} cancel={this.handleViewPayment} />
     } else if (this.state.attachments) {
       return <BillAttachments billId={billId} profileId={profileId} />
-    } 
+    }
     else {
       return <div>
         {this.displayAllBills(visible, bills)}{danger && this.deleteBillModel()}
@@ -409,7 +409,7 @@ class Bills extends Component {
               </thead>
               <tbody>
                 {this.state.filterDate ? this.loadFilterAndNonFilteredBills(filteredBills) : this.loadFilterAndNonFilteredBills(bills)}
-                </tbody>
+              </tbody>
             </Table>
           </CardBody>
         </div>
@@ -504,14 +504,14 @@ class Bills extends Component {
         <DropdownItem onClick={this.handleViewPayment}>View Payment</DropdownItem>
         {!bill.paid ? <DropdownItem onClick={this.handleMarkAsPaid}>Mark As Paid</DropdownItem> :
           <DropdownItem onClick={this.handleMarkAsUnpaidPayment}>Mark As Unpaid</DropdownItem>}
-        {this.state.profileType > 1 ?  <DropdownItem onClick={() => this.billAttachments(key, bill.id)}>Attachments</DropdownItem> : '' }
+        {this.state.profileType > 1 ? <DropdownItem onClick={() => this.billAttachments(key, bill.id)}>Attachments</DropdownItem> : ''}
         <DropdownItem onClick={() => this.setBillId(bill)}>Delete</DropdownItem>
       </DropdownMenu>
     </UncontrolledDropdown>
   </span>
 
-  billAttachments=(key, billId)=>{
-    this.setState({ billId : billId, attachments: true})
+  billAttachments = (key, billId) => {
+    this.setState({ billId: billId, attachments: true })
   }
 
   //this method calls the delete model
