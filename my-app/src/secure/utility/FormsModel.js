@@ -207,3 +207,35 @@ export const CategoryLabelForm = (props) => {
     </center>
   </AvForm>
 }
+
+export const ContactFormUI = (props) => {
+  const {countries, labels, selectedCountry, contact} = props.data
+  const {name, organization, phone, address1, address2, email, postcode, state, website } = contact ? contact : ""
+  return (<>
+    <Row>
+      <Col><AvField name="name" placeholder="Name" value={name} validate={{ myValidation: props.nameOrOrganization }} onChange={props.validateOrganization} /></Col>
+      <Col><AvField name="organization" placeholder="Organization" value={organization} validate={{ myValidation: props.nameOrOrganization }} onChange={props.validateName} /></Col>
+    </Row>
+    <Row>
+      <Col><AvField name="phone" placeholder="Phone Number" value={phone} validate={{ pattern: { value: '^[0-9*+-]+$' } }} errorMessage="Please enter valid Phone number" required /></Col>
+      <Col><AvField name="email" placeholder="Email" type="text" value={email} validate={{ email: true }} errorMessage="Please enter valid Email id" required /></Col></Row>
+    <Row>
+      <Col><AvField name="address1" placeholder="Address 1" value={address1} /></Col>
+      <Col><AvField name="address2" placeholder="Address 2" value={address2} /></Col>
+    </Row>
+    <Row>
+      <Col><AvField name="postcode" placeholder="Postal Code" value={postcode} errorMessage="Enter Valid Postal Code" validate={{ pattern: { value: '^[0-9]{6}' } }} /></Col>
+      <Col><AvField name="state" placeholder="State" value={state}/></Col>
+      <Col>
+        <Input type="select" onChange={e => props.handleCountrySelect(e)} value={selectedCountry} placeholder="Select country" required>
+          <option value="">Select Country</option>
+          {countries.map((country, key) => {
+            return <option key={key} value={country.code}>{country.name + ' (' + country.short + ')'}</option>;
+          })}
+        </Input>
+      </Col>
+      <Col><AvField name="website" placeholder="Website" value={website} /></Col>
+    </Row>
+    <Row><Col>{labels.length === 0 ? <center>You dont have Labels</center> : props.loadAvCollapse(contact)}</Col></Row> <br />
+  </>);
+}
