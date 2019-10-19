@@ -1,15 +1,13 @@
 import Avatar from 'react-avatar';
 import React, { Component } from "react";
 import Loader from 'react-loader-spinner'
-import UpdateProfile from "./UpdateProfile";
-import CreateProfile from "./CreateProfile";
 import DeleteProfile from "./DeleteProfile";
 import { Redirect } from 'react-router';
 import ProfileApi from "../../services/ProfileApi";
 import { DeleteModel } from "../utility/DeleteModel";
 import { ProfileEmptyMessage } from "../utility/ProfileEmptyMessage";
 import { Container, Button, Card, CardBody, Table, CardHeader, Alert } from "reactstrap";
-
+import ProfileForm from './ProfileForm';
 /**
  * Display list of profiles,Manage profile like (update, delete)
  * Call Add,Update, delete Componets.
@@ -20,8 +18,8 @@ class Profiles extends Component {
     super(props);
     this.state = {
       profiles: [],
-      id: 0,
-      name: "",
+      profileId: 0,
+      profileName: "",
       updateProfile: false,
       deleteProfile: false,
       createProfile: false,
@@ -47,7 +45,7 @@ class Profiles extends Component {
   errorCall = err => { this.setState({ visible: true }); console.log("Internal Server Error") }
 
   updateProfile = (profileId, profileName) => {
-    this.setState({ updateProfile: true, id: profileId, name: profileName })
+    this.setState({ profileId, profileName, updateProfile: true, })
   };
 
   deleteProfile = () => {
@@ -63,18 +61,18 @@ class Profiles extends Component {
   }
 
   render() {
-    const { profiles, id, createProfile, updateProfile, deleteProfile, selectProfile, name, spinner, danger } = this.state
+    const { profiles, profileId, createProfile, updateProfile, deleteProfile, selectProfile, profileName, spinner, danger } = this.state;
     if (profiles.length === 0 && !createProfile) {
       return <div>{profiles.length === 0 && !createProfile && !spinner ? this.loadSpinner() : <ProfileEmptyMessage />}</div>
     } else if (selectProfile) {
-      let url = "/profiles/" + id
+      let url = "/profiles/" + profileId
       return (<Container> <Redirect push to={url} /></Container>)
     } else if (createProfile) {
-      return (<Container> <CreateProfile /> </Container>)
+      return <ProfileForm />
     } else if (updateProfile) {
-      return (<Container> <UpdateProfile id={id} name={name} /> </Container>)
+      return (<Container> <ProfileForm profileId={profileId} profileName={profileName} /> </Container>)
     } else if (deleteProfile) {
-      return (<Container> <DeleteProfile id={id} /> </Container>)
+      return (<Container> <DeleteProfile profileId={profileId} /> </Container>)
      } else  {
        return <div> { danger && this.loadDeleteProfile()} {this.showProfile(profiles)}</div>
      }
@@ -127,7 +125,7 @@ class Profiles extends Component {
   }
 
   selectProfile = (selectedId) => {
-    this.setState({ id: selectedId, selectProfile: true })
+    this.setState({ profileId: selectedId, selectProfile: true })
   }
 
   //this method load the single profile
@@ -138,7 +136,6 @@ class Profiles extends Component {
         <td style={{ paddingTop: 18 }}>{this.loadProfileType(profile.type)} </td>
         <td style={{ paddingRight: 35 }}>
           <Button className="float-centre" style={{ backgroundColor: "#43A432", color: "#F0F3F4" }} onClick={() => { this.updateProfile(profile.id, profile.name) }}>Edit</Button>
-          {/* <Button color="danger" onClick={() => { this.setState({ id: profile.id }); this.toggleDanger() }} style={{ marginLeft: 10 }} >Delete</Button> */}
         </td>
       </tr>
     );

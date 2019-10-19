@@ -12,16 +12,16 @@ class ProfileApi {
     Store.getUserProfiles() === null || value === "True" ? process(success, failure, "/profiles/", "GET") : success(Store.getUserProfiles());
   }
 
-  getProfilesById(success, failure, uid) {
-    process(success, failure, "/profiles/" + uid, "GET");
+  getProfilesById(success, failure, profileId) {
+    process(success, failure, "/profiles/" + profileId, "GET");
   }
 
-  updateProfile(success, failure, data, uid) {
-    process(success, failure, "/profiles/" + uid, "PUT", data);
+  updateProfile(success, failure, data, profileId) {
+    process(success, failure, "/profiles/" + profileId, "PUT", data);
   }
 
-  deleteProfile(success, failure, uid) {
-    process(success, failure, "/profiles/" + uid, "DELETE", null, uid);
+  deleteProfile(success, failure, profileId) {
+    process(success, failure, "/profiles/" + profileId, "DELETE", null, profileId);
   }
 }
 
