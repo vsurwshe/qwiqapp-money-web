@@ -1,6 +1,8 @@
 import React from 'react';
 import { AvForm, AvField, AvInput } from 'availity-reactstrap-validation';
 import { Button, FormGroup, Col, Row, Label, Collapse, Input } from "reactstrap";
+import { AvForm, AvField, AvInput, AvGroup } from 'availity-reactstrap-validation';
+import { Button, FormGroup, Col, Row, Label, Collapse, Input, Tooltip } from "reactstrap";
 import Select from 'react-select';
 import Data from '../../data/SelectData';
 import Store from '../../data/Store';
@@ -238,4 +240,21 @@ export const ContactFormUI = (props) => {
     </Row>
     <Row><Col>{labels.length === 0 ? <center>You dont have Labels</center> : props.loadAvCollapse(contact)}</Col></Row> <br />
   </>);
+}
+// ==============ProfileFormUI ===========
+
+export const ProfileFormUI = (props) =>{
+  console.log(props);
+  const { profileName, tooltipOpen } = props.data;
+  const buttonMessage= profileName ? "Update":"Save";
+  return <> <FormGroup row>
+  <Label sm={2}>Profile Name :</Label>
+  <Col sm={8}>
+    <Input name="profileName" value={profileName} type="text" placeholder="Enter Profile name" autoFocus={true} onChange={e => props.handleInput(e)} id="tool-tip" />
+    <Tooltip target="tool-tip" isOpen={tooltipOpen} placement="right" toggle={props.toggle}>Profile Name</Tooltip>
+  </Col>
+</FormGroup>
+<Button color="success" disabled={!profileName} onClick={e => props.handleSubmit(e)} > {buttonMessage} </Button>
+<Button active color="light" style={{ marginLeft: 20 }} aria-pressed="true" onClick={props.cancelCreateProfile}>Cancel</Button>
+</>
 }
