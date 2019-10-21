@@ -108,8 +108,8 @@ class Profiles extends Component {
         <CardBody>
           <Table bordered >
             <thead>
-              <tr style={{ backgroundColor: "#DEE9F2  ", color: '#000000' }}>
-                <th >Profile Name</th>
+              <tr style={{ backgroundColor: "#DEE9F2  ", color: '#000000' }}  align='center'>
+                <th>Profile Name</th>
                 <th>Profile Type </th>
                 <th>Actions</th>
               </tr>
@@ -134,7 +134,7 @@ class Profiles extends Component {
       <tr key={key} >
         <td><b onClick={() => { this.selectProfile(profile.id) }} ><Avatar name={profile.name.charAt(0)} size="40" round={true} /> &nbsp;&nbsp;{profile.name}</b> </td>
         <td style={{ paddingTop: 18 }}>{this.loadProfileType(profile.type)} </td>
-        <td style={{ paddingRight: 35 }}>
+        <td align="center">
           <Button className="float-centre" style={{ backgroundColor: "#43A432", color: "#F0F3F4" }} onClick={() => { this.updateProfile(profile.id, profile.name) }}>Edit</Button>
         </td>
       </tr>
