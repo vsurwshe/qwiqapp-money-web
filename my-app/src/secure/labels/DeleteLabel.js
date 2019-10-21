@@ -8,16 +8,13 @@ class DeleteLabel extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      id: this.props.id,
-      labelDeleted: false,
       content: "Deleting Label.....",
       color: "green",
-      profileId: this.props.pid
     };
   }
 
   componentDidMount = async () => {
-    await new LabelApi().deleteLabel(this.successCall, this.errorCall, this.state.profileId, this.state.id);
+    await new LabelApi().deleteLabel(this.successCall, this.errorCall, this.props.profileId, this.props.labelId);
   };
 
   successCall = () => {

@@ -1,8 +1,6 @@
 import React, { Component } from "react";
 import { Button, Card, CardBody, CardHeader } from "reactstrap";
-import Loader from 'react-loader-spinner'
-import CreateLabel from "./Createlabel";
-import UpdateLabel from "./UpdateLabel";
+import Loader from 'react-loader-spinner';
 import DeleteLabel from "./DeleteLabel";
 import LabelApi from "../../services/LabelApi";
 import Store from "../../data/Store";
@@ -10,27 +8,20 @@ import { ProfileEmptyMessage } from "../utility/ProfileEmptyMessage";
 import { ShowServiceComponent } from "../utility/ShowServiceComponent";
 import { DeleteModel } from "../utility/DeleteModel";
 import Config from "../../data/Config";
+import LabelForm from "./LabelForm";
 
 class Lables extends Component {
   constructor(props) {
     super(props);
     this.state = {
       labels: [],
-      requiredLabel: [],
-      id: 0,
-      name: "",
-      createLabel: false,
-      visible: props.visible,
-      updateLabel: false,
-      deleteLabel: false,
-      profileId: "",
+      requiredLabel: [], 
       accordion: [],
-      danger: false,
       dropdownOpen: [],
-      spinner: false,
+      subLabelHover: [],
       search: '',
-      index: '',
-      subLabelHover: []
+      index: '',      
+      visible: props.visible
     };
   }
 
@@ -90,7 +81,7 @@ class Lables extends Component {
         dropdownOpen: [...prevState.dropdownOpen, false]
       }))
     });
-    this.toggleAccordion(this.props.index);
+    this.toggleAccordion(this.state.index);
   }
 
   toggleDanger = () => {
@@ -124,11 +115,11 @@ class Lables extends Component {
   }
 
   setSearch = e => this.setState({ search: e.target.value })
-  setLabelId = (labels) => this.setState({ id: labels.id, labelname: labels.name })
+  setLabelId = (labels) => this.setState({ labelId: labels.id, labelname: labels.name })
   callCreateLabel = () => this.setState({ createLabel: true })
 
   render() {
-    const { labels, createLabel, updateLabel, id, deleteLabel, visible, profileId, requiredLabel, spinner, search, index, danger } = this.state
+    const { labels, createLabel, updateLabel, labelId, deleteLabel, visible, profileId, requiredLabel, spinner, search, index, danger } = this.state
     let profile = Store.getProfile()
     if (!profile) {
       return <ProfileEmptyMessage />
@@ -137,11 +128,11 @@ class Lables extends Component {
         ? this.loadSpinner()
         : this.loadNotLabel()}</div>
     } else if (createLabel) {
-      return <CreateLabel pid={profileId} label={labels} />
+      return <LabelForm profileId={profileId} lables={labels} />
     } else if (updateLabel) {
-      return <UpdateLabel pid={profileId} label={requiredLabel} lables={labels} index={index} />
+      return <LabelForm profileId={profileId} label={requiredLabel} lables={labels} index={index} />
     } else if (deleteLabel) {
-      return <DeleteLabel id={id} pid={profileId} />
+      return <DeleteLabel labelId={labelId} profileId={profileId} />
     } else {
       return <div>{this.loadShowLabel(visible, labels, search)}{danger && this.loadDeleteLabel()}</div>
     }
