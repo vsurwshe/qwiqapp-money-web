@@ -80,7 +80,11 @@ class ProfileForm extends Component {
   };
 
   successCall = () => {
-    this.callAlertTimer("success", "New Profile Created!!");
+    if(this.state.profileId){
+      this.callAlertTimer("success", "Profile Updated Successfully!!");
+    } else{
+      this.callAlertTimer("success", "New Profile Created!!");
+    }
   }
 
   errorCall = err => {
@@ -114,15 +118,15 @@ class ProfileForm extends Component {
   }
 
   render() {
-    const { color, profileCreated, cancelCreateProfile, action, profileType, profileInfoTable, profileTypes, profileId } = this.state
-    if(cancelCreateProfile){
+    const { color, content, profileCreated, cancelCreateProfile, action, profileType, profileInfoTable, profileTypes, profileId } = this.state
+    if(profileCreated || cancelCreateProfile){
        return <Profiles /> 
     } else if(profileId){
-       return this.loadProfile() 
+       return this.loadProfile(color, content, "UPDATE PROFILE") 
     } else{
         const profileTypesOptions = profileTypes.map(proTypes => {
             return <tr key={proTypes.type}>
-              <td> <Input type="radio" name="radio1" value={proTypes.type} checked={proTypes.type === profileType}
+              <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<Input type="radio" name="radio1" value={proTypes.type} checked={proTypes.type === profileType}
                 onChange={() => this.selectProfileType(proTypes.type)} />{' '}</td>
               <td>{proTypes.name}</td>
               <td>{proTypes.cost}</td>
@@ -130,35 +134,38 @@ class ProfileForm extends Component {
             </tr>
           })
           return <div>
-            {(profileCreated || cancelCreateProfile) ? <Profiles /> : this.createProfile(color, action, profileType, profileInfoTable, profileTypesOptions)}
+            {(profileCreated || cancelCreateProfile) ? <Profiles /> : this.loadProfile(color, content, "CREATE PROFILE", action, profileType, profileInfoTable, profileTypesOptions)}
           </div>
     }
  }
 
   // when Profile Creation in process.
-  createProfile = (color, action, profileType, profileInfoTable, profileTypesOptions) => {
+  loadProfile = (color, content, headerMessage, action, profileType, profileInfoTable, profileTypesOptions) => {
     return (
       <div className="animated fadeIn">
         <Card>
-          <CardHeader><strong>CREATE PROFILE</strong></CardHeader>
+          <CardHeader><strong>{headerMessage}</strong></CardHeader>
           <CardBody>
-            <center>
-              <h5><b>CHOOSE PROFILE TYPES</b></h5>
-              <Col >
-                <Alert color={color}>{this.state.content}</Alert>
-                {action !== "VERIFY_EMAIL" && this.createProfileTypes(profileTypesOptions)}
-                {this.loadActionsButton(action, profileType)}<br /><br />
-                <h5><span onClick={this.profileViewTable} className="float-right" style={{ color: '#7E0462' }} ><u>{this.state.comparisionText}</u></span></h5>
-              </Col>
-            </center> <br /><br />
-            {profileInfoTable && <ProfileInfoTable />}
+            <Col><Alert color={color}>{content}</Alert></Col>
+            {
+              profileTypesOptions ? <>
+                <center>
+                <h5><b>CHOOSE PROFILE TYPES</b></h5>
+                <Col >
+                  {action !== "VERIFY_EMAIL" && this.createProfileTypes(profileTypesOptions)}
+                  <br/>{this.loadActionsButton(action, profileType)}<br /><br />
+                  <h5><span onClick={this.profileViewTable} className="float-right" style={{ color: '#7E0462' }} ><u>{this.state.comparisionText}</u></span></h5>
+                </Col>
+                </center> <br /><br />
+                {profileInfoTable && <ProfileInfoTable />}</> : this.loadProfileForm()
+            }
           </CardBody>
         </Card>
       </div>);
   }
 
   createProfileTypes = (profileTypesOptions) => {
-    return <Table>
+    return <Table bordered striped>
       <thead>
         <tr>
           <th>Type</th>
@@ -183,15 +190,16 @@ class ProfileForm extends Component {
         <Button active color="danger" style={{ marginLeft: 20 }} aria-pressed="true" onClick={this.cancelCreateProfile}>Cancel</Button>
       </>
     } else {
-      return this.loadProfile()
+      return this.loadProfileForm()
     }
   }
 
-  loadProfile = () => {
+  loadProfileForm = () => {
     const { profileName, tooltipOpen } = this.state;
     const profileFields = {
         profileName : profileName, 
         tooltipOpen : tooltipOpen,
+        buttonMessage : this.props.profileId ? 'Update' : 'Save'
     } 
     return <ProfileFormUI data={profileFields} handleInput={this.handleInput} 
     toggle={this.toggle} handleSubmit={this.handleSubmit} 

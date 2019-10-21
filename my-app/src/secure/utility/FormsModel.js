@@ -1,8 +1,6 @@
 import React from 'react';
 import { AvForm, AvField, AvInput } from 'availity-reactstrap-validation';
 import { Button, FormGroup, Col, Row, Label, Collapse, Input } from "reactstrap";
-import { AvForm, AvField, AvInput, AvGroup } from 'availity-reactstrap-validation';
-import { Button, FormGroup, Col, Row, Label, Collapse, Input, Tooltip } from "reactstrap";
 import Select from 'react-select';
 import Data from '../../data/SelectData';
 import Store from '../../data/Store';
@@ -61,10 +59,10 @@ export const BillFormUI = (props) => {
         <label>Description / Notes</label>
         <AvField name="description" type="text" list="colors" value={description} placeholder="Ex: Recharge" errorMessage="Invalid Notes" /></Col>
     </Row>
-    {!props.data.moreOptions && 
-    <Button className="m-0 p-0" color="link" onClick={() => props.toggleCustom()} aria-expanded={moreOptions} aria-controls="exampleAccordion1">
-      More Options
-    </Button> }
+    {!props.data.moreOptions &&
+      <Button className="m-0 p-0" color="link" onClick={() => props.toggleCustom()} aria-expanded={moreOptions} aria-controls="exampleAccordion1">
+        More Options
+    </Button>}
     {props.loadMoreOptions(labels, contacts)} <br />
     <FormGroup >
       <center>
@@ -243,18 +241,19 @@ export const ContactFormUI = (props) => {
 }
 // ==============ProfileFormUI ===========
 
-export const ProfileFormUI = (props) =>{
-  console.log(props);
-  const { profileName, tooltipOpen } = props.data;
-  const buttonMessage= profileName ? "Update":"Save";
-  return <> <FormGroup row>
-  <Label sm={2}>Profile Name :</Label>
-  <Col sm={8}>
-    <Input name="profileName" value={profileName} type="text" placeholder="Enter Profile name" autoFocus={true} onChange={e => props.handleInput(e)} id="tool-tip" />
-    <Tooltip target="tool-tip" isOpen={tooltipOpen} placement="right" toggle={props.toggle}>Profile Name</Tooltip>
-  </Col>
-</FormGroup>
-<Button color="success" disabled={!profileName} onClick={e => props.handleSubmit(e)} > {buttonMessage} </Button>
-<Button active color="light" style={{ marginLeft: 20 }} aria-pressed="true" onClick={props.cancelCreateProfile}>Cancel</Button>
-</>
+export const ProfileFormUI = (props) => {
+  const { profileName, tooltipOpen, buttonMessage } = props.data;
+  return <>
+    <FormGroup row>
+      <Label sm={2}>Profile Name :</Label>
+      <Col sm={8}>
+        <Input name="profileName" value={profileName} type="text" placeholder="Enter Profile name" autoFocus={true} onChange={e => props.handleInput(e)} id="tool-tip" />
+        <Tooltip target="tool-tip" isOpen={tooltipOpen} placement="right" toggle={props.toggle}>Profile Name</Tooltip>
+      </Col>
+    </FormGroup>
+    <center>
+      <Button color="success" disabled={!profileName} onClick={e => props.handleSubmit(e)} > {buttonMessage} </Button>
+      <Button active color="light" style={{ marginLeft: 20 }} aria-pressed="true" onClick={props.cancelCreateProfile}>Cancel</Button>
+    </center>
+  </>
 }
