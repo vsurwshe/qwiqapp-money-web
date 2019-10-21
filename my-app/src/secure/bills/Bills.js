@@ -1,6 +1,7 @@
 
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
+import {Redirect} from 'react-router';
 import { Card, CardBody, Alert, Table, FormGroup, Label, Input, UncontrolledDropdown, Button, DropdownMenu, DropdownItem, DropdownToggle } from "reactstrap";
 import Loader from 'react-loader-spinner';
 import { FaUndoAlt } from 'react-icons/fa';
@@ -19,7 +20,6 @@ import BillPayment from "./billPayment/ BillPayment";
 import ViewPayment from "./billPayment/ViewPayment";
 import PaymentApi from "../../services/PaymentApi";
 import '../../css/style.css';
-import BillAttachments from "./BillAttachments";
 
 class Bills extends Component {
   constructor(props) {
@@ -313,6 +313,11 @@ class Bills extends Component {
     }
   }
 
+
+  billAttachments = (key, billId) => {
+    this.setState({ billId: billId, attachments: true })
+  }
+
   render() {
     const { bills, createBillRequest, updateBillRequest, billId, deleteBillRequest, visible, profileId, updateBill, spinner, labels, categories, contacts, danger, paidAmount, requiredBill, markPaid } = this.state;
     if (!profileId) {
@@ -335,7 +340,7 @@ class Bills extends Component {
     } else if (this.state.viewPayment) {
       return <ViewPayment bill={this.state.requiredBill} paidAmount={paidAmount} profileId={profileId} cancel={this.handleViewPayment} />
     } else if (this.state.attachments) {
-      return <BillAttachments billId={billId} profileId={profileId} />
+      return  <Redirect to={{pathname: "/bills/attachments", query: { profileId: profileId, billId: billId }}} />
     }
     else {
       return <div>
@@ -509,10 +514,6 @@ class Bills extends Component {
       </DropdownMenu>
     </UncontrolledDropdown>
   </span>
-
-  billAttachments = (key, billId) => {
-    this.setState({ billId: billId, attachments: true })
-  }
 
   //this method calls the delete model
   deleteBillModel = () => {
