@@ -221,6 +221,16 @@ const Store = {
         return JSON.parse(categories)
     },
 
+    // for Attachments storing profileId, billId
+    saveBillIdforAttechments: function (data) {
+        db.setItem("BILL_ID_ATTACH", JSON.stringify(data))
+    },
+
+    getBillIdforAttechments: function () {
+        const categories = db.getItem("BILL_ID_ATTACH")
+        return JSON.parse(categories)
+    },
+
     // Clears the Local Storage
     clearLocalStorage: function () {
         this.userDataClear()
@@ -232,6 +242,7 @@ const Store = {
 
     clearBills: function(){
         db.removeItem("BILL");
+        db.removeItem("BILL_ID_ATTACH");
     },
 
     // when refersh button call(userDataClear)

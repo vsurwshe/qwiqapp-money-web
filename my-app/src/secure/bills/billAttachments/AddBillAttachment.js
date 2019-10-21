@@ -5,6 +5,7 @@ import { Redirect } from 'react-router';
 import BillAttachmentsApi from '../../../services/BillAttachmentsApi';
 import { ShowServiceComponent } from '../../utility/ShowServiceComponent';
 import Config from '../../../data/Config';
+import Store from '../../../data/Store';
 
 class AddBillAttachment extends Component {
   constructor(props){
@@ -30,11 +31,25 @@ class AddBillAttachment extends Component {
   handlePostData = () => {
     const { profileId, billId } = this.props.location.query ? this.props.location.query : ""
     const { file } = this.state
-    let reader = new FormData();
-    reader.append('file', file);
-    if (profileId && billId) {
-      this.setState({ doubleClick: false });
-      new BillAttachmentsApi().createAttachment(this.successCall, this.errorCall, profileId, billId, reader);
+    if (file) {
+      let reader = new FormData();
+      reader.append('file', file);
+      if (profileId && billId) {
+        this.setState({ doubleClick: false });
+        let data = {
+          profileId: profileId,
+          billId: billId
+        }
+        Store.saveBillIdforAttechments(data)
+        new BillAttachmentsApi().createAttachment(this.successCall, this.errorCall, profileId, billId, reader);
+      } else {
+        let data = Store.getBillIdforAttechments("BILL_ID_ATTACH");
+        if (data.billId) {
+          new BillAttachmentsApi().createAttachment(this.successCall, this.errorCall, data.profileId, data.billId, reader);
+        }
+      }
+    } else {
+      this.callAlertTimer('danger', "please select a file to upload");
     }
   }
 
@@ -81,7 +96,7 @@ class AddBillAttachment extends Component {
         <Col sm="4" md={{ size: 8, offset: 3 }}>
           {color && <Alert color={color} >{content}</Alert>}
           <AvForm onSubmit={this.handlePostData}  >
-            <AvField type="file" name="file" label="Select File to upload" onChange={e => this.handleInput(e)} errorMessage="Please, select a file to continue..." />
+            <AvField type="file" name="file" label="Select File to upload" onChange={e => this.handleInput(e)} />
             <FormGroup>
               <Button color="info" disabled={this.state.doubleClick} > Upload </Button> &nbsp;&nbsp;
               <Button active color="light" type="button" onClick={this.cancelAddAttachment} >Cancel</Button>

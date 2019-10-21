@@ -7,23 +7,40 @@ import Attachment from '../../utility/Download_View_Delete_Attachment';
 import { DeleteModel } from '../../utility/DeleteModel';
 import { ShowServiceComponent } from '../../utility/ShowServiceComponent';
 import Config from '../../../data/Config';
+import Store from '../../../data/Store';
+import '../../../css/style.css';
 
 class BillAttachments extends Component {
     constructor(props) {
         super(props);
         this.state = {
             // This condtions checking whether vairable came form query or through props.
-            profileId: this.props.location && this.props.location.query ? this.props.location.query.profileId : this.props.profileId,
-            billId: this.props.location && this.props.location.query ? this.props.location.query.billId : this.props.billId,
+            // profileId: this.props.location && this.props.location.query ? this.props.location.query.profileId : this.props.profileId,
+            // billId: this.props.location && this.props.location.query ? this.props.location.query.billId : this.props.billId,
             attachments: [],
             dropdownOpen: [],
             reattachment: '',
         }
     }
 
-    componentDidMount = () => {
-        const { profileId, billId } = this.state
-        new BillAttachmentsApi().getAttachments(this.successCall, this.errorCall, profileId, billId);
+    componentDidMount () {
+        // const { profileId, billId } = this.state
+        const { profileId, billId } = this.props.location && this.props.location.query ? this.props.location.query : "";
+        if (profileId && billId) {
+            this.setState({ profileId, billId });
+            let data = {
+                profileId: profileId,
+                billId: billId
+            }
+            Store.saveBillIdforAttechments(data); // on "reload", "this.props.location.query/state" is getting null, so storing and getting. but priority goes to "props", then "store".
+            new BillAttachmentsApi().getAttachments(this.successCall, this.errorCall, profileId, billId);
+        } else {
+            let idData = Store.getBillIdforAttechments("BILL_ID_ATTACH");
+            if (idData) {
+                this.setState({ profileId: idData.profileId, billId: idData.billId });
+                new BillAttachmentsApi().getAttachments(this.successCall, this.errorCall, idData.profileId, idData.billId);
+            }
+        }
     }
 
     successCall = async (attachments) => {
@@ -68,15 +85,14 @@ class BillAttachments extends Component {
         if (color === 'success') {
             setTimeout(() => {
                 this.setState({ color: '', content: '' });
-            }, Config.apiTimeoutMillis)
+                window.location.reload();
+            }, Config.apiTimeoutMillis);
         }
     }
 
     downloadLink = async (reattachment) => { Attachment.downloadAttachment(reattachment).then(response => console.log(response))}
 
     viewLink = (reattachment) => { Attachment.viewAttachment(reattachment).then(response => this.toggleView(response, reattachment))}
-
-    // handleAddFile = () => { this.setState({ addFile: !this.state.addFile }); }
 
     render() {
         const { attachments, danger, spinner } = this.state;
@@ -94,7 +110,8 @@ class BillAttachments extends Component {
     loadHeader = () => {
         const { profileId, billId } = this.state
         return <CardHeader>
-            <div style={{ paddingTop: 10, color: '#000000' }}>
+            <div className="black-color padding-top">
+            {/* <div style={{ paddingTop: 10, color: '#000000' }}> */}
                 <strong>ATTACHMENTS
                     <Link to={{ pathname: "/bills/attachments/add", query: { profileId: profileId, billId: billId } }} >
                         <FaCloudUploadAlt style={{ marginRight: 10 }} className="float-right" color="#020b71" size={20} />
@@ -107,7 +124,7 @@ class BillAttachments extends Component {
     showNoAttachments = () => {
         return <Card>
             {this.loadHeader()}
-            <center style={{ paddingTop: '20px' }}><CardBody> <h5><b>You haven't added any attachments for this Bill. Please add now...</b></h5><br /> </CardBody></center>
+            <center className="column-text"> <CardBody> <h5><b>You haven't added any attachments for this Bill. Please add now...</b></h5><br /> </CardBody> </center>
         </Card>
     }
 
