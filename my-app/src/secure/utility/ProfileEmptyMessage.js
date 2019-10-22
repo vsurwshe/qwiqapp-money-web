@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Card, CardBody, CardHeader, Button } from "reactstrap";
-import CreateProfile from '../profiles/CreateProfile';
+import ProfileForm from '../profiles/ProfileForm';
 
 export const ProfileEmptyMessage = () => {
   let [addProfile, changeAddProfile] = useState(false)
@@ -9,7 +9,7 @@ export const ProfileEmptyMessage = () => {
   }
 
   if (addProfile) {
-    return <CreateProfile />
+    return <ProfileForm />
   } else {
     return (
       <div className="animated fadeIn">

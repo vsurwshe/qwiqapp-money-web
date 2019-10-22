@@ -15,7 +15,7 @@ import Categories from "../secure/categories/Categories";
 import Contacts from "../secure/contacts/Contacts";
 import UserApi from "../services/UserApi";
 import ProfileApi from "../services/ProfileApi";
-import CreateProfile from "../secure/profiles/CreateProfile";
+import ProfileForm from "../secure/profiles/ProfileForm";
 import Bills from "../secure/bills/Bills";
 import SetProfile from "../secure/profiles/SetProfile";
 import DefaultHeader from "../secure/sidebar/DefaultHeader"
@@ -128,7 +128,7 @@ class Main extends Component {
         <PrivateRoute exact path="/billing/addCredits" component={MakePayment} />
         <PrivateRoute exact path="/billing/paymentHistory" component={PaymentHistory} />
         <PrivateRoute exact path="/payment/invoice/:id" component={Invoice} />
-        <PrivateRoute exact path="/createProfile" component={CreateProfile} />
+        <PrivateRoute exact path="/createProfile" component={ProfileForm} />
         <PrivateRoute exact path="/profiles" component={Profiles} />
         <PrivateRoute exact path="/profiles/:id" component={SetProfile} />
         <PrivateRoute exact path="/listBills" component={Bills} />
