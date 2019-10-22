@@ -13,10 +13,7 @@ class AddBillAttachment extends Component {
     this.state = {
     file: '',
     color: '',
-    addSuccess: false,
-    content: '',
-    cancelAddAttachment: false,
-    doubleClick: false
+    content: ''
     }
   }
 
@@ -39,7 +36,7 @@ class AddBillAttachment extends Component {
         new BillAttachmentsApi().createAttachment(this.successCall, this.errorCall, profileId, billId, reader);
       } 
     } else {
-      this.callAlertTimer('danger', "please select a file to upload");
+      this.callAlertTimer('danger', "Please select a file to upload");
     }
   }
 
