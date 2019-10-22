@@ -163,7 +163,7 @@ class Contacts extends Component {
       <Card>
         {this.loadHeader()}
         <center className="padding-top">
-          <CardBody><Loader type="Ball-Triangle" color="#2E86C1" height={80} width={80} /></CardBody>
+          <CardBody><Loader type="BallTriangle" color="#2E86C1" height={80} width={80} /></CardBody>
         </center>
       </Card>
     </div>

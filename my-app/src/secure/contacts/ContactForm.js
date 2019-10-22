@@ -24,12 +24,7 @@ class ContactForm extends Component {
       countries: [],
       labels: props.lables,
       contact: props.contact,
-      alertColor: '',
-      alertMessage: '',
       selectedOption: [],
-      cancelAddContact: false,
-      disableDoubleClick: false,
-      contactCreated: false,
       selectedCountry: props.contact ? props.contact.country : "",
     };
   }
