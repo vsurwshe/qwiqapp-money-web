@@ -253,7 +253,7 @@ export const ProfileFormUI = (props) => {
     </FormGroup>
     <center>
       <Button color="success" disabled={!profileName} onClick={e => props.handleSubmit(e)} > {buttonMessage} </Button>
-      <Button active color="light" style={{ marginLeft: 20 }} aria-pressed="true" onClick={props.cancelCreateProfile}>Cancel</Button>
+      <Button active color="light" style={{ marginLeft: 20 }} aria-pressed="true" onClick={props.handleEditProfileCancel}>Cancel</Button>
     </center>
   </>
 }

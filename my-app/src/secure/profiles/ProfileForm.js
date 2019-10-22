@@ -8,6 +8,7 @@ import Config from "../../data/Config";
 import ProfileInfoTable from './ProfileInfoTable';
 import ProfileTypesApi from "../../services/ProfileTypesApi";
 import { ProfileFormUI } from "../utility/FormsModel";
+import '../../css/style.css';
 
 class ProfileForm extends Component {
     constructor(props){
@@ -15,16 +16,9 @@ class ProfileForm extends Component {
         this.state = {
           profileId: props.profileId ? props.profileId : '',
           profileName: props.profileName ? props.profileName : '',
-          color: '',
-          content: '',
-          profileCreated: false,
-          cancelCreateProfile: false,
           profileType: 0,
-          profileInfoTable: false,
-          action: '',
           comparisionText: "View Feature Comparision",
           profileTypes: [],
-          tooltipOpen: false
         };
     }
 
@@ -55,8 +49,8 @@ class ProfileForm extends Component {
     this.setState({ buttonText: "Create " + buttonText[0].name + " Profile" })
   }
 
-  cancelCreateProfile = () => {
-    this.setState({ cancelCreateProfile: true });
+  handleEditProfileCancel = () => {
+    this.setState({ cancelEditProfile: true });
   }
 
   toggle = () => {
@@ -118,8 +112,8 @@ class ProfileForm extends Component {
   }
 
   render() {
-    const { color, content, profileCreated, cancelCreateProfile, action, profileType, profileInfoTable, profileTypes, profileId } = this.state
-    if(profileCreated || cancelCreateProfile){
+    const { color, content, profileCreated, cancelEditProfile, action, profileType, profileInfoTable, profileTypes, profileId } = this.state
+    if(profileCreated || cancelEditProfile){
        return <Profiles /> 
     } else if(profileId){
        return this.loadProfile(color, content, "UPDATE PROFILE") 
@@ -134,7 +128,7 @@ class ProfileForm extends Component {
             </tr>
           })
           return <div>
-            {(profileCreated || cancelCreateProfile) ? <Profiles /> : this.loadProfile(color, content, "CREATE PROFILE", action, profileType, profileInfoTable, profileTypesOptions)}
+            {(profileCreated || cancelEditProfile) ? <Profiles /> : this.loadProfile(color, content, "CREATE PROFILE", action, profileType, profileInfoTable, profileTypesOptions)}
           </div>
     }
  }
@@ -146,11 +140,11 @@ class ProfileForm extends Component {
         <Card>
           <CardHeader><strong>{headerMessage}</strong></CardHeader>
           <CardBody>
-            <Col><Alert color={color}>{content}</Alert></Col>
+            <Col>{color && <Alert color={color}>{content}</Alert>}</Col>
             {
               profileTypesOptions ? <>
                 <center>
-                <h5><b>CHOOSE PROFILE TYPES</b></h5>
+                <h5><b>Choose profile types</b></h5>
                 <Col >
                   {action !== "VERIFY_EMAIL" && this.createProfileTypes(profileTypesOptions)}
                   <br/>{this.loadActionsButton(action, profileType)}<br /><br />
@@ -165,8 +159,8 @@ class ProfileForm extends Component {
   }
 
   createProfileTypes = (profileTypesOptions) => {
-    return <Table bordered striped>
-      <thead>
+    return <Table bordered striped hover>
+      <thead className="table-header-color">
         <tr>
           <th>Type</th>
           <th>Profile Type</th>
@@ -187,7 +181,7 @@ class ProfileForm extends Component {
     } else if (profileType !== 0 && profileType !== 3 && action) {
       return <>
         <Button color="info"><Link to={url} style={{ color: "black" }}> {action}</Link></Button>
-        <Button active color="danger" style={{ marginLeft: 20 }} aria-pressed="true" onClick={this.cancelCreateProfile}>Cancel</Button>
+        <Button active color="danger" style={{ marginLeft: 20 }} aria-pressed="true" onClick={this.handleEditProfileCancel}>Cancel</Button>
       </>
     } else {
       return this.loadProfileForm()
@@ -203,7 +197,7 @@ class ProfileForm extends Component {
     } 
     return <ProfileFormUI data={profileFields} handleInput={this.handleInput} 
     toggle={this.toggle} handleSubmit={this.handleSubmit} 
-    cancelCreateProfile={this.cancelCreateProfile} />
+    handleEditProfileCancel={this.handleEditProfileCancel} />
   }
 }
 export default ProfileForm;
