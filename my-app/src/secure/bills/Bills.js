@@ -1,4 +1,3 @@
-
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import {Redirect} from 'react-router';
@@ -21,7 +20,7 @@ import ViewPayment from "./billPayment/ViewPayment";
 import PaymentApi from "../../services/PaymentApi";
 import '../../css/style.css';
 
-class Bills extends Component {
+class Bills extends Component { 
   constructor(props) {
     super(props);
     this.state = {
@@ -509,11 +508,11 @@ class Bills extends Component {
       <Button className="rounded" style={{ backgroundColor: "transparent", borderColor: '#ada397', color: "green", width: 67 }} onClick={() => this.updateBillAction(bill)}>Edit</Button> &nbsp;
       <UncontrolledDropdown group>
       <DropdownToggle caret onClick={() => this.handleShowPayment(bill)}> More ... </DropdownToggle>
-      <DropdownMenu>
-        <DropdownItem onClick={this.handleAddPayment} >Add Payment</DropdownItem>
-        <DropdownItem onClick={this.handleViewPayment}>View Payment</DropdownItem>
-        {!bill.paid ? <DropdownItem onClick={this.handleMarkAsPaid}>Mark As Paid</DropdownItem> :
-          <DropdownItem onClick={this.handleMarkAsUnpaidPayment}>Mark As Unpaid</DropdownItem>}
+      <DropdownMenu right>
+        <DropdownItem onClick={this.handleAddPayment} >Add a payment</DropdownItem>
+        <DropdownItem onClick={this.handleViewPayment}>Payments History</DropdownItem>
+        {!bill.paid ? <DropdownItem onClick={this.handleMarkAsPaid}>Mark as PAID</DropdownItem> :
+          <DropdownItem onClick={this.handleMarkAsUnpaidPayment}>Mark as unpaid</DropdownItem>}
         {this.state.profileType > 1 ? <DropdownItem onClick={() => this.billAttachments(key, bill.id)}>Attachments</DropdownItem> : ''}
         <DropdownItem onClick={() => this.setBillId(bill)}>Delete</DropdownItem>
       </DropdownMenu>

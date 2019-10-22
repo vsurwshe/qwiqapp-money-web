@@ -113,7 +113,8 @@ class BillAttachments extends Component {
     showNoAttachments = () => {
         return <Card>
             {this.loadHeader()}
-            <center className="column-text"> <CardBody> <h5><b>You haven't added any attachments for this Bill. Please add now...</b></h5><br /> </CardBody> </center>
+            <center className="column-text"> <CardBody> 
+                <h5><b>You haven't added any attachments for this Bill. Please add now...</b></h5><br /> </CardBody> </center>
         </Card>
     }
 

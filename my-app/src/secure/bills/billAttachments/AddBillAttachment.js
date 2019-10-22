@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Card, FormGroup, Button, Alert, Col, CardBody } from 'reactstrap';
+import { Card, FormGroup, Button, Alert, Col, CardBody, Label } from 'reactstrap';
 import { AvForm, AvField } from 'availity-reactstrap-validation';
 import { Redirect } from 'react-router';
 import BillAttachmentsApi from '../../../services/BillAttachmentsApi';
@@ -80,10 +80,11 @@ class AddBillAttachment extends Component {
     return <Card>
       {ShowServiceComponent.loadHeader("ADD ATTACHMENT")}
       <CardBody>
-        <Col sm="4" md={{ size: 8, offset: 3 }}>
-          {color && <Alert color={color} >{content}</Alert>}
-          <AvForm onSubmit={this.handlePostData}  >
-            <AvField type="file" name="file" label="Select File to upload" onChange={e => this.handleInput(e)} />
+        {color && <Alert color={color} >{content}</Alert>}
+        <Col md={{ size: 12, offset: 5 }}>
+          <AvForm onSubmit={this.handlePostData}>
+            <Label>Select a file to upload</Label><br/><br/>
+            <AvField type="file" name="file" onChange={e => this.handleInput(e)} />
             <FormGroup>
               <Button color="info" disabled={this.state.doubleClick} > Upload </Button> &nbsp;&nbsp;
               <Button active color="light" type="button" onClick={this.cancelAddAttachment} >Cancel</Button>
