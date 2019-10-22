@@ -340,7 +340,12 @@ class Bills extends Component {
     } else if (this.state.viewPayment) {
       return <ViewPayment bill={this.state.requiredBill} paidAmount={paidAmount} profileId={profileId} cancel={this.handleViewPayment} />
     } else if (this.state.attachments) {
-      return  <Redirect to={{pathname: "/bills/attachments", query: { profileId: profileId, billId: billId }}} />
+       let data = {
+                profileId: profileId,
+                billId: billId
+      }
+      Store.saveBillIdforAttechments(data);
+      return  <Redirect to="/bills/attachments"/>
     }
     else {
       return <div>

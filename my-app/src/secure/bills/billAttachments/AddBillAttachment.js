@@ -29,25 +29,15 @@ class AddBillAttachment extends Component {
   }
 
   handlePostData = () => {
-    const { profileId, billId } = this.props.location.query ? this.props.location.query : ""
-    const { file } = this.state
+    const { profileId, billId } = Store.getBillIdforAttechments("BILL_ID_ATTACH");
+    const { file } = this.state;
     if (file) {
       let reader = new FormData();
       reader.append('file', file);
       if (profileId && billId) {
         this.setState({ doubleClick: false });
-        let data = {
-          profileId: profileId,
-          billId: billId
-        }
-        Store.saveBillIdforAttechments(data)
         new BillAttachmentsApi().createAttachment(this.successCall, this.errorCall, profileId, billId, reader);
-      } else {
-        let data = Store.getBillIdforAttechments("BILL_ID_ATTACH");
-        if (data.billId) {
-          new BillAttachmentsApi().createAttachment(this.successCall, this.errorCall, data.profileId, data.billId, reader);
-        }
-      }
+      } 
     } else {
       this.callAlertTimer('danger', "please select a file to upload");
     }

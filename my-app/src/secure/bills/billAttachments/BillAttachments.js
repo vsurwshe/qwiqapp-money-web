@@ -14,32 +14,24 @@ class BillAttachments extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            // This condtions checking whether vairable came form query or through props.
-            // profileId: this.props.location && this.props.location.query ? this.props.location.query.profileId : this.props.profileId,
-            // billId: this.props.location && this.props.location.query ? this.props.location.query.billId : this.props.billId,
+            profileId: Store.getBillIdforAttechments("BILL_ID_ATTACH").profileId,
+            billId: Store.getBillIdforAttechments("BILL_ID_ATTACH").billId,
             attachments: [],
             dropdownOpen: [],
-            reattachment: '',
+            reattachment: ''
         }
     }
 
     componentDidMount () {
-        // const { profileId, billId } = this.state
-        const { profileId, billId } = this.props.location && this.props.location.query ? this.props.location.query : "";
+        const { profileId, billId } = this.state
         if (profileId && billId) {
-            this.setState({ profileId, billId });
-            let data = {
-                profileId: profileId,
-                billId: billId
-            }
-            Store.saveBillIdforAttechments(data); // on "reload", "this.props.location.query/state" is getting null, so storing and getting. but priority goes to "props", then "store".
-            new BillAttachmentsApi().getAttachments(this.successCall, this.errorCall, profileId, billId);
-        } else {
-            let idData = Store.getBillIdforAttechments("BILL_ID_ATTACH");
-            if (idData) {
-                this.setState({ profileId: idData.profileId, billId: idData.billId });
-                new BillAttachmentsApi().getAttachments(this.successCall, this.errorCall, idData.profileId, idData.billId);
-            }
+           new BillAttachmentsApi().getAttachments(this.successCall, this.errorCall, profileId, billId);
+        } 
+    }
+
+    componentDidUpdate=()=>{
+        if(this.state.color==="success"){
+            new BillAttachmentsApi().getAttachments(this.successCall, this.errorCall, this.state.profileId, this.state.billId);
         }
     }
 
@@ -85,7 +77,6 @@ class BillAttachments extends Component {
         if (color === 'success') {
             setTimeout(() => {
                 this.setState({ color: '', content: '' });
-                window.location.reload();
             }, Config.apiTimeoutMillis);
         }
     }
@@ -108,12 +99,10 @@ class BillAttachments extends Component {
     }
 
     loadHeader = () => {
-        const { profileId, billId } = this.state
         return <CardHeader>
             <div className="black-color padding-top">
-            {/* <div style={{ paddingTop: 10, color: '#000000' }}> */}
                 <strong>ATTACHMENTS
-                    <Link to={{ pathname: "/bills/attachments/add", query: { profileId: profileId, billId: billId } }} >
+                    <Link to= "/bills/attachments/add" >
                         <FaCloudUploadAlt style={{ marginRight: 10 }} className="float-right" color="#020b71" size={20} />
                     </Link>
                 </strong>
