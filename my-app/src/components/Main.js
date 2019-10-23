@@ -13,7 +13,6 @@ import navigation from "../data/navigations";
 import Lables from "../secure/labels/Labels";
 import Categories from "../secure/categories/Categories";
 import Contacts from "../secure/contacts/Contacts";
-import CreateContact from "../secure/contacts/CreateContact";
 import UserApi from "../services/UserApi";
 import ProfileApi from "../services/ProfileApi";
 import CreateProfile from "../secure/profiles/CreateProfile";
@@ -134,7 +133,6 @@ class Main extends Component {
         <PrivateRoute exact path="/listBills/:value" component={Bills} />
         <PrivateRoute path="/label/labels" component={Lables} />
         <PrivateRoute path="/listCategories" component={Categories} />
-        <PrivateRoute exact path="/contact/createContact" component={CreateContact} />
         <PrivateRoute exact path="/contact/viewContacts" component={Contacts} />
         <Route path="/login" component={Login} />
         <Route path="/signup" component={Signup} />
