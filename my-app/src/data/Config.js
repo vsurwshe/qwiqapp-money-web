@@ -20,13 +20,15 @@ const Config = {
 }
 
 let initFirst= function () {
+    let clientId = process.env.REACT_APP_CLIENT_ID;
+    let clientSecret = process.env.REACT_APP_CLIENT_SEC;
     let data = {
         bgcolor: 'red',
         content: 'green',
         authBaseURL: "http://localhost:8081",
         cloudBaseURL: "http://localhost:8082",
-        clientId: process.env.REACT_APP_CLIENT_ID,
-        clientSecret: process.env.REACT_APP_CLIENT_SEC
+        clientId: clientId,
+        clientSecret: clientSecret
     }
     let mode = process.env.REACT_APP_SITE_MODE
     if (process.env.REACT_APP_NODE_ENV === 'LOCAL') {
