@@ -11,7 +11,7 @@ import { user_actions, DEFAULT_CURRENCY } from '../../data/GlobalKeys';
 export const BillFormUI = (props) => {
   let categoryName;
   const { bill, currencies, labels, contacts, categories, type, amount, dueDays, dueDate, billDate, moreOptions, doubleClick } = props.data;
-  const { currency, description } = bill ? bill : '';
+  const { currency, description } = bill ? bill : Store.getProfile();
   if (bill) {
     categoryName = Data.categoriesOrLabels(categories).filter(item => { return item.value === bill.categoryId })
   }
