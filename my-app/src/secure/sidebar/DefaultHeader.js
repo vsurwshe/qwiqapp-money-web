@@ -35,7 +35,9 @@ const DefaultHeader = (props) => {
   }
 
   //TODO:  handle profile error message
-  useEffect(() => { successCall(); getUserName() });
+  useEffect(() => {
+    successCall(); getUserName()
+  });
 
   const successCall = async () => {
     if (Store.getProfile() === null) {
@@ -89,7 +91,7 @@ const DefaultHeader = (props) => {
         {profiles && profiles.map((profile, id) => {
           let url = "/profiles/" + profile.id;
           return <DropdownItem key={id} tag={Link} to={url}>
-            <FaUserCircle style={{ color: "#7F3BDB" }} /> &nbsp; {profile.name.length > 15 ? profileName.slice(0, 15) + "..." : profile.name}
+            <FaUserCircle style={{ color: "#7F3BDB" }} /> &nbsp; {profile.name.length > 15 ? (profile.name).slice(0, 15) + "..." : profile.name}
           </DropdownItem>
         })
         }
@@ -103,11 +105,11 @@ const DefaultHeader = (props) => {
 
   return <React.Fragment>
     <AppSidebarToggler className="d-lg-none" display="md" mobile />
-    <Link to="/dashboard"  style={{ color: "black", textDecoration: "none" }}>
+    <Link to="/dashboard" style={{ color: "black", textDecoration: "none" }}>
       <span>
-       <img src={process.env.PUBLIC_URL + '/img/logo.png'} className="bills-reminder-logo" alt="bills-reminder" />Bills Reminder
+        <img src={process.env.PUBLIC_URL + '/img/logo.png'} className="bills-reminder-logo" alt="bills-reminder" />Bills Reminder
         </span>
-      </Link>
+    </Link>
     <Nav className="d-md-down-none" navbar />
     <Nav className="ml-auto" navbar>
       <AppHeaderDropdown direction="down">

@@ -50,7 +50,6 @@ class Main extends Component {
       new ProfileApi().getProfiles(this.successCallProfiles, this.errorCall);
     }
   }
-
   successCallProfiles = async (profiles) => {
     if (profiles.length === 0 || profiles === null) {
       console.log("There is No Profile");
@@ -95,12 +94,15 @@ class Main extends Component {
 
   signOut(e) { e.preventDefault(); this.props.history.push("/login"); }
 
+  // this function is called when user selects profile in default header dropdown
   changeFlagOnClick = () => {
     this.setState({ flag: !this.state.flag })
   }
 
+  // this function is called when user manually selects profile in Manage Profiles table
   changeFlagValue = () => {
-    this.setState({ flag: this.props.location.state.changeFlag })
+    const { changeFlag } = this.props.location.state
+    this.setState({ flag: changeFlag })
     this.props.location.state = null
   }
 
