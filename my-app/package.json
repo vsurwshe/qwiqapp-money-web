@@ -58,7 +58,7 @@
     "start": "react-scripts start ",
     "build": "react-scripts build",
     "envrun": "eval $(cat .env) npm start",
-    "envbuild": "sh -ac '. .env; react-scripts build'",
+    "envbuild": "sh -ac '. ./.env; react-scripts build'",
     "stag": "REACT_APP_NODE_ENV=demo npm start ",
     "prod": "REACT_APP_NODE_ENV=ppe npm start ",
     "build:demo": "REACT_APP_NODE_ENV=DEMO npm build",
