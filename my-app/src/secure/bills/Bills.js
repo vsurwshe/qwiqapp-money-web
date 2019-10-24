@@ -156,7 +156,7 @@ class Bills extends Component {
 
   // category name color append to bills
   billsWithcategoryNameColor = (bills) => {
-    let previousPayments = [];
+    let previousPayments = []; 
     const prevState = bills;
     const state = prevState.map((bill, index) => {
       this.getPayments(bill.id, previousPayments);
@@ -243,9 +243,10 @@ class Bills extends Component {
   handleMarkAsUnpaidPayment = () => { this.setState({ markAsUnPaid: true }) }
 
   calculateLastPaid = (bill) => {
-    if (this.state.billPayments.length > 0) {
+    const { billPayments }=this.state
+    if (billPayments.length > 0) {
       // Filtering billpayments according to billId
-      let filteredBillPayment = this.state.billPayments.filter(billPayment => billPayment.billId === bill.billId);
+      let filteredBillPayment =  billPayments.filter(billPayment => billPayment.billId === bill.id);
       let paidAmount = bill.amount;
       if (filteredBillPayment && filteredBillPayment.length && filteredBillPayment[0].payments.length) {
         // Calculating the total paidAmount of all billpayments
