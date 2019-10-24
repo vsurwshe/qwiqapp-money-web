@@ -23,6 +23,10 @@ class ProfileApi {
   deleteProfile(success, failure, profileId) {
     process(success, failure, "/profiles/" + profileId, "DELETE", null, profileId);
   }
+
+  upgradeProfile(success, failure, profileId, type) {
+    process(success, failure, "/profiles/" + profileId + "/upgrade?type="+ type, "PUT", null, profileId);
+  }
 }
 
 export default ProfileApi;

@@ -8,6 +8,7 @@ import { DeleteModel } from "../utility/DeleteModel";
 import { ProfileEmptyMessage } from "../utility/ProfileEmptyMessage";
 import { Container, Button, Card, CardBody, Table, CardHeader, Alert } from "reactstrap";
 import ProfileForm from './ProfileForm';
+import Config from '../../data/Config';
 /**
  * Display list of profiles,Manage profile like (update, delete)
  * Call Add,Update, delete Componets.
@@ -33,12 +34,23 @@ class Profiles extends Component {
     }
   };
 
-  errorCall = err => { this.setState({ visible: true }); console.log("Internal Server Error") }
+  errorCall = err => { this.setState({ visible: true }); console.log("Internal Server Error"); console.log(err) }
 
   updateProfile = (profileId, profileName) => {
     this.setState({ profileId, profileName, updateProfile: true, })
   };
 
+  upgradeProfile = (upgradeProfile) => {
+    new ProfileApi().upgradeProfile(this.upgradeSuccessCall, this.errorCall, upgradeProfile.id, upgradeProfile.type+1);
+  }
+
+  upgradeSuccessCall = (profile) => {
+    console.log(profile)
+    this.setState({ alertColor: "success", alertMessage: "Your profile upgraded successfully" });
+    setTimeout(()=>{
+      this.setState({ alertColor: '', alertMessage: '' });
+    }, Config.apiTimeoutMillis);
+  }
   deleteProfile = () => {
     this.setState({ deleteProfile: true })
   };
@@ -97,6 +109,7 @@ class Profiles extends Component {
       <div className="animated fadeIn">
         {this.loadHeader()}
         <CardBody>
+          {this.state.alertMessage && <Alert color={this.state.alertColor} >{this.state.alertMessage}</Alert>}
           <Table bordered >
             <thead>
               <tr style={{ backgroundColor: "#DEE9F2  ", color: '#000000' }}  align='center'>
@@ -127,7 +140,8 @@ class Profiles extends Component {
           <Avatar name={profile.name.charAt(0)} size="40" round={true} /> &nbsp;&nbsp;{profile.name}</b> </td>
         <td style={{ paddingTop: 18 }}>{this.loadProfileType(profile.type)} </td>
         <td align="center">
-          <Button className="float-centre" style={{ backgroundColor: "#43A432", color: "#F0F3F4" }} onClick={() => { this.updateProfile(profile.id, profile.name) }}>Edit</Button>
+          <Button className="float-centre" style={{ backgroundColor: "#43A432", color: "#F0F3F4" }} onClick={() => { this.updateProfile(profile.id, profile.name) }}>Edit</Button> &nbsp;
+          <Button className="float-centre" style={{ backgroundColor: "#003325", color: "#F0F3F4" }} onClick={() => { this.upgradeProfile(profile) }}>Upgrade</Button>
         </td>
       </tr>
     );
