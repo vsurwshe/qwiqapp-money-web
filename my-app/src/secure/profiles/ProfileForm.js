@@ -11,20 +11,19 @@ import { ProfileFormUI } from "../utility/FormsModel";
 import '../../css/style.css';
 
 class ProfileForm extends Component {
-    constructor(props){
-        super(props);
-        this.state = {
-          profileId: props.profileId ? props.profileId : '',
-          profileName: props.profileName ? props.profileName : '',
-          profileType: 0,
-          comparisionText: "View Feature Comparision",
-          profileTypes: [],
-        };
-    }
+  constructor(props) {
+    super(props);
+    this.state = {
+      profileId: props.profileId ? props.profileId : '',
+      profileName: props.profileName ? props.profileName : '',
+      profileType: 0,
+      comparisionText: "View Feature Comparision",
+      profileTypes: [],
+    };
+  }
 
   componentDidMount = () => {
     let user = Store.getUser();
-    this.setState({ action: Store.getUser().action });
     new ProfileTypesApi().getProfileTypes((profileTypes) => { this.setState({ profileTypes }) }, (error) => { console.log("error", error); })
     if (user) {
       this.setState({ action: user.action });
@@ -60,23 +59,23 @@ class ProfileForm extends Component {
   handleSubmit = e => {
     e.preventDefault();
     const { profileId, profileName, profileType, action } = this.state
-    if(profileId){
-        const data = { name: profileName };
-        new ProfileApi().updateProfile(this.successCall, this.errorCall, data, profileId);
-    } else{
-        if (action !== 'VERIFY_EMAIL') {
-            const data = { name: profileName, type: profileType };
-            new ProfileApi().createProfile(this.successCall, this.errorCall, data);
-          } else {
-            this.callAlertTimer("danger", "First Please verify with the code sent to your Email.....")
-          }
+    if (profileId) {
+      const data = { name: profileName };
+      new ProfileApi().updateProfile(this.successCall, this.errorCall, data, profileId);
+    } else {
+      if (action !== 'VERIFY_EMAIL') {
+        const data = { name: profileName, type: profileType };
+        new ProfileApi().createProfile(this.successCall, this.errorCall, data);
+      } else {
+        this.callAlertTimer("danger", "First Please verify with the code sent to your Email.....")
+      }
     }
   };
 
   successCall = () => {
-    if(this.state.profileId){
+    if (this.state.profileId) {
       this.callAlertTimer("success", "Profile Updated Successfully!!");
-    } else{
+    } else {
       this.callAlertTimer("success", "New Profile Created!!");
     }
   }
@@ -96,7 +95,6 @@ class ProfileForm extends Component {
     if (color === "success") {
       setTimeout(() => {
         this.setState({ content: '', color: '', profileName: '', profileCreated: true });
-        window.location.href = "/profiles";
       }, Config.apiTimeoutMillis);
     }
   };
@@ -113,25 +111,25 @@ class ProfileForm extends Component {
 
   render() {
     const { color, content, profileCreated, cancelEditProfile, action, profileType, profileInfoTable, profileTypes, profileId } = this.state
-    if(profileCreated || cancelEditProfile){
-       return <Profiles /> 
-    } else if(profileId){
-       return this.loadProfile(color, content, "UPDATE PROFILE") 
-    } else{
-        const profileTypesOptions = profileTypes.map(proTypes => {
-            return <tr key={proTypes.type}>
-              <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<Input type="radio" name="radio1" value={proTypes.type} checked={proTypes.type === profileType}
-                onChange={() => this.selectProfileType(proTypes.type)} />{' '}</td>
-              <td>{proTypes.name}</td>
-              <td>{proTypes.cost}</td>
-              <td>{proTypes.description}</td>
-            </tr>
-          })
-          return <div>
-            {(profileCreated || cancelEditProfile) ? <Profiles /> : this.loadProfile(color, content, "CREATE PROFILE", action, profileType, profileInfoTable, profileTypesOptions)}
-          </div>
+    if (profileCreated || cancelEditProfile) {
+      return <Profiles />
+    } else if (profileId) {
+      return this.loadProfile(color, content, "UPDATE PROFILE")
+    } else {
+      const profileTypesOptions = profileTypes.map(proTypes => {
+        return <tr key={proTypes.type}>
+          <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<Input type="radio" name="radio1" value={proTypes.type} checked={proTypes.type === profileType}
+            onChange={() => this.selectProfileType(proTypes.type)} />{' '}</td>
+          <td>{proTypes.name}</td>
+          <td>{proTypes.cost}</td>
+          <td>{proTypes.description}</td>
+        </tr>
+      })
+      return <div>
+        {(profileCreated || cancelEditProfile) ? <Profiles /> : this.loadProfile(color, content, "CREATE PROFILE", action, profileType, profileInfoTable, profileTypesOptions)}
+      </div>
     }
- }
+  }
 
   // when Profile Creation in process.
   loadProfile = (color, content, headerMessage, action, profileType, profileInfoTable, profileTypesOptions) => {
@@ -141,18 +139,20 @@ class ProfileForm extends Component {
           <CardHeader><strong>{headerMessage}</strong></CardHeader>
           <CardBody>
             <Col>{color && <Alert color={color}>{content}</Alert>}</Col>
-            {
+            <Col>
+              {
               profileTypesOptions ? <>
                 <center>
-                <h5><b>Choose profile types</b></h5>
-                <Col >
-                  {action !== "VERIFY_EMAIL" && this.createProfileTypes(profileTypesOptions)}
-                  <br/>{this.loadActionsButton(action, profileType)}<br /><br />
-                  <h5><span onClick={this.profileViewTable} className="float-right" style={{ color: '#7E0462' }} ><u>{this.state.comparisionText}</u></span></h5>
-                </Col>
+                  <h5><b>Choose profile types</b></h5>
+                  <Col >
+                    {action !== "VERIFY_EMAIL" && this.createProfileTypes(profileTypesOptions)}
+                    <br />{this.loadActionsButton(action, profileType)}<br /><br />
+                    <h5><span onClick={this.profileViewTable} className="float-right" style={{ color: '#7E0462' }} ><u>{this.state.comparisionText}</u></span></h5>
+                  </Col>
                 </center> <br /><br />
                 {profileInfoTable && <ProfileInfoTable />}</> : this.loadProfileForm()
             }
+            </Col>
           </CardBody>
         </Card>
       </div>);
@@ -191,13 +191,13 @@ class ProfileForm extends Component {
   loadProfileForm = () => {
     const { profileName, tooltipOpen } = this.state;
     const profileFields = {
-        profileName : profileName, 
-        tooltipOpen : tooltipOpen,
-        buttonMessage : this.props.profileId ? 'Update' : 'Save'
-    } 
-    return <ProfileFormUI data={profileFields} handleInput={this.handleInput} 
-    toggle={this.toggle} handleSubmit={this.handleSubmit} 
-    handleEditProfileCancel={this.handleEditProfileCancel} />
+      profileName: profileName,
+      tooltipOpen: tooltipOpen,
+      buttonMessage: this.props.profileId ? 'Update' : 'Save'
+    }
+    return <ProfileFormUI data={profileFields} handleInput={this.handleInput}
+      toggle={this.toggle} handleSubmit={this.handleSubmit}
+      handleEditProfileCancel={this.handleEditProfileCancel} />
   }
 }
 export default ProfileForm;
