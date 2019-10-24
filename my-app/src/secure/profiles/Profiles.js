@@ -61,7 +61,7 @@ class Profiles extends Component {
   }
 
   render() {
-    const { profiles, profileId, createProfile, updateProfile, deleteProfile, selectProfile, profileName, spinner, danger } = this.state;
+    const { profiles, profileId, createProfile, updateProfile, deleteProfile, selectProfile, spinner, danger } = this.state;
     if (profiles.length === 0 && !createProfile) {
       return <div>{profiles.length === 0 && !createProfile && !spinner ? this.loadSpinner() : <ProfileEmptyMessage />}</div>
     } else if (selectProfile) {
@@ -70,7 +70,7 @@ class Profiles extends Component {
     } else if (createProfile) {
       return <ProfileForm />
     } else if (updateProfile) {
-      return (<Container> <ProfileForm profileId={profileId} profileName={profileName} /> </Container>)
+      return (<Container> <ProfileForm profileId={profileId} /> </Container>)
     } else if (deleteProfile) {
       return (<Container> <DeleteProfile profileId={profileId} /> </Container>)
      } else  {

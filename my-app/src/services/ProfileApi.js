@@ -13,7 +13,7 @@ class ProfileApi {
   }
 
   getProfilesById(success, failure, profileId) {
-    process(success, failure, "/profiles/" + profileId, "GET");
+    process(success, failure, "/profiles/" + profileId, "GET", null, null, profileId);
   }
 
   updateProfile(success, failure, data, profileId) {
@@ -27,12 +27,12 @@ class ProfileApi {
 
 export default ProfileApi;
 
-async function process(success, failure, requestUrl, requestMethod, data, deleteId, reload) {
+async function process(success, failure, requestUrl, requestMethod, data, deleteId, profileId, reload) {
   let HTTP = httpCall(requestUrl, requestMethod);
   let promise;
   try {
     data === null ? promise = await HTTP.request() : promise = await HTTP.request({ data });
-    if (requestMethod === "GET") {
+    if (requestMethod === "GET" && !profileId) {
       Store.saveUserProfiles(promise.data);
       validResponse(promise, success, requestMethod, deleteId)
     } else {
@@ -41,17 +41,17 @@ async function process(success, failure, requestUrl, requestMethod, data, delete
        : await new ProfileApi().getProfiles(success, failure, true);
     }
   } catch (err) {
-    handleAccessTokenError(err, failure, requestUrl, requestMethod, data, deleteId, success, reload);
+    handleAccessTokenError(err, failure, requestUrl, requestMethod, data, deleteId, success, profileId, reload);
   }
 }
 
 //this method solve the Expire Token Problem.
-let handleAccessTokenError = function (err, failure, requestUrl, requestMethod, data, deleteId, success, reload) {
+let handleAccessTokenError = function (err, failure, requestUrl, requestMethod, data, deleteId, success, profileId, reload) {
   if (err.request.status === 0) {
     errorResponse(err, failure)
   } else if (err.response.status === 403 || err.response.status === 401) {
     if (!reload) {
-      new LoginApi().refresh(() => { process(success, failure, requestUrl, requestMethod, data, deleteId, "reload") }, errorResponse(err, failure))
+      new LoginApi().refresh(() => { process(success, failure, requestUrl, requestMethod, data, deleteId, profileId, "reload") }, errorResponse(err, failure))
     } else {
       errorResponse(err, failure)
     }

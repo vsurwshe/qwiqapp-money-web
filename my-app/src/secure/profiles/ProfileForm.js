@@ -14,25 +14,39 @@ class ProfileForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      currencies: Store.getCurrencies() ? Store.getCurrencies() : [],
       profileId: props.profileId ? props.profileId : '',
-      profileName: props.profileName ? props.profileName : '',
       profileType: 0,
-      comparisionText: "View Feature Comparision",
       profileTypes: [],
+      comparisionText: "View Feature Comparision"
     };
   }
 
-  componentDidMount = () => {
-    let user = Store.getUser();
-    new ProfileTypesApi().getProfileTypes((profileTypes) => { this.setState({ profileTypes }) }, (error) => { console.log("error", error); })
-    if (user) {
-      this.setState({ action: user.action });
+  componentDidMount = async () => {
+    if (this.state.profileId) {
+      await new ProfileApi().getProfilesById(this.successCallById, this.errorCallById, this.state.profileId);
+    } else {
+      let user = Store.getUser();
+      this.setState({ action: Store.getUser().action });
+      await new ProfileTypesApi().getProfileTypes((profileTypes) => {
+        this.setState({ profileTypes })
+      },
+        (error) => { console.log("error", error); }
+      )
+      if (user) {
+        this.setState({ action: user.action });
+      }
     }
   }
 
-  handleInput = e => {
-    this.setState({ [e.target.name]: e.target.value });
-  };
+  successCallById = (profile) => {
+    console.log("profile by id = ", profile);
+    this.setState({ profile });
+  }
+
+  errorCallById = (error) => {
+    console.log(error);
+  }
 
   selectProfileType = async profileType => {
     await this.setState({ profileType });
@@ -56,15 +70,16 @@ class ProfileForm extends Component {
     this.setState({ tooltipOpen: !this.state.tooltipOpen });
   }
 
-  handleSubmit = e => {
+  handleSubmit = (e, values) => {
     e.preventDefault();
-    const { profileId, profileName, profileType, action } = this.state
+    const { profileId, profileType, action } = this.state;
+    console.log("values = ", values);
     if (profileId) {
-      const data = { name: profileName };
+      const data = { name: values.name, currency: values.currency };
       new ProfileApi().updateProfile(this.successCall, this.errorCall, data, profileId);
     } else {
       if (action !== 'VERIFY_EMAIL') {
-        const data = { name: profileName, type: profileType };
+        const data = { name: values.name, type: profileType };
         new ProfileApi().createProfile(this.successCall, this.errorCall, data);
       } else {
         this.callAlertTimer("danger", "First Please verify with the code sent to your Email.....")
@@ -147,7 +162,7 @@ class ProfileForm extends Component {
                   <Col >
                     {action !== "VERIFY_EMAIL" && this.createProfileTypes(profileTypesOptions)}
                     <br />{this.loadActionsButton(action, profileType)}<br /><br />
-                    <h5><span onClick={this.profileViewTable} className="float-right" style={{ color: '#7E0462' }} ><u>{this.state.comparisionText}</u></span></h5>
+                    <h5><span onClick={this.profileViewTable} className="float-right profile-comparision-text" ><u>{this.state.comparisionText}</u></span></h5>
                   </Col>
                 </center> <br /><br />
                 {profileInfoTable && <ProfileInfoTable />}</> : this.loadProfileForm()
@@ -189,13 +204,14 @@ class ProfileForm extends Component {
   }
 
   loadProfileForm = () => {
-    const { profileName, tooltipOpen } = this.state;
+    const { profile, tooltipOpen, currencies } = this.state;
     const profileFields = {
-      profileName: profileName,
+      profile: profile,
       tooltipOpen: tooltipOpen,
-      buttonMessage: this.props.profileId ? 'Update' : 'Save'
+      buttonMessage: this.props.profileId ? 'Update' : 'Save',
+      currencies: currencies,
     }
-    return <ProfileFormUI data={profileFields} handleInput={this.handleInput}
+    return <ProfileFormUI data={profileFields}
       toggle={this.toggle} handleSubmit={this.handleSubmit}
       handleEditProfileCancel={this.handleEditProfileCancel} />
   }
