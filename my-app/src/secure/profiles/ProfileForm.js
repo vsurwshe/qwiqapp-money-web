@@ -17,7 +17,6 @@ class ProfileForm extends Component {
     this.state = {
       currencies: Store.getCurrencies() ? Store.getCurrencies() : [],
       profileId: props.profileId ? props.profileId : '',
-      profileName: props.profileName ? props.profileName : '',
       profileType: 0,
       profileTypes: [],
       comparisionText: "View Feature Comparision",
