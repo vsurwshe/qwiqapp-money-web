@@ -26,7 +26,7 @@ class AddBillAttachment extends Component {
   }
 
   handlePostData = () => {
-    const { profileId, billId } = Store.getBillIdforAttechments("BILL_ID_ATTACH");
+    const { profileId, billId } = Store.getProfileIdAndBillId();
     const { file } = this.state;
     if (file) {
       let reader = new FormData();

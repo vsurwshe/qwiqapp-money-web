@@ -344,7 +344,7 @@ class Bills extends Component {
                 profileId: profileId,
                 billId: billId
       }
-      Store.saveBillIdforAttechments(data);
+      Store.saveProfileIdAndBillId(data);
       return  <Redirect to="/bills/attachments"/>
     }
     else {
