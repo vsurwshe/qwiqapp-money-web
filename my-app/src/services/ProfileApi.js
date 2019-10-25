@@ -9,7 +9,7 @@ class ProfileApi {
   }
 
   getProfiles(success, failure, value) {
-    Store.getUserProfiles() === null || value === "True" ? process(success, failure, "/profiles/", "GET") : success(Store.getUserProfiles());
+    Store.getUserProfiles() === null || value === true ? process(success, failure, "/profiles/", "GET") : success(Store.getUserProfiles());
   }
 
   getProfilesById(success, failure, profileId) {
@@ -34,10 +34,12 @@ async function process(success, failure, requestUrl, requestMethod, data, delete
     data === null ? promise = await HTTP.request() : promise = await HTTP.request({ data });
     if (requestMethod === "GET") {
       Store.saveUserProfiles(promise.data);
+      validResponse(promise, success, requestMethod, deleteId)
     } else {
-      await new ProfileApi().getProfiles(success, failure, "True");
+      requestMethod === "POST" ? 
+      new LoginApi().refresh(async() => { await new ProfileApi().getProfiles(success, failure, true); }, (err)=>errorResponse(err, failure)) :
+      await new ProfileApi().getProfiles(success, failure, true);
     }
-    validResponse(promise, success, requestMethod, deleteId)
   } catch (err) {
     handleAccessTokenError(err, failure, requestUrl, requestMethod, data, deleteId, success, reload);
   }
