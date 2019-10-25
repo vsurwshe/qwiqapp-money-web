@@ -4,27 +4,20 @@ import LoginApi from './LoginApi';
 
 class BillAttachmentsApi {
 
-  createAttachment(success, failure, profileId, billId, data) {
+  createBillAttachment(success, failure, profileId, billId, data) {
     process(success, failure, profileId + "/bills/" + billId + "/attachments", "POST", data);
   }
 
-  getAttachments(success, failure, profileId, billId) {
+  getBillAttachments(success, failure, profileId, billId) {
     process(success, failure, profileId + "/bills/" + billId + "/attachments", 'GET', profileId)
   }
 
-  getAttachmentsById(success, failure, profileId, billId, aid) {
-    process(success, failure, profileId + "/bills/" + billId + "/attachments/" + aid, "GET");
+  getBillAttachmentsById(success, failure, profileId, billId, attachmentId) {
+    process(success, failure, profileId + "/bills/" + billId + "/attachments/" + attachmentId, "GET");
   }
 
-  viewAttachments(success, failure, profileId, billId, aid) {
-    process(success, failure, profileId + "/bills/" + billId + "/attachments/" + aid + "/view", "GET");
-  }
-
-  downloadAttachments(success, failure, profileId, billId, aid) {
-    process(success, failure, profileId + "/bills/" + billId + "/attachments/" + aid + "/download", "GET");
-  }
-  deleteAttachment(success, failure, profileId, billId, aId) {
-    process(success, failure, profileId + "/bills/" + billId + "/attachments/" + aId, "DELETE", profileId);
+  deleteBillAttachment(success, failure, profileId, billId, attachmentId) {
+    process(success, failure, profileId + "/bills/" + billId + "/attachments/" + attachmentId, "DELETE", profileId);
   }
 }
 

@@ -154,8 +154,8 @@ const Store = {
 
     //this is get profiles form local storege
     getUserProfiles: function () {
-        const categories = db.getItem(PROFILES);
-        return JSON.parse(categories);
+        const profiles = db.getItem(PROFILES);
+        return JSON.parse(profiles);
     },
 
     //this saves selected profile in local storage
@@ -207,7 +207,7 @@ const Store = {
     //this is get bills form local storege
     getBills: function () {
         const bills = db.getItem(BILLS);
-        return JSON.parse(bills)
+        return JSON.parse(bills);
     },
 
     saveContacts: function (data) {
@@ -215,8 +215,8 @@ const Store = {
     },
 
     getContacts: function () {
-        const categories = db.getItem(CONTACTS);
-        return JSON.parse(categories)
+        const contacts = db.getItem(CONTACTS);
+        return JSON.parse(contacts);
     },
 
     // for Attachments storing profileId, billId
@@ -225,8 +225,8 @@ const Store = {
     },
 
     getProfileIdAndBillId: function () {
-        const categories = db.getItem(PROFILEID_BILLID);
-        return JSON.parse(categories)
+        const ids = db.getItem(PROFILEID_BILLID);
+        return JSON.parse(ids);
     },
 
     // Clears the Local Storage

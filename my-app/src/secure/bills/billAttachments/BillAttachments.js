@@ -23,7 +23,7 @@ class BillAttachments extends Component {
             billId:'',
             attachments: [],
             dropdownOpen: [],
-            reattachment: ''
+            reAttachment: ''
         }
     }
     componentWillMount() {
@@ -36,7 +36,7 @@ class BillAttachments extends Component {
         this._iMount = true;
         const { profileId, billId } = this.state
         if (profileId && billId) {
-            new BillAttachmentsApi().getAttachments(this.successCall, this.errorCall, profileId, billId);
+            new BillAttachmentsApi().getBillAttachments(this.successCall, this.errorCall, profileId, billId);
         }
     }
 
@@ -46,7 +46,7 @@ class BillAttachments extends Component {
 
     componentDidUpdate = () => {
         if (this.state.color === "success") {
-            new BillAttachmentsApi().getAttachments(this.successCall, this.errorCall, this.state.profileId, this.state.billId);
+            new BillAttachmentsApi().getBillAttachments(this.successCall, this.errorCall, this.state.profileId, this.state.billId);
         }
     }
 
@@ -72,8 +72,8 @@ class BillAttachments extends Component {
         }
     }
 
-    toggleView = (viewData, reattachment) => {
-        this.setState({ display: !this.state.display, viewData, reattachment });
+    toggleView = (viewData, reAttachment) => {
+        this.setState({ display: !this.state.display, viewData, reAttachment });
     }
 
     deleteAttachmentRequest = async () => {
@@ -98,9 +98,9 @@ class BillAttachments extends Component {
         }
     }
 
-    downloadLink = async (reattachment) => { AttachmentUtils.downloadAttachment(reattachment).then(response => console.log(response)) }
+    downloadLink = async (reAttachment) => { AttachmentUtils.downloadAttachment(reAttachment).then(response => console.log(response)) }
 
-    viewLink = (reattachment) => { AttachmentUtils.viewAttachment(reattachment).then(response => this.toggleView(response, reattachment)) }
+    viewLink = (reAttachment) => { AttachmentUtils.viewAttachment(reAttachment).then(response => this.toggleView(response, reAttachment)) }
 
     render() {
         const { attachments, danger, spinner } = this.state;
@@ -173,9 +173,9 @@ class BillAttachments extends Component {
     }
 
     displayAttachment = () => {
-        const { display, viewData, reattachment } = this.state;
+        const { display, viewData, reAttachment } = this.state;
         return <Modal isOpen={display} size="xl" style={{ height: window.screen.height }} className={this.props.className} >
-            <ModalHeader toggle={() => { this.toggleView() }}>{reattachment && reattachment.filename}</ModalHeader>
+            <ModalHeader toggle={() => { this.toggleView() }}>{reAttachment && reAttachment.filename}</ModalHeader>
             <object size="xl" style={{ height: window.screen.height }} data={viewData} >
                 <embed src={viewData} />
             </object>

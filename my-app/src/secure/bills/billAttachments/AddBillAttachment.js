@@ -8,14 +8,14 @@ import Config from '../../../data/Config';
 import Store from '../../../data/Store';
 
 class AddBillAttachment extends Component {
-  constructor(props){
-    super(props);
-    this.state = {
-    file: '',
-    color: '',
-    content: ''
-    }
-  }
+   constructor(props){
+     super(props);
+     this.state = {
+      file: '',
+      color: '',
+      content: ''
+     }
+   }
 
   handleInput = (e) => {
     if (e.target.files[0].size >= 5242880) {
@@ -33,7 +33,7 @@ class AddBillAttachment extends Component {
       reader.append('file', file);
       if (profileId && billId) {
         this.setState({ doubleClick: false });
-        new BillAttachmentsApi().createAttachment(this.successCall, this.errorCall, profileId, billId, reader);
+        new BillAttachmentsApi().createBillAttachment(this.successCall, this.errorCall, profileId, billId, reader);
       } 
     } else {
       this.callAlertTimer('danger', "Please select a file to upload");
@@ -50,7 +50,11 @@ class AddBillAttachment extends Component {
 
   errorCall = (err) => {
     if (err.response.status === 500) {
-      this.callAlertTimer('danger', "Sorry, you can not add attachments, please upgrade your profile");
+      if (err.response.data && err.response.data.error.debugMessage) {
+        this.callAlertTimer('danger', "You can not add this file, please try another file");
+      } else {
+        this.callAlertTimer('danger', "Sorry, you can not add attachments, please upgrade your profile");
+      }
     } else {
       this.callAlertTimer('danger', "Unable to process request, please try later");
     }

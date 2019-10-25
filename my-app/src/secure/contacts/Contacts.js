@@ -228,7 +228,6 @@ class Contacts extends Component {
     return <DeleteModel danger={this.state.danger} headerMessage="Delete Contact" bodyMessage={this.state.contactField}
       toggleDanger={this.toggleDanger} delete={this.deleteContact} cancel={this.toggleDanger} >contact</DeleteModel>
   }
-
   // view update, delete 
   loadDropDown = (contact) => {
     return (<>
