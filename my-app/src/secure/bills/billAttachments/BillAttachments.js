@@ -3,7 +3,7 @@ import { Card, CardHeader, CardBody, Button, Row, Col, Modal, ModalHeader, Alert
 import { FaTrashAlt, FaCloudUploadAlt, FaEye } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import BillAttachmentsApi from '../../../services/BillAttachmentsApi';
-import Attachment from '../../utility/Download_View_Delete_Attachment';
+import AttachmentUtils from '../../utility/AttachmentUtils';
 import { DeleteModel } from '../../utility/DeleteModel';
 import { ShowServiceComponent } from '../../utility/ShowServiceComponent';
 import Config from '../../../data/Config';
@@ -11,32 +11,49 @@ import Store from '../../../data/Store';
 import '../../../css/style.css';
 
 class BillAttachments extends Component {
+    /*
+      * After render completed in backgground call get attachment Api.
+      * Avoid api call use this variabel _isMount.
+    */
+    _iMount = false;
     constructor(props) {
         super(props);
         this.state = {
-            profileId: Store.getBillIdforAttechments("BILL_ID_ATTACH").profileId,
-            billId: Store.getBillIdforAttechments("BILL_ID_ATTACH").billId,
+            profileId:'',
+            billId:'',
             attachments: [],
             dropdownOpen: [],
             reattachment: ''
         }
     }
-
-    componentDidMount () {
-        const { profileId, billId } = this.state
-        if (profileId && billId) {
-           new BillAttachmentsApi().getAttachments(this.successCall, this.errorCall, profileId, billId);
-        } 
+    componentWillMount() {
+        this._iMount = true;
+        const { profileId, billId } = Store.getProfileIdAndBillId();
+        this.setState({ profileId, billId })
     }
 
-    componentDidUpdate=()=>{
-        if(this.state.color==="success"){
+    componentDidMount() {
+        this._iMount = true;
+        const { profileId, billId } = this.state
+        if (profileId && billId) {
+            new BillAttachmentsApi().getAttachments(this.successCall, this.errorCall, profileId, billId);
+        }
+    }
+
+    componentWillUnmount() {
+        this._iMount = false;
+    }
+
+    componentDidUpdate = () => {
+        if (this.state.color === "success") {
             new BillAttachmentsApi().getAttachments(this.successCall, this.errorCall, this.state.profileId, this.state.billId);
         }
     }
 
     successCall = async (attachments) => {
-        await this.setState({ attachments: attachments, spinner: true });
+        if (this._iMount) {
+            await this.setState({ attachments: attachments, spinner: true });
+        }
     }
 
     loadDropdown = () => {
@@ -62,7 +79,7 @@ class BillAttachments extends Component {
     deleteAttachmentRequest = async () => {
         this.setState({ danger: !this.state.danger });
         const { profileId, billId, attachmentId } = this.state;
-        await Attachment.deleteAttachment(this.success, this.errorCall, profileId, billId, attachmentId, true);
+        await AttachmentUtils.deleteAttachment(this.success, this.errorCall, profileId, billId, attachmentId, true);
     }
 
     success = () => { this.callAlertTimer("success", 'Attachment Deleted !!') }
@@ -81,9 +98,9 @@ class BillAttachments extends Component {
         }
     }
 
-    downloadLink = async (reattachment) => { Attachment.downloadAttachment(reattachment).then(response => console.log(response))}
+    downloadLink = async (reattachment) => { AttachmentUtils.downloadAttachment(reattachment).then(response => console.log(response)) }
 
-    viewLink = (reattachment) => { Attachment.viewAttachment(reattachment).then(response => this.toggleView(response, reattachment))}
+    viewLink = (reattachment) => { AttachmentUtils.viewAttachment(reattachment).then(response => this.toggleView(response, reattachment)) }
 
     render() {
         const { attachments, danger, spinner } = this.state;
@@ -102,7 +119,7 @@ class BillAttachments extends Component {
         return <CardHeader>
             <div className="black-color padding-top">
                 <strong>ATTACHMENTS
-                    <Link to= "/bills/attachments/add" >
+                    <Link to="/bills/attachments/add" >
                         <FaCloudUploadAlt style={{ marginRight: 10 }} className="float-right" color="#020b71" size={20} />
                     </Link>
                 </strong>
@@ -113,7 +130,7 @@ class BillAttachments extends Component {
     showNoAttachments = () => {
         return <Card>
             {this.loadHeader()}
-            <center className="column-text"> <CardBody> 
+            <center className="column-text"> <CardBody>
                 <h5><b>You haven't added any attachments for this Bill. Please add now...</b></h5><br /> </CardBody> </center>
         </Card>
     }
@@ -158,11 +175,11 @@ class BillAttachments extends Component {
     displayAttachment = () => {
         const { display, viewData, reattachment } = this.state;
         return <Modal isOpen={display} size="xl" style={{ height: window.screen.height }} className={this.props.className} >
-                    <ModalHeader toggle={() => { this.toggleView() }}>{reattachment && reattachment.filename}</ModalHeader>
-                    <object size="xl" style={{ height: window.screen.height }} data={viewData} >
-                        <embed src={viewData} />
-                    </object>
-               </Modal>
+            <ModalHeader toggle={() => { this.toggleView() }}>{reattachment && reattachment.filename}</ModalHeader>
+            <object size="xl" style={{ height: window.screen.height }} data={viewData} >
+                <embed src={viewData} />
+            </object>
+        </Modal>
     }
 }
 

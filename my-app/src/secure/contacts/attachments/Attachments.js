@@ -3,7 +3,7 @@ import { Card, CardBody, Button, Row, Col, Modal, ModalHeader } from 'reactstrap
 import { FaTrashAlt, FaCloudUploadAlt, FaEye } from 'react-icons/fa';
 import AttachmentApi from '../../../services/AttachmentApi';
 import AddAttachment from './AddAttachment';
-import Attachment from '../../utility/Download_View_Delete_Attachment';
+import AttachmentUtils from '../../utility/AttachmentUtils';
 import { DeleteModel } from '../../utility/DeleteModel';
 
 class Attachments extends Component {
@@ -61,7 +61,7 @@ class Attachments extends Component {
   deleteAttachmentRequest = async () => {
     this.setState({ danger: !this.state.danger });
     const { profileId, contactId, attachmentId } = this.state;
-    await Attachment.deleteAttachment(this.success, this.errorCall, profileId, contactId, attachmentId)
+    await AttachmentUtils.deleteAttachment(this.success, this.errorCall, profileId, contactId, attachmentId)
   }
 
   success = (message) => {
@@ -73,11 +73,11 @@ class Attachments extends Component {
   }
 
   downloadLink = async (reAttachment) => {
-    Attachment.downloadAttachment(reAttachment).then(response => console.log(response));
+    AttachmentUtils.downloadAttachment(reAttachment).then(response => console.log(response));
   }
 
   viewLink = (reAttachment) => {
-    Attachment.viewAttachment(reAttachment).then(response => this.toggleView(response, reAttachment));
+    AttachmentUtils.viewAttachment(reAttachment).then(response => this.toggleView(response, reAttachment));
   }
 
   handleAddFile = () => {

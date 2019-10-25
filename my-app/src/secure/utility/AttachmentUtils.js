@@ -2,7 +2,7 @@ import Store from '../../data/Store';
 import AttachmentApi from '../../services/AttachmentApi';
 import BillAttachmentsApi from '../../services/BillAttachmentsApi';
 
-const Attachment = {
+const AttachmentUtils = {
     downloadAttachment: function (attachment) {
         const url = Store.getProfile().url + "" + attachment.downloadLink;
         const filename = attachment.filename;
@@ -50,4 +50,4 @@ const Attachment = {
     }
 }
 
-export default Attachment;
+export default AttachmentUtils;
