@@ -256,7 +256,8 @@ export const ProfileFormUI = (props) => {
         </Col>
       </Row>
       <center>
-        <Button color="success"> {buttonMessage} </Button>
+        <Button color="success"> {buttonMessage} </Button> &nbsp;
+        <Button active color="light" type="button" onClick={props.handleEditProfileCancel}>Cancel</Button>
       </center>
     </AvForm>
   </div>

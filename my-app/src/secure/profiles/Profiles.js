@@ -18,15 +18,15 @@ class Profiles extends Component {
     super(props);
     this.state = {
       profiles: [],
-      profileId: 0,
-      profileName: "",
-      updateProfile: false,
-      deleteProfile: false,
-      createProfile: false,
-      danger: false,
-      spinner: false,
-      visible: false,
-      selectProfile: false,
+      // profileId: 0,
+      // profileName: "",
+      // updateProfile: false,
+      // deleteProfile: false,
+      // createProfile: false,
+      // danger: false,
+      // spinner: false,
+      // visible: false,
+      // selectProfile: false,
     };
   }
 

@@ -41,13 +41,12 @@ class ProfileForm extends Component {
   }
 
   successCallById = (profile) => {
-    console.log("profile by id = ", profile);
     this.setState({ profile });
   }
 
   errorCallById = (error) => {
-    console.log(error);
-  }
+      console.log(error);
+    }
 
   selectProfileType = async profileType => {
     await this.setState({ profileType });
@@ -74,7 +73,6 @@ class ProfileForm extends Component {
   handleSubmit = (e, values) => {
     e.preventDefault();
     const { profileId, profileType, action } = this.state;
-    console.log("values = ", values);
     const data = { name: values.name, currency: values.currency };
     if (profileId) { 
       new ProfileApi().updateProfile(this.successCall, this.errorCall, data, profileId);
