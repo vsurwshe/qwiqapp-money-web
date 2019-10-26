@@ -16,6 +16,7 @@ class ProfileForm extends Component {
     this.state = {
       currencies: Store.getCurrencies() ? Store.getCurrencies() : [],
       profileId: props.profileId ? props.profileId : '',
+      profileName: props.profileName? props.profileName:'',
       profileType: 0,
       profileTypes: [],
       comparisionText: "View Feature Comparision"
@@ -74,13 +75,13 @@ class ProfileForm extends Component {
     e.preventDefault();
     const { profileId, profileType, action } = this.state;
     console.log("values = ", values);
-    if (profileId) {
-      const data = { name: values.name, currency: values.currency };
+    const data = { name: values.name, currency: values.currency };
+    if (profileId) { 
       new ProfileApi().updateProfile(this.successCall, this.errorCall, data, profileId);
     } else {
       if (action !== 'VERIFY_EMAIL') {
-        const data = { name: values.name, type: profileType };
-        new ProfileApi().createProfile(this.successCall, this.errorCall, data);
+        const newData = { ...data, type: profileType };
+        new ProfileApi().createProfile(this.successCall, this.errorCall, newData);
       } else {
         this.callAlertTimer("danger", "First Please verify with the code sent to your Email.....")
       }
@@ -96,6 +97,7 @@ class ProfileForm extends Component {
   }
 
   errorCall = err => {
+    console.log("error =", err.status);
     if (this.state.profileType) {
       this.callAlertTimer("danger", "You need to purchase credits to create these Profiles, For more info View Feature Comparision.....");
     } else if (Store.getProfile() !== null) {
@@ -204,9 +206,10 @@ class ProfileForm extends Component {
   }
 
   loadProfileForm = () => {
-    const { profile, tooltipOpen, currencies } = this.state;
+    const { profile, profileName, tooltipOpen, currencies } = this.state;
     const profileFields = {
       profile: profile,
+      profileName : profileName,
       tooltipOpen: tooltipOpen,
       buttonMessage: this.props.profileId ? 'Update' : 'Save',
       currencies: currencies,

@@ -241,9 +241,7 @@ export const ContactFormUI = (props) => {
 // ==============ProfileFormUI ===========
 
 export const ProfileFormUI = (props) => {
-  const { profile, tooltipOpen, buttonMessage, currencies } = props.data;
-  const { name } = profile ? profile : '';
-  console.log("profile name = ", name);
+  const { profile, profileName, tooltipOpen, buttonMessage, currencies } = props.data;
   const currencySymbol = profile ? profile.currency : 'GBP';
   return <div>
     <AvForm onValidSubmit={props.handleSubmit}>
@@ -253,7 +251,7 @@ export const ProfileFormUI = (props) => {
         </Col>
         <Col sm={8}>
           <Label>Profile Name :</Label>
-          <AvField type="text" name="name" value={name} placeholder="Enter Profile name" id="tool-tip" required />
+          <AvField type="text" name="name" value={profileName} placeholder="Enter Profile name" id="tool-tip" required />
           <Tooltip target="tool-tip" isOpen={tooltipOpen} placement="right" toggle={props.toggle}>Profile Name</Tooltip>
         </Col>
       </Row>

@@ -61,7 +61,7 @@ class Profiles extends Component {
   }
 
   render() {
-    const { profiles, profileId, createProfile, updateProfile, deleteProfile, selectProfile, spinner, danger } = this.state;
+    const { profiles, profileId, profileName, createProfile, updateProfile, deleteProfile, selectProfile, spinner, danger } = this.state;
     if (profiles.length === 0 && !createProfile) {
       return <div>{profiles.length === 0 && !createProfile && !spinner ? this.loadSpinner() : <ProfileEmptyMessage />}</div>
     } else if (selectProfile) {
@@ -70,7 +70,7 @@ class Profiles extends Component {
     } else if (createProfile) {
       return <ProfileForm />
     } else if (updateProfile) {
-      return (<Container> <ProfileForm profileId={profileId} /> </Container>)
+      return (<Container> <ProfileForm profileId={profileId}  profileName={profileName}/> </Container>)
     } else if (deleteProfile) {
       return (<Container> <DeleteProfile profileId={profileId} /> </Container>)
      } else  {
@@ -132,7 +132,8 @@ class Profiles extends Component {
   loadSingleProfile = (profile, key) => {
     return (
       <tr key={key} >
-        <td><b onClick={() => { this.selectProfile(profile.id) }} ><Avatar name={profile.name.charAt(0)} size="40" round={true} /> &nbsp;&nbsp;{profile.name}</b> </td>
+        <td><b onClick={() => { this.selectProfile(profile.id) }} >
+          <Avatar name={profile.name.charAt(0)} size="40" round={true} /> &nbsp;&nbsp;{profile.name}</b> </td>
         <td style={{ paddingTop: 18 }}>{this.loadProfileType(profile.type)} </td>
         <td align="center">
           <Button className="float-centre" style={{ backgroundColor: "#43A432", color: "#F0F3F4" }} onClick={() => { this.updateProfile(profile.id, profile.name) }}>Edit</Button>
