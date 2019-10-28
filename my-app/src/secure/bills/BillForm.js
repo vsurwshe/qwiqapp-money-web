@@ -22,7 +22,7 @@ class BillForm extends Component {
       categories: props.categories,
       bill: props.bill,
       billCreated: false,
-      profileId: props.pid,
+      profileId: props.profileId,
       alertColor: "",
       alertMessage: "",
       currencies: Store.getCurrencies() ? Store.getCurrencies() : [],

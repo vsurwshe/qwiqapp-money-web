@@ -8,8 +8,8 @@ class DeleteBill extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      billId: props.id,
-      profileId: props.pid,
+      billId: props.billId,
+      profileId: props.profileId,
       labelDeleted: false,
       color: "warning",
       content: "Deleting Bill.....",

@@ -55,7 +55,7 @@
     font-style: oblique;
 }
 .bill-amount-color{
-color: darkgreen;
+    color: darkgreen;
 }
 .strong-text {
     font-size:20px;
@@ -72,6 +72,9 @@ color: darkgreen;
 dropdown-align {
     margin-top: 7px;
     float: right
+}
+.black-color { 
+    color: #000000;
 }
 .delete-model-padding {
      padding-top: 20%

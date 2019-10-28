@@ -1,6 +1,6 @@
-
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
+import {Redirect} from 'react-router';
 import { Card, CardBody, Alert, Table, FormGroup, Label, Input, UncontrolledDropdown, Button, DropdownMenu, DropdownItem, DropdownToggle } from "reactstrap";
 import Loader from 'react-loader-spinner';
 import { FaUndoAlt } from 'react-icons/fa';
@@ -20,7 +20,7 @@ import ViewPayment from "./billPayment/ViewPayment";
 import PaymentApi from "../../services/PaymentApi";
 import '../../css/style.css';
 
-class Bills extends Component {
+class Bills extends Component { 
   constructor(props) {
     super(props);
     this.state = {
@@ -39,7 +39,7 @@ class Bills extends Component {
       spinner: false,
       selectedOption: '',
       removeDependents: true,
-      paidAmount: 0,
+      paidAmount: 0
     };
   }
 
@@ -58,7 +58,8 @@ class Bills extends Component {
 
   setProfileId = async () => {
     if (Store.getProfile()) {
-      await this.setState({ profileId: Store.getProfile().id });
+      let profile = Store.getProfile();
+      await this.setState({ profileId: profile.id, profileType: profile.type });
       // This condition checking whether api call first time or reptely 
       this.state.categories !== undefined && this.state.categories.length <= 0 ? this.getCategory() : this.forceUpdate();
     }
@@ -74,9 +75,9 @@ class Bills extends Component {
     if (categories.length === 0 && this.state.categories !== undefined) {
       this.setState({ categories: undefined })
     } else {
-      await this.setState({ categories: categories })
+      await this.setState({ categories: categories });
     }
-    this.getLabel()
+    this.getLabel();
   };
 
   // This Method execute the Label API Call
@@ -88,7 +89,7 @@ class Bills extends Component {
   successCallLabel = async (label) => {
     this.setState({ spinner: true })
     if (label.length === 0 && this.state.labels !== undefined) {
-      this.setState({ labels: undefined })
+      this.setState({ labels: undefined });
     } else {
       await this.setState({ labels: label });
     }
@@ -102,9 +103,9 @@ class Bills extends Component {
 
   // Handle Contacts response
   successCallContact = async (contacts) => {
-    this.setState({ spinner: true })
+    this.setState({ spinner: true });
     if (contacts.length === 0 && this.state.contacts !== undefined) {
-      this.setState({ contacts: undefined })
+      this.setState({ contacts: undefined });
     } else {
       await this.setState({ contacts });
     }
@@ -123,7 +124,7 @@ class Bills extends Component {
   // bills response
   successCallBill = async bills => {
     let newBills;
-    const { value } = this.props.match.params
+    const { value } = this.props.match.params;
     if (bills.length === 0) {
       this.setState({ bills: [] })
     } else {
@@ -155,10 +156,10 @@ class Bills extends Component {
 
   // category name color append to bills
   billsWithcategoryNameColor = (bills) => {
-    let previousPayments = [];
+    let previousPayments = []; 
     const prevState = bills;
     const state = prevState.map((bill, index) => {
-      this.getPayments(bill.id, previousPayments)
+      this.getPayments(bill.id, previousPayments);
       return { ...bill, categoryName: this.displayCategoryName(bill.categoryId) }
     });
     this.setState({ bills: state });
@@ -212,7 +213,7 @@ class Bills extends Component {
       "deletBillDescription": bill.description,
       "deletBillCategoryName": bill.categoryName.name
     }
-    this.setState({ id: bill.id, deleteBillName: data });
+    this.setState({ billId: bill.id, deleteBillName: data });
     this.toggleDanger();
   }
 
@@ -242,9 +243,10 @@ class Bills extends Component {
   handleMarkAsUnpaidPayment = () => { this.setState({ markAsUnPaid: true }) }
 
   calculateLastPaid = (bill) => {
-    if (this.state.billPayments.length > 0) {
+    const { billPayments }=this.state
+    if (billPayments.length > 0) {
       // Filtering billpayments according to billId
-      let filteredBillPayment = this.state.billPayments.filter(billPayment => billPayment.billId === bill.id);
+      let filteredBillPayment =  billPayments.filter(billPayment => billPayment.billId === bill.id);
       let paidAmount = bill.amount;
       if (filteredBillPayment && filteredBillPayment.length && filteredBillPayment[0].payments.length) {
         // Calculating the total paidAmount of all billpayments
@@ -256,19 +258,19 @@ class Bills extends Component {
           payments: filteredBillPayment[0].payments, //  Getting payments list of a specific bill
           date: sortedPayment.date,  // Sorting and getting last payment date
           paymentAmt: sortedPayment.amount,  // Sorting and getting last payment amount
-          paidAmount: paidAmount,   // setting the total paid amount
+          paidAmount: paidAmount   // setting the total paid amount
         }
         return lastPaid;
       }
     }
   }
 
-  setBillsForFilter = (bill, filteredBills, id) => {
+  setBillsForFilter = (bill, filteredBills, key) => {
     let difference = new Date(ShowServiceComponent.customDate(bill.billDate)) - new Date(this.state.filterDate);
     let daysDifference = difference / (1000 * 60 * 60 * 24);
     if (daysDifference >= 0) {
       if (this.state.yearSelected) { // This for all the bills in current year
-        let billDate = ShowServiceComponent.customDate(bill.billDate)
+        let billDate = ShowServiceComponent.customDate(bill.billDate);
         let currentDate = new Date().getFullYear();
         if (new Date(billDate).getFullYear() === currentDate) {
           filteredBills.push(bill);
@@ -286,15 +288,15 @@ class Bills extends Component {
     let filterDate = new Date();
     switch (dateFilter) {
       case 7:
-        filterDate.setDate(filterDate.getDate() - 7)
+        filterDate.setDate(filterDate.getDate() - 7);
         this.setState({ filterValue: 7 });
         break;
       case 30:
-        filterDate.setDate(filterDate.getDate() - 30)
+        filterDate.setDate(filterDate.getDate() - 30);
         this.setState({ filterValue: 30 });
         break;
       case 'year':
-        filterDate = new Date(filterDate.getFullYear(), 0, 1)
+        filterDate = new Date(filterDate.getFullYear(), 0, 1);
         this.setState({ yearSelected: true });
         break;
       case 'today':
@@ -311,8 +313,13 @@ class Bills extends Component {
     }
   }
 
+
+  billAttachments = (key, billId) => {
+    this.setState({ billId: billId, attachments: true })
+  }
+
   render() {
-    const { bills, createBillRequest, updateBillRequest, id, deleteBillRequest, visible, profileId, updateBill, spinner, labels, categories, contacts, danger, paidAmount, requiredBill, markPaid } = this.state;
+    const { bills, createBillRequest, updateBillRequest, billId, deleteBillRequest, visible, profileId, updateBill, spinner, labels, categories, contacts, danger, paidAmount, requiredBill, markPaid } = this.state;
     if (!profileId) {
       return <ProfileEmptyMessage />
     } else if (bills.length === 0 && !createBillRequest) {  // Checks for bills not there and no bill create Request, then executes
@@ -323,16 +330,24 @@ class Bills extends Component {
         }
       </div>
     } else if (createBillRequest) {
-      return <BillForm pid={profileId} labels={labels} categories={categories} contacts={contacts} />
+      return <BillForm profileId={profileId} labels={labels} categories={categories} contacts={contacts} />
     } else if (updateBillRequest) {
-      return <BillForm pid={profileId} bill={updateBill} labels={labels} categories={categories} contacts={contacts} />
+      return <BillForm profileId={profileId} bill={updateBill} labels={labels} categories={categories} contacts={contacts} />
     } else if (deleteBillRequest) {
-      return <DeleteBill id={id} pid={profileId} removeDependents={this.state.removeDependents} />
+      return <DeleteBill billId={billId} profileId={profileId} removeDependents={this.state.removeDependents} />
     } else if (this.state.addPayment || this.state.markPaid) {
       return <BillPayment bill={requiredBill} markPaid={markPaid} paidAmount={paidAmount} profileId={profileId} />
     } else if (this.state.viewPayment) {
       return <ViewPayment bill={this.state.requiredBill} paidAmount={paidAmount} profileId={profileId} cancel={this.handleViewPayment} />
-    } else {
+    } else if (this.state.attachments) {
+       let data = {
+                profileId: profileId,
+                billId: billId
+      }
+      Store.saveProfileIdAndBillId(data);
+      return  <Redirect to="/bills/attachments"/>
+    }
+    else {
       return <div>
         {this.displayAllBills(visible, bills)}{danger && this.deleteBillModel()}
         {this.state.markAsUnPaid && this.handleMarkAsUnPaid()}
@@ -377,11 +392,11 @@ class Bills extends Component {
   displayAllBills = (visible, bills) => {
     const color = this.props.color;
     if (color) {
-      this.callAlertTimer(visible)
+      this.callAlertTimer(visible);
     }
     let filteredBills = [];
-    this.state.filterDate && bills.map((bill, id) => {
-      return this.setBillsForFilter(bill, filteredBills, id);
+    this.state.filterDate && bills.map((bill, key) => {
+      return this.setBillsForFilter(bill, filteredBills, key);
     });
     return <div className="animated fadeIn">
       <Card>
@@ -404,7 +419,7 @@ class Bills extends Component {
               </thead>
               <tbody>
                 {this.state.filterDate ? this.loadFilterAndNonFilteredBills(filteredBills) : this.loadFilterAndNonFilteredBills(bills)}
-                </tbody>
+              </tbody>
             </Table>
           </CardBody>
         </div>
@@ -420,9 +435,9 @@ class Bills extends Component {
 
   // Show the Single Bill 
   loadSingleBill = (bill, key) => {
-    let strike = bill.paid
+    let strike = bill.paid;
     let lastPaid = this.calculateLastPaid(bill, bill.amount);
-    let billDescription = bill.description ? bill.description : bill.categoryName.name
+    let billDescription = bill.description ? bill.description : bill.categoryName.name;
     return <tr width={50} key={key}>
       <td>{strike ? <strike>{ShowServiceComponent.customDate(bill.dueDate_, true)}</strike> : ShowServiceComponent.customDate(bill.dueDate_, true)}</td>
       <td>{strike ? <strike> {ShowServiceComponent.customDate(bill.billDate, true)} </strike> : ShowServiceComponent.customDate(bill.billDate, true)}</td>
@@ -494,11 +509,12 @@ class Bills extends Component {
       <Button className="rounded" style={{ backgroundColor: "transparent", borderColor: '#ada397', color: "green", width: 67 }} onClick={() => this.updateBillAction(bill)}>Edit</Button> &nbsp;
       <UncontrolledDropdown group>
       <DropdownToggle caret onClick={() => this.handleShowPayment(bill)}> More ... </DropdownToggle>
-      <DropdownMenu>
-        <DropdownItem onClick={this.handleAddPayment} >Add Payment</DropdownItem>
-        <DropdownItem onClick={this.handleViewPayment}>View Payment</DropdownItem>
-        {!bill.paid ? <DropdownItem onClick={this.handleMarkAsPaid}>Mark As Paid</DropdownItem> :
-          <DropdownItem onClick={this.handleMarkAsUnpaidPayment}>Mark As Unpaid</DropdownItem>}
+      <DropdownMenu right>
+        <DropdownItem onClick={this.handleAddPayment} >Add a payment</DropdownItem>
+        <DropdownItem onClick={this.handleViewPayment}>Payments History</DropdownItem>
+        {!bill.paid ? <DropdownItem onClick={this.handleMarkAsPaid}>Mark as PAID</DropdownItem> :
+          <DropdownItem onClick={this.handleMarkAsUnpaidPayment}>Mark as unpaid</DropdownItem>}
+        {this.state.profileType > 1 ? <DropdownItem onClick={() => this.billAttachments(key, bill.id)}>Attachments</DropdownItem> : ''}
         <DropdownItem onClick={() => this.setBillId(bill)}>Delete</DropdownItem>
       </DropdownMenu>
     </UncontrolledDropdown>

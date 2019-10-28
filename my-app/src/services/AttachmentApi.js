@@ -4,27 +4,19 @@ import LoginApi from './LoginApi';
 
 class AttachmentApi {
 
-  createAttachment(success, failure, pid, cid, data) {
-    process(success, failure, pid + "/contacts/" + cid + "/attachments", "POST", data);
+  createAttachment(success, failure, profileId, contactId, data) {
+    process(success, failure, profileId + "/contacts/" + contactId + "/attachments", "POST", data);
   }
 
-  getAttachments(success, failure, pid, cid) {
-    process(success, failure, pid + "/contacts/" + cid + "/attachments", 'GET', pid)
+  getAttachments(success, failure, profileId, contactId) {
+    process(success, failure, profileId + "/contacts/" + contactId + "/attachments", 'GET', profileId)
   }
 
-  getAttachmentsById(success, failure, pid, cid, aid) {
-    process(success, failure, pid + "/contacts/" + cid + "/attachments/" + aid, "GET");
+  getAttachmentsById(success, failure, profileId, contactId, attachmentId) {
+    process(success, failure, profileId + "/contacts/" + contactId + "/attachments/" + attachmentId, "GET");
   }
-
-  viewAttachments(success, failure, pid, cid, aid) {
-    process(success, failure, pid + "/contacts/" + cid + "/attachments/" + aid + "/view", "GET");
-  }
-
-  downloadAttachments(success, failure, pid, cid, aid) {
-    process(success, failure, pid + "/contacts/" + cid + "/attachments/" + aid + "/download", "GET");
-  }
-  deleteAttachment(success, failure, pid, cid, aId) {
-    process(success, failure, pid + "/contacts/" + cid + "/attachments/" + aId, "DELETE", pid);
+  deleteAttachment(success, failure, profileId, contactId, attachmentId) {
+    process(success, failure, profileId + "/contacts/" + contactId + "/attachments/" + attachmentId, "DELETE", profileId);
   }
 }
 
