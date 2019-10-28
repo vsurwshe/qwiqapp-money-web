@@ -45,6 +45,9 @@ async function process(success, failure, requestUrl, requestMethod, data, delete
       // This condtions decide to store profile when getProfiles Method call only
       !profileId && Store.saveUserProfiles(promise.data);
       validResponse(promise, success, requestMethod, deleteId)
+    // if (requestMethod === "GET" && !profileId) {
+    //   Store.saveUserProfiles(promise.data);
+    //   validResponse(promise, success, requestMethod, deleteId)
     } else {
       requestMethod === "POST" ?
         new LoginApi().refresh(async () => { await new ProfileApi().getProfiles(success, failure, true); }, (err) => errorResponse(err, failure))
