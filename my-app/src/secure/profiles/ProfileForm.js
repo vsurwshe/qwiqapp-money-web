@@ -95,11 +95,14 @@ class ProfileForm extends Component {
   }
 
   errorCall = err => {
-    console.log("error =", err.status);
     if (this.state.profileType) {
       this.callAlertTimer("danger", "You need to purchase credits to create these Profiles, For more info View Feature Comparision.....");
     } else if (Store.getProfile() !== null) {
-      this.callAlertTimer("danger", "Sorry, You can't create another Profile.....");
+      if (this.state.profileId) {
+        this.callAlertTimer("danger", "Unable to process request, Please Try Again ...");
+      } else {
+        this.callAlertTimer("danger", "Sorry, You can't create another Profile.....");
+      }
     } else {
       this.callAlertTimer("danger", "Unable to process request, Please Try Again ...");
     }

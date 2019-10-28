@@ -32,9 +32,14 @@ async function process(success, failure, requestUrl, requestMethod, data, delete
   let promise;
   try {
     data === null ? promise = await HTTP.request() : promise = await HTTP.request({ data });
-    if (requestMethod === "GET" && !profileId) {
-      Store.saveUserProfiles(promise.data);
+    if (requestMethod === "GET") {
+      if (!profileId) {
+        Store.saveUserProfiles(promise.data);
+      }
       validResponse(promise, success, requestMethod, deleteId)
+    // if (requestMethod === "GET" && !profileId) {
+    //   Store.saveUserProfiles(promise.data);
+    //   validResponse(promise, success, requestMethod, deleteId)
     } else {
       requestMethod === "POST" ? 
        new LoginApi().refresh(async() => { await new ProfileApi().getProfiles(success, failure, true); }, (err)=>errorResponse(err, failure)) 
