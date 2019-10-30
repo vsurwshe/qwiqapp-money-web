@@ -241,6 +241,7 @@ const Store = {
         this.userDataClear();
         db.removeItem(PROFILES);
         db.removeItem(PROFILE);
+        db.removeItem(PROFILE_TYPES);
         db.removeItem(SELECTED_PROFILE);
         db.removeItem(USERDATA);
     },
