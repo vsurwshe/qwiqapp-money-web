@@ -1,6 +1,6 @@
 import React from 'react';
 import { AvForm, AvField, AvInput } from 'availity-reactstrap-validation';
-import { Button, FormGroup, Col, Row, Label, Collapse, Input } from "reactstrap";
+import { Button, FormGroup, Col, Row, Label, Collapse, Input, Tooltip } from "reactstrap";
 import Select from 'react-select';
 import Data from '../../data/SelectData';
 import Store from '../../data/Store';
@@ -59,10 +59,10 @@ export const BillFormUI = (props) => {
         <label>Description / Notes</label>
         <AvField name="description" type="text" list="colors" value={description} placeholder="Ex: Recharge" errorMessage="Invalid Notes" /></Col>
     </Row>
-    {!props.data.moreOptions && 
-    <Button className="m-0 p-0" color="link" onClick={() => props.toggleCustom()} aria-expanded={moreOptions} aria-controls="exampleAccordion1">
-      More Options
-    </Button> }
+    {!props.data.moreOptions &&
+      <Button className="m-0 p-0" color="link" onClick={() => props.toggleCustom()} aria-expanded={moreOptions} aria-controls="exampleAccordion1">
+        More Options
+    </Button>}
     {props.loadMoreOptions(labels, contacts)} <br />
     <FormGroup >
       <center>
@@ -175,26 +175,26 @@ export const LoadNotifications = (props) => {
 export const CategoryLabelForm = (props) => {
   const { doubleClick, collapse, parentId, chkMakeParent, type, componentType, items, itemName, itemColor, notes, updateItem } = props.data
   return <AvForm onValidSubmit={props.handleSubmitValue}>
-    <AvField type="text" name="name" label={componentType+ " name"} errorMessage="Category Name Required" value={itemName} placeholder="Enter Category name" required />
-    { componentType === "Label" ? <AvField type="text" name="notes" value={notes} placeholder="Description / Notes" label="Description / Notes"  /> 
+    <AvField type="text" name="name" label={componentType + " name"} errorMessage="Category Name Required" value={itemName} placeholder="Enter Category name" required />
+    {componentType === "Label" ? <AvField type="text" name="notes" value={notes} placeholder="Description / Notes" label="Description / Notes" />
       : <AvField type="select" name="type" label="Type" value={type ? type : "EXPENSE_PAYABLE"} errorMessage="Select Type of Category" >
-          <option value="EXPENSE_PAYABLE">Payable</option>
-          <option value="INCOME_RECEIVABLE">Receivable</option>
-    </AvField>
+        <option value="EXPENSE_PAYABLE">Payable</option>
+        <option value="INCOME_RECEIVABLE">Receivable</option>
+      </AvField>
     }
-    <AvField type="color" name="color" list="colors" label={componentType+ " color"} value={itemColor} />
+    <AvField type="color" name="color" list="colors" label={componentType + " color"} value={itemColor} />
 
     {items.length > 0 && // checking Label / Categories are there, then only showing "Nest option" while creating Label / Categories 
       (updateItem ? // checking the item(Label / Categories) is creating / updating, if creating then showing "Nest option"
         (updateItem.parentId ? // Checking whether Label / Categories has ParentId. If parentId is there then we are showing "Make it as Parent" or else checking for subLabel/subcategory 
-          (!chkMakeParent && <><Label style={{paddingLeft: 20}} check> <AvInput type="checkbox" name="makeParent" onChange={props.toggle} /> Make it as Parent </Label> <br /><br /></>) // if selected make it as parent, then assigning "null" to "parentId"
-        : !(updateItem.subLabels || updateItem.subCategories) && (!collapse && <><Label style={{paddingLeft: 20}} check> <AvInput type="checkbox" name="checkbox1" onChange={props.toggle} /> Nest {componentType} under </Label> <br /> </>)) //checking for subItems, if there dont show anything or else showing "Nest option"
-      : !collapse && <><Label style={{paddingLeft: 20}} check> <AvInput type="checkbox" name="checkbox1" onChange={props.toggle} /> Nest {componentType} under </Label> <br /> <br /></>) // If creating Label/ category then showing "Nest option"
+          (!chkMakeParent && <><Label style={{ paddingLeft: 20 }} check> <AvInput type="checkbox" name="makeParent" onChange={props.toggle} /> Make it as Parent </Label> <br /><br /></>) // if selected make it as parent, then assigning "null" to "parentId"
+          : !(updateItem.subLabels || updateItem.subCategories) && (!collapse && <><Label style={{ paddingLeft: 20 }} check> <AvInput type="checkbox" name="checkbox1" onChange={props.toggle} /> Nest {componentType} under </Label> <br /> </>)) //checking for subItems, if there dont show anything or else showing "Nest option"
+        : !collapse && <><Label style={{ paddingLeft: 20 }} check> <AvInput type="checkbox" name="checkbox1" onChange={props.toggle} /> Nest {componentType} under </Label> <br /> <br /></>) // If creating Label/ category then showing "Nest option"
     }
 
-    <Collapse isOpen={collapse}> 
-      <AvField type="select" name="parentId" label={"Select " +componentType+ " name"} 
-      value={parentId} required={collapse}>
+    <Collapse isOpen={collapse}>
+      <AvField type="select" name="parentId" label={"Select " + componentType + " name"}
+        value={parentId} required={collapse}>
         <option value="">Select {componentType}</option>
         {items.map((item, key) => { return <option key={key} value={item.id}>{item.name}</option> })}
       </AvField>
@@ -209,8 +209,8 @@ export const CategoryLabelForm = (props) => {
 }
 
 export const ContactFormUI = (props) => {
-  const {countries, labels, selectedCountry, contact} = props.data
-  const {name, organization, phone, address1, address2, email, postcode, state, website } = contact ? contact : ""
+  const { countries, labels, selectedCountry, contact } = props.data
+  const { name, organization, phone, address1, address2, email, postcode, state, website } = contact ? contact : ""
   return (<>
     <Row>
       <Col><AvField name="name" placeholder="Name" value={name} validate={{ myValidation: props.nameOrOrganization }} onChange={props.validateOrganization} /></Col>
@@ -225,7 +225,7 @@ export const ContactFormUI = (props) => {
     </Row>
     <Row>
       <Col><AvField name="postcode" placeholder="Postal Code" value={postcode} errorMessage="Enter Valid Postal Code" validate={{ pattern: { value: '^[0-9A-Za-z]' } }} /></Col>
-      <Col><AvField name="state" placeholder="State" value={state}/></Col>
+      <Col><AvField name="state" placeholder="State" value={state} /></Col>
       <Col>
         <Input type="select" onChange={e => props.handleCountrySelect(e)} value={selectedCountry} placeholder="Select country" required>
           <option value="">Select Country</option>
@@ -238,4 +238,23 @@ export const ContactFormUI = (props) => {
     </Row>
     <Row><Col>{labels.length === 0 ? <center>You dont have Labels</center> : props.loadAvCollapse(contact)}</Col></Row> <br />
   </>);
+}
+
+// ==============ProfileFormUI ===========
+
+export const ProfileFormUI = (props) => {
+  const { profileName, tooltipOpen, buttonMessage } = props.data;
+  return <>
+    <FormGroup row>
+      <Label sm={2}>Profile Name :</Label>
+      <Col sm={8}>
+        <Input name="profileName" value={profileName} type="text" placeholder="Enter Profile name" autoFocus={true} onChange={e => props.handleInput(e)} id="tool-tip" />
+        <Tooltip target="tool-tip" isOpen={tooltipOpen} placement="right" toggle={props.toggle}>Profile Name</Tooltip>
+      </Col>
+    </FormGroup>
+    <center>
+      <Button color="success" disabled={!profileName} onClick={e => props.handleSubmit(e)} > {buttonMessage} </Button>
+      <Button active color="light" style={{ marginLeft: 20 }} aria-pressed="true" onClick={props.handleEditProfileCancel}>Cancel</Button>
+    </center>
+  </>
 }

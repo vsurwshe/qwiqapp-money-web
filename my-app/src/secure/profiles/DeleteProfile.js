@@ -8,7 +8,7 @@ class DeleteProfile extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      id: this.props.id,
+      profileId: this.props.profileId,
       profileDeleted: false,
       color: "blue",
       content: "Deleting profile ......"
@@ -16,7 +16,7 @@ class DeleteProfile extends Component {
   }
 
   componentDidMount = () => {
-    new ProfileApi().deleteProfile(this.successCall, this.errorCall, this.state.id);
+    new ProfileApi().deleteProfile(this.successCall, this.errorCall, this.state.profileId);
   };
 
   successCall = () => {

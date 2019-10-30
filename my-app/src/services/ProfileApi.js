@@ -8,20 +8,20 @@ class ProfileApi {
     process(success, failure, "/profiles/", "POST", data);
   }
 
-  getProfiles(success, failure, value) {
-    Store.getUserProfiles() === null || value === "True" ? process(success, failure, "/profiles/", "GET") : success(Store.getUserProfiles());
+  getProfiles(success, failure, newGetRequest) {
+    !Store.getUserProfiles() || newGetRequest ? process(success, failure, "/profiles/", "GET") : success(Store.getUserProfiles());
   }
 
-  getProfilesById(success, failure, uid) {
-    process(success, failure, "/profiles/" + uid, "GET");
+  getProfilesById(success, failure, profileId) {
+    process(success, failure, "/profiles/" + profileId, "GET");
   }
 
-  updateProfile(success, failure, data, uid) {
-    process(success, failure, "/profiles/" + uid, "PUT", data);
+  updateProfile(success, failure, data, profileId) {
+    process(success, failure, "/profiles/" + profileId, "PUT", data);
   }
 
-  deleteProfile(success, failure, uid) {
-    process(success, failure, "/profiles/" + uid, "DELETE", null, uid);
+  deleteProfile(success, failure, profileId) {
+    process(success, failure, "/profiles/" + profileId, "DELETE", null, profileId);
   }
 }
 
@@ -34,10 +34,12 @@ async function process(success, failure, requestUrl, requestMethod, data, delete
     data === null ? promise = await HTTP.request() : promise = await HTTP.request({ data });
     if (requestMethod === "GET") {
       Store.saveUserProfiles(promise.data);
+      validResponse(promise, success, requestMethod, deleteId)
     } else {
-      await new ProfileApi().getProfiles(success, failure, "True");
+      requestMethod === "POST" ? 
+       new LoginApi().refresh(async() => { await new ProfileApi().getProfiles(success, failure, true); }, (err)=>errorResponse(err, failure)) 
+       : await new ProfileApi().getProfiles(success, failure, true);
     }
-    validResponse(promise, success, requestMethod, deleteId)
   } catch (err) {
     handleAccessTokenError(err, failure, requestUrl, requestMethod, data, deleteId, success, reload);
   }
