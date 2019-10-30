@@ -6,9 +6,10 @@ import { Redirect } from 'react-router';
 import ProfileApi from "../../services/ProfileApi";
 import { DeleteModel } from "../utility/DeleteModel";
 import { ProfileEmptyMessage } from "../utility/ProfileEmptyMessage";
-import { Container, Button, Card, CardBody, Table, CardHeader, Alert } from "reactstrap";
+import { Container, Button, Card, CardBody, Table, CardHeader, Alert, UncontrolledDropdown, DropdownToggle, DropdownItem, DropdownMenu } from "reactstrap";
 import ProfileForm from './ProfileForm';
 import Config from '../../data/Config';
+import Store from '../../data/Store';
 /**
  * Display list of profiles,Manage profile like (update, delete)
  * Call Add,Update, delete Componets.
@@ -25,12 +26,22 @@ class Profiles extends Component {
   componentDidMount() {
     new ProfileApi().getProfiles(this.successCall, this.errorCall);
   }
+  componentDidUpdate() {
+    if (this.state.profileUpgraded) {
+      new ProfileApi().getProfiles(this.successCall, this.errorCall, "True");
+      this.setState({profileUpgraded: false});
+    }
+  }
 
-  successCall = async  profiles => {
+  successCall = async profiles => {
     if (profiles === null) {
       this.setState({ profiles: [], spinner: true })
     } else {
-      this.setState({ profiles, spinner: true })
+      let profilesById = [];
+      await profiles.map((profile, key) => {
+        new ProfileApi().getProfilesById((profileById) => { profilesById.push(profileById) }, this.errorCall, profile.id)
+      });
+      this.setState({ profiles: profilesById, spinner: true })
     }
   };
 
@@ -40,14 +51,13 @@ class Profiles extends Component {
     this.setState({ profileId, profileName, updateProfile: true, })
   };
 
-  upgradeProfile = (upgradeProfile) => {
-    new ProfileApi().upgradeProfile(this.upgradeSuccessCall, this.errorCall, upgradeProfile.id, upgradeProfile.type+1);
+  handelUpgradeProfile = (profileId, profileType) => {
+    new ProfileApi().upgradeProfile(this.upgradeSuccessCall, this.errorCall, profileId, profileType);
   }
 
   upgradeSuccessCall = (profile) => {
-    console.log(profile)
-    this.setState({ alertColor: "success", alertMessage: "Your profile upgraded successfully" });
-    setTimeout(()=>{
+    this.setState({ alertColor: "success", alertMessage: "Your profile upgraded successfully", profileUpgraded: true });
+    setTimeout(() => {
       this.setState({ alertColor: '', alertMessage: '' });
     }, Config.apiTimeoutMillis);
   }
@@ -96,7 +106,10 @@ class Profiles extends Component {
             {this.loadHeader()}
             <CardBody>
               {this.state.visible && <Alert color="danger">Unable to Process your Request, please try Again...</Alert>}
-              <Loader type="TailSpin" color="#2E86C1" height={60} width={60} />
+              {/* <Loader type="TailSpin" color="#2E86C1" height={60} width={60} /> */}
+              <div class="spinner-border text-primary" role="status">
+  <span class="sr-only">Loading...</span>
+</div>
             </CardBody>
           </center>
         </Card>
@@ -112,7 +125,7 @@ class Profiles extends Component {
           {this.state.alertMessage && <Alert color={this.state.alertColor} >{this.state.alertMessage}</Alert>}
           <Table bordered >
             <thead>
-              <tr style={{ backgroundColor: "#DEE9F2  ", color: '#000000' }}  align='center'>
+              <tr style={{ backgroundColor: "#DEE9F2  ", color: '#000000' }} align='center'>
                 <th>Profile Name</th>
                 <th>Profile Type </th>
                 <th>Actions</th>
@@ -134,14 +147,26 @@ class Profiles extends Component {
 
   //this method load the single profile
   loadSingleProfile = (profile, key) => {
+    let profileTypes = Store.getProfileTypes();
     return (
       <tr key={key} >
         <td><b onClick={() => { this.selectProfile(profile.id) }} >
           <Avatar name={profile.name.charAt(0)} size="40" round={true} /> &nbsp;&nbsp;{profile.name}</b> </td>
         <td style={{ paddingTop: 18 }}>{this.loadProfileType(profile.type)} </td>
         <td align="center">
-          <Button className="float-centre" style={{ backgroundColor: "#43A432", color: "#F0F3F4" }} onClick={() => { this.updateProfile(profile.id, profile.name) }}>Edit</Button> &nbsp;
-          <Button className="float-centre" style={{ backgroundColor: "#003325", color: "#F0F3F4" }} onClick={() => { this.upgradeProfile(profile) }}>Upgrade</Button>
+          <Button style={{ backgroundColor: "#43A432", color: "#F0F3F4" }} onClick={() => { this.updateProfile(profile.id, profile.name) }}>Edit</Button> &nbsp;
+          {profile.upgradeTypes ? <UncontrolledDropdown group>
+            <DropdownToggle caret >Upgrade</DropdownToggle>
+            {profileTypes && <DropdownMenu>
+              {profile.upgradeTypes.map((upgreadType, id) => {
+                const data = profileTypes.filter(profile => profile.type === upgreadType);
+                return <DropdownItem key={id} onClick={() => this.handelUpgradeProfile(profile.id, data[0].type)} >{data[0].name} </DropdownItem>
+              })}
+            </DropdownMenu>
+            }
+          </UncontrolledDropdown>
+            : <span style={{ paddingRight: 100 }}></span>
+          }
         </td>
       </tr>
     );

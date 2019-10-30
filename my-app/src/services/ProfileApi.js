@@ -54,7 +54,7 @@ async function process(success, failure, requestUrl, requestMethod, data, delete
 
 //this method solve the Expire Token Problem.
 let handleAccessTokenError = function (err, failure, requestUrl, requestMethod, data, deleteId, success, profileId, reload) {
-  if (err.request.status === 0) {
+  if (err.request && err.request.status === 0) {
     errorResponse(err, failure)
   } else if (err.response.status === 403 || err.response.status === 401) {
     if (!reload) {

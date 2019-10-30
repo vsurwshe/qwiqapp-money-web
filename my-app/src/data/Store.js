@@ -229,6 +229,13 @@ const Store = {
         return JSON.parse(ids);
     },
 
+    saveProfileTypes: function (data) {
+        db.setItem(PROFILE_TYPES, JSON.stringify(data))
+    },
+    getProfileTypes: function () {
+        return JSON.parse(db.getItem(PROFILE_TYPES));
+    },
+
     // Clears the Local Storage
     clearLocalStorage: function () {
         this.userDataClear();

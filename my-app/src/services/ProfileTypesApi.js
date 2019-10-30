@@ -5,7 +5,7 @@ import LoginApi from "./LoginApi";
 
 class ProfileTypesApi {
   getProfileTypes(success, failure) {
-    process(success, failure, "/profile/types", "GET");
+    !Store.getProfileTypes() && process(success, failure, "/profile/types", "GET");
   }
 }
 

@@ -32,6 +32,7 @@ import Config from "../data/Config";
 import AddBillAttachment from "../secure/bills/billAttachments/AddBillAttachment";
 import BillAttachments from "../secure/bills/billAttachments/BillAttachments";
 import { userAction } from "../data/GlobalKeys";
+import ProfileTypesApi from "../services/ProfileTypesApi";
 
 const DefaultFooter = React.lazy(() => import("../secure/sidebar/DefaultFooter"));
 
@@ -65,6 +66,7 @@ class Main extends Component {
     new GeneralApi().settings(this.getPaypalSettings, this.errorCall);
     new GeneralApi().getCurrencyList(this.getCurrenciesList, this.errorCall);
     new GeneralApi().getCountrylist(this.getCountriesList, this.errorCall);
+    new ProfileTypesApi().getProfileTypes(this.getProfileTypes, this.errorCall);
   }
 
   getPaypalSettings = (data) => {
@@ -78,7 +80,10 @@ class Main extends Component {
   getCountriesList = (countries) => {
     Store.saveCountries(countries)
   }
-
+  getProfileTypes=(profileTypes)=>{
+    Store.saveProfileTypes(profileTypes);
+  }
+  
   getUser = () => {
     new UserApi().getUser(this.successCallUser, this.errorCall)
   }
