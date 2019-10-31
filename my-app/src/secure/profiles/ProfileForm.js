@@ -162,7 +162,7 @@ class ProfileForm extends Component {
       profileName: profileName,
       tooltipOpen: tooltipOpen,
       buttonMessage: this.props.profileId ? 'Update' : buttonText,
-      currencies: currencies,
+      currencies: currencies
     }
     return <ProfileFormUI
       data={profileFields}

@@ -17,7 +17,7 @@ class Profiles extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      profiles: [],
+      profiles: []
     };
   }
 
@@ -54,7 +54,7 @@ class Profiles extends Component {
   render() {
     const { profiles, profileId, profileName, createProfile, updateProfile, deleteProfile, selectProfile, spinner, danger } = this.state;
     if (profiles.length === 0 && !createProfile) {
-      return <div>{profiles.length === 0 && !createProfile && !spinner ? this.loadSpinner() : <ProfileEmptyMessage />}</div>
+      return <div>{!spinner ? this.loadSpinner() : <ProfileEmptyMessage />}</div>
     } else if (selectProfile) {
       let url = "/profiles/" + profileId
       return (<Container> <Redirect push to={url} /></Container>)
