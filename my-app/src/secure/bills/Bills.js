@@ -57,9 +57,9 @@ class Bills extends Component {
   }
 
   setProfileId = async () => {
-    if (Store.getProfile()) {
-      let profile = Store.getProfile();
-      await this.setState({ profileId: profile.id, profileType: profile.type });
+    let profile = Store.getProfile();
+    if (profile) {
+      await this.setState({ profileId: profile.id, profileType: profile.type, profileFeatures: profile.features });
       // This condition checking whether api call first time or reptely 
       this.state.categories !== undefined && this.state.categories.length <= 0 ? this.getCategory() : this.forceUpdate();
     }
@@ -319,7 +319,9 @@ class Bills extends Component {
   }
 
   render() {
-    const { bills, createBillRequest, updateBillRequest, billId, deleteBillRequest, visible, profileId, updateBill, spinner, labels, categories, contacts, danger, paidAmount, requiredBill, markPaid } = this.state;
+    const { bills, createBillRequest, updateBillRequest, billId, deleteBillRequest, visible, profileId,
+       updateBill, spinner, labels, categories, contacts, danger, paidAmount, requiredBill, markPaid, profileFeatures } = this.state;
+    let featureAttachment = profileFeatures && profileFeatures.includes("Attachments") // return true/false
     if (!profileId) {
       return <ProfileEmptyMessage />
     } else if (bills.length === 0 && !createBillRequest) {  // Checks for bills not there and no bill create Request, then executes
@@ -349,7 +351,7 @@ class Bills extends Component {
     }
     else {
       return <div>
-        {this.displayAllBills(visible, bills)}{danger && this.deleteBillModel()}
+        {this.displayAllBills(visible, bills, featureAttachment)}{danger && this.deleteBillModel()}
         {this.state.markAsUnPaid && this.handleMarkAsUnPaid()}
       </div>
     }
@@ -389,7 +391,7 @@ class Bills extends Component {
   </div>
 
   // Displays all the Bills one by one
-  displayAllBills = (visible, bills) => {
+  displayAllBills = (visible, bills, featureAttachment) => {
     const color = this.props.color;
     if (color) {
       this.callAlertTimer(visible);
@@ -418,7 +420,7 @@ class Bills extends Component {
                 </tr>
               </thead>
               <tbody>
-                {this.state.filterDate ? this.loadFilterAndNonFilteredBills(filteredBills) : this.loadFilterAndNonFilteredBills(bills)}
+                {this.state.filterDate ? this.loadFilterAndNonFilteredBills(filteredBills, featureAttachment) : this.loadFilterAndNonFilteredBills(bills, featureAttachment)}
               </tbody>
             </Table>
           </CardBody>
@@ -427,14 +429,14 @@ class Bills extends Component {
     </div>
   }
 
-  loadFilterAndNonFilteredBills = (bills) => {
+  loadFilterAndNonFilteredBills = (bills, featureAttachment) => {
     return bills.filter(this.searchingFor(this.state.selectedOption)).map((bill, key) => {
-      return this.loadSingleBill(bill, key);
+      return this.loadSingleBill(bill, key, featureAttachment);
     })
   }
 
   // Show the Single Bill 
-  loadSingleBill = (bill, key) => {
+  loadSingleBill = (bill, key, featureAttachment) => {
     let strike = bill.paid;
     let lastPaid = this.calculateLastPaid(bill, bill.amount);
     let billDescription = bill.description ? bill.description : bill.categoryName.name;
@@ -445,7 +447,7 @@ class Bills extends Component {
       <td>{strike ? <strike>{this.handleSignedBillAmount(bill)}</strike> : this.handleSignedBillAmount(bill)}</td>
       <td style={{ color: bill.paid ? 'green' : 'red' }}> {strike ? <strike>Paid</strike> : 'Unpaid'} </td>
       <td> {strike ? <strike>{this.loadPaidStatus(bill, lastPaid)} </strike> : <>{this.loadPaidStatus(bill, lastPaid)}</>} </td>
-      <td><h6>{this.loadDropDown(bill, key)}</h6></td>
+      <td><h6>{this.loadDropDown(bill, key, featureAttachment)}</h6></td>
     </tr>
   }
 
@@ -504,7 +506,7 @@ class Bills extends Component {
   }
 
   //this Method loads Browser DropDown
-  loadDropDown = (bill, key) => <span className="float-right" style={{ marginTop: -8, marginBottom: -9 }} >
+  loadDropDown = (bill, key, featureAttachment) => <span className="float-right" style={{ marginTop: -8, marginBottom: -9 }} >
     {bill.recurId ? <FaUndoAlt /> : ''} &nbsp;
       <Button className="rounded" style={{ backgroundColor: "transparent", borderColor: '#ada397', color: "green", width: 67 }} onClick={() => this.updateBillAction(bill)}>Edit</Button> &nbsp;
       <UncontrolledDropdown group>
@@ -514,7 +516,7 @@ class Bills extends Component {
         <DropdownItem onClick={this.handleViewPayment}>Payments History</DropdownItem>
         {!bill.paid ? <DropdownItem onClick={this.handleMarkAsPaid}>Mark as PAID</DropdownItem> :
           <DropdownItem onClick={this.handleMarkAsUnpaidPayment}>Mark as unpaid</DropdownItem>}
-        {this.state.profileType > 1 ? <DropdownItem onClick={() => this.billAttachments(key, bill.id)}>Attachments</DropdownItem> : ''}
+        {featureAttachment ? <DropdownItem onClick={() => this.billAttachments(key, bill.id)}>Attachments</DropdownItem> : ''}
         <DropdownItem onClick={() => this.setBillId(bill)}>Delete</DropdownItem>
       </DropdownMenu>
     </UncontrolledDropdown>
