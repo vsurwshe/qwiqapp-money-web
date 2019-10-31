@@ -1,6 +1,7 @@
 import React from 'react';
-import { AvForm, AvField, AvInput } from 'availity-reactstrap-validation';
-import { Button, FormGroup, Col, Row, Label, Collapse, Input, Tooltip } from "reactstrap";
+import { AvForm, AvField, AvInput, AvRadio, AvRadioGroup } from 'availity-reactstrap-validation';
+import { Button, FormGroup, Col, Row, Label, Collapse, Input, Table } from "reactstrap";
+import { Link } from 'react-router-dom';
 import Select from 'react-select';
 import Data from '../../data/SelectData';
 import Store from '../../data/Store';
@@ -241,36 +242,74 @@ export const ContactFormUI = (props) => {
 // ==============ProfileFormUI ===========
 
 export const ProfileFormUI = (props) => {
-  const { profile, profileName, tooltipOpen, buttonMessage, currencies } = props.data;
+  const { profile, profileName, buttonMessage, currencies, profileType, profileTypes, action } = props.data;
   const currencySymbol = profile ? profile.currency : 'GBP';
-  return <div>
-    <AvForm onValidSubmit={props.handleSubmit}>
-      <Row>
-        <Col sm={4}>
-          {getCurrency(currencies, currencySymbol)}
-        </Col>
-        <Col sm={8}>
-          <Label>Profile Name :</Label>
-          <AvField type="text" name="name" value={profileName} placeholder="Enter Profile name" id="tool-tip" required />
-          <Tooltip target="tool-tip" isOpen={tooltipOpen} placement="right" toggle={props.toggle}>Profile Name</Tooltip>
-        </Col>
-      </Row>
+  let url = action === "VERIFY_EMAIL" ? "/verify" : (action === 'ADD_BILLING' ? "/billing/address" : '/billing/paymentHistory');
+  // Default value set while creating profile in AvForm
+  const defaultValues = { type: 0 }
+  return <AvForm onValidSubmit={props.handleSubmit} model={defaultValues}>
+    {// This Block Shows the ProfileTypes when user actions is  not "VERIFY_EMAIL" and  profileTypes length is more than 0
+      (profileTypes.length > 0 && action !== "VERIFY_EMAIL") && 
+      <> <h5><b>Choose Profile Type</b></h5> {createProfileTypes(profileTypes, props.profielTypeButtonText, action)}</>
+    }
+    {( (action !== "VERIFY_EMAIL" && profileType === 0) || (action !== "ADD_BILLING" && action !== "ADD_CREDITS_LOW" && action !== "VERIFY_EMAIL") ) ?
+      // This Block execute when user actions are not "ADD_BILLING" , "ADD_CREDITS_LOW" & "VERIFY_EMAIL"
+      <>{getCurrency(currencies, currencySymbol)}
+        <AvField type="text" name="name" value={profileName} placeholder="Enter Profile name" id="tool-tip" label="Profile Name" required />
+        <center>
+          <FormGroup>
+            <Button color="success"> {buttonMessage} </Button> &nbsp;
+          <Button active color="light" type="button" onClick={props.handleEditProfileCancel}>Cancel</Button>
+          </FormGroup>
+        </center>
+      </> :
+      // This Block execute when user actions are "ADD_BILLING" , "ADD_CREDITS_LOW" & "VERIFY_EMAIL"
       <center>
-        <Button color="success"> {buttonMessage} </Button> &nbsp;
+        <Button type="button" color="info"><Link to={url} style={{ color: "black" }}> {action}</Link></Button> &nbsp;
         <Button active color="light" type="button" onClick={props.handleEditProfileCancel}>Cancel</Button>
       </center>
-    </AvForm>
-  </div>
+    }
+  </AvForm>
 }
 
+// Shows the ProfileTypes table for creating Profiles
+const createProfileTypes = (profileTypesOptions, profielTypeButtonText, action) => {
+  return <AvRadioGroup name="type">
+    <Table bordered striped hover>
+      <thead className="table-header-color">
+        <tr>
+          <th>Type</th>
+          <th>Profile Type</th>
+          <th>Cost</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        {profileInfo(profileTypesOptions, profielTypeButtonText)}
+      </tbody>
+    </Table>
+  </AvRadioGroup>
+}
+
+// Returns the ProfileTypes table rows using profileTypeOptions
+const profileInfo = (profileTypesOptions, profielTypeButtonText) => {
+  const rowData = profileTypesOptions.map((proTypes, key) => {
+    return <tr key={key}>
+      <td> <AvRadio label={proTypes.name} value={proTypes.type} onChange={() => { return profielTypeButtonText(proTypes.type) }} /></td>
+      <td>{proTypes.name}</td>
+      <td>{proTypes.cost}</td>
+      <td>{proTypes.description}</td>
+    </tr>
+  })
+  return rowData
+}
+
+// Currency for profile form
 const getCurrency = (currencies, currencySymbol) => {
   if (currencies.length > 0) {
-    return <AvField type="select" id="symbol" name="currency" value={currencySymbol} label="Currency">
+    return <AvField type="select" id="symbol" name="currency" value={currencySymbol} label="Default Currency">
       <option value=""> Select</option>
-      {currencies.map((currency, key) => {
-        return <option key={key} value={currency.code}
-          data={currency.symbol} symbol={currency.symbol} >{currency.symbol}</option>
-      })}
+      {currencies.map((currency, key) => { return <option key={key} value={currency.code} data={currency.symbol} symbol={currency.symbol} >{currency.symbol}</option> })}
     </AvField>
   }
 }

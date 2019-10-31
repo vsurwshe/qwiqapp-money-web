@@ -47,12 +47,8 @@ class ProfileForm extends Component {
 
   profielTypeButtonText = async (profileType) => {
     let buttonText = "Create Free Profile";
-    const { profileTypes, action } = this.state
-    if (profileType === 0) {
-      this.setState({ buttonText, profileType })
-    } else if (profileType > 0 && action === "ADD_BILLING") {
-      this.setState({ buttonText: "Add Billing Address", profileType });
-    } else {
+    const { profileTypes } = this.state
+    if (profileTypes.length) {
       buttonText = await profileTypes.filter(profile => profile.type === profileType);
       this.setState({ buttonText: "Create " + buttonText[0].name + " Profile", profileType })
     }
@@ -72,7 +68,7 @@ class ProfileForm extends Component {
       new ProfileApi().updateProfile(this.successCall, this.errorCall, data, profileId);
     } else {
       if (action !== 'VERIFY_EMAIL') {
-        new ProfileApi().createProfile(this.successCall, this.errorCall, data);
+        new ProfileApi().createProfile(this.successCall, (err)=>{this.errorCall(err, data.type)}, data);
       } else {
         this.callAlertTimer("danger", "First Please verify with the code sent to your Email.....")
       }
@@ -87,8 +83,8 @@ class ProfileForm extends Component {
     }
   }
 
-  errorCall = err => {
-    if (this.state.profileType) {
+  errorCall = (error, profileType ) => {
+    if (profileType) {
       this.callAlertTimer("danger", "You need to purchase credits to create these Profiles, For more info View Feature Comparision.....");
     } else if (Store.getProfile() !== null) {
       if (this.state.profileId) {
