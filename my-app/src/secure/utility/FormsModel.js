@@ -250,7 +250,7 @@ export const ProfileFormUI = (props) => {
   return <AvForm onValidSubmit={props.handleSubmit} model={defaultValues}>
     {// This Block Shows the ProfileTypes when user actions is  not "VERIFY_EMAIL" and  profileTypes length is more than 0
       (profileTypes.length > 0 && action !== "VERIFY_EMAIL") && 
-      <> <h5><b>Choose Profile Type</b></h5> {createProfileTypes(profileTypes, props.profielTypeButtonText, action)}</>
+      <> <h5><b>Choose Profile Type</b></h5> {createProfileTypes(profileTypes, props.setButtonText, action)}</>
     }
     {( (action !== "VERIFY_EMAIL" && profileType === 0) || (action !== "ADD_BILLING" && action !== "ADD_CREDITS_LOW" && action !== "VERIFY_EMAIL") ) ?
       // This Block execute when user actions are not "ADD_BILLING" , "ADD_CREDITS_LOW" & "VERIFY_EMAIL"
@@ -273,7 +273,7 @@ export const ProfileFormUI = (props) => {
 }
 
 // Shows the ProfileTypes table for creating Profiles
-const createProfileTypes = (profileTypesOptions, profielTypeButtonText, action) => {
+const createProfileTypes = (profileTypesOptions, setButtonText, action) => {
   return <AvRadioGroup name="type">
     <Table bordered striped hover>
       <thead className="table-header-color">
@@ -285,17 +285,17 @@ const createProfileTypes = (profileTypesOptions, profielTypeButtonText, action) 
         </tr>
       </thead>
       <tbody>
-        {profileInfo(profileTypesOptions, profielTypeButtonText)}
+        {profileInfo(profileTypesOptions, setButtonText)}
       </tbody>
     </Table>
   </AvRadioGroup>
 }
 
 // Returns the ProfileTypes table rows using profileTypeOptions
-const profileInfo = (profileTypesOptions, profielTypeButtonText) => {
+const profileInfo = (profileTypesOptions, setButtonText) => {
   const rowData = profileTypesOptions.map((proTypes, key) => {
     return <tr key={key}>
-      <td> <AvRadio label={proTypes.name} value={proTypes.type} onChange={() => { return profielTypeButtonText(proTypes.type) }} /></td>
+      <td> <AvRadio label={proTypes.name} value={proTypes.type} onChange={() => { return setButtonText(proTypes.type) }} /></td>
       <td>{proTypes.name}</td>
       <td>{proTypes.cost}</td>
       <td>{proTypes.description}</td>

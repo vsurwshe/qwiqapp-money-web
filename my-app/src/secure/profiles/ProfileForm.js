@@ -25,11 +25,11 @@ class ProfileForm extends Component {
   }
 
   componentDidMount = async () => {
+    // This Condtions Checks the Profile is Edit or Create
     if (this.state.profileId) {
       await new ProfileApi().getProfilesById(this.successCallById, this.errorCallById, this.state.profileId);
     } else {
       let user = Store.getUser();
-      this.setState({ action: Store.getUser().action });
       await new ProfileTypesApi().getProfileTypes((profileTypes) => { this.setState({ profileTypes }) }, (error) => { console.log("error", error); })
       if (user) {
         this.setState({ action: user.action });
@@ -45,7 +45,7 @@ class ProfileForm extends Component {
     console.log(error);
   }
 
-  profielTypeButtonText = async (profileType) => {
+  setButtonText = async (profileType) => {
     let buttonText = "Create Free Profile";
     const { profileTypes } = this.state
     if (profileTypes.length) {
@@ -168,7 +168,7 @@ class ProfileForm extends Component {
       data={profileFields}
       toggle={this.toggle}
       handleSubmit={this.handleSubmit}
-      profielTypeButtonText={this.profielTypeButtonText}
+      setButtonText={this.setButtonText}
       handleEditProfileCancel={this.handleEditProfileCancel}
     />
   }
