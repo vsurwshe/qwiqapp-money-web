@@ -6,7 +6,7 @@ import AddAttachment from './AddAttachment';
 import AttachmentUtils from '../../utility/AttachmentUtils';
 import { DeleteModel } from '../../utility/DeleteModel';
 
-class Attachments extends Component {
+class ContactAttachments extends Component {
   _isMount = false;
   constructor(props) {
     super(props);
@@ -150,4 +150,4 @@ class Attachments extends Component {
   }
 }
 
-export default Attachments;
+export default ContactAttachments;
