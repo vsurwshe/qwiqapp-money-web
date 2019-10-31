@@ -70,9 +70,9 @@ class Profiles extends Component {
     } else if (createProfile) {
       return <ProfileForm />
     } else if (updateProfile) {
-      return (<Container> <ProfileForm profileId={profileId}  profileName={profileName}/> </Container>)
+      return <ProfileForm profileId={profileId}  profileName={profileName}/>
     } else if (deleteProfile) {
-      return (<Container> <DeleteProfile profileId={profileId} /> </Container>)
+      return <DeleteProfile profileId={profileId} />
      } else  {
        return <div> { danger && this.loadDeleteProfile()} {this.showProfile(profiles)}</div>
      }
