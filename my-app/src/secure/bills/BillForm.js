@@ -38,7 +38,7 @@ class BillForm extends Component {
       nextBillDate: '',
       endDate: this.setRepeatUntilDate(new Date(), 2),
       recurId: props.bill ? props.bill.recurId : '',
-      dueDate: props.bill ? ShowServiceComponent.customDate(props.bill.dueDate_) : ShowServiceComponent.loadDateFormat(new Date()),  
+      dueDate: props.bill ? ShowServiceComponent.customDate(props.bill.dueDate_) : ShowServiceComponent.loadDateFormat(new Date()),
       billDate: props.bill ? ShowServiceComponent.customDate(props.bill.billDate) : ShowServiceComponent.loadDateFormat(new Date()),
       amount: props.bill ? this.setBillAmount(props.bill.amount) : 0,
       contactOption: props.bill ? props.bill.contactId : '',
@@ -130,17 +130,17 @@ class BillForm extends Component {
           }
           this.handleUpdateBill(event, data);
         } else if (this.state.recurConfig) {
-            data = {
-              ...newData,
-              "nextBillDate": Data.datePassToAPI(values.nextBillDate),
-              "endsOn": Data.datePassToAPI(this.state.endDate)
-            }
-            if (!this.props.bill.recurId) {
-              this.handleCreateRecurBill(event, data, true, this.props.bill.id)  // update Normal Bill with Recur Configuration Added
-            } else {
-              let result = { ...data, "version": this.state.recurBillVersion, "billVersion": this.props.bill.version }
-              this.handleUpdateRecurBill(event, result);
-            }
+          data = {
+            ...newData,
+            "nextBillDate": Data.datePassToAPI(values.nextBillDate),
+            "endsOn": Data.datePassToAPI(this.state.endDate)
+          }
+          if (!this.props.bill.recurId) {
+            this.handleCreateRecurBill(event, data, true, this.props.bill.id)  // update Normal Bill with Recur Configuration Added
+          } else {
+            let result = { ...data, "version": this.state.recurBillVersion, "billVersion": this.props.bill.version }
+            this.handleUpdateRecurBill(event, result);
+          }
         } else {
           this.handleUpdateBill(event, newData)
         }
@@ -337,13 +337,13 @@ class BillForm extends Component {
   }
 
   handleEndDate = (e) => {
-    this.setState({endDate: e.target.value, doubleClick: false});
+    this.setState({ endDate: e.target.value, doubleClick: false });
     this.validateEndDate(e.target.value)
   }
   validateEndDate = (endDate) => {
     if (this.state.nextBillDate) {
-      let diffEndDateAndNxtBillDate = new Date(endDate)- new Date(this.state.nextBillDate);
-      if ((diffEndDateAndNxtBillDate / (1000*60*60*24)) < 0) {
+      let diffEndDateAndNxtBillDate = new Date(endDate) - new Date(this.state.nextBillDate);
+      if ((diffEndDateAndNxtBillDate / (1000 * 60 * 60 * 24)) < 0) {
         this.setState({ doubleClick: true })
         this.callAlertTimer("danger", "end date should be after the next bill date");
       }
@@ -411,6 +411,7 @@ class BillForm extends Component {
   }
 
   loadMoreOptions = () => {
+    const profileFeatures = Store.getProfile().features.includes("Recurring");
     const { labels, contacts } = this.state;
     let labelName, contactName;
     if (this.props.bill) {
@@ -431,14 +432,13 @@ class BillForm extends Component {
       <Row>
         <Col>
           <label>Labels</label>
-          {labels ? <> {/*  <label>Select Labels</label> */}
-            <Select isMulti options={Data.categoriesOrLabels(labels)} styles={Data.colourStyles} defaultValue={labelName} placeholder="Select Labels" onChange={this.labelSelected} /></> : <p style={{paddingTop: contacts && "10px"}}>You don't have Labels, Click here to  <Link to='/label/labels'>Create</Link> </p>}       
+          {labels ? <>
+            <Select isMulti options={Data.categoriesOrLabels(labels)} styles={Data.colourStyles} defaultValue={labelName} placeholder="Select Labels" onChange={this.labelSelected} /></> : <p style={{ paddingTop: contacts && "10px" }}>You don't have Labels, Click here to  <Link to='/label/labels'>Create</Link> </p>}
         </Col>
         <Col>
-        <label>Contacts</label>
+          <label>Contacts</label>
           {contacts ? <>
-            {/* <label>Select Contacts</label> */}
-            <Select options={Data.contacts(contacts)} defaultValue={contactName} placeholder="Select Contacts" onChange={this.contactSelected} /></> : <p style={{paddingTop: labels && "10px"}}> {labels && <span ></span>}You don't have Contacts, Click here to  <Link to='/contact/viewContacts'>Create</Link></p>}
+            <Select options={Data.contacts(contacts)} defaultValue={contactName} placeholder="Select Contacts" onChange={this.contactSelected} /></> : <p style={{ paddingTop: labels && "10px" }}> {labels && <span ></span>}You don't have Contacts, Click here to  <Link to='/contact/viewContacts'>Create</Link></p>}
         </Col>
       </Row><br />
       <Row style={{ marginLeft: 7 }}>
@@ -451,13 +451,12 @@ class BillForm extends Component {
           <Col><AvField name="notifyDate" label="Notify Date" disabled value={this.state.notifyDate} type="date" errorMessage="Invalid Date" validate={{ date: { format: 'dd/MM/yyyy' } }} /></Col>
         </Row>
       }
-      {Store.getProfile().type > 0 && <>
+      {profileFeatures && <>
         <Row style={{ marginLeft: 7 }}>
           <Col>
             <Input name="check" type="checkbox" checked={this.state.recurConfig} value={this.state.recurConfig} onChange={this.handleRecurBillCheck} /> Recurring Bill</Col>
         </Row> <br />
         {this.state.recurConfig ? this.loadRecurBill() : ''}</>}
-
     </Collapse>
   }
 
@@ -494,7 +493,7 @@ class BillForm extends Component {
             <Input name="check" type="checkbox" checked={recurBillForever === true} value={recurBillForever} onChange={this.handlRecurBillForever} />{recurBillForever ? "Repeat until" : "Repeating forever"}
             <br />
             {recurBillForever && <>
-              <AvField name="endsOn" value={endDate} type="date" errorMessage="Invalid Date" onChange={(e)=>{this.handleEndDate(e)}} validate={{
+              <AvField name="endsOn" value={endDate} type="date" errorMessage="Invalid Date" onChange={(e) => { this.handleEndDate(e) }} validate={{
                 date: { format: 'dd/MM/yyyy' },
                 dateRange: { format: 'YYYY/MM/DD', start: { value: '1900/01/01' }, end: { value: '9999/12/31' } },
                 required: { value: true }
@@ -504,6 +503,6 @@ class BillForm extends Component {
       </>
     )
   }
-  
+
 }
 export default BillForm;
