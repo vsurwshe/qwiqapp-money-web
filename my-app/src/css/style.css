@@ -230,4 +230,63 @@ dropdown-align {
 .unpaid-bill{
     background-color: "#FA5858";
 }
-/* ====*/
+/* ====  Default Header CSS Code ====*/
+.avtar{
+    margin-right: 25;
+    position: "relative";
+}
+
+.faAddressCard{
+    color: #F16939;
+    margin-right: 15px;
+}
+
+.faRegCalendarAlt{
+    color: green;
+    margin-right: 15px;
+}
+
+.faUserEdit{
+    color: #AB2504;
+    margin-right: 15px;
+}
+
+.faKey{
+    color: #101011;
+    margin-right: 15px;
+}
+
+.faPowerOff{
+    color: red;
+    margin-right: 15px 
+}
+
+.faRegSun{
+    color: #4763B9;
+}
+
+.faUserPlus{
+    color: #832476
+}
+
+.faSyncAlt{
+    color: #0C7223
+}
+
+.faUserCircle{
+    color: #7F3BDB
+}
+.faAngleDown{
+    color: darkblue;
+    margin-right: 25px;
+}
+
+.dashboardLink{
+    color: black; 
+    text-decoration: none;
+}
+
+.dashboardLink:hover{
+    color: black; 
+    text-decoration: none;
+}

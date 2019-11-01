@@ -6,20 +6,22 @@ import Select from 'react-select';
 import Data from '../../data/SelectData';
 import Store from '../../data/Store';
 import { user_actions, DEFAULT_CURRENCY } from '../../data/GlobalKeys';
+import { profile_features } from '../../data/GlobalKeys';
 
 // ======================= This Bill Form Code =======
 export const BillFormUI = (props) => {
-  const profileFeatures = Store.getProfile().features.includes("MultiCurrency");
+  const featureMultiCurrency = Store.getProfile().features.includes(profile_features.MULTICURRENCY);
   let categoryName;
   const { bill, currencies, labels, contacts, categories, type, amount, dueDays, dueDate, billDate, moreOptions, doubleClick } = props.data;
-  const { currency, description } = bill ? bill : Store.getProfile();
+  // If bill exists, take currency from bill. If not, takes the default currency from selected Profile
+  const { currency, description } = bill ? bill : Store.getProfile(); 
   if (bill) {
     categoryName = Data.categoriesOrLabels(categories).filter(item => { return item.value === bill.categoryId })
   }
   return <AvForm onSubmit={props.handleSubmitValue}>
     <Row>
       <Col sm={3}>
-        <AvField type="select" id="symbol" name="currency" value={currency} disabled={!profileFeatures} label="Currency" errorMessage="Select Currency" required>
+        <AvField type="select" id="symbol" name="currency" value={currency} disabled={!featureMultiCurrency} label="Currency" errorMessage="Select Currency" required>
           <option value="">Select</option>
           {currencies.map((currencies, key) => {
             return <option key={key} value={currencies.code}

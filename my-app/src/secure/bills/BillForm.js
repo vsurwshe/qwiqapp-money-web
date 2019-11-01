@@ -12,6 +12,9 @@ import { BillFormUI } from "../utility/FormsModel";
 import '../../css/style.css';
 import { ShowServiceComponent } from "../utility/ShowServiceComponent";
 import RecurringBillsApi from "../../services/RecurringBillsApi";
+import { profile_features } from "../../data/GlobalKeys";
+
+
 
 class BillForm extends Component {
   constructor(props) {
@@ -411,7 +414,7 @@ class BillForm extends Component {
   }
 
   loadMoreOptions = () => {
-    const profileFeatures = Store.getProfile().features.includes("Recurring");
+    const featureRecurring = Store.getProfile().features.includes(profile_features.RECURRING);
     const { labels, contacts } = this.state;
     let labelName, contactName;
     if (this.props.bill) {
@@ -451,12 +454,15 @@ class BillForm extends Component {
           <Col><AvField name="notifyDate" label="Notify Date" disabled value={this.state.notifyDate} type="date" errorMessage="Invalid Date" validate={{ date: { format: 'dd/MM/yyyy' } }} /></Col>
         </Row>
       }
-      {profileFeatures && <>
+      {
+        // This checks the profile feature Recurring and shows Recurring Configuration logic if the feature exists
+        featureRecurring && <>
         <Row style={{ marginLeft: 7 }}>
           <Col>
             <Input name="check" type="checkbox" checked={this.state.recurConfig} value={this.state.recurConfig} onChange={this.handleRecurBillCheck} /> Recurring Bill</Col>
         </Row> <br />
         {this.state.recurConfig ? this.loadRecurBill() : ''}</>}
+    
     </Collapse>
   }
 

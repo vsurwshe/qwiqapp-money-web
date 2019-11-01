@@ -56,7 +56,8 @@ class Main extends Component {
     } else {
       await Store.saveUserProfiles(profiles);
       if (Store.getSelectedValue() === 'false') {
-        new ProfileApi().getProfileById((response)=>{Store.saveProfile(response)}, (error)=>console.log(error), profiles[0].id);
+        // Calling getProfileById for getting the first profile details of the api response(profiles). 
+        await new ProfileApi().getProfileById(async(response)=>{ await Store.saveProfile(response); this.forceUpdate()}, (error)=>console.log(error), profiles[0].id);
       }
       this.forceUpdate();
     }
