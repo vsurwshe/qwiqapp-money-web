@@ -7,6 +7,7 @@ import Config from "../../data/Config";
 import ProfileInfoTable from './ProfileInfoTable';
 import ProfileTypesApi from "../../services/ProfileTypesApi";
 import { ProfileFormUI } from "../utility/FormsModel";
+import { user_actions } from "../../data/GlobalKeys";
 import '../../css/style.css';
 
 
@@ -67,8 +68,8 @@ class ProfileForm extends Component {
     if (profileId) {
       new ProfileApi().updateProfile(this.successCall, this.errorCall, data, profileId);
     } else {
-      if (action !== 'VERIFY_EMAIL') {
-        new ProfileApi().createProfile(this.successCall, (err)=>{this.errorCall(err, data.type)}, data);
+      if (action !== user_actions.VERIFY_EMAIL) {
+        new ProfileApi().createProfile(this.successCall, (err) => { this.errorCall(err, data.type) }, data);
       } else {
         this.callAlertTimer("danger", "First Please verify with the code sent to your Email.....")
       }
@@ -83,7 +84,7 @@ class ProfileForm extends Component {
     }
   }
 
-  errorCall = (error, profileType ) => {
+  errorCall = (error, profileType) => {
     if (profileType) {
       this.callAlertTimer("danger", "You need to purchase credits to create these Profiles, For more info View Feature Comparision.....");
     } else if (Store.getProfile() !== null) {

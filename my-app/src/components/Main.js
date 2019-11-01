@@ -31,6 +31,7 @@ import Invoice from "../secure/billing/invoice/Invoice";
 import Config from "../data/Config";
 import AddBillAttachment from "../secure/bills/billAttachments/AddBillAttachment";
 import BillAttachments from "../secure/bills/billAttachments/BillAttachments";
+import { user_actions } from "../data/GlobalKeys";
 
 const DefaultFooter = React.lazy(() => import("../secure/sidebar/DefaultFooter"));
 
@@ -66,18 +67,18 @@ class Main extends Component {
     new GeneralApi().getCountrylist(this.getCountriesList, this.errorCall);
   }
 
-  getPaypalSettings = (data)=>{
-    Store.saveSetting(data) 
+  getPaypalSettings = (data) => {
+    Store.saveSetting(data)
   }
 
-  getCurrenciesList=(currencies)=>{
+  getCurrenciesList = (currencies) => {
     Store.saveCurrencies(currencies)
   }
 
-  getCountriesList=(countries)=>{
+  getCountriesList = (countries) => {
     Store.saveCountries(countries)
   }
-  
+
   getUser = () => {
     new UserApi().getUser(this.successCallUser, this.errorCall)
   }
@@ -98,15 +99,15 @@ class Main extends Component {
     this.setState({ flag: !this.state.flag })
   }
 
-  changeFlagValue=()=>{
-      this.setState({ flag: this.props.location.state.changeFlag})
-      this.props.location.state= null
+  changeFlagValue = () => {
+    this.setState({ flag: this.props.location.state.changeFlag })
+    this.props.location.state = null
   }
 
   render() {
     if (Store.isAppUserLoggedIn()) {
       // this condtions checks, manually profile selected or not
-      if(this.props.location.state){
+      if (this.props.location.state) {
         this.changeFlagValue();
       }
       return this.loadSecureRoutes();
@@ -151,12 +152,12 @@ class Main extends Component {
   loadSecureRoutes = () => {
     const { user } = this.state
     return (
-      <div className="app "  style={{ backgroundColor:Config.settings().bgcolor}}>
+      <div className="app " style={{ backgroundColor: Config.settings().bgcolor }}>
         {this.loadHeader()}
         <div className="app-body">
           {this.loadSideBar()}
           <main className="main" >
-            { Config.isLive()  ? '' : <p> Non live Environment is: {Config.environment()}</p>}
+            {Config.isLive() ? '' : <p> Non live Environment is: {Config.environment()}</p>}
             {this.loadNotification(user)}
             <Container fluid>
               <Suspense fallback={this.loading()}>{this.loadRoutes()}</Suspense>
@@ -187,17 +188,17 @@ class Main extends Component {
     //added currently profiels into sidebar items json array 
     return (
       <>
-     {Store.getProfile() !== null && 
-     <AppSidebar fixed display="sm">
-        <Suspense>
-          <AppSidebarNav navConfig={navigation} {...this.props} />
-        </Suspense>
-     </AppSidebar>}</>);
+        {Store.getProfile() !== null &&
+          <AppSidebar fixed display="sm">
+            <Suspense>
+              <AppSidebarNav navConfig={navigation} {...this.props} />
+            </Suspense>
+          </AppSidebar>}</>);
   }
 
   //This method displays the Static Notification according to User's Action
   loadNotification = (user) => {
-    if (user.action === 'VERIFY_EMAIL') {
+    if (user.action === user_actions.VERIFY_EMAIL) {
       return <center style={{ padding: 15 }}><span style={{ backgroundColor: '#f66749', color: 'white', borderRadius: '0.4em', padding: 7 }} >You are not verified yet... Please <u><a href='/verify' style={{ color: 'white' }}>Verify Now</a></u></span></center>;
     } else {
       return <center style={{ padding: 10 }} />;

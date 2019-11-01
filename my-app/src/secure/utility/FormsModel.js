@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import Select from 'react-select';
 import Data from '../../data/SelectData';
 import Store from '../../data/Store';
+import { user_actions, DEFAULT_CURRENCY } from '../../data/GlobalKeys';
 
 // ======================= This Bill Form Code =======
 export const BillFormUI = (props) => {
@@ -243,16 +244,16 @@ export const ContactFormUI = (props) => {
 
 export const ProfileFormUI = (props) => {
   const { profile, profileName, buttonMessage, currencies, profileType, profileTypes, action } = props.data;
-  const currencySymbol = profile ? profile.currency : 'GBP';
-  let url = action === "VERIFY_EMAIL" ? "/verify" : (action === 'ADD_BILLING' ? "/billing/address" : '/billing/paymentHistory');
+  const currencySymbol = profile ? profile.currency : DEFAULT_CURRENCY;
+  let url = action === user_actions.VERIFY_EMAIL ? "/verify" : (action === user_actions.ADD_BILLING ? "/billing/address" : "/billing/paymentHistory");
   // Default value set while creating profile in AvForm
   const defaultValues = { type: 0 }
   return <AvForm onValidSubmit={props.handleSubmit} model={defaultValues}>
     {// This Block Shows the ProfileTypes when user actions is  not "VERIFY_EMAIL" and  profileTypes length is more than 0
-      (profileTypes.length > 0 && action !== "VERIFY_EMAIL") && 
-      <> <h5><b>Choose Profile Type</b></h5> {createProfileTypes(profileTypes, props.setButtonText, action)}</>
+      (profileTypes.length > 0 && action !== user_actions.VERIFY_EMAIL) &&
+      <> <h5><b>Choose Profile Type</b></h5> {createProfileTypes(profileTypes, props.setButtonText)}</>
     }
-    {( (action !== "VERIFY_EMAIL" && profileType === 0) || (action !== "ADD_BILLING" && action !== "ADD_CREDITS_LOW" && action !== "VERIFY_EMAIL") ) ?
+    {((action !== user_actions.VERIFY_EMAIL && profileType === 0) || (action !== user_actions.ADD_BILLING && action !== user_actions.ADD_CREDITS_LOW && action !== user_actions.VERIFY_EMAIL)) ?
       // This Block execute when user actions are not "ADD_BILLING" , "ADD_CREDITS_LOW" & "VERIFY_EMAIL"
       <>{getCurrency(currencies, currencySymbol)}
         <AvField type="text" name="name" value={profileName} placeholder="Enter Profile name" id="tool-tip" label="Profile Name" required />
@@ -273,7 +274,7 @@ export const ProfileFormUI = (props) => {
 }
 
 // Shows the ProfileTypes table for creating Profiles
-const createProfileTypes = (profileTypesOptions, setButtonText, action) => {
+const createProfileTypes = (profileTypesOptions, setButtonText) => {
   return <AvRadioGroup name="type">
     <Table bordered striped hover>
       <thead className="table-header-color">
