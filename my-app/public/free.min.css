@@ -10,7 +10,8 @@
 @font-face {
     font-family: bills-reminder;
     
-    src: url("./fonts/icons-bills-reminder.woff") format("woff"); 
+    src: url("./icons-bills-reminder.woff") format("woff");
+    /* src: url("./fonts/icons-bills-reminder.woff") format("woff");  */
     /* src: url("./fonts/icons-justMoney.woff") format("woff"), url("./fonts/icons-justMoney.svg") format("svg");  */
     
     font-weight: 400;
