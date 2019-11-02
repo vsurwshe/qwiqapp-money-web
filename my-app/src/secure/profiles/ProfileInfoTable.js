@@ -1,8 +1,8 @@
 import React from 'react';
 import { Table } from 'reactstrap';
 import { FaCheck, FaMinus } from "react-icons/fa";
-import ProfileTypesApi from '../../services/ProfileTypesApi'
 import Config from '../../data/Config';
+import Store from '../../data/Store';
 
 const green = { color: '#008000' }
 const red = { color: '#FF0000' }
@@ -17,7 +17,10 @@ export default class ProfileInfoTable extends React.Component {
   }
 
   componentDidMount = () => {
-    new ProfileTypesApi().getProfileTypes((profileTypes) => { this.setState({ profileTypes }) }, (error) => { console.log("error", error); })
+    let profileTypes = Store.getProfileTypes();
+    if (profileTypes) {
+      this.setState({ profileTypes })
+    } 
   }
 
   render() {

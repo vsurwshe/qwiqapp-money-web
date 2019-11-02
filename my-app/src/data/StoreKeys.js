@@ -13,3 +13,11 @@
  export const CONTACTS='contacts';
  export const BILLS= 'bills';
  export const PROFILEID_BILLID='profielIdAndBillId';
+
+
+ export const user_actions = {
+    VERIFY_EMAIL: 'VERIFY_EMAIL',
+    ADD_BILLING: 'ADD_BILLING',
+    ADD_CREDITS: 'ADD_CREDITS',
+    ADD_CREDITS_LOW: 'ADD_CREDITS_LOW' 
+ };
