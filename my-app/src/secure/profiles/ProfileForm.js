@@ -7,7 +7,7 @@ import Config from "../../data/Config";
 import ProfileInfoTable from './ProfileInfoTable';
 import ProfileTypesApi from "../../services/ProfileTypesApi";
 import { ProfileFormUI } from "../utility/FormsModel";
-import { user_actions } from "../../data/GlobalKeys";
+import { userActions } from "../../data/GlobalKeys";
 import '../../css/style.css';
 
 
@@ -28,7 +28,7 @@ class ProfileForm extends Component {
   componentDidMount = async () => {
     // This Condtions Checks the Profile is Edit or Create
     if (this.state.profileId) {
-      await new ProfileApi().getProfilesById(this.successCallById, this.errorCallById, this.state.profileId);
+      await new ProfileApi().getProfileById(this.successCallById, this.errorCallById, this.state.profileId);
     } else {
       let user = Store.getUser();
       await new ProfileTypesApi().getProfileTypes((profileTypes) => { this.setState({ profileTypes }) }, (error) => { console.log("error", error); })
@@ -68,7 +68,7 @@ class ProfileForm extends Component {
     if (profileId) {
       new ProfileApi().updateProfile(this.successCall, this.errorCall, data, profileId);
     } else {
-      if (action !== user_actions.VERIFY_EMAIL) {
+      if (action !== userActions.VERIFY_EMAIL) {
         new ProfileApi().createProfile(this.successCall, (err) => { this.errorCall(err, data.type) }, data);
       } else {
         this.callAlertTimer("danger", "First Please verify with the code sent to your Email.....")

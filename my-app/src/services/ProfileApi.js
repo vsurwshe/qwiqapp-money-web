@@ -12,7 +12,7 @@ class ProfileApi {
     !Store.getUserProfiles() || newGetRequest ? process(success, failure, "/profiles/", "GET") : success(Store.getUserProfiles());
   }
 
-  getProfilesById(success, failure, profileId) {
+  getProfileById(success, failure, profileId) {
     process(success, failure, "/profiles/" + profileId, "GET", null, null, profileId);
   }
 

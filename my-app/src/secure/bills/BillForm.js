@@ -12,7 +12,7 @@ import { BillFormUI } from "../utility/FormsModel";
 import '../../css/style.css';
 import { ShowServiceComponent } from "../utility/ShowServiceComponent";
 import RecurringBillsApi from "../../services/RecurringBillsApi";
-import { profile_features } from "../../data/GlobalKeys";
+import { profileFeatures } from "../../data/GlobalKeys";
 
 
 
@@ -414,7 +414,7 @@ class BillForm extends Component {
   }
 
   loadMoreOptions = () => {
-    const featureRecurring = Store.getProfile().features.includes(profile_features.RECURRING);
+    const featureRecurring = Store.getProfile().features.includes(profileFeatures.RECURRING);
     const { labels, contacts } = this.state;
     let labelName, contactName;
     if (this.props.bill) {

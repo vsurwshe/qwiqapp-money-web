@@ -9,7 +9,7 @@ import BillingAddressApi from '../../../services/BillingAddressApi';
 import BillingInfo from "./BillingInfo";
 import { handleApiResponseMsg, buttonAction, updateStatus, setCountries } from "../../../redux/actions/billingAddressActions";
 import '../../../css/style.css';
-import { user_actions } from "../../../data/GlobalKeys";
+import { userActions } from "../../../data/GlobalKeys";
 
 const firstNameAndlastNameOrcompany = (value, field) => {
   if (!(field.firstName && field.lastName) && !field.company) {
@@ -76,7 +76,7 @@ class EditBillingAddress extends Component {
   successCreate = () => {
     let user = Store.getUser();
     this.callAlertTimer("success", "Saved Billing Address");
-    if (user.action === user_actions.ADD_BILLING) {
+    if (user.action === userActions.ADD_BILLING) {
       new UserApi().getUser((response) => Store.saveUser(response), this.errorCall);
     }
     // This is Seting update status for calling getbilling address in billinginfo component
