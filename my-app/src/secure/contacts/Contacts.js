@@ -11,6 +11,7 @@ import { DeleteModel } from "../utility/DeleteModel";
 import { ProfileEmptyMessage } from "../utility/ProfileEmptyMessage";
 import ContactApi from "../../services/ContactApi";
 import ContactForm from "./ContactForm";
+import { profile_fratures } from "../../data/StoreKeys";
 import '../../css/style.css';
 /* 
   * Presently we are showing attachments also
@@ -38,7 +39,7 @@ class Contacts extends Component {
   setProfileId = async () => {
     const profile = Store.getProfile();
     if (profile) {
-      await this.setState({ profileId: profile.id, profileType: profile.type, profileFeatures: profile.features });
+      await this.setState({ profileId: profile.id, profileFeatures: profile.features });
       this.getContacts();
     }
   }
@@ -111,7 +112,6 @@ class Contacts extends Component {
   }
 
   render() {
-    // let profile = Store.getProfile();
     const { contacts, singleContact, createContact, updateContact, deleteContact, addAttachRequest, contactId, profileId, spinner, labels, danger } = this.state
     if (profileId) {
       if (contacts.length === 0 && !createContact) {
@@ -202,7 +202,7 @@ class Contacts extends Component {
 
   loadSingleContact = (contact, contactKey) => {
     const {profileFeatures} = this.state
-    let featureAttachment = profileFeatures && profileFeatures.find(feature=> feature === "Attachments");
+    let featureAttachment = profileFeatures && profileFeatures.includes(profile_fratures.ATTACHMENTS);
     return <ListGroup flush key={contactKey} className="animated fadeIn" >
       <ListGroupItem action >
         <Row onMouseEnter={() => this.hoverAccordion(contactKey)} onMouseLeave={() => this.hoverAccordion(contactKey)}>
@@ -221,7 +221,7 @@ class Contacts extends Component {
           </Col>
           <Col>{this.state.hoverAccord[contactKey] ? this.loadDropDown(contact, featureAttachment) : ''}</Col>
         </Row>
-        <Collapse isOpen={this.state.attachDropdown[contactKey]}>{this.showAttachments(contact.id, contact)}</Collapse>
+        <Collapse isOpen={this.state.attachDropdown[contactKey]}>{this.showAttachments(contact.id, contact, featureAttachment)}</Collapse>
       </ListGroupItem>
     </ListGroup>
   }
@@ -251,9 +251,7 @@ class Contacts extends Component {
     this.setState({ contactId: contact.id, contactField: fieldName });
   }
 
-  showAttachments(contactId, contact) {
-    const {profileFeatures} = this.state
-    let featureAttachment = profileFeatures && profileFeatures.find(feature=> feature === "Attachments");
+  showAttachments(contactId, contact, featureAttachment) {
     return <div className="attachments">
       <span>
         <b>Email: </b>{contact.email}<br />
