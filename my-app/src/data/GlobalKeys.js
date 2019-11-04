@@ -6,6 +6,7 @@ export const COUNTRIES = 'contries';
 export const BILLING_ADDRESS = 'billingAddress';
 export const PROFILES = 'profiles';
 export const PROFILE = 'profile';
+export const PROFILE_TYPES = 'profileTypes';
 export const SELECTED_PROFILE = 'selectedProfile';
 export const LABELS = 'labels';
 export const CATEGORIES = 'categories';

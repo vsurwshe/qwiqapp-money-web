@@ -9,7 +9,7 @@ import { Container, Button, Card, CardBody, Table, CardHeader, Alert, Uncontroll
 import ProfileForm from './ProfileForm';
 import Config from '../../data/Config';
 import Store from '../../data/Store';
-import { user_actions } from '../../data/StoreKeys';
+import { userActions } from '../../data/GlobalKeys';
 /**
  * Display list of profiles,Manage profile like (update, delete)
  * Call Add,Update, delete Componets.
@@ -65,19 +65,20 @@ class Profiles extends Component {
     this.setState({ userConformUpgarde:!this.state.userConformUpgarde });
   }
   handelUserConform=(profileId, profileType)=>{
+    console.log("1")
     this.handleConformUpgrade()
     this.setState({ profileId, profileType, alertColor: undefined, alertMessage: undefined})
   }
   
   handelUpgradeProfile = () => {
     this.handleConformUpgrade();
-    const userAction=Store.getUser();
-    if(userAction.action){
-      switch (userAction.action) {
-        case user_actions.ADD_BILLING:
+    const cuurentUserAction=Store.getUser();
+    if(cuurentUserAction.action){
+      switch (cuurentUserAction.action) {
+        case userActions.ADD_BILLING:
           this.setState({ alertColor: "danger", alertMessage: "Add your billing address" });
           break;
-        case user_actions.ADD_CREDITS:
+        case userActions.ADD_CREDITS:
           this.setState({ alertColor: "danger", alertMessage: "Add credits" });
           break;
         default: this.setState({ alertColor: "danger", alertMessage: "Your credits are low, please add more credits" });
@@ -179,6 +180,7 @@ class Profiles extends Component {
   //this method load the single profile
   loadSingleProfile = (profile, key) => {
     let profileTypes = Store.getProfileTypes();
+    console.log("Prof ",profileTypes)
     return <tr key={key} >
         <td><b onClick={() => { this.selectProfile(profile.id) }} ><Avatar name={profile.name.charAt(0)} size="40" round={true} /> &nbsp;&nbsp;{profile.name}</b> </td>
         <td style={{ paddingTop: 18 }}>{this.loadProfileType(profile.type)} </td>
