@@ -1,9 +1,11 @@
 import React from 'react';
-import { AvForm, AvField, AvInput } from 'availity-reactstrap-validation';
-import { Button, FormGroup, Col, Row, Label, Collapse, Input, Tooltip } from "reactstrap";
+import { AvForm, AvField, AvInput, AvRadio, AvRadioGroup } from 'availity-reactstrap-validation';
+import { Button, FormGroup, Col, Row, Label, Collapse, Input, Table } from "reactstrap";
+import { Link } from 'react-router-dom';
 import Select from 'react-select';
 import Data from '../../data/SelectData';
 import Store from '../../data/Store';
+import { user_actions, DEFAULT_CURRENCY } from '../../data/GlobalKeys';
 
 // ======================= This Bill Form Code =======
 export const BillFormUI = (props) => {
@@ -80,13 +82,7 @@ export const RecurBillFormUI = (props) => {
   return <AvForm onSubmit={props.handleSubmitValue}>
     <Row>
       <Col sm={3}>
-        <AvField type="select" id="symbol" name="currency" value={currencyCode} label="Currency" errorMessage="Select Currency" required>
-          <option value="">Select</option>
-          {currencies.map((currencies, key) => {
-            return <option key={key} value={currencies.code}
-              data={currencies.symbol} symbol={currencies.symbol} >{currencies.symbol}</option>
-          })}
-        </AvField>
+        {getCurrency(currencies, currencyCode)}
       </Col>
       <Col sm={3}>
         <AvField type="select" name="type" label="Type of Bill" value={billType} errorMessage="Select Type of Bill" required>
@@ -187,9 +183,13 @@ export const CategoryLabelForm = (props) => {
     {items.length > 0 && // checking Label / Categories are there, then only showing "Nest option" while creating Label / Categories 
       (updateItem ? // checking the item(Label / Categories) is creating / updating, if creating then showing "Nest option"
         (updateItem.parentId ? // Checking whether Label / Categories has ParentId. If parentId is there then we are showing "Make it as Parent" or else checking for subLabel/subcategory 
-          (!chkMakeParent && <><Label style={{ paddingLeft: 20 }} check> <AvInput type="checkbox" name="makeParent" onChange={props.toggle} /> Make it as Parent </Label> <br /><br /></>) // if selected make it as parent, then assigning "null" to "parentId"
-          : !(updateItem.subLabels || updateItem.subCategories) && (!collapse && <><Label style={{ paddingLeft: 20 }} check> <AvInput type="checkbox" name="checkbox1" onChange={props.toggle} /> Nest {componentType} under </Label> <br /> </>)) //checking for subItems, if there dont show anything or else showing "Nest option"
-        : !collapse && <><Label style={{ paddingLeft: 20 }} check> <AvInput type="checkbox" name="checkbox1" onChange={props.toggle} /> Nest {componentType} under </Label> <br /> <br /></>) // If creating Label/ category then showing "Nest option"
+          (!chkMakeParent && <><Label style={{ paddingLeft: 20 }} check>
+            <AvInput type="checkbox" name="makeParent" onChange={props.toggle} /> Make it as Parent </Label> <br /></>) // if selected make it as parent, then assigning "null" to "parentId"
+          : !(updateItem.subLabels || updateItem.subCategories) && (!collapse &&
+            <><Label style={{ paddingLeft: 20 }} check>
+              <AvInput type="checkbox" name="checkbox1" onChange={props.toggle} /> Nest {componentType} under </Label> <br /> </>)) //checking for subItems, if there dont show anything or else showing "Nest option"
+        : !collapse && <><Label style={{ paddingLeft: 20 }} check>
+          <AvInput type="checkbox" name="checkbox1" onChange={props.toggle} /> Nest {componentType} under </Label> <br /> <br /></>) // If creating Label/ category then showing "Nest option"
     }
 
     <Collapse isOpen={collapse}>
@@ -243,18 +243,74 @@ export const ContactFormUI = (props) => {
 // ==============ProfileFormUI ===========
 
 export const ProfileFormUI = (props) => {
-  const { profileName, tooltipOpen, buttonMessage } = props.data;
-  return <>
-    <FormGroup row>
-      <Label sm={2}>Profile Name :</Label>
-      <Col sm={8}>
-        <Input name="profileName" value={profileName} type="text" placeholder="Enter Profile name" autoFocus={true} onChange={e => props.handleInput(e)} id="tool-tip" />
-        <Tooltip target="tool-tip" isOpen={tooltipOpen} placement="right" toggle={props.toggle}>Profile Name</Tooltip>
-      </Col>
-    </FormGroup>
-    <center>
-      <Button color="success" disabled={!profileName} onClick={e => props.handleSubmit(e)} > {buttonMessage} </Button>
-      <Button active color="light" style={{ marginLeft: 20 }} aria-pressed="true" onClick={props.handleEditProfileCancel}>Cancel</Button>
-    </center>
-  </>
+  const { profile, profileName, buttonMessage, currencies, profileType, profileTypes, action } = props.data;
+  const currencySymbol = profile ? profile.currency : DEFAULT_CURRENCY;
+  let url = action === user_actions.VERIFY_EMAIL ? "/verify" : (action === user_actions.ADD_BILLING ? "/billing/address" : "/billing/paymentHistory");
+  // Default value set while creating profile in AvForm
+  const defaultValues = { type: 0 }
+  return <AvForm onValidSubmit={props.handleSubmit} model={defaultValues}>
+    {// This Block Shows the ProfileTypes when user actions is  not "VERIFY_EMAIL" and  profileTypes length is more than 0
+      (profileTypes.length > 0 && action !== user_actions.VERIFY_EMAIL) &&
+      <> <h5><b>Choose Profile Type</b></h5> {createProfileTypes(profileTypes, props.setButtonText)}</>
+    }
+    {((action !== user_actions.VERIFY_EMAIL && profileType === 0) || (action !== user_actions.ADD_BILLING && action !== user_actions.ADD_CREDITS_LOW && action !== user_actions.VERIFY_EMAIL)) ?
+      // This Block execute when user actions are not "ADD_BILLING" , "ADD_CREDITS_LOW" & "VERIFY_EMAIL"
+      <>{getCurrency(currencies, currencySymbol)}
+        <AvField type="text" name="name" value={profileName} placeholder="Enter Profile name" id="tool-tip" label="Profile Name" required />
+        <center>
+          <FormGroup>
+            <Button color="success"> {buttonMessage} </Button> &nbsp;
+          <Button active color="light" type="button" onClick={props.handleEditProfileCancel}>Cancel</Button>
+          </FormGroup>
+        </center>
+      </> :
+      // This Block execute when user actions are "ADD_BILLING" , "ADD_CREDITS_LOW" & "VERIFY_EMAIL"
+      <center>
+        <Button type="button" color="info"><Link to={url} style={{ color: "black" }}> {action}</Link></Button> &nbsp;
+        <Button active color="light" type="button" onClick={props.handleEditProfileCancel}>Cancel</Button>
+      </center>
+    }
+  </AvForm>
+}
+
+// Shows the ProfileTypes table for creating Profiles
+const createProfileTypes = (profileTypesOptions, setButtonText) => {
+  return <AvRadioGroup name="type">
+    <Table bordered striped hover>
+      <thead className="table-header-color">
+        <tr>
+          <th>Type</th>
+          <th>Profile Type</th>
+          <th>Cost</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        {profileInfo(profileTypesOptions, setButtonText)}
+      </tbody>
+    </Table>
+  </AvRadioGroup>
+}
+
+// Returns the ProfileTypes table rows using profileTypeOptions
+const profileInfo = (profileTypesOptions, setButtonText) => {
+  const rowData = profileTypesOptions.map((proTypes, key) => {
+    return <tr key={key}>
+      <td> <AvRadio label={proTypes.name} value={proTypes.type} onChange={() => { return setButtonText(proTypes.type) }} /></td>
+      <td>{proTypes.name}</td>
+      <td>{proTypes.cost}</td>
+      <td>{proTypes.description}</td>
+    </tr>
+  })
+  return rowData
+}
+
+// Currency for profile form
+const getCurrency = (currencies, currencySymbol) => {
+  if (currencies.length > 0) {
+    return <AvField type="select" id="symbol" name="currency" value={currencySymbol} label="Default Currency">
+      <option value=""> Select</option>
+      {currencies.map((currency, key) => { return <option key={key} value={currency.code} data={currency.symbol} symbol={currency.symbol} >{currency.symbol}</option> })}
+    </AvField>
+  }
 }
