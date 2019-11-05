@@ -30,7 +30,8 @@ class Profiles extends Component {
       this.setState({ userAction: user.action });
     }
   }
-  componentDidUpdate() { 
+
+  componentDidUpdate() {
     // solved Reload issues
     if (this.state.profileUpgraded) {
       new ProfileApi().getProfiles(this.successCall, this.errorCall, "True");
@@ -46,9 +47,9 @@ class Profiles extends Component {
       await profiles.map(profile => {
         // to get dynamic dropdowns for Profile Upgrade
         // dropdown is based on "profile.upgradeTypes"
-        new ProfileApi().getProfilesById(async (profileById) => { 
+        new ProfileApi().getProfileById(async (profileById) => {
           profilesById.push(profileById);
-         await this.setState({profiles: profilesById, spinner: false })  
+          await this.setState({ profiles: profilesById, spinner: false })
         }, this.errorCall, profile.id);
         return 0;
       });
@@ -61,19 +62,18 @@ class Profiles extends Component {
     this.setState({ profileId, profileName, updateProfile: true, })
   };
 
-  handleConformUpgrade = () => {
-    this.setState({ userConformUpgarde:!this.state.userConformUpgarde });
+  handleConfirmUpgrade = () => {
+    this.setState({ userConfirmUpgrade: !this.state.userConfirmUpgrade });
   }
-  handelUserConform=(profileId, profileType)=>{
-    console.log("1")
-    this.handleConformUpgrade()
-    this.setState({ profileId, profileType, alertColor: undefined, alertMessage: undefined})
+  handelUserConform = (profileId, profileType) => {
+    this.handleConfirmUpgrade()
+    this.setState({ profileId, profileType, alertColor: undefined, alertMessage: undefined })
   }
-  
+
   handelUpgradeProfile = () => {
-    this.handleConformUpgrade();
-    const cuurentUserAction=Store.getUser();
-    if(cuurentUserAction.action){
+    this.handleConfirmUpgrade();
+    const cuurentUserAction = Store.getUser();
+    if (cuurentUserAction.action) {
       switch (cuurentUserAction.action) {
         case userActions.ADD_BILLING:
           this.setState({ alertColor: "danger", alertMessage: "Add your billing address" });
@@ -88,12 +88,14 @@ class Profiles extends Component {
       new ProfileApi().upgradeProfile(this.upgradeSuccessCall, this.errorCall, this.state.profileId, this.state.profileType);
     }
   }
+
   upgradeSuccessCall = (profile) => {
     this.setState({ alertColor: "success", alertMessage: "Your profile upgraded successfully", profileUpgraded: true });
     setTimeout(() => {
       this.setState({ alertColor: '', alertMessage: '' });
     }, Config.apiTimeoutMillis);
   }
+
   deleteProfile = () => {
     this.setState({ deleteProfile: true })
   };
@@ -116,12 +118,12 @@ class Profiles extends Component {
     } else if (createProfile) {
       return <ProfileForm />
     } else if (updateProfile) {
-      return <ProfileForm profileId={profileId}  profileName={profileName}/>
+      return <ProfileForm profileId={profileId} profileName={profileName} />
     } else if (deleteProfile) {
       return <DeleteProfile profileId={profileId} />
-     } else  {
-       return <div> { danger && this.loadDeleteProfile()} {this.showProfile(profiles)}</div>
-     }
+    } else {
+      return <div> {danger && this.loadDeleteProfile()} {this.showProfile(profiles)}</div>
+    }
   }
 
   loadHeader = () => {
@@ -139,7 +141,7 @@ class Profiles extends Component {
             {this.loadHeader()}
             <CardBody>
               {this.state.visible && <Alert color="danger">Unable to Process your Request, please try Again...</Alert>}
-              <div className="spinner-border text-primary" style={{width: 100, height: 100}} role="status">
+              <div className="spinner-border text-primary" style={{ width: 100, height: 100 }} role="status">
                 <span className="sr-only">Loading...</span>
               </div>
             </CardBody>
@@ -180,27 +182,26 @@ class Profiles extends Component {
   //this method load the single profile
   loadSingleProfile = (profile, key) => {
     let profileTypes = Store.getProfileTypes();
-    console.log("Prof ",profileTypes)
     return <tr key={key} >
-        <td><b onClick={() => { this.selectProfile(profile.id) }} ><Avatar name={profile.name.charAt(0)} size="40" round={true} /> &nbsp;&nbsp;{profile.name}</b> </td>
-        <td style={{ paddingTop: 18 }}>{this.loadProfileType(profile.type)} </td>
-        <td align="center">
-          <Button style={{ backgroundColor: "#43A432", color: "#F0F3F4" }} onClick={() => { this.updateProfile(profile.id, profile.name) }}>Edit</Button> &nbsp;
+      <td><b onClick={() => { this.selectProfile(profile.id) }} ><Avatar name={profile.name.charAt(0)} size="40" round={true} /> &nbsp;&nbsp;{profile.name}</b> </td>
+      <td style={{ paddingTop: 18 }}>{this.loadProfileType(profile.type)} </td>
+      <td align="center">
+        <Button style={{ backgroundColor: "#43A432", color: "#F0F3F4" }} onClick={() => { this.updateProfile(profile.id, profile.name) }}>Edit</Button> &nbsp;
           {profile.upgradeTypes ? <UncontrolledDropdown group>
-            <DropdownToggle caret >Upgrade</DropdownToggle>
-            {profileTypes && <DropdownMenu>
-              {profile.upgradeTypes.map((upgreadType, id) => {
-                const data = profileTypes.filter(profile => profile.type === upgreadType);
-                return <DropdownItem key={id} onClick={() => this.handelUserConform(profile.id, data[0].type)} >{data[0].name} </DropdownItem>
-              })}
-            </DropdownMenu>
-            }
-          </UncontrolledDropdown>
-            : <span style={{ paddingRight: 100 }}></span>
+          <DropdownToggle caret >Upgrade to</DropdownToggle>
+          {profileTypes && <DropdownMenu>
+            {profile.upgradeTypes.map((upgreadType, id) => {
+              const data = profileTypes.filter(profile => profile.type === upgreadType);
+              return <DropdownItem key={id} onClick={() => this.handelUserConform(profile.id, data[0].type)} >{data[0].name} </DropdownItem>
+            })}
+          </DropdownMenu>
           }
-        </td>
-        {this.state.userConformUpgarde && this.loadConformations()}
-      </tr>
+        </UncontrolledDropdown>
+          : <span style={{ paddingRight: 110 }}></span>
+        }
+      </td>
+      {this.state.userConfirmUpgrade && this.loadConfirmations()}
+    </tr>
   }
 
   loadProfileType = (type) => {
@@ -225,16 +226,16 @@ class Profiles extends Component {
   }
 
   // delete model
-  loadConformations = () => {
-    return <DeleteModel 
-      danger={this.state.userConformUpgarde} 
-      headerMessage="Upgrade Profile" 
+  loadConfirmations = () => {
+    return <DeleteModel
+      danger={this.state.userConfirmUpgrade}
+      headerMessage="Upgrade Profile"
       bodyMessage="This profile cost higher then current profile, are you sure You wants to upgrade"
-      toggleDanger={this.handelUserConform} 
-      delete={this.handelUpgradeProfile} 
-      cancel={this.handleConformUpgrade} 
+      toggleDanger={this.handelUserConform}
+      delete={this.handelUpgradeProfile}
+      cancel={this.handleConfirmUpgrade}
       buttonText="Upgrade Profile"
-      />
+    />
   }
 
 }

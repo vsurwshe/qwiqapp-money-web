@@ -25,7 +25,7 @@ class ProfileApi {
   }
 
   upgradeProfile(success, failure, profileId, type) {
-    process(success, failure, "/profiles/" + profileId + "/upgrade?type="+ type, "PUT", null, profileId);
+    process(success, failure, "/profiles/" + profileId + "/upgrade?type=" + type, "PUT", null, profileId);
   }
 }
 
@@ -43,9 +43,9 @@ async function process(success, failure, requestUrl, requestMethod, data, delete
       }
       validResponse(promise, success, requestMethod, deleteId)
     } else {
-      requestMethod === "POST" ? 
-       new LoginApi().refresh(async() => { await new ProfileApi().getProfiles(success, failure, true); }, (err)=>errorResponse(err, failure)) 
-       : await new ProfileApi().getProfiles(success, failure, true);
+      requestMethod === "POST" ?
+        new LoginApi().refresh(async () => { await new ProfileApi().getProfiles(success, failure, true); }, (err) => errorResponse(err, failure))
+        : await new ProfileApi().getProfiles(success, failure, true);
     }
   } catch (err) {
     handleAccessTokenError(err, failure, requestUrl, requestMethod, data, deleteId, success, profileId, reload);
