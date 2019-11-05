@@ -28,5 +28,12 @@ export const userAction = {
 //========== Profile Feature===========
 export const profileFeature = {
    RECURRING: "Recurring",
-   MULTICURRENCY: "MultiCurrency"
+   MULTICURRENCY: "MultiCurrency",
+   ATTACHMENTS: 'Attachments',
+   MULTIUSER: 'MultiUser'
+} 
+
+export const billType = {
+   PAYABLE: 'EXPENSE_PAYABLE',
+   RECEIVABLE: 'INCOME_RECEIVABLE'
 }

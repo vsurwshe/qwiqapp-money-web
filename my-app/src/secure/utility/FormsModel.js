@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import Select from 'react-select';
 import Data from '../../data/SelectData';
 import Store from '../../data/Store';
-import { userAction, profileFeature, DEFAULT_CURRENCY } from '../../data/GlobalKeys';
+import { userAction, profileFeature, billType, DEFAULT_CURRENCY } from '../../data/GlobalKeys';
 
 // ======================= This Bill Form Code =======
 export const BillFormUI = (props) => {
@@ -30,8 +30,8 @@ export const BillFormUI = (props) => {
       </Col>
       <Col sm={3}>
         <AvField type="select" name="type" label="Type of Bill" value={type} errorMessage="Select Type of Bill" required>
-          <option value={bill_type.PAYABLE}>Payable</option>
-          <option value={bill_type.RECEIVABLE}>Receivable</option>
+          <option value={billType.PAYABLE}>Payable</option>
+          <option value={billType.RECEIVABLE}>Receivable</option>
         </AvField>
       </Col>
       <Col sm={6}>
@@ -124,9 +124,9 @@ export const CategoryLabelForm = (props) => {
   return <AvForm onValidSubmit={props.handleSubmitValue}>
     <AvField type="text" name="name" label={componentType + " name"} errorMessage="Category Name Required" value={itemName} placeholder="Enter Category name" required />
     {componentType === "Label" ? <AvField type="text" name="notes" value={notes} placeholder="Description / Notes" label="Description / Notes" />
-      : <AvField type="select" name="type" label="Type" value={type ? type :bill_type.PAYABLE } errorMessage="Select Type of Category" >
-        <option value={bill_type.PAYABLE}>Payable</option>
-        <option value={bill_type.RECEIVABLE}>Receivable</option>
+      : <AvField type="select" name="type" label="Type" value={type ? type :billType.PAYABLE } errorMessage="Select Type of Category" >
+        <option value={billType.PAYABLE}>Payable</option>
+        <option value={billType.RECEIVABLE}>Receivable</option>
       </AvField>
     }
     <AvField type="color" name="color" list="colors" label={componentType + " color"} value={itemColor} />

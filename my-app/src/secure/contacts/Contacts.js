@@ -11,7 +11,7 @@ import { DeleteModel } from "../utility/DeleteModel";
 import { ProfileEmptyMessage } from "../utility/ProfileEmptyMessage";
 import ContactApi from "../../services/ContactApi";
 import ContactForm from "./ContactForm";
-import { profile_fratures } from "../../data/StoreKeys";
+import { profileFeatures } from "../../data/GlobalKeys";
 import '../../css/style.css';
 /* 
   * Presently we are showing attachments also
@@ -39,7 +39,7 @@ class Contacts extends Component {
   setProfileId = async () => {
     const profile = Store.getProfile();
     if (profile) {
-      await this.setState({ profileId: profile.id, profileFeatures: profile.features });
+      await this.setState({ profileId: profile.id, profileFeaturesData: profile.features });
       this.getContacts();
     }
   }
@@ -201,8 +201,8 @@ class Contacts extends Component {
   }
 
   loadSingleContact = (contact, contactKey) => {
-    const {profileFeatures} = this.state
-    let featureAttachment = profileFeatures && profileFeatures.includes(profile_fratures.ATTACHMENTS);
+    const {profileFeaturesData} = this.state
+    let featureAttachment = profileFeaturesData && profileFeaturesData.includes(profileFeatures.ATTACHMENTS);
     return <ListGroup flush key={contactKey} className="animated fadeIn" >
       <ListGroupItem action >
         <Row onMouseEnter={() => this.hoverAccordion(contactKey)} onMouseLeave={() => this.hoverAccordion(contactKey)}>
