@@ -34,7 +34,7 @@ class Profiles extends Component {
   componentDidUpdate() {
     // solved Reload issues
     if (this.state.profileUpgraded) {
-      new ProfileApi().getProfiles(this.successCall, this.errorCall, "True");
+      new ProfileApi().getProfiles(this.successCall, this.errorCall, true);
       this.setState({ profileUpgraded: false });
     }
   }
@@ -42,14 +42,14 @@ class Profiles extends Component {
   successCall = async profiles => {
     let profilesById = [];
     if (!profiles.length) {
-      this.setState({ profiles: [], spinner: false })
+      this.setState({ profiles: [], spinner: true })
     } else {
       await profiles.map(profile => {
         // to get dynamic dropdowns for Profile Upgrade
         // dropdown is based on "profile.upgradeTypes"
         new ProfileApi().getProfileById(async (profileById) => {
           profilesById.push(profileById);
-          await this.setState({ profiles: profilesById, spinner: false })
+          await this.setState({ profiles: profilesById })
         }, this.errorCall, profile.id);
         return 0;
       });
@@ -65,17 +65,18 @@ class Profiles extends Component {
   handleConfirmUpgrade = () => {
     this.setState({ userConfirmUpgrade: !this.state.userConfirmUpgrade });
   }
-  handelUserConform = (profileId, profileType) => {
+
+  handleUserConfirm = (profileId, profileType) => {
     this.handleConfirmUpgrade()
     this.setState({ profileId, profileType, alertColor: undefined, alertMessage: undefined })
   }
 
   handelUpgradeProfile = () => {
     this.handleConfirmUpgrade();
-    const cuurentUserAction = Store.getUser();
-    if (cuurentUserAction.action) {
-      switch (cuurentUserAction.action) {
-        case userActions.ADD_BILLING:
+    const userAction = this.state.userAction; // This is user action(actually from store(API response))
+    if (userAction) {
+      switch (userAction) {
+        case userActions.ADD_BILLING: // This is Global variable(declared in GlobalKeys.js), to compare 'userAction'
           this.setState({ alertColor: "danger", alertMessage: "Add your billing address" });
           break;
         case userActions.ADD_CREDITS:
@@ -141,7 +142,7 @@ class Profiles extends Component {
             {this.loadHeader()}
             <CardBody>
               {this.state.visible && <Alert color="danger">Unable to Process your Request, please try Again...</Alert>}
-              <div className="spinner-border text-primary" style={{ width: 100, height: 100 }} role="status">
+              <div className="text-primary spinner-size" role="status">
                 <span className="sr-only">Loading...</span>
               </div>
             </CardBody>
@@ -159,13 +160,13 @@ class Profiles extends Component {
           {this.state.alertMessage && <Alert color={this.state.alertColor} >{this.state.alertMessage}</Alert>}
           <Table bordered >
             <thead>
-              <tr style={{ backgroundColor: "#DEE9F2  ", color: '#000000' }} align='center'>
+              <tr className="table-tr" align='center'>
                 <th>Profile Name</th>
                 <th>Profile Type </th>
                 <th>Actions</th>
               </tr>
             </thead>
-            <tbody style={{ paddingBottom: "20px" }}>
+            <tbody className="tbody-padding">
               {profiles.map((profile, key) => {
                 return this.loadSingleProfile(profile, key);
               })}
@@ -190,9 +191,9 @@ class Profiles extends Component {
           {profile.upgradeTypes ? <UncontrolledDropdown group>
           <DropdownToggle caret >Upgrade to</DropdownToggle>
           {profileTypes && <DropdownMenu>
-            {profile.upgradeTypes.map((upgreadType, id) => {
-              const data = profileTypes.filter(profile => profile.type === upgreadType);
-              return <DropdownItem key={id} onClick={() => this.handelUserConform(profile.id, data[0].type)} >{data[0].name} </DropdownItem>
+            {profile.upgradeTypes.map((upgradeType, id) => {
+              const data = profileTypes.filter(profile => profile.type === upgradeType);
+              return <DropdownItem key={id} onClick={() => this.handleUserConfirm(profile.id, data[0].type)} >{data[0].name} </DropdownItem>
             })}
           </DropdownMenu>
           }
@@ -230,8 +231,9 @@ class Profiles extends Component {
     return <DeleteModel
       danger={this.state.userConfirmUpgrade}
       headerMessage="Upgrade Profile"
-      bodyMessage="This profile cost higher then current profile, are you sure You wants to upgrade"
-      toggleDanger={this.handelUserConform}
+      bodyMessage="Upgrading a profile may incur some charges. Are you sure you want to upgrade "
+      // "This profile cost is higher than current profile, are you sure you want to upgrade ?"
+      toggleDanger={this.handleUserConfirm}
       delete={this.handelUpgradeProfile}
       cancel={this.handleConfirmUpgrade}
       buttonText="Upgrade Profile"

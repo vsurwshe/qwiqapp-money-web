@@ -204,8 +204,8 @@ export const ProfileFormUI = (props) => {
       (profileTypes.length > 0 && action !== userAction.VERIFY_EMAIL) &&
       <> <h5><b>Choose Profile Type</b></h5> {createProfileTypes(profileTypes, props.setButtonText)}</>
     }
-    {((action !== userAction.VERIFY_EMAIL && profileType === 0) || (action !== userAction.ADD_BILLING && action !== userAction.ADD_CREDITS_LOW && action !== userAction.VERIFY_EMAIL)) ?
-      // This Block execute when user actions are not "ADD_BILLING" , "ADD_CREDITS_LOW" & "VERIFY_EMAIL"
+    {!action || ((profileType === 0)) ?
+      // This Block execute only when user action is null or user selects to create a Free Profile
       <>{getCurrency(currencies, currencySymbol)}
         <AvField type="text" name="name" value={profileName} placeholder="Enter Profile name" id="tool-tip" label="Profile Name" required />
         <center>
@@ -258,7 +258,7 @@ const profileInfo = (profileTypesOptions, setButtonText) => {
 
 // Currency for profile form
 const getCurrency = (currencies, currencySymbol) => {
-  if (currencies.length > 0) {
+  if (currencies.length) {
     return <AvField type="select" id="symbol" name="currency" value={currencySymbol} label="Default Currency">
       <option value=""> Select</option>
       {currencies.map((currency, key) => { return <option key={key} value={currency.code} data={currency.symbol} symbol={currency.symbol} >{currency.symbol}</option> })}
