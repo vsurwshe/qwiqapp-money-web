@@ -413,7 +413,7 @@ class Bills extends Component {
                   <th>Description</th>
                   <th>Bill Amount</th>
                   <th>Status</th>
-                  <th>Last Transcation</th>
+                  <th>Last Transaction</th>
                   <th></th>
                 </tr>
               </thead>

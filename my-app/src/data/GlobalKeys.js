@@ -13,14 +13,19 @@ export const CONTACTS = 'contacts';
 export const BILLS = 'bills';
 export const PROFILEID_BILLID = 'profielIdAndBillId';
 
-// default profile currency
+//===== default profile currency
 export const DEFAULT_CURRENCY = 'GBP';
 
-
-// user actions
-export const user_actions = {
+//===== user actions
+export const userAction = {
    VERIFY_EMAIL: 'VERIFY_EMAIL',
    ADD_BILLING: 'ADD_BILLING',
    ADD_CREDITS: 'ADD_CREDITS',
    ADD_CREDITS_LOW: 'ADD_CREDITS_LOW'
+}
+
+//========== Profile Feature===========
+export const profileFeature = {
+   RECURRING: "Recurring",
+   MULTICURRENCY: "MultiCurrency"
 }

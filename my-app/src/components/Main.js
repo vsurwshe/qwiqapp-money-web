@@ -31,7 +31,7 @@ import Invoice from "../secure/billing/invoice/Invoice";
 import Config from "../data/Config";
 import AddBillAttachment from "../secure/bills/billAttachments/AddBillAttachment";
 import BillAttachments from "../secure/bills/billAttachments/BillAttachments";
-import { user_actions } from "../data/GlobalKeys";
+import { userAction } from "../data/GlobalKeys";
 
 const DefaultFooter = React.lazy(() => import("../secure/sidebar/DefaultFooter"));
 
@@ -50,14 +50,14 @@ class Main extends Component {
       new ProfileApi().getProfiles(this.successCallProfiles, this.errorCall);
     }
   }
-
   successCallProfiles = async (profiles) => {
     if (profiles.length === 0 || profiles === null) {
       console.log("There is No Profile");
     } else {
       await Store.saveUserProfiles(profiles);
       if (Store.getSelectedValue() === 'false') {
-        await Store.saveProfile(profiles[0])
+        // Calling getProfileById for getting the first profile details of the api response(profiles). 
+        await new ProfileApi().getProfileById(async(response)=>{ await Store.saveProfile(response); this.forceUpdate()}, (error)=>console.log(error), profiles[0].id);
       }
       this.forceUpdate();
     }
@@ -95,12 +95,15 @@ class Main extends Component {
 
   signOut(e) { e.preventDefault(); this.props.history.push("/login"); }
 
+  // this function is called when user selects profile in default header dropdown
   changeFlagOnClick = () => {
     this.setState({ flag: !this.state.flag })
   }
 
+  // this function is called when user manually selects profile in Manage Profiles table
   changeFlagValue = () => {
-    this.setState({ flag: this.props.location.state.changeFlag })
+    const { changeFlag } = this.props.location.state
+    this.setState({ flag: changeFlag })
     this.props.location.state = null
   }
 
@@ -198,7 +201,7 @@ class Main extends Component {
 
   //This method displays the Static Notification according to User's Action
   loadNotification = (user) => {
-    if (user.action === user_actions.VERIFY_EMAIL) {
+    if (user.action === userAction.VERIFY_EMAIL) {
       return <center style={{ padding: 15 }}><span style={{ backgroundColor: '#f66749', color: 'white', borderRadius: '0.4em', padding: 7 }} >You are not verified yet... Please <u><a href='/verify' style={{ color: 'white' }}>Verify Now</a></u></span></center>;
     } else {
       return <center style={{ padding: 10 }} />;

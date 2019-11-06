@@ -12,7 +12,7 @@ class ProfileApi {
     !Store.getUserProfiles() || newGetRequest ? process(success, failure, "/profiles/", "GET") : success(Store.getUserProfiles());
   }
 
-  getProfilesById(success, failure, profileId) {
+  getProfileById(success, failure, profileId) {
     process(success, failure, "/profiles/" + profileId, "GET", null, null, profileId);
   }
 
@@ -33,7 +33,8 @@ async function process(success, failure, requestUrl, requestMethod, data, delete
   try {
     data === null ? promise = await HTTP.request() : promise = await HTTP.request({ data });
     if (requestMethod === "GET") {
-      if (!profileId) {
+      // This condtions decide to store profile when getProfiles Method call only
+      if(!profileId){
         Store.saveUserProfiles(promise.data);
       }
       validResponse(promise, success, requestMethod, deleteId)
@@ -85,7 +86,7 @@ let errorResponse = function (error, failure) {
 
 function httpCall(requestUrl, requestMethod) {
   let instance = Axios.create({
-    baseURL:Config.settings().cloudBaseURL,
+    baseURL: Config.settings().cloudBaseURL,
     method: requestMethod,
     url: requestUrl,
     headers: {

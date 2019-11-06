@@ -8,6 +8,8 @@ import Config from "../../data/Config";
 import Store from "../../data/Store";
 import Avatar from "react-avatar";
 import '../../css/bills-reminder.css';
+import '../../css/style.css';
+
 const DefaultHeader = (props) => {
   let [profileName, setProfileName] = useState("Web Money");
 
@@ -35,7 +37,9 @@ const DefaultHeader = (props) => {
   }
 
   //TODO:  handle profile error message
-  useEffect(() => { successCall(); getUserName() });
+  useEffect(() => {
+    successCall(); getUserName()
+  });
 
   const successCall = async () => {
     if (Store.getProfile() === null) {
@@ -66,15 +70,15 @@ const DefaultHeader = (props) => {
   const loadUserDropdown = () => {
     return <>
       <DropdownToggle nav>
-        <Avatar name={userName && userName.charAt(0)} style={{ marginRight: 25, position: "relative" }} size="40" round={true} />
+        <Avatar name={userName && userName.charAt(0)} className="avtar" size="40" round={true} />
       </DropdownToggle>
       <DropdownMenu right style={{ right: 'auto' }}>
         <DropdownItem tag="div" className="text-center"><strong >{userName}</strong></DropdownItem>
-        <DropdownItem tag={Link} to='/billing/address'><FaAddressCard style={{ color: "#F16939", marginRight: 15 }} />Billing Address</DropdownItem>
-        <DropdownItem tag={Link} to="/billing/paymentHistory"><FaRegCalendarAlt style={{ color: "green", marginRight: 15 }} />Payment History</DropdownItem>
-        <DropdownItem tag={Link} to="/editUser"><FaUserEdit style={{ color: "#AB2504", marginRight: 15 }} />Edit User</DropdownItem>
-        <DropdownItem tag={Link} to="/changePassword"><FaKey style={{ color: "#101011", marginRight: 15 }} />Change Password</DropdownItem>
-        <DropdownItem onClick={e => toggleDanger(e)} ><FaPowerOff style={{ color: "red", marginRight: 15 }} />Logout</DropdownItem>
+        <DropdownItem tag={Link} to='/billing/address'><FaAddressCard className="faAddressCard" />Billing Address</DropdownItem>
+        <DropdownItem tag={Link} to="/billing/paymentHistory"><FaRegCalendarAlt className="faRegCalendarAlt" />Payment History</DropdownItem>
+        <DropdownItem tag={Link} to="/editUser"><FaUserEdit className="faUserEdit" />Edit User</DropdownItem>
+        <DropdownItem tag={Link} to="/changePassword"><FaKey className="faKey" />Change Password</DropdownItem>
+        <DropdownItem onClick={e => toggleDanger(e)} ><FaPowerOff className="faPowerOff" />Logout</DropdownItem>
       </DropdownMenu>
     </>
   }
@@ -83,19 +87,19 @@ const DefaultHeader = (props) => {
     return <>
       <DropdownToggle nav>
         <b>{profileName ? profileName.length <= 13 ? profileName : profileName.slice(0, 11) + "..." : ""}&nbsp;</b>&nbsp;
-        <FaAngleDown size={18} style={{ color: "darkblue", marginRight: 25 }} />
+        <FaAngleDown size={18} className="faAngleDown"/>
       </DropdownToggle>
       <DropdownMenu right style={{ right: 'auto' }}>
         {profiles && profiles.map((profile, id) => {
           let url = "/profiles/" + profile.id;
           return <DropdownItem key={id} tag={Link} to={url}>
-            <FaUserCircle style={{ color: "#7F3BDB" }} /> &nbsp; {profile.name.length > 15 ? profileName.slice(0, 15) + "..." : profile.name}
+            <FaUserCircle className="faUserCircle" /> &nbsp; {profile.name.length > 15 ? (profile.name).slice(0, 15) + "..." : profile.name}
           </DropdownItem>
         })
         }
-        <DropdownItem tag={Link} to="/profiles"> <FaRegSun style={{ color: "#4763B9" }} /> &nbsp;&nbsp;Manage Profiles</DropdownItem>
-        <DropdownItem tag={Link} to="/createProfile"><FaUserPlus style={{ color: "#832476  " }} /> &nbsp; Create Profile </DropdownItem>
-        <DropdownItem onClick={refreshButton} > {!icon && <><FaSyncAlt style={{ color: "#0C7223" }} />&nbsp; &nbsp;Refresh</>}
+        <DropdownItem tag={Link} to="/profiles"> <FaRegSun className="faRegSun" /> &nbsp;&nbsp;Manage Profiles</DropdownItem>
+        <DropdownItem tag={Link} to="/createProfile"><FaUserPlus className="faUserPlus"/> &nbsp; Create Profile </DropdownItem>
+        <DropdownItem onClick={refreshButton} > {!icon && <><FaSyncAlt className="faSyncAlt" />&nbsp; &nbsp;Refresh</>}
         </DropdownItem>
       </DropdownMenu>
     </>
@@ -103,11 +107,11 @@ const DefaultHeader = (props) => {
 
   return <React.Fragment>
     <AppSidebarToggler className="d-lg-none" display="md" mobile />
-    <Link to="/dashboard"  style={{ color: "black", textDecoration: "none" }}>
+    <Link to="/dashboard" className="dashboardLink">
       <span>
-       <img src={process.env.PUBLIC_URL + '/img/logo.png'} className="bills-reminder-logo" alt="bills-reminder" />Bills Reminder
+        <img src={process.env.PUBLIC_URL + '/img/logo.png'} className="bills-reminder-logo" alt="bills-reminder" />Bills Reminder
         </span>
-      </Link>
+    </Link>
     <Nav className="d-md-down-none" navbar />
     <Nav className="ml-auto" navbar>
       <AppHeaderDropdown direction="down">

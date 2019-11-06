@@ -5,20 +5,22 @@ import { Link } from 'react-router-dom';
 import Select from 'react-select';
 import Data from '../../data/SelectData';
 import Store from '../../data/Store';
-import { user_actions, DEFAULT_CURRENCY } from '../../data/GlobalKeys';
+import { userAction, profileFeature, DEFAULT_CURRENCY } from '../../data/GlobalKeys';
 
 // ======================= This Bill Form Code =======
 export const BillFormUI = (props) => {
+  const featureMultiCurrency = Store.getProfile().features.includes(profileFeature.MULTICURRENCY);
   let categoryName;
   const { bill, currencies, labels, contacts, categories, type, amount, dueDays, dueDate, billDate, moreOptions, doubleClick } = props.data;
-  const { currency, description } = bill ? bill : '';
+  // If bill exists, take currency from bill. If not, takes the default currency from selected Profile
+  const { currency, description } = bill ? bill : Store.getProfile(); 
   if (bill) {
     categoryName = Data.categoriesOrLabels(categories).filter(item => { return item.value === bill.categoryId })
   }
   return <AvForm onSubmit={props.handleSubmitValue}>
     <Row>
       <Col sm={3}>
-        <AvField type="select" id="symbol" name="currency" value={currency} label="Currency" errorMessage="Select Currency" required>
+        <AvField type="select" id="symbol" name="currency" value={currency} disabled={!featureMultiCurrency} label="Currency" errorMessage="Select Currency" required>
           <option value="">Select</option>
           {currencies.map((currencies, key) => {
             return <option key={key} value={currencies.code}
@@ -71,57 +73,6 @@ export const BillFormUI = (props) => {
         <Button color="success" disabled={doubleClick}> {props.buttonText}  </Button> &nbsp;&nbsp;
         <Button type="button" onClick={props.cancel}>Cancel</Button>
       </center>
-    </FormGroup>
-  </AvForm>
-}
-
-
-// ======================= This RecurBill Form Code =======
-export const RecurBillFormUI = (props) => {
-  const { currencies, categories, categoryName, billDate, dueDays, dueDate, description, updateAmount, currencyCode, billType, doubleClick, moreOptions } = props.data
-  return <AvForm onSubmit={props.handleSubmitValue}>
-    <Row>
-      <Col sm={3}>
-        {getCurrency(currencies, currencyCode)}
-      </Col>
-      <Col sm={3}>
-        <AvField type="select" name="type" label="Type of Bill" value={billType} errorMessage="Select Type of Bill" required>
-          <option value="EXPENSE_PAYABLE">Payable</option>
-          <option value="INCOME_RECEIVABLE">Receivable</option>
-        </AvField>
-      </Col>
-      <Col sm={6}>
-        <AvField name="amount" id="amount" label="Amount" value={updateAmount > 0 ? updateAmount : -(updateAmount)} placeholder="Amount" type="number" errorMessage="Invalid amount"
-          onChange={e => { props.handleSetAmount(e) }} required />
-      </Col>
-    </Row>
-    <Row>
-      <Col>
-        <label >Category</label>
-        <Select options={Data.categoriesOrLabels(categories)} defaultValue={categoryName} styles={Data.singleStyles} placeholder="Select Categories " onChange={props.categorySelected} required /></Col>
-      <Col><AvField name="billDate" label="Bill Date" value={billDate} type="date"
-        onChange={(e) => { props.handleBillDate(e) }} errorMessage="Invalid Date" validate={{
-          date: { format: 'dd/MM/yyyy' },
-          dateRange: { format: 'YYYY/MM/DD', start: { value: '1900/01/01' }, end: { value: '9999/12/31' } },
-          required: { value: true }
-        }} /></Col>
-    </Row>
-    <Row>
-      <Col><AvField name="dueDays" label="Due Days" placeholder="No.of Days" onChange={e => { props.handleDate(e) }} value={dueDays} type="number" errorMessage="Invalid Days" /></Col>
-      <Col><AvField name="dueDate" label="Due Date" disabled value={dueDate} type="date" errorMessage="Invalid Date" validate={{ date: { format: 'dd/MM/yyyy' } }} /></Col>
-    </Row>
-    {Store.getProfile().type > 0 && props.selectEveryRecurBill()}
-    <Row>
-      <Col>
-        <label >Description / Notes</label>
-        <AvField name="description" type="text" list="colors" value={description} placeholder="Ex: Recharge" errorMessage="Invalid Notes" /></Col>
-    </Row>
-    <Button className="m-0 p-0" color="link" onClick={() => props.toggleCustom()} aria-expanded={moreOptions} aria-controls="exampleAccordion1"> More Options </Button>
-    {moreOptions && <LoadMoreOptions data={props} moreOptions={moreOptions} />
-    }
-    <FormGroup >
-      <center><Button color="success" disabled={doubleClick}> {props.buttonText} </Button> &nbsp;&nbsp;
-      <Button type="button" onClick={props.cancelRecurBill}>Cancel</Button></center>
     </FormGroup>
   </AvForm>
 }
@@ -245,15 +196,15 @@ export const ContactFormUI = (props) => {
 export const ProfileFormUI = (props) => {
   const { profile, profileName, buttonMessage, currencies, profileType, profileTypes, action } = props.data;
   const currencySymbol = profile ? profile.currency : DEFAULT_CURRENCY;
-  let url = action === user_actions.VERIFY_EMAIL ? "/verify" : (action === user_actions.ADD_BILLING ? "/billing/address" : "/billing/paymentHistory");
+  let url = action === userAction.VERIFY_EMAIL ? "/verify" : (action === userAction.ADD_BILLING ? "/billing/address" : "/billing/paymentHistory");
   // Default value set while creating profile in AvForm
   const defaultValues = { type: 0 }
   return <AvForm onValidSubmit={props.handleSubmit} model={defaultValues}>
     {// This Block Shows the ProfileTypes when user actions is  not "VERIFY_EMAIL" and  profileTypes length is more than 0
-      (profileTypes.length > 0 && action !== user_actions.VERIFY_EMAIL) &&
+      (profileTypes.length > 0 && action !== userAction.VERIFY_EMAIL) &&
       <> <h5><b>Choose Profile Type</b></h5> {createProfileTypes(profileTypes, props.setButtonText)}</>
     }
-    {((action !== user_actions.VERIFY_EMAIL && profileType === 0) || (action !== user_actions.ADD_BILLING && action !== user_actions.ADD_CREDITS_LOW && action !== user_actions.VERIFY_EMAIL)) ?
+    {((action !== userAction.VERIFY_EMAIL && profileType === 0) || (action !== userAction.ADD_BILLING && action !== userAction.ADD_CREDITS_LOW && action !== userAction.VERIFY_EMAIL)) ?
       // This Block execute when user actions are not "ADD_BILLING" , "ADD_CREDITS_LOW" & "VERIFY_EMAIL"
       <>{getCurrency(currencies, currencySymbol)}
         <AvField type="text" name="name" value={profileName} placeholder="Enter Profile name" id="tool-tip" label="Profile Name" required />

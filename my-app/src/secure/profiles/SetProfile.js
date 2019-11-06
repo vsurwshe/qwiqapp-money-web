@@ -1,19 +1,40 @@
 import React from 'react';
 import Store from '../../data/Store';
 import { Redirect } from 'react-router';
+import Loader from 'react-loader-spinner';
+import ProfileApi from '../../services/ProfileApi';
 
 class SetProfile extends React.Component {
+  state = {
+    callDashboard: false
+  }
 
   componentDidMount = async () => {
     const { match: { params: { id } } } = this.props;
-    const selectedProfile = Store.getUserProfiles().filter(profile => id === profile.id.toString())
-    await Store.saveProfile(selectedProfile[0])
-    await Store.userDataClear()
-    await Store.setSelectedValue(true)
+    await this.setProfile(id);
+  }
+
+  setProfile = (profileId) => {
+    return new ProfileApi().getProfileById(async (profile) => {
+      await Store.saveProfile(profile)
+      await Store.userDataClear()
+      await Store.setSelectedValue(true)
+      this.setState({ callDashboard: true });
+    }, (err) => {
+      this.setState({ callDashboard: true });
+    }, profileId);
   }
 
   render() {
-    return <Redirect to={{pathname: "/dashboard", state: {changeFlag: false}}} />
+    const { callDashboard } = this.state
+    return callDashboard ? <Redirect to={{ pathname: "/dashboard", state: { changeFlag: false } }} />
+      : this.loadSpinner()
+  }
+
+  loadSpinner = () => {
+    return <center style={{ paddingTop: '20px' }}>
+      <Loader type="TailSpin" color="#2E86C1" height={60} width={60} />
+    </center>
   }
 }
 
