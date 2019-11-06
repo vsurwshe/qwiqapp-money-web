@@ -25,7 +25,7 @@ class ProfileApi {
   }
 
   upgradeProfile(success, failure, profileId, type) {
-    process(success, failure, "/profiles/" + profileId + "/upgrade?type=" + type, "PUT", null, profileId);
+    process(success, failure, "/profiles/" + profileId + "/upgrade?type=" + type, "PUT", null, null, profileId);
   }
 }
 

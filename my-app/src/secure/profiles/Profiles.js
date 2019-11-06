@@ -76,7 +76,7 @@ class Profiles extends Component {
     const action = this.state.action; // This is user action(actually from store(API response))
     if (action) {
       switch (action) {
-        case userAction.ADD_BILLING: // This is Global variable(declared in GlobalKeys.js), to compare 'userAction'
+        case userAction.ADD_BILLING: // This is Global variable(declared in GlobalKeys.js), to compare 'action' of user
           this.setState({ alertColor: "danger", alertMessage: "Add your billing address" });
           break;
         case userAction.ADD_CREDITS:
