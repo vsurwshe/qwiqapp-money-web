@@ -18,6 +18,7 @@ import Config from "../../data/Config";
 import BillPayment from "./billPayment/ BillPayment";
 import ViewPayment from "./billPayment/ViewPayment";
 import PaymentApi from "../../services/PaymentApi";
+import { profileFeature } from "../../data/GlobalKeys";
 import '../../css/style.css';
 
 class Bills extends Component { 
@@ -30,15 +31,9 @@ class Bills extends Component {
       contacts: [],
       updateBill: [],
       billPayments: [],
-      createBillRequest: false,
-      updateBillRequest: false,
-      deleteBillRequest: false,
       visible: props.visible,
       profileId: "",
-      danger: false,
-      spinner: false,
       selectedOption: '',
-      removeDependents: true,
       paidAmount: 0
     };
   }
@@ -321,7 +316,8 @@ class Bills extends Component {
   render() {
     const { bills, createBillRequest, updateBillRequest, billId, deleteBillRequest, visible, profileId,
        updateBill, spinner, labels, categories, contacts, danger, paidAmount, requiredBill, markPaid, profileFeatures } = this.state;
-    let featureAttachment = profileFeatures && profileFeatures.includes("Attachments") // return true/false
+    let featureAttachment = profileFeatures && profileFeatures.includes(profileFeature.ATTACHMENTS) // return true/false
+    // let featureAttachment = profileFeatures && profileFeatures.includes("Attachments") // return true/false
     if (!profileId) {
       return <ProfileEmptyMessage />
     } else if (bills.length === 0 && !createBillRequest) {  // Checks for bills not there and no bill create Request, then executes
