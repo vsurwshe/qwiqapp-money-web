@@ -5,12 +5,11 @@ import { Link } from 'react-router-dom';
 import Select from 'react-select';
 import Data from '../../data/SelectData';
 import Store from '../../data/Store';
-import { userActions, DEFAULT_CURRENCY } from '../../data/GlobalKeys';
-import { profileFeatures } from '../../data/GlobalKeys';
+import { userAction, profileFeature, DEFAULT_CURRENCY } from '../../data/GlobalKeys';
 
 // ======================= This Bill Form Code =======
 export const BillFormUI = (props) => {
-  const featureMultiCurrency = Store.getProfile().features.includes(profileFeatures.MULTICURRENCY);
+  const featureMultiCurrency = Store.getProfile().features.includes(profileFeature.MULTICURRENCY);
   let categoryName;
   const { bill, currencies, labels, contacts, categories, type, amount, dueDays, dueDate, billDate, moreOptions, doubleClick } = props.data;
   // If bill exists, take currency from bill. If not, takes the default currency from selected Profile
@@ -197,15 +196,15 @@ export const ContactFormUI = (props) => {
 export const ProfileFormUI = (props) => {
   const { profile, profileName, buttonMessage, currencies, profileType, profileTypes, action } = props.data;
   const currencySymbol = profile ? profile.currency : DEFAULT_CURRENCY;
-  let url = action === userActions.VERIFY_EMAIL ? "/verify" : (action === userActions.ADD_BILLING ? "/billing/address" : "/billing/paymentHistory");
+  let url = action === userAction.VERIFY_EMAIL ? "/verify" : (action === userAction.ADD_BILLING ? "/billing/address" : "/billing/paymentHistory");
   // Default value set while creating profile in AvForm
   const defaultValues = { type: 0 }
   return <AvForm onValidSubmit={props.handleSubmit} model={defaultValues}>
     {// This Block Shows the ProfileTypes when user actions is  not "VERIFY_EMAIL" and  profileTypes length is more than 0
-      (profileTypes.length > 0 && action !== userActions.VERIFY_EMAIL) &&
+      (profileTypes.length > 0 && action !== userAction.VERIFY_EMAIL) &&
       <> <h5><b>Choose Profile Type</b></h5> {createProfileTypes(profileTypes, props.setButtonText)}</>
     }
-    {((action !== userActions.VERIFY_EMAIL && profileType === 0) || (action !== userActions.ADD_BILLING && action !== userActions.ADD_CREDITS_LOW && action !== userActions.VERIFY_EMAIL)) ?
+    {((action !== userAction.VERIFY_EMAIL && profileType === 0) || (action !== userAction.ADD_BILLING && action !== userAction.ADD_CREDITS_LOW && action !== userAction.VERIFY_EMAIL)) ?
       // This Block execute when user actions are not "ADD_BILLING" , "ADD_CREDITS_LOW" & "VERIFY_EMAIL"
       <>{getCurrency(currencies, currencySymbol)}
         <AvField type="text" name="name" value={profileName} placeholder="Enter Profile name" id="tool-tip" label="Profile Name" required />

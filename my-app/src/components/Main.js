@@ -31,7 +31,7 @@ import Invoice from "../secure/billing/invoice/Invoice";
 import Config from "../data/Config";
 import AddBillAttachment from "../secure/bills/billAttachments/AddBillAttachment";
 import BillAttachments from "../secure/bills/billAttachments/BillAttachments";
-import { userActions } from "../data/GlobalKeys";
+import { userAction } from "../data/GlobalKeys";
 
 const DefaultFooter = React.lazy(() => import("../secure/sidebar/DefaultFooter"));
 
@@ -201,7 +201,7 @@ class Main extends Component {
 
   //This method displays the Static Notification according to User's Action
   loadNotification = (user) => {
-    if (user.action === userActions.VERIFY_EMAIL) {
+    if (user.action === userAction.VERIFY_EMAIL) {
       return <center style={{ padding: 15 }}><span style={{ backgroundColor: '#f66749', color: 'white', borderRadius: '0.4em', padding: 7 }} >You are not verified yet... Please <u><a href='/verify' style={{ color: 'white' }}>Verify Now</a></u></span></center>;
     } else {
       return <center style={{ padding: 10 }} />;

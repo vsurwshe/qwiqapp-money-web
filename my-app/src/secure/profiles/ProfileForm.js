@@ -7,7 +7,7 @@ import Config from "../../data/Config";
 import ProfileInfoTable from './ProfileInfoTable';
 import ProfileTypesApi from "../../services/ProfileTypesApi";
 import { ProfileFormUI } from "../utility/FormsModel";
-import { userActions } from "../../data/GlobalKeys";
+import { userAction } from "../../data/GlobalKeys";
 import '../../css/style.css';
 
 
@@ -68,7 +68,7 @@ class ProfileForm extends Component {
     if (profileId) {
       new ProfileApi().updateProfile(this.successCall, this.errorCall, data, profileId);
     } else {
-      if (action !== userActions.VERIFY_EMAIL) {
+      if (action !== userAction.VERIFY_EMAIL) {
         new ProfileApi().createProfile(this.successCall, (err) => { this.errorCall(err, data.type) }, data);
       } else {
         this.callAlertTimer("danger", "First Please verify with the code sent to your Email.....")

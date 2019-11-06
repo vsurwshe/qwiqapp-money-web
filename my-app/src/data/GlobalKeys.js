@@ -17,7 +17,7 @@ export const PROFILEID_BILLID = 'profielIdAndBillId';
 export const DEFAULT_CURRENCY = 'GBP';
 
 //===== user actions
-export const userActions = {
+export const userAction = {
    VERIFY_EMAIL: 'VERIFY_EMAIL',
    ADD_BILLING: 'ADD_BILLING',
    ADD_CREDITS: 'ADD_CREDITS',
@@ -25,7 +25,7 @@ export const userActions = {
 }
 
 //========== Profile Feature===========
-export const profileFeatures = {
+export const profileFeature = {
    RECURRING: "Recurring",
    MULTICURRENCY: "MultiCurrency"
 }
