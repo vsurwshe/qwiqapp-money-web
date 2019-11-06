@@ -9,7 +9,7 @@ import { Container, Button, Card, CardBody, Table, CardHeader, Alert, Uncontroll
 import ProfileForm from './ProfileForm';
 import Config from '../../data/Config';
 import Store from '../../data/Store';
-import { userActions } from '../../data/GlobalKeys';
+import { userAction } from '../../data/GlobalKeys';
 /**
  * Display list of profiles,Manage profile like (update, delete)
  * Call Add,Update, delete Componets.
@@ -27,7 +27,7 @@ class Profiles extends Component {
     let user = Store.getUser();
     new ProfileApi().getProfiles(this.successCall, this.errorCall);
     if (user) {
-      this.setState({ userAction: user.action });
+      this.setState({ action: user.action });
     }
   }
 
@@ -73,13 +73,13 @@ class Profiles extends Component {
 
   handelUpgradeProfile = () => {
     this.handleConfirmUpgrade();
-    const userAction = this.state.userAction; // This is user action(actually from store(API response))
-    if (userAction) {
-      switch (userAction) {
-        case userActions.ADD_BILLING: // This is Global variable(declared in GlobalKeys.js), to compare 'userAction'
+    const action = this.state.action; // This is user action(actually from store(API response))
+    if (action) {
+      switch (action) {
+        case userAction.ADD_BILLING: // This is Global variable(declared in GlobalKeys.js), to compare 'userAction'
           this.setState({ alertColor: "danger", alertMessage: "Add your billing address" });
           break;
-        case userActions.ADD_CREDITS:
+        case userAction.ADD_CREDITS:
           this.setState({ alertColor: "danger", alertMessage: "Add credits" });
           break;
         default: this.setState({ alertColor: "danger", alertMessage: "Your credits are low, please add more credits" });
