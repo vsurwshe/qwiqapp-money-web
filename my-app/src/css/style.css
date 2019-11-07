@@ -91,6 +91,10 @@
 /* =======END======= */
 
 /* ============ Bills styles Start=========*/
+.bill-load-dropdown {
+    margin-top: -8; 
+    margin-bottom: -9;
+}
 .row-text-bill {
     padding-left: 10px;
     font-style: oblique;
@@ -165,10 +169,9 @@ dropdown-align {
 
 /* ============ start Contacts styles=========*/
 .faPaperclip{
-    color:"#34aec1";
-    margin-top: 5;
-    margin-left: 10;
-    size:17 
+    color: rgba(52,174,193);
+    margin-top: 0px;
+    margin-left: 10px;
 }
 .attachments{
     padding-left: 29px;
@@ -176,6 +179,9 @@ dropdown-align {
     color: black
 
 }
+.transparent-background {background-color: "transparent"; }
+.contact-edit { border-color: green; color: green }
+.contact-remove { background-color: "transparent"; border-color: red; color: red }
 /* ============ End Contacts styles=========*/
 
 /* ========= Start Labels & Categories Styless ===========*/

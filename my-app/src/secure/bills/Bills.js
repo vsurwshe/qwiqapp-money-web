@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import {Redirect} from 'react-router';
 import { Card, CardBody, Alert, Table, FormGroup, Label, Input, UncontrolledDropdown, Button, DropdownMenu, DropdownItem, DropdownToggle } from "reactstrap";
-import Loader from 'react-loader-spinner';
 import { FaUndoAlt } from 'react-icons/fa';
 import BillForm from "./BillForm";
 import BillApi from "../../services/BillApi";
@@ -56,7 +55,7 @@ class Bills extends Component {
     if (profile) {
       await this.setState({ profileId: profile.id, profileType: profile.type, profileFeatures: profile.features });
       // This condition checking whether api call first time or reptely 
-      this.state.categories !== undefined && this.state.categories.length <= 0 ? this.getCategory() : this.forceUpdate();
+      this.state.categories !== undefined && this.state.categories.length <= 0 ? this.getCategory() : this.forceUpdate(); 
     }
   }
 
@@ -110,7 +109,7 @@ class Bills extends Component {
   // This Method execute the Bill API Call
   getBills = async () => {
     if (this.props.paid) {
-      await new BillApi().getBills(this.successCallBill, this.errorCall, this.state.profileId, "True");
+      await new BillApi().getBills(this.successCallBill, this.errorCall, this.state.profileId, true);
     } else {
       await new BillApi().getBills(this.successCallBill, this.errorCall, this.state.profileId);
     }
@@ -317,14 +316,13 @@ class Bills extends Component {
     const { bills, createBillRequest, updateBillRequest, billId, deleteBillRequest, visible, profileId,
        updateBill, spinner, labels, categories, contacts, danger, paidAmount, requiredBill, markPaid, profileFeatures } = this.state;
     let featureAttachment = profileFeatures && profileFeatures.includes(profileFeature.ATTACHMENTS) // return true/false
-    // let featureAttachment = profileFeatures && profileFeatures.includes("Attachments") // return true/false
     if (!profileId) {
       return <ProfileEmptyMessage />
-    } else if (bills.length === 0 && !createBillRequest) {  // Checks for bills not there and no bill create Request, then executes
+    } else if (!bills.length && !createBillRequest) {  // Checks for bills not there and no bill create Request, then executes
       return <div>
         {/*  If spinner is true and bills are there, it shows the loader function, until bills are loaded */}
-        {(spinner && bills.length !== 0) ? <>{visible && <Alert isOpen={visible} color={this.state.color}>{this.state.content}</Alert>} {this.loadLoader()}
-        </> : bills.length === 0 && this.emptyBills() // If bills not there, it will show Empty message 
+        {(spinner && bills.length) ? <>{visible && <Alert isOpen={visible} color={this.state.color}>{this.state.content}</Alert>} {this.loadLoader()}
+        </> : !bills.length && this.emptyBills() // If bills not there, it will show Empty message 
         }
       </div>
     } else if (createBillRequest) {
@@ -371,7 +369,10 @@ class Bills extends Component {
     <Card>
       {this.loadHeader("")}
       <center className="padding-top" >
-        <CardBody><Loader type="TailSpin" className="loader-color" height={60} width={60} /></CardBody>
+        <CardBody>
+          <div className="text-primary spinner-size" role="status">
+            <span className="sr-only">Loading...</span>
+          </div></CardBody>
       </center>
     </Card>
   </div>

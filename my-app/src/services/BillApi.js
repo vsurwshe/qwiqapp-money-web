@@ -10,7 +10,7 @@ class BillApi {
 
   //This Method Get All Bills
   getBills(success, failure, profileId, value) {
-    Store.getBills() === null || value === "True" ? process(success, failure, profileId + "/bills", "GET", profileId) : success(Store.getBills());
+    Store.getBills() === null || value ? process(success, failure, profileId + "/bills", "GET", profileId) : success(Store.getBills());
   }
 
   //This Method Get Bill By ID
@@ -44,7 +44,7 @@ async function process(success, failure, requestURL, requestMethod, profileId, d
       Store.saveBills(promise.data);
       validResponse(promise, success)
     } else {
-      await new BillApi().getBills(success, failure, profileId, "True");
+      await new BillApi().getBills(success, failure, profileId, true);
     }
   }
   //TODO: handle user error   
@@ -56,7 +56,7 @@ async function process(success, failure, requestURL, requestMethod, profileId, d
 //this method slove the Exprie Token Problem.
 let handleAccessTokenError = function (profileId, err, failure, requestURL, requestMethod, data, success, reload) {
   if (err.request && err.request.status === 0) {
-    new BillApi().getBills(success, failure, profileId, "True");
+    new BillApi().getBills(success, failure, profileId, true);
   } else if (err.response && (err.response.status === 403 || err.response.status === 401)) {
     if (!reload) {
       new LoginApi().refresh(() => { process(success, failure, requestURL, requestMethod, profileId, data, "restrict") }, errorResponse(err, failure))

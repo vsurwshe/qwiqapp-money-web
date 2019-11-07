@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { Button, Row, Col, Card, CardBody, CardHeader, Alert, Input, InputGroup, InputGroupAddon, InputGroupText, ListGroupItem, ListGroup, Collapse } from "reactstrap";
 import { FaPaperclip, FaUserCircle, FaSearch, FaCaretDown } from 'react-icons/fa';
-import Loader from 'react-loader-spinner'
 import DeleteContact from "./DeleteContact";
 import LabelApi from "../../services/LabelApi";
 import ContactAttachments from "./contactAttachments/ContactAttachments";
@@ -114,8 +113,8 @@ class Contacts extends Component {
   render() {
     const { contacts, singleContact, createContact, updateContact, deleteContact, addAttachRequest, contactId, profileId, spinner, labels, danger } = this.state
     if (profileId) {
-      if (contacts.length === 0 && !createContact) {
-        return <div>{contacts.length === 0 && !createContact && !spinner ? this.loadSpinner() : this.loadContactEmpty()}</div>
+      if (!contacts.length && !createContact) {
+        return <div>{ !spinner ? this.loadSpinner() : this.loadContactEmpty()}</div>
       } else if (createContact) {
         return <ContactForm profileId={profileId} lables={labels} />
       } else if (updateContact) {
@@ -163,7 +162,10 @@ class Contacts extends Component {
       <Card>
         {this.loadHeader()}
         <center className="padding-top">
-          <CardBody><Loader type="BallTriangle" color="#2E86C1" height={80} width={80} /></CardBody>
+          <CardBody>
+            <div className="text-primary spinner-size" role="status">
+              <span className="sr-only">Loading...</span>
+            </div></CardBody>
         </center>
       </Card>
     </div>
@@ -215,7 +217,7 @@ class Contacts extends Component {
               </b> &nbsp;
               {featureAttachment ?
                 <>
-                  <FaPaperclip style={{ color: '#34aec1', marginTop: 0, marginLeft: 10 }} onClick={() => this.attachDropDown(contactKey, contact.id)} />
+                  <FaPaperclip className="faPaperclip" onClick={() => this.attachDropDown(contactKey, contact.id)} />
                 </> : <FaCaretDown />}
             </span>
           </Col>
@@ -235,8 +237,8 @@ class Contacts extends Component {
     return (<>
       {featureAttachment && <ContactAttachments profileId={this.state.profileId} contactId={contact.id} getCount={true} />}
       <span className="float-right" >
-        <small><button style={{ backgroundColor: "transparent", borderColor: 'green', color: "green" }} onClick={() => { this.updateContact(contact) }}> EDIT </button></small> &nbsp;
-      <small><button style={{ backgroundColor: "transparent", borderColor: 'red', color: "red" }} onClick={() => { this.setContactID(contact); this.toggleDanger(); }}> REMOVE </button></small>
+        <small><button className="contact-edit transparent-background" onClick={() => { this.updateContact(contact) }}> EDIT </button></small> &nbsp;
+        <small><button className="contact-remove transparent-background" onClick={() => { this.setContactID(contact); this.toggleDanger(); }}> REMOVE </button></small>
       </span></>
     )
   }
