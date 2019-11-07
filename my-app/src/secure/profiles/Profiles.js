@@ -23,12 +23,8 @@ class Profiles extends Component {
     };
   }
 
-  componentDidMount() {
-    let user = Store.getUser();
+  async componentDidMount() {
     new ProfileApi().getProfiles(this.successCall, this.errorCall);
-    if (user) {
-      this.setState({ action: user.action });
-    }
   }
 
   componentDidUpdate() {
@@ -73,7 +69,8 @@ class Profiles extends Component {
 
   handelUpgradeProfile = () => {
     this.handleConfirmUpgrade();
-    const action = this.state.action; // This is user action(actually from store(API response))
+    // After login, userAction getting undefined through ComponetDidMount, to resolve this issue, it is placed here.
+    const action = Store.getUser() ? Store.getUser().action : true; // This is user action(actually from store(API response))
     if (action) {
       switch (action) {
         case userAction.ADD_BILLING: // This is Global variable(declared in GlobalKeys.js), to compare 'action' of user
