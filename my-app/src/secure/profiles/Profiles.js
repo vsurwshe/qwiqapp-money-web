@@ -74,8 +74,7 @@ class Profiles extends Component {
     if (action) {
       switch (action) {
         case userAction.ADD_BILLING: // This is Global variable(declared in GlobalKeys.js), to compare 'action' of user
-        this.callAlertTimer("danger", "Add your billing address", true);
-          this.setState({ alertColor: "danger", alertMessage: "Add your billing address" });
+          this.callAlertTimer("danger", "Add your billing address", true);
           break;
         case userAction.ADD_CREDITS:
           this.callAlertTimer("danger", "Add credits", true);
