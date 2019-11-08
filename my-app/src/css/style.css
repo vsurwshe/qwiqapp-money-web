@@ -24,13 +24,15 @@
 .padding{
     padding: 10px
 }
+.center-padding{
+    padding: 15px
+}
 .padding-top { 
     padding-top: 20px 
 }
 .padding-left { 
     padding-left: 20px
 }
-
 .margin {
     margin: 10px
 }
@@ -51,8 +53,44 @@
     font-size: 1.0em;
     font-weight: bold
 }
+.span-style{
+    background-color: #f66749;
+    color: white;
+    border-radius: 0.4em;
+    padding: 7px
+}
 
-/* ============ Bils styles Start=========*/
+/* ============ Profiles Styles ========*/
+.table-tr{
+    background-color: #DEE9F2;
+    color: #000000
+}
+.tbody-padding{
+    padding-bottom: 20px
+}
+.button-color{
+    background-color: #43A432;
+    color: #F0F3F4
+}
+.spinner-size{
+    display: inline-block;
+    width: 5rem;
+    height: 5rem;
+    vertical-align: text-bottom;
+    border: .25em solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 1s linear infinite;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); } 
+    100% { transform: rotate(360deg); }
+}
+
+/* =======END======= */
+
+/* ============ Bills styles Start=========*/
 .row-text-bill {
     padding-left: 10px;
     font-style: oblique;
@@ -109,7 +147,8 @@ dropdown-align {
     color: red; 
     border-color: red;
 }
-/* ============ End Bils styles=========*/
+/* ============ End Bills styles=========*/
+
 /* ============ start Category styles=========*/
 .update-category{
     font-weight: 'bold';
@@ -179,6 +218,7 @@ dropdown-align {
 .button-hover:focus{
     outline:0;
  }
+
 /* ================== User Invoice Code ================== */
  .h1-padding{
     padding-bottom : 1;
@@ -210,6 +250,7 @@ dropdown-align {
     color: #6F6D6D;
 }
 /* ================== END  =================*/
+
 /* ===Dashboard==== */
 .card-title{
  color:#FFFFFF;

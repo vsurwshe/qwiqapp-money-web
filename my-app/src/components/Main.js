@@ -32,6 +32,8 @@ import Config from "../data/Config";
 import AddBillAttachment from "../secure/bills/billAttachments/AddBillAttachment";
 import BillAttachments from "../secure/bills/billAttachments/BillAttachments";
 import { userAction } from "../data/GlobalKeys";
+import ProfileTypesApi from "../services/ProfileTypesApi";
+import '../css/style.css'
 
 const DefaultFooter = React.lazy(() => import("../secure/sidebar/DefaultFooter"));
 
@@ -62,9 +64,10 @@ class Main extends Component {
       this.forceUpdate();
     }
     this.getUser();
-    new GeneralApi().settings(this.getPaypalSettings, this.errorCall);
-    new GeneralApi().getCurrencyList(this.getCurrenciesList, this.errorCall);
-    new GeneralApi().getCountrylist(this.getCountriesList, this.errorCall);
+    await new GeneralApi().settings(this.getPaypalSettings, this.errorCall);
+    await new GeneralApi().getCurrencyList(this.getCurrenciesList, this.errorCall);
+    await new GeneralApi().getCountrylist(this.getCountriesList, this.errorCall);
+    await new ProfileTypesApi().getProfileTypes(this.getProfileTypes, this.errorCall);
   }
 
   getPaypalSettings = (data) => {
@@ -79,6 +82,12 @@ class Main extends Component {
     Store.saveCountries(countries)
   }
 
+  // Saving API response of ProfileTypes into Store  
+  getProfileTypes = async (profileTypes) => {
+    await Store.saveProfileTypes(profileTypes);
+    this.forceUpdate(); // Forcefully re-render the component as the profileTypes are not stored into state
+  }
+
   getUser = () => {
     new UserApi().getUser(this.successCallUser, this.errorCall)
   }
@@ -91,7 +100,7 @@ class Main extends Component {
     console.log("Error = ", error);
   }
 
-  loading = () => (<div className="animated fadeIn pt-1 text-center">Loading...</div>);
+  loading = () => <div className="animated fadeIn pt-1 text-center">Loading...</div>;
 
   signOut(e) { e.preventDefault(); this.props.history.push("/login"); }
 
@@ -204,7 +213,7 @@ class Main extends Component {
     if (user.action === userAction.VERIFY_EMAIL) {
       return <center style={{ padding: 15 }}><span style={{ backgroundColor: '#f66749', color: 'white', borderRadius: '0.4em', padding: 7 }} >You are not verified yet... Please <u><a href='/verify' style={{ color: 'white' }}>Verify Now</a></u></span></center>;
     } else {
-      return <center style={{ padding: 10 }} />;
+      return <center className="padding" />;
     }
   }
 }

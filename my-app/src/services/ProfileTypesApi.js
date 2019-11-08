@@ -5,7 +5,12 @@ import LoginApi from "./LoginApi";
 
 class ProfileTypesApi {
   getProfileTypes(success, failure) {
-    process(success, failure, "/profile/types", "GET");
+    const profileTypes = Store.getProfileTypes();
+    if (profileTypes) {
+      success(profileTypes)
+    } else {
+      process(success, failure, "/profile/types", "GET")
+    }
   }
 }
 

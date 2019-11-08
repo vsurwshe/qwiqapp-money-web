@@ -23,6 +23,10 @@ class ProfileApi {
   deleteProfile(success, failure, profileId) {
     process(success, failure, "/profiles/" + profileId, "DELETE", null, profileId);
   }
+
+  upgradeProfile(success, failure, profileId, type) {
+    process(success, failure, "/profiles/" + profileId + "/upgrade?type=" + type, "PUT", null, null, profileId);
+  }
 }
 
 export default ProfileApi;
@@ -39,9 +43,9 @@ async function process(success, failure, requestUrl, requestMethod, data, delete
       }
       validResponse(promise, success, requestMethod, deleteId)
     } else {
-      requestMethod === "POST" ? 
-       new LoginApi().refresh(async() => { await new ProfileApi().getProfiles(success, failure, true); }, (err)=>errorResponse(err, failure)) 
-       : await new ProfileApi().getProfiles(success, failure, true);
+      requestMethod === "POST" ?
+        new LoginApi().refresh(async () => { await new ProfileApi().getProfiles(success, failure, true); }, (err) => errorResponse(err, failure))
+        : await new ProfileApi().getProfiles(success, failure, true);
     }
   } catch (err) {
     handleAccessTokenError(err, failure, requestUrl, requestMethod, data, deleteId, success, profileId, reload);
@@ -50,7 +54,7 @@ async function process(success, failure, requestUrl, requestMethod, data, delete
 
 //this method solve the Expire Token Problem.
 let handleAccessTokenError = function (err, failure, requestUrl, requestMethod, data, deleteId, success, profileId, reload) {
-  if (err.request.status === 0) {
+  if (err.request && err.request.status === 0) {
     errorResponse(err, failure)
   } else if (err.response.status === 403 || err.response.status === 401) {
     if (!reload) {

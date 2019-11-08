@@ -1,4 +1,4 @@
-import {USER_KEY,DUMMY_KEY, USERDATA, CURRENCIES, COUNTRIES, BILLING_ADDRESS, PROFILES, PROFILE, SELECTED_PROFILE, LABELS, CATEGORIES, BILLS, CONTACTS, PROFILEID_BILLID,} from './GlobalKeys';
+import {USER_KEY,DUMMY_KEY, USERDATA, CURRENCIES, COUNTRIES, BILLING_ADDRESS, PROFILES, PROFILE, SELECTED_PROFILE, LABELS, CATEGORIES, BILLS, CONTACTS, PROFILE_TYPES, PROFILEID_BILLID} from './GlobalKeys';
 const db = localStorage;
 
 const Store = {
@@ -229,11 +229,19 @@ const Store = {
         return JSON.parse(ids);
     },
 
+    saveProfileTypes: function (data) {
+        db.setItem(PROFILE_TYPES, JSON.stringify(data))
+    },
+    getProfileTypes: function () {
+        return JSON.parse(db.getItem(PROFILE_TYPES));
+    },
+
     // Clears the Local Storage
     clearLocalStorage: function () {
         this.userDataClear();
         db.removeItem(PROFILES);
         db.removeItem(PROFILE);
+        db.removeItem(PROFILE_TYPES);
         db.removeItem(SELECTED_PROFILE);
         db.removeItem(USERDATA);
     },
