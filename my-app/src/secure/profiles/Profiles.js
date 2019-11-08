@@ -204,8 +204,8 @@ class Profiles extends Component {
           <DropdownToggle caret >Upgrade to</DropdownToggle>
           {profileTypes && <DropdownMenu>
             {profile.upgradeTypes.map((upgradeType, id) => {
-              const data = profileTypes.filter(profile => profile.type === upgradeType);
-              return <DropdownItem key={id} onClick={() => this.handleUserConfirm(profile.id, data[0].type)} >{data[0].name} </DropdownItem>
+              const upgradeProfileType = profileTypes.filter(profile => profile.type === upgradeType);
+              return <DropdownItem key={id} onClick={() => this.handleUserConfirm(profile.id, upgradeProfileType[0].type)} >{upgradeProfileType[0].name} </DropdownItem>
             })}
           </DropdownMenu>
           }

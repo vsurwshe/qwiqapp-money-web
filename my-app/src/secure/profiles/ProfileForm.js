@@ -120,6 +120,9 @@ class ProfileForm extends Component {
   render() {
     const { color, content, profileCreated, cancelEditProfile, profileInfoTable, profileId } = this.state
     if (profileCreated || cancelEditProfile) {
+      if (!Store.getProfile()) { // to solve loading Sidebar. Side bar not loading while after created first profile.
+        window.location.reload();
+      }
       return <Profiles />
     } else if (profileId) {
       return this.loadProfile(color, content, "UPDATE PROFILE")
