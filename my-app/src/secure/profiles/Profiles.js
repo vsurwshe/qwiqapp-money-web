@@ -52,7 +52,7 @@ class Profiles extends Component {
     }
   };
 
-  errorCall = err => { this.setState({ visible: true }); console.log("Internal Server Error"); console.log(err) }
+  errorCall = err => { this.setState({ visible: true }); console.log("Internal Server Error", err) }
 
   updateProfile = (profileId, profileName) => {
     this.setState({ profileId, profileName, updateProfile: true, })
@@ -74,24 +74,39 @@ class Profiles extends Component {
     if (action) {
       switch (action) {
         case userAction.ADD_BILLING: // This is Global variable(declared in GlobalKeys.js), to compare 'action' of user
-          this.setState({ alertColor: "danger", alertMessage: "Add your billing address" });
+        this.callAlertTimer("danger", "Add your billing address", true);
           break;
         case userAction.ADD_CREDITS:
-          this.setState({ alertColor: "danger", alertMessage: "Add credits" });
+          this.callAlertTimer("danger", "Add credits", true);
           break;
-        default: this.setState({ alertColor: "danger", alertMessage: "Your credits are low, please add more credits" });
+        default: this.callAlertTimer("danger", "Your credits are low, please add more credits", true);
           break;
       }
     } else {
-      new ProfileApi().upgradeProfile(this.upgradeSuccessCall, this.errorCall, this.state.profileId, this.state.profileType);
+      new ProfileApi().upgradeProfile(this.upgradeSuccessCall, this.upgradeErrorCall, this.state.profileId, this.state.profileType);
     }
   }
 
-  upgradeSuccessCall = (profile) => {
-    this.setState({ alertColor: "success", alertMessage: "Your profile upgraded successfully", profileUpgraded: true });
-    setTimeout(() => {
-      this.setState({ alertColor: '', alertMessage: '' });
-    }, Config.apiTimeoutMillis);
+  upgradeSuccessCall = (profiles) => {
+    this.setState({ profileUpgraded: true });
+    this.callAlertTimer("success","Your profile upgraded successfully", true);
+  }
+
+  upgradeErrorCall = (error) =>{
+    if (error.response.status === 400 && !error.response.data) {
+      this.callAlertTimer("danger", "Your credits are low, please add more credits", true );
+    } else {
+      this.callAlertTimer("danger", "Unable to process your request", true);
+    }
+  }
+
+  callAlertTimer = (alertColor, alertMessage, emptyMessages) => {
+    this.setState({ alertColor, alertMessage });
+    if (emptyMessages) {
+      setTimeout(()=>{
+        this.setState({ alertColor: "", alertMessage: "" });
+      }, Config.apiTimeoutMillis);
+    }
   }
 
   deleteProfile = () => {
