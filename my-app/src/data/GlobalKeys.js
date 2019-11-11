@@ -4,6 +4,7 @@ export const USERDATA = 'userData';
 export const CURRENCIES = 'currencies';
 export const COUNTRIES = 'countries';
 export const BILLING_ADDRESS = 'billingAddress';
+export const PAYPAL_SETTINGS = 'paypalSettings';
 export const PROFILES = 'profiles';
 export const PROFILE = 'profile';
 export const PROFILE_TYPES = 'profileTypes';

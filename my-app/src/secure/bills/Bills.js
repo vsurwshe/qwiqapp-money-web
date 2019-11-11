@@ -53,7 +53,7 @@ class Bills extends Component {
   setProfileId = async () => {
     let profile = Store.getProfile();
     if (profile) {
-      await this.setState({ profileId: profile.id, profileType: profile.type, profileFeatures: profile.features });
+      await this.setState({ profileId: profile.id, profileFeatures: profile.features });
       // This condition checking whether api call first time or reptely 
       this.state.categories !== undefined && this.state.categories.length <= 0 ? this.getCategory() : this.forceUpdate(); 
     }

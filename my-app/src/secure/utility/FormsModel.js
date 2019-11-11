@@ -22,9 +22,9 @@ export const BillFormUI = (props) => {
       <Col sm={3}>
         <AvField type="select" id="symbol" name="currency" value={currency} disabled={!featureMultiCurrency} label="Currency" errorMessage="Select Currency" required>
           <option value="">Select</option>
-          {currencies.map((currencies, key) => {
-            return <option key={key} value={currencies.code}
-              data={currencies.symbol} symbol={currencies.symbol} >{currencies.symbol}</option>
+          {currencies.map((currency, key) => {
+            return <option key={key} value={currency.code}
+              data={currency.symbol} symbol={currency.symbol} >{currency.code + " - "+ currency.name}</option>
           })}
         </AvField>
       </Col>
@@ -261,7 +261,7 @@ const getCurrency = (currencies, currencySymbol) => {
   if (currencies.length) {
     return <AvField type="select" id="symbol" name="currency" value={currencySymbol} label="Default Currency">
       <option value=""> Select</option>
-      {currencies.map((currency, key) => { return <option key={key} value={currency.code} data={currency.symbol} symbol={currency.symbol} >{currency.symbol}</option> })}
+      {currencies.map((currency, key) => { return <option key={key} value={currency.code} data={currency.symbol} symbol={currency.symbol} >{currency.code + " - " + currency.name}</option> })}
     </AvField>
   }
 }

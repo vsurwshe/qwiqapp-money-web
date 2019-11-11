@@ -8,6 +8,7 @@ import BillingAddressApi from '../../../services/BillingAddressApi';
 import PaymentSuccessMessage from './PaymentSuccessMessage';
 import UserApi from '../../../services/UserApi';
 import { ShowServiceComponent } from '../../utility/ShowServiceComponent';
+import { PAYPAL_SETTINGS } from '../../../data/GlobalKeys';
 import '../../../css/style.css';
 
 const PAYPAL_URL = 'https://www.paypal.com/sdk/js?'
@@ -176,7 +177,7 @@ class MakePayment extends Component {
   }
 
   loadMakePayment = (data) => {
-    let url =  PAYPAL_URL + Store.getSetting('SETTINGS').paypalParams;
+    let url =  PAYPAL_URL + Store.getSetting(PAYPAL_SETTINGS).paypalParams;
     return <div className="animated fadeIn"> {this.loadPayPalButton(url)}</div>
   }
 

@@ -1,4 +1,4 @@
-import {USER_KEY,DUMMY_KEY, USERDATA, CURRENCIES, COUNTRIES, BILLING_ADDRESS, PROFILES, PROFILE, SELECTED_PROFILE, LABELS, CATEGORIES, BILLS, CONTACTS, PROFILE_TYPES, PROFILEID_BILLID} from './GlobalKeys';
+import {USER_KEY,DUMMY_KEY, USERDATA, CURRENCIES, COUNTRIES, BILLING_ADDRESS, PROFILES, PROFILE, SELECTED_PROFILE, LABELS, CATEGORIES, BILLS, CONTACTS, PROFILE_TYPES, PROFILEID_BILLID, PAYPAL_SETTINGS} from './GlobalKeys';
 const db = localStorage;
 
 const Store = {
@@ -98,7 +98,7 @@ const Store = {
 
     // Setting Api for payapal payment transaction
     saveSetting: function (jsonValue) {
-        db.setItem("SETTINGS", JSON.stringify(jsonValue));
+        db.setItem(PAYPAL_SETTINGS, JSON.stringify(jsonValue));
     },
 
     getSetting: function (keyName) {
