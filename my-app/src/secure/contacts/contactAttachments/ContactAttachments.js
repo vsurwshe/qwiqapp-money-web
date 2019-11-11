@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import { Card, CardBody, Button, Row, Col, Modal, ModalHeader } from 'reactstrap';
 import { FaTrashAlt, FaCloudUploadAlt, FaEye } from 'react-icons/fa';
-import AttachmentApi from '../../../services/AttachmentApi';
+import ContactAttachmentApi from '../../../services/ContactAttachmentApi.js';
 import AddAttachment from './AddAttachment';
 import AttachmentUtils from '../../utility/AttachmentUtils';
 import { DeleteModel } from '../../utility/DeleteModel';
 
-class Attachments extends Component {
+class ContactAttachments extends Component {
   _isMount = false;
   constructor(props) {
     super(props);
@@ -25,7 +25,7 @@ class Attachments extends Component {
 
   componentDidMount () {
     this._isMount = true;
-    new AttachmentApi().getAttachments(this.successCall, this.errorCall, this.state.profileId, this.state.contactId);
+    new ContactAttachmentApi().getAttachments(this.successCall, this.errorCall, this.state.profileId, this.state.contactId);
   }
 
   componentWillUnmount(){
@@ -150,4 +150,4 @@ class Attachments extends Component {
   }
 }
 
-export default Attachments;
+export default ContactAttachments;

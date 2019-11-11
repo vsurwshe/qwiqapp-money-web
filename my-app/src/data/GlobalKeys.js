@@ -4,6 +4,7 @@ export const USERDATA = 'userData';
 export const CURRENCIES = 'currencies';
 export const COUNTRIES = 'countries';
 export const BILLING_ADDRESS = 'billingAddress';
+export const PAYPAL_SETTINGS = 'paypalSettings';
 export const PROFILES = 'profiles';
 export const PROFILE = 'profile';
 export const PROFILE_TYPES = 'profileTypes';
@@ -28,5 +29,12 @@ export const userAction = {
 //========== Profile Feature===========
 export const profileFeature = {
    RECURRING: "Recurring",
-   MULTICURRENCY: "MultiCurrency"
+   MULTICURRENCY: "MultiCurrency",
+   ATTACHMENTS: 'Attachments',
+   MULTIUSER: 'MultiUser'
+} 
+
+export const billType = {
+   PAYABLE: 'EXPENSE_PAYABLE',
+   RECEIVABLE: 'INCOME_RECEIVABLE'
 }

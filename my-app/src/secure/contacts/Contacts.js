@@ -1,16 +1,16 @@
 import React, { Component } from "react";
 import { Button, Row, Col, Card, CardBody, CardHeader, Alert, Input, InputGroup, InputGroupAddon, InputGroupText, ListGroupItem, ListGroup, Collapse } from "reactstrap";
 import { FaPaperclip, FaUserCircle, FaSearch, FaCaretDown } from 'react-icons/fa';
-import Loader from 'react-loader-spinner'
 import DeleteContact from "./DeleteContact";
 import LabelApi from "../../services/LabelApi";
-import Attachments from "./attachments/Attachments";
-import AddAttachment from "./attachments/AddAttachment";
+import ContactAttachments from "./contactAttachments/ContactAttachments";
+import AddAttachment from "./contactAttachments/AddAttachment";
 import Store from "../../data/Store";
 import { DeleteModel } from "../utility/DeleteModel";
 import { ProfileEmptyMessage } from "../utility/ProfileEmptyMessage";
 import ContactApi from "../../services/ContactApi";
 import ContactForm from "./ContactForm";
+import { profileFeature } from "../../data/GlobalKeys";
 import '../../css/style.css';
 /* 
   * Presently we are showing attachments also
@@ -38,7 +38,7 @@ class Contacts extends Component {
   setProfileId = async () => {
     const profile = Store.getProfile();
     if (profile) {
-      await this.setState({ profileId: profile.id, profileType: profile.type });
+      await this.setState({ profileId: profile.id, profileFeaturesData: profile.features });
       this.getContacts();
     }
   }
@@ -111,11 +111,10 @@ class Contacts extends Component {
   }
 
   render() {
-    let profile = Store.getProfile();
     const { contacts, singleContact, createContact, updateContact, deleteContact, addAttachRequest, contactId, profileId, spinner, labels, danger } = this.state
-    if (profile) {
-      if (contacts.length === 0 && !createContact) {
-        return <div>{contacts.length === 0 && !createContact && !spinner ? this.loadSpinner() : this.loadContactEmpty()}</div>
+    if (profileId) {
+      if (!contacts.length && !createContact) {
+        return <div>{ !spinner ? this.loadSpinner() : this.loadContactEmpty()}</div>
       } else if (createContact) {
         return <ContactForm profileId={profileId} lables={labels} />
       } else if (updateContact) {
@@ -163,7 +162,10 @@ class Contacts extends Component {
       <Card>
         {this.loadHeader()}
         <center className="padding-top">
-          <CardBody><Loader type="BallTriangle" color="#2E86C1" height={80} width={80} /></CardBody>
+          <CardBody>
+            <div className="text-primary spinner-size" role="status">
+              <span className="sr-only">Loading...</span>
+            </div></CardBody>
         </center>
       </Card>
     </div>
@@ -201,6 +203,8 @@ class Contacts extends Component {
   }
 
   loadSingleContact = (contact, contactKey) => {
+    const {profileFeaturesData} = this.state
+    let featureAttachment = profileFeaturesData && profileFeaturesData.includes(profileFeature.ATTACHMENTS);
     return <ListGroup flush key={contactKey} className="animated fadeIn" >
       <ListGroupItem action >
         <Row onMouseEnter={() => this.hoverAccordion(contactKey)} onMouseLeave={() => this.hoverAccordion(contactKey)}>
@@ -211,15 +215,15 @@ class Contacts extends Component {
                 {contact.name ? (contact.name.length > 20 ? contact.name.slice(0, 20) + "..." : contact.name)
                   : (contact.organization.length > 20 ? contact.organization.slice(0, 20) + "..." : contact.organization)}
               </b> &nbsp;
-              {this.state.profileType > 1 ?
+              {featureAttachment ?
                 <>
-                  <FaPaperclip style={{ color: '#34aec1', marginTop: 0, marginLeft: 10 }} onClick={() => this.attachDropDown(contactKey, contact.id)} />
+                  <FaPaperclip className="faPaperclip" onClick={() => this.attachDropDown(contactKey, contact.id)} />
                 </> : <FaCaretDown />}
             </span>
           </Col>
-          <Col>{this.state.hoverAccord[contactKey] ? this.loadDropDown(contact) : ''}</Col>
+          <Col>{this.state.hoverAccord[contactKey] ? this.loadDropDown(contact, featureAttachment) : ''}</Col>
         </Row>
-        <Collapse isOpen={this.state.attachDropdown[contactKey]}>{this.showAttachments(contact.id, contact)}</Collapse>
+        <Collapse isOpen={this.state.attachDropdown[contactKey]}>{this.showAttachments(contact.id, contact, featureAttachment)}</Collapse>
       </ListGroupItem>
     </ListGroup>
   }
@@ -229,12 +233,12 @@ class Contacts extends Component {
       toggleDanger={this.toggleDanger} delete={this.deleteContact} cancel={this.toggleDanger} >contact</DeleteModel>
   }
   // view update, delete 
-  loadDropDown = (contact) => {
+  loadDropDown = (contact, featureAttachment) => {
     return (<>
-      {this.state.profileType >= 2 && <Attachments profileId={this.state.profileId} contactId={contact.id} getCount={true} />}
+      {featureAttachment && <ContactAttachments profileId={this.state.profileId} contactId={contact.id} getCount={true} />}
       <span className="float-right" >
-        <small><button style={{ backgroundColor: "transparent", borderColor: 'green', color: "green" }} onClick={() => { this.updateContact(contact) }}> EDIT </button></small> &nbsp;
-      <small><button style={{ backgroundColor: "transparent", borderColor: 'red', color: "red" }} onClick={() => { this.setContactID(contact); this.toggleDanger(); }}> REMOVE </button></small>
+        <small><button className="contact-edit transparent-background" onClick={() => { this.updateContact(contact) }}> EDIT </button></small> &nbsp;
+        <small><button className="contact-remove transparent-background" onClick={() => { this.setContactID(contact); this.toggleDanger(); }}> REMOVE </button></small>
       </span></>
     )
   }
@@ -249,13 +253,13 @@ class Contacts extends Component {
     this.setState({ contactId: contact.id, contactField: fieldName });
   }
 
-  showAttachments(contactId, contact) {
+  showAttachments(contactId, contact, featureAttachment) {
     return <div className="attachments">
       <span>
         <b>Email: </b>{contact.email}<br />
         <b>Phone: </b>{contact.phone}<br />
       </span>
-      {this.state.profileType >= 2 && <Attachments contactId={contactId} profileId={this.state.profileId} />}
+      {featureAttachment && <ContactAttachments contactId={contactId} profileId={this.state.profileId} />}
     </div>
   }
 }

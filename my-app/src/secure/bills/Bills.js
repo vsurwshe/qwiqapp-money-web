@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import {Redirect} from 'react-router';
 import { Card, CardBody, Alert, Table, FormGroup, Label, Input, UncontrolledDropdown, Button, DropdownMenu, DropdownItem, DropdownToggle } from "reactstrap";
-import Loader from 'react-loader-spinner';
 import { FaUndoAlt } from 'react-icons/fa';
 import BillForm from "./BillForm";
 import BillApi from "../../services/BillApi";
@@ -18,6 +17,7 @@ import Config from "../../data/Config";
 import BillPayment from "./billPayment/ BillPayment";
 import ViewPayment from "./billPayment/ViewPayment";
 import PaymentApi from "../../services/PaymentApi";
+import { profileFeature } from "../../data/GlobalKeys";
 import '../../css/style.css';
 
 class Bills extends Component { 
@@ -30,15 +30,9 @@ class Bills extends Component {
       contacts: [],
       updateBill: [],
       billPayments: [],
-      createBillRequest: false,
-      updateBillRequest: false,
-      deleteBillRequest: false,
       visible: props.visible,
       profileId: "",
-      danger: false,
-      spinner: false,
       selectedOption: '',
-      removeDependents: true,
       paidAmount: 0
     };
   }
@@ -57,11 +51,11 @@ class Bills extends Component {
   }
 
   setProfileId = async () => {
-    if (Store.getProfile()) {
-      let profile = Store.getProfile();
-      await this.setState({ profileId: profile.id, profileType: profile.type });
+    let profile = Store.getProfile();
+    if (profile) {
+      await this.setState({ profileId: profile.id, profileFeatures: profile.features });
       // This condition checking whether api call first time or reptely 
-      this.state.categories !== undefined && this.state.categories.length <= 0 ? this.getCategory() : this.forceUpdate();
+      this.state.categories !== undefined && this.state.categories.length <= 0 ? this.getCategory() : this.forceUpdate(); 
     }
   }
 
@@ -115,7 +109,7 @@ class Bills extends Component {
   // This Method execute the Bill API Call
   getBills = async () => {
     if (this.props.paid) {
-      await new BillApi().getBills(this.successCallBill, this.errorCall, this.state.profileId, "True");
+      await new BillApi().getBills(this.successCallBill, this.errorCall, this.state.profileId, true);
     } else {
       await new BillApi().getBills(this.successCallBill, this.errorCall, this.state.profileId);
     }
@@ -319,14 +313,16 @@ class Bills extends Component {
   }
 
   render() {
-    const { bills, createBillRequest, updateBillRequest, billId, deleteBillRequest, visible, profileId, updateBill, spinner, labels, categories, contacts, danger, paidAmount, requiredBill, markPaid } = this.state;
+    const { bills, createBillRequest, updateBillRequest, billId, deleteBillRequest, visible, profileId,
+       updateBill, spinner, labels, categories, contacts, danger, paidAmount, requiredBill, markPaid, profileFeatures } = this.state;
+    let featureAttachment = profileFeatures && profileFeatures.includes(profileFeature.ATTACHMENTS) // return true/false
     if (!profileId) {
       return <ProfileEmptyMessage />
-    } else if (bills.length === 0 && !createBillRequest) {  // Checks for bills not there and no bill create Request, then executes
+    } else if (!bills.length && !createBillRequest) {  // Checks for bills not there and no bill create Request, then executes
       return <div>
         {/*  If spinner is true and bills are there, it shows the loader function, until bills are loaded */}
-        {(spinner && bills.length !== 0) ? <>{visible && <Alert isOpen={visible} color={this.state.color}>{this.state.content}</Alert>} {this.loadLoader()}
-        </> : bills.length === 0 && this.emptyBills() // If bills not there, it will show Empty message 
+        {(spinner && bills.length) ? <>{visible && <Alert isOpen={visible} color={this.state.color}>{this.state.content}</Alert>} {this.loadLoader()}
+        </> : !bills.length && this.emptyBills() // If bills not there, it will show Empty message 
         }
       </div>
     } else if (createBillRequest) {
@@ -349,7 +345,7 @@ class Bills extends Component {
     }
     else {
       return <div>
-        {this.displayAllBills(visible, bills)}{danger && this.deleteBillModel()}
+        {this.displayAllBills(visible, bills, featureAttachment)}{danger && this.deleteBillModel()}
         {this.state.markAsUnPaid && this.handleMarkAsUnPaid()}
       </div>
     }
@@ -373,7 +369,10 @@ class Bills extends Component {
     <Card>
       {this.loadHeader("")}
       <center className="padding-top" >
-        <CardBody><Loader type="TailSpin" className="loader-color" height={60} width={60} /></CardBody>
+        <CardBody>
+          <div className="text-primary spinner-size" role="status">
+            <span className="sr-only">Loading...</span>
+          </div></CardBody>
       </center>
     </Card>
   </div>
@@ -389,7 +388,7 @@ class Bills extends Component {
   </div>
 
   // Displays all the Bills one by one
-  displayAllBills = (visible, bills) => {
+  displayAllBills = (visible, bills, featureAttachment) => {
     const color = this.props.color;
     if (color) {
       this.callAlertTimer(visible);
@@ -418,7 +417,7 @@ class Bills extends Component {
                 </tr>
               </thead>
               <tbody>
-                {this.state.filterDate ? this.loadFilterAndNonFilteredBills(filteredBills) : this.loadFilterAndNonFilteredBills(bills)}
+                {this.state.filterDate ? this.loadFilterAndNonFilteredBills(filteredBills, featureAttachment) : this.loadFilterAndNonFilteredBills(bills, featureAttachment)}
               </tbody>
             </Table>
           </CardBody>
@@ -427,14 +426,14 @@ class Bills extends Component {
     </div>
   }
 
-  loadFilterAndNonFilteredBills = (bills) => {
+  loadFilterAndNonFilteredBills = (bills, featureAttachment) => {
     return bills.filter(this.searchingFor(this.state.selectedOption)).map((bill, key) => {
-      return this.loadSingleBill(bill, key);
+      return this.loadSingleBill(bill, key, featureAttachment);
     })
   }
 
   // Show the Single Bill 
-  loadSingleBill = (bill, key) => {
+  loadSingleBill = (bill, key, featureAttachment) => {
     let strike = bill.paid;
     let lastPaid = this.calculateLastPaid(bill, bill.amount);
     let billDescription = bill.description ? bill.description : bill.categoryName.name;
@@ -445,7 +444,7 @@ class Bills extends Component {
       <td>{strike ? <strike>{this.handleSignedBillAmount(bill)}</strike> : this.handleSignedBillAmount(bill)}</td>
       <td style={{ color: bill.paid ? 'green' : 'red' }}> {strike ? <strike>Paid</strike> : 'Unpaid'} </td>
       <td> {strike ? <strike>{this.loadPaidStatus(bill, lastPaid)} </strike> : <>{this.loadPaidStatus(bill, lastPaid)}</>} </td>
-      <td><h6>{this.loadDropDown(bill, key)}</h6></td>
+      <td><h6>{this.loadDropDown(bill, key, featureAttachment)}</h6></td>
     </tr>
   }
 
@@ -504,7 +503,7 @@ class Bills extends Component {
   }
 
   //this Method loads Browser DropDown
-  loadDropDown = (bill, key) => <span className="float-right" style={{ marginTop: -8, marginBottom: -9 }} >
+  loadDropDown = (bill, key, featureAttachment) => <span className="float-right" style={{ marginTop: -8, marginBottom: -9 }} >
     {bill.recurId ? <FaUndoAlt /> : ''} &nbsp;
       <Button className="rounded" style={{ backgroundColor: "transparent", borderColor: '#ada397', color: "green", width: 67 }} onClick={() => this.updateBillAction(bill)}>Edit</Button> &nbsp;
       <UncontrolledDropdown group>
@@ -514,7 +513,7 @@ class Bills extends Component {
         <DropdownItem onClick={this.handleViewPayment}>Payments History</DropdownItem>
         {!bill.paid ? <DropdownItem onClick={this.handleMarkAsPaid}>Mark as PAID</DropdownItem> :
           <DropdownItem onClick={this.handleMarkAsUnpaidPayment}>Mark as unpaid</DropdownItem>}
-        {this.state.profileType > 1 ? <DropdownItem onClick={() => this.billAttachments(key, bill.id)}>Attachments</DropdownItem> : ''}
+        {featureAttachment ? <DropdownItem onClick={() => this.billAttachments(key, bill.id)}>Attachments</DropdownItem> : ''}
         <DropdownItem onClick={() => this.setBillId(bill)}>Delete</DropdownItem>
       </DropdownMenu>
     </UncontrolledDropdown>

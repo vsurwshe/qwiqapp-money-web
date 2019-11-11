@@ -2,7 +2,7 @@ import Axios from "axios";
 import Store from "../data/Store";
 import LoginApi from './LoginApi';
 
-class AttachmentApi {
+class ContactAttachmentApi {
 
   createAttachment(success, failure, profileId, contactId, data) {
     process(success, failure, profileId + "/contacts/" + contactId + "/attachments", "POST", data);
@@ -20,7 +20,7 @@ class AttachmentApi {
   }
 }
 
-export default AttachmentApi;
+export default ContactAttachmentApi;
 
 async function process(success, failure, Uurl, Umethod, data, reload) {
   let HTTP = httpCall(Uurl, Umethod);

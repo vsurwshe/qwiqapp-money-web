@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Card, FormGroup, Button, Alert, Col } from 'reactstrap';
-import AttachmentApi from '../../../services/AttachmentApi';
+import ContactAttachmentApi from '../../../services/ContactAttachmentApi';
 import { ShowServiceComponent } from '../../utility/ShowServiceComponent';
 import Contacts from '../Contacts';
 
@@ -31,7 +31,7 @@ class AddAttachment extends Component {
     reader.append('file', file);
     if (profileId || contactId) {
       this.setState({ doubleClick: false });
-      new AttachmentApi().createAttachment(this.successCall, this.errorCall, profileId, contactId, reader)
+      new ContactAttachmentApi().createAttachment(this.successCall, this.errorCall, profileId, contactId, reader)
     }
   }
 

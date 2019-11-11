@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import Select from 'react-select';
 import Data from '../../data/SelectData';
 import Store from '../../data/Store';
-import { userAction, profileFeature, DEFAULT_CURRENCY } from '../../data/GlobalKeys';
+import { userAction, profileFeature, billType, DEFAULT_CURRENCY } from '../../data/GlobalKeys';
 
 // ======================= This Bill Form Code =======
 export const BillFormUI = (props) => {
@@ -22,16 +22,16 @@ export const BillFormUI = (props) => {
       <Col sm={3}>
         <AvField type="select" id="symbol" name="currency" value={currency} disabled={!featureMultiCurrency} label="Currency" errorMessage="Select Currency" required>
           <option value="">Select</option>
-          {currencies.map((currencies, key) => {
-            return <option key={key} value={currencies.code}
-              data={currencies.symbol} symbol={currencies.symbol} >{currencies.symbol}</option>
+          {currencies.map((currency, key) => {
+            return <option key={key} value={currency.code}
+              data={currency.symbol} symbol={currency.symbol} >{currency.code + " - "+ currency.name}</option>
           })}
         </AvField>
       </Col>
       <Col sm={3}>
         <AvField type="select" name="type" label="Type of Bill" value={type} errorMessage="Select Type of Bill" required>
-          <option value="EXPENSE_PAYABLE">Payable</option>
-          <option value="INCOME_RECEIVABLE">Receivable</option>
+          <option value={billType.PAYABLE}>Payable</option>
+          <option value={billType.RECEIVABLE}>Receivable</option>
         </AvField>
       </Col>
       <Col sm={6}>
@@ -124,9 +124,9 @@ export const CategoryLabelForm = (props) => {
   return <AvForm onValidSubmit={props.handleSubmitValue}>
     <AvField type="text" name="name" label={componentType + " name"} errorMessage="Category Name Required" value={itemName} placeholder="Enter Category name" required />
     {componentType === "Label" ? <AvField type="text" name="notes" value={notes} placeholder="Description / Notes" label="Description / Notes" />
-      : <AvField type="select" name="type" label="Type" value={type ? type : "EXPENSE_PAYABLE"} errorMessage="Select Type of Category" >
-        <option value="EXPENSE_PAYABLE">Payable</option>
-        <option value="INCOME_RECEIVABLE">Receivable</option>
+      : <AvField type="select" name="type" label="Type" value={type ? type :billType.PAYABLE } errorMessage="Select Type of Category" >
+        <option value={billType.PAYABLE}>Payable</option>
+        <option value={billType.RECEIVABLE}>Receivable</option>
       </AvField>
     }
     <AvField type="color" name="color" list="colors" label={componentType + " color"} value={itemColor} />
@@ -261,7 +261,7 @@ const getCurrency = (currencies, currencySymbol) => {
   if (currencies.length) {
     return <AvField type="select" id="symbol" name="currency" value={currencySymbol} label="Default Currency">
       <option value=""> Select</option>
-      {currencies.map((currency, key) => { return <option key={key} value={currency.code} data={currency.symbol} symbol={currency.symbol} >{currency.symbol}</option> })}
+      {currencies.map((currency, key) => { return <option key={key} value={currency.code} data={currency.symbol} symbol={currency.symbol} >{currency.code + " - " + currency.name}</option> })}
     </AvField>
   }
 }

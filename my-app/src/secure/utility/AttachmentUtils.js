@@ -1,5 +1,5 @@
 import Store from '../../data/Store';
-import AttachmentApi from '../../services/AttachmentApi';
+import ContactAttachmentApi from '../../services/ContactAttachmentApi';
 import BillAttachmentsApi from '../../services/BillAttachmentsApi';
 
 const AttachmentUtils = {
@@ -34,7 +34,7 @@ const AttachmentUtils = {
         if(value){
          new BillAttachmentsApi().deleteBillAttachment(success,error,profileId, itemId, attachmentId) // itemId <- billId
         }else{
-        new AttachmentApi().deleteAttachment(success, error, profileId, itemId, attachmentId); // itemId <- contactId
+        new ContactAttachmentApi().deleteAttachment(success, error, profileId, itemId, attachmentId); // itemId <- contactId
         }
     },
 
