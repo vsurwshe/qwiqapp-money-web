@@ -5,7 +5,7 @@ import Loader from 'react-loader-spinner';
 import Config from '../../../data/Config';
 import BillingAddressApi from '../../../services/BillingAddressApi';
 import EditBillingAddress from './EditBillingAddress';
-import {  updateStatus, getBillingAddress } from "../../../redux/actions/BillingAddressActions";
+import {  updateStatus, getBillingAddress } from "../../../redux/actions/BillingAddressAction";
 import { handleApiResponseMsg, buttonAction, setSpinnerValue } from "../../../redux/actions/UtilityActions";
 // import { handleApiResponseMsg, buttonAction, setSpinnerValue, getBillingAddress, updateStatus } from '../../../redux/actions/BillingAddressActions';
 import '../../../css/style.css';

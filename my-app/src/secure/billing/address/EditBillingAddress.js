@@ -7,7 +7,7 @@ import Store from "../../../data/Store";
 import UserApi from '../../../services/UserApi';
 import BillingAddressApi from '../../../services/BillingAddressApi';
 import BillingInfo from "./BillingInfo";
-import {  updateStatus } from "../../../redux/actions/BillingAddressActions";
+import {  updateStatus } from "../../../redux/actions/BillingAddressAction";
 import { handleApiResponseMsg, setCountries, buttonAction } from "../../../redux/actions/UtilityActions";
 import { userAction } from "../../../data/GlobalKeys";
 import '../../../css/style.css';

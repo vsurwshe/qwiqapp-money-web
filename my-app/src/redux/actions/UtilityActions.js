@@ -1,4 +1,4 @@
-import { utilityAction } from "./ActionTypes";
+import { utilityAction } from "./ReduxActionTypes";
 
 export function buttonAction(action,spinnerValue) {
     return{

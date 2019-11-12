@@ -1,4 +1,4 @@
-import { billingAddressAction } from "./ActionTypes";
+import { billingAddressAction } from "./ReduxActionTypes";
 
 // getting BillingAddress from reducers.
 export function getBillingAddress(billingData) {

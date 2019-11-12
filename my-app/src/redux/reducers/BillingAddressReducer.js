@@ -1,4 +1,4 @@
-import { billingAddressAction, utilityAction } from "../actions/ActionTypes";
+import { billingAddressAction, utilityAction } from "../actions/ReduxActionTypes";
 
 
 const initialState = {
