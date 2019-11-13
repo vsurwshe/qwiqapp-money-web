@@ -61,7 +61,7 @@ export const BillFormUI = (props) => {
     <Row>
       <Col>
         <label>Description / Notes</label>
-        <AvField name="description" type="text" list="colors" value={description} placeholder="Ex: Recharge" errorMessage="Invalid Notes" /></Col>
+        <AvField name="description" type="textarea" list="colors" value={description} placeholder="Ex: Recharge" errorMessage="Invalid Notes" /></Col>
     </Row>
     {!props.data.moreOptions &&
       <Button className="m-0 p-0" color="link" onClick={() => props.toggleCustom()} aria-expanded={moreOptions} aria-controls="exampleAccordion1">
@@ -122,14 +122,14 @@ export const LoadNotifications = (props) => {
 export const CategoryLabelForm = (props) => {
   const { doubleClick, collapse, parentId, chkMakeParent, type, componentType, items, itemName, itemColor, notes, updateItem } = props.data
   return <AvForm onValidSubmit={props.handleSubmitValue}>
-    <AvField type="text" name="name" label={componentType + " name"} errorMessage="Category Name Required" value={itemName} placeholder="Enter Category name" required />
-    {componentType === "Label" ? <AvField type="text" name="notes" value={notes} placeholder="Description / Notes" label="Description / Notes" />
+    <AvField type="text" name="name" label={componentType + " Name"} errorMessage="Category Name Required" value={itemName} placeholder="Enter Category name" required />
+    {componentType === "Label" ? <AvField type="textarea" name="notes" value={notes} placeholder="Description / Notes" label="Description / Notes" />
       : <AvField type="select" name="type" label="Type" value={type ? type :billType.PAYABLE } errorMessage="Select Type of Category" >
         <option value={billType.PAYABLE}>Payable</option>
         <option value={billType.RECEIVABLE}>Receivable</option>
       </AvField>
     }
-    <AvField type="color" name="color" list="colors" label={componentType + " color"} value={itemColor} />
+    <AvField type="color" name="color" list="colors" label={componentType + " Color"} value={itemColor} />
 
     {items.length > 0 && // checking Label / Categories are there, then only showing "Nest option" while creating Label / Categories 
       (updateItem ? // checking the item(Label / Categories) is creating / updating, if creating then showing "Nest option"
