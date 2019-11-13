@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Alert, Card, CardHeader, Col} from "reactstrap";
+import { Alert, Card, CardHeader, CardBody, Col } from "reactstrap";
 import LabelApi from "../../services/LabelApi";
 import Lables from './Labels';
 import Config from "../../data/Config";
@@ -103,7 +103,8 @@ class LabelForm extends Component {
         <CardHeader>
           <strong>Label</strong>
         </CardHeader>
-        <Col sm="1" md={{ size: 8, offset: 1 }}>
+        <CardBody>
+        <Col sm="1" md={{ size: 8, offset: 2 }}>
           <center><h5> <b>{!this.props.label ? "NEW LABEL" : "EDIT LABEL"}</b> </h5> </center>
           {alertColor && <Alert color={alertColor}>{content}</Alert>}
           <CategoryLabelForm
@@ -115,6 +116,7 @@ class LabelForm extends Component {
             buttonText={this.props.label ? "Edit Label" : "Save Label"}
           />
         </Col>
+        </CardBody>
       </Card>;
   }
 }
