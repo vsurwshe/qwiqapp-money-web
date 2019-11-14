@@ -26,6 +26,7 @@ class ContactForm extends Component {
       contact: props.contact,
       selectedOption: [],
       selectedCountry: props.contact ? props.contact.country : "",
+      hideCancel: props.hideButton
     };
   }
 
@@ -82,7 +83,12 @@ class ContactForm extends Component {
     this.setState({ alertColor, alertMessage });
     if (alertMessage !== "Country is Required") {
       setTimeout(() => {
-        this.setState({ contactCreated: true });
+        if(this.state.hideCancel){
+          this.setState({ hideCancel: '' })
+          this.props.toggleCreateModal('', true)
+        } else{
+          this.setState({ contactCreated: true });
+        }
       }, Config.notificationMillis);
     }
   };
@@ -105,7 +111,7 @@ class ContactForm extends Component {
   }
 
   loadAddContact = (alertColor, alertMessage) => {
-    const {countries, labels, selectedCountry, contact, labelUpdate} = this.state;
+    const {countries, labels, selectedCountry, contact, labelUpdate, hideCancel} = this.state;
     let contactData = {
       countries: countries,
       labels: labels,
@@ -129,7 +135,7 @@ class ContactForm extends Component {
           <center><FormGroup row>
             <Col>
               <Button color="info" disabled={this.state.disableDoubleClick} > Save </Button> &nbsp; &nbsp;
-              <Button active color="light" type="button" onClick={this.cancelAddContact}>Cancel</Button>
+              {!hideCancel && <Button active color="light" type="button" onClick={this.cancelAddContact}>Cancel</Button>}
             </Col>
           </FormGroup></center>
         </AvForm>

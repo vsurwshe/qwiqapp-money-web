@@ -1,7 +1,6 @@
 import React, { Component } from "react";
-import { Link } from 'react-router-dom';
 import { AvField } from 'availity-reactstrap-validation';
-import { Alert, Card, Col, Row, Container, Input, Collapse } from "reactstrap";
+import { Alert, Card, Col, Row, Container, Input, Collapse, Modal, ModalBody, ModalHeader } from "reactstrap";
 import Select from 'react-select';
 import BillApi from "../../services/BillApi";
 import Bills from "./Bills";
@@ -13,6 +12,8 @@ import { ShowServiceComponent } from "../utility/ShowServiceComponent";
 import RecurringBillsApi from "../../services/RecurringBillsApi";
 import { profileFeature } from "../../data/GlobalKeys";
 import '../../css/style.css';
+import ContactForm from "../contacts/ContactForm";
+import LabelForm from "../labels/LabelForm";
 
 
 
@@ -55,7 +56,8 @@ class BillForm extends Component {
       type: props.bill ? props.bill.type : 'EXPENSE_PAYABLE',
       moreOptions: this.handleMoreOptions(props.bill),
       recurConfig: props.bill && props.bill.recurId ? true : false, //bills
-      recurBillChanged: false
+      recurBillChanged: false,
+      createModal: false
     };
   }
 
@@ -343,6 +345,7 @@ class BillForm extends Component {
     this.setState({ endDate: e.target.value, doubleClick: false });
     this.validateEndDate(e.target.value)
   }
+
   validateEndDate = (endDate) => {
     if (this.state.nextBillDate) {
       let diffEndDateAndNxtBillDate = new Date(endDate) - new Date(this.state.nextBillDate);
@@ -351,6 +354,14 @@ class BillForm extends Component {
         this.callAlertTimer("danger", "end date should be after the next bill date");
       }
     }
+  }
+
+  toggleCreateModal = (item, success) =>{
+    this.setState({ createModal : !this.state.createModal });
+    item && this.setState({ createItem : item });
+    if(success){
+      this.state.createItem === 'Contacts' ? this.props.getContacts(true) : this.props.getLabels(true)
+    } 
   }
 
   render() {
@@ -384,7 +395,10 @@ class BillForm extends Component {
       type: type
     }
     let headerMessage = this.props.bill ? " " : " New Bill Details "
-    return this.loadBillForm(FormData, alertColor, alertMessage, headerMessage)
+    return <>
+    {this.loadBillForm(FormData, alertColor, alertMessage, headerMessage)}
+    {this.state.createModal && this.loadCreateModal()}
+    </>
   }
 
   loadBillForm = (formData, alertColor, alertMessage, headerMessage) => {
@@ -415,7 +429,7 @@ class BillForm extends Component {
 
   loadMoreOptions = () => {
     const featureRecurring = Store.getProfile().features.includes(profileFeature.RECURRING);
-    const { labels, contacts } = this.state;
+    const { labels, contacts } = this.props;
     let labelName, contactName;
     if (this.props.bill) {
       const options = Data.categoriesOrLabels(this.props.labels);
@@ -436,12 +450,12 @@ class BillForm extends Component {
         <Col>
           <label>Labels</label>
           {labels ? <>
-            <Select isMulti options={Data.categoriesOrLabels(labels)} styles={Data.colourStyles} defaultValue={labelName} placeholder="Select Labels" onChange={this.labelSelected} /></> : <p style={{ paddingTop: contacts && "10px" }}>You don't have Labels, Click here to  <Link to='/label/labels'>Create</Link> </p>}
+            <Select isMulti options={Data.categoriesOrLabels(labels)} styles={Data.colourStyles} defaultValue={labelName} placeholder="Select Labels" onChange={this.labelSelected} /></> : <p style={{ paddingTop: contacts && "10px" }} onClick={()=>this.toggleCreateModal("Labels")}>You don't have Labels, Click here to Create </p>}
         </Col>
         <Col>
           <label>Contacts</label>
           {contacts ? <>
-            <Select options={Data.contacts(contacts)} defaultValue={contactName} placeholder="Select Contacts" onChange={this.contactSelected} /></> : <p style={{ paddingTop: labels && "10px" }}> {labels && <span ></span>}You don't have Contacts, Click here to  <Link to='/contact/viewContacts'>Create</Link></p>}
+            <Select options={Data.contacts(contacts)} defaultValue={contactName} placeholder="Select Contacts" onChange={this.contactSelected} /></> : <p style={{ paddingTop: labels && "10px" }} onClick={()=>this.toggleCreateModal("Contacts")}> {labels && <span ></span>}You don't have Contacts, Click here to  Create</p>}
         </Col>
       </Row><br />
       <Row style={{ marginLeft: 7 }}>
@@ -464,6 +478,16 @@ class BillForm extends Component {
         {this.state.recurConfig ? this.loadRecurBill() : ''}</>}
     
     </Collapse>
+  }
+
+  loadCreateModal = () =>{
+    const { createItem, createModal } = this.state
+    return <Modal isOpen={createModal} toggle={()=>this.toggleCreateModal()} style={{ paddingTop: "20%" }} backdrop={true}>
+    <ModalHeader toggle={()=>this.toggleCreateModal()}>{createItem}</ModalHeader>
+    <ModalBody>
+      {createItem === 'Labels' ? <LabelForm profileId={this.state.profileId} hideButton={true} toggleCreateModal={this.toggleCreateModal}/> : <ContactForm lables={this.state.labels} profileId={this.state.profileId} hideButton={true} toggleCreateModal={this.toggleCreateModal}/>}
+    </ModalBody>
+  </Modal>
   }
 
   // This Method Load Recuring Config.

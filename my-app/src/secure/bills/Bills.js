@@ -71,39 +71,39 @@ class Bills extends Component {
     } else {
       await this.setState({ categories: categories });
     }
-    this.getLabel();
+    this.getLabels();
   };
 
   // This Method execute the Label API Call
-  getLabel = async () => {
-    new LabelApi().getSublabels(this.successCallLabel, this.errorCall, this.state.profileId);
+  getLabels = async (callContacts) => {
+    new LabelApi().getSublabels((labels)=>this.successCallLabel(labels, callContacts), this.errorCall, this.state.profileId);
   }
 
   // Handle Label response
-  successCallLabel = async (label) => {
+  successCallLabel = async (labels, callContacts) => {
     this.setState({ spinner: true })
-    if (label.length === 0 && this.state.labels !== undefined) {
+    if (labels.length === 0 && this.state.labels !== undefined) {
       this.setState({ labels: undefined });
     } else {
-      await this.setState({ labels: label });
+      await this.setState({ labels });
     }
-    this.getContacts();
+    !callContacts && this.getContacts();
   };
 
   // This Method execute the Contacts API Call
-  getContacts = () => {
-    new ContactApi().getContacts(this.successCallContact, this.errorCall, this.state.profileId);
+  getContacts = (callBills) => {
+    new ContactApi().getContacts((contacts)=>this.successCallContact(contacts, callBills), this.errorCall, this.state.profileId);
   }
 
   // Handle Contacts response
-  successCallContact = async (contacts) => {
+  successCallContact = async (contacts, callBills) => {
     this.setState({ spinner: true });
     if (contacts.length === 0 && this.state.contacts !== undefined) {
       this.setState({ contacts: undefined });
     } else {
       await this.setState({ contacts });
     }
-    this.getBills();
+    !callBills && this.getBills();
   };
 
   // This Method execute the Bill API Call
@@ -326,7 +326,7 @@ class Bills extends Component {
         }
       </div>
     } else if (createBillRequest) {
-      return <BillForm profileId={profileId} labels={labels} categories={categories} contacts={contacts} />
+      return <BillForm profileId={profileId} labels={labels} categories={categories} contacts={contacts} getContacts={this.getContacts} getLabels={this.getLabels}/>
     } else if (updateBillRequest) {
       return <BillForm profileId={profileId} bill={updateBill} labels={labels} categories={categories} contacts={contacts} />
     } else if (deleteBillRequest) {
