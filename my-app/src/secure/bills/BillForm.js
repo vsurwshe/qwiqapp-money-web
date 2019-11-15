@@ -450,12 +450,12 @@ class BillForm extends Component {
         <Col>
           <label>Labels</label>
           {labels ? <>
-            <Select isMulti options={Data.categoriesOrLabels(labels)} styles={Data.colourStyles} defaultValue={labelName} placeholder="Select Labels" onChange={this.labelSelected} /></> : <p style={{ paddingTop: contacts && "10px" }} onClick={()=>this.toggleCreateModal("Labels")}>You don't have Labels, Click here to Create </p>}
+            <Select isMulti options={Data.categoriesOrLabels(labels)} styles={Data.colourStyles} defaultValue={labelName} placeholder="Select Labels" onChange={this.labelSelected} /></> : <p style={{ paddingTop: contacts && "10px", textDecoration: "underline" }} onClick={()=>this.toggleCreateModal("Labels")}>You don't have Labels, Click here to Create </p>}
         </Col>
         <Col>
           <label>Contacts</label>
           {contacts ? <>
-            <Select options={Data.contacts(contacts)} defaultValue={contactName} placeholder="Select Contacts" onChange={this.contactSelected} /></> : <p style={{ paddingTop: labels && "10px" }} onClick={()=>this.toggleCreateModal("Contacts")}> {labels && <span ></span>}You don't have Contacts, Click here to  Create</p>}
+            <Select options={Data.contacts(contacts)} defaultValue={contactName} placeholder="Select Contacts" onChange={this.contactSelected} /></> : <p style={{ paddingTop: labels && "10px", textDecoration: "underline" }} onClick={()=>this.toggleCreateModal("Contacts")}> {labels && <span ></span>}You don't have Contacts, Click here to  Create</p>}
         </Col>
       </Row><br />
       <Row style={{ marginLeft: 7 }}>

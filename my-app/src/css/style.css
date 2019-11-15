@@ -333,7 +333,34 @@ dropdown-align {
     text-decoration: none;
 }
 
+.tooltip-inner {
+    max-width: 650px !important; /* define whatever width you want */
+    color: #0C7223;
+}
+.tooltip-arrow {
+   background-color: inherit;
+}
+
 .dashboardLink:hover{
     color: black; 
     text-decoration: none;
 }
+/* Bill Description */
+table {
+    overflow: hidden;
+  }
+  
+  .description, th {
+    position: relative;
+  }
+  .description:hover::after,
+  th:hover::after {
+    content: "";
+    position: absolute;
+    background-color: rgb(195, 149, 209);
+    left: 0;
+    top: -5000px;
+    height: 10000px;
+    width: 100%;
+    z-index: -1;
+  }
