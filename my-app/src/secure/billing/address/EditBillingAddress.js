@@ -7,7 +7,7 @@ import Store from "../../../data/Store";
 import UserApi from '../../../services/UserApi';
 import BillingAddressApi from '../../../services/BillingAddressApi';
 import BillingInfo from "./BillingInfo";
-import {  updateStatus } from "../../../redux/actions/BillingAddressAction";
+import {  updateStatusValue } from "../../../redux/actions/BillingAddressAction";
 import { handleApiResponseMsg, setCountries, buttonAction } from "../../../redux/actions/UtilityActions";
 import { userAction } from "../../../data/GlobalKeys";
 import '../../../css/style.css';
@@ -81,7 +81,7 @@ class EditBillingAddress extends Component {
       new UserApi().getUser((response) => Store.saveUser(response), this.errorCall);
     }
     // This is Seting update status for calling getbilling address in billinginfo component
-    this.props.dispatch(updateStatus(true))
+    this.props.dispatch(updateStatusValue(true))
   }
 
   //this handle the error response the when api calling
@@ -101,23 +101,25 @@ class EditBillingAddress extends Component {
   };
 
   render() {
-    const { billingAddress, addBilling } = this.props;
+    const { addBilling } = this.props.utility;
     if (!addBilling) {
       return <BillingInfo />
     } else {
-      return <div>{this.loadCreatingBill(billingAddress)}</div>
+      return <div>{this.loadCreatingBill()}</div>
     }
   }
 
   //this Method Call when Label Creation in porceess.
-  loadCreatingBill = (updateBill) => {
-    const { showAlert, color, message } = this.props;
+  loadCreatingBill = () => {
+    // This line get billing address from redux store
+    const { billingAddress:updateBill } = this.props.biliing;
+    const { color, message, countries  } = this.props.utility;
     const placeholderStyle = { color: '#000000', fontSize: '1.0em', }
     return <div className="animated fadeIn" >
       <Card>
         <h4 className="padding-top"><b><center> BILLING ADDRESS</center></b></h4> <br />
+        {color && <Alert color={color}>{message}</Alert>}
         {updateBill && <Col >
-          {<Alert isOpen={showAlert} color={color}>{message}</Alert>}
           <AvForm ref={refId => this.form = refId} onSubmit={this.handleSubmitValue}>
             <Row>
               <Col><AvField name="firstName" label="Firstname" placeholder="First Name" style={placeholderStyle} value={updateBill.firstName} validate={{ myValidation: firstNameAndlastNameOrcompany }} onChange={(e) => { this.handleInputValidate(e) }} /></Col>
@@ -137,7 +139,7 @@ class EditBillingAddress extends Component {
               <Col>
                 <AvField style={placeholderStyle} label="Country" type="select" id="country" name="country" value={updateBill.country} errorMessage="Select Country" onClick={() => this.setState({ alertColor: "", content: "" })} required >
                   {this.selectCountry(updateBill)}
-                  {this.props.countries.map((country, key) => { return <option key={key} value={country.code}>{country.name}</option> })}
+                  {countries.map((country, key) => { return <option key={key} value={country.code}>{country.name}</option> })}
                 </AvField>
               </Col>
             </Row>
@@ -155,9 +157,10 @@ class EditBillingAddress extends Component {
   }
 
   selectCountry = (updateBill) => {
+    const {countries }=this.props.utility
     return <>
       {updateBill.country === "" ? <option value="">Select Country</option>
-        : (this.props.countries.map((country, index) => {
+        : (countries.map((country, index) => {
           if (country.code === updateBill.country) {
             return <option key={index} value={updateBill.country}> {country.name} </option>
           }

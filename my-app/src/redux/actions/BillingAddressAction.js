@@ -9,7 +9,7 @@ export function getBillingAddress(billingData) {
 }
 
 // updating every time bill address/ get billing address.
-export function updateStatus(value){
+export function updateStatusValue(value){
     return {
         type: billingAddressAction.UPDATE_STATUS,
         updateStatus: value
