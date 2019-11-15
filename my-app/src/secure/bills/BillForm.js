@@ -498,7 +498,7 @@ class BillForm extends Component {
         <p>USING BELOW RECURRING CONFIGURATION: </p>
         <Row >
           <Col sm={3}>
-            <AvField name="every" label="Repeats Every" placeholder="Ex: 1" type="number" value={repeatEvery} onChange={(e) => { this.handleEveryRecurBill(e) }}
+            <AvField name="every" label="Repeats Every *" placeholder="Ex: 1" type="number" value={repeatEvery} onChange={(e) => { this.handleEveryRecurBill(e) }}
               errorMessage="Invalid day" />
           </Col>
           <Col sm={3}>
