@@ -447,7 +447,7 @@ class Bills extends Component {
         <div className="description" id="TooltipExample" >  
           {strike ? <strike> {billDescription} </strike> : billDescription}
         </div> 
-        {bill.description && bill.description.length > 50 && <Tooltip placement="bottom-start" className="tooltip-inner tooltip-arrow" isOpen={this.state.tooltipOpen} target="TooltipExample" toggle={this.descriptionToggle}> 
+        {bill.description && bill.description.length > 50 && <Tooltip placement="bottom-start" className="tooltip-main tooltip-inner tooltip-arrow" isOpen={this.state.tooltipOpen} target="TooltipExample" toggle={this.descriptionToggle}> 
           {bill.description}
         </Tooltip>} </>
       </td>

@@ -9,16 +9,17 @@ import Store from "../../data/Store";
 import Avatar from "react-avatar";
 import '../../css/bills-reminder.css';
 import '../../css/style.css';
+import { userAction } from "../../data/GlobalKeys";
 
 const DefaultHeader = (props) => {
   let [profileName, setProfileName] = useState("Web Money");
 
   let [authButton, setAuthButton] = useState(false);
   let [icon, animatedIcon] = useState(false);
-
   let [userName, changeUserName] = useState("");
-
   let profiles = Store.getUserProfiles();
+  const currentUserAction = Store.getUser() ? Store.getUser().action : '';
+  let navigateUrl = currentUserAction !== userAction.VERIFY_EMAIL ? "/dashboard" : "/profiles"
 
   const refreshButton = async () => {
     await Store.userDataClear();
@@ -107,9 +108,9 @@ const DefaultHeader = (props) => {
 
   return <React.Fragment>
     <AppSidebarToggler className="d-lg-none" display="md" mobile />
-    <Link to="/dashboard" className="dashboardLink">
+    <Link to={navigateUrl} className="dashboardLink">
       <span>
-        <img src={process.env.PUBLIC_URL + '/img/logo.png'} className="bills-reminder-logo" alt="bills-reminder" />Bills Reminder
+          <img src={process.env.PUBLIC_URL + '/img/logo.png'} className="bills-reminder-logo" alt="bills-reminder" />Bills Reminder
         </span>
     </Link>
     <Nav className="d-md-down-none" navbar />

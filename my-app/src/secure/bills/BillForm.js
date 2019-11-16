@@ -25,21 +25,11 @@ class BillForm extends Component {
       contacts: props.contacts,
       categories: props.categories,
       bill: props.bill,
-      billCreated: false,
       profileId: props.profileId,
-      alertColor: "",
-      alertMessage: "",
       currencies: Store.getCurrencies() ? Store.getCurrencies() : [],
-      cancelCreateBill: false,
-      doubleClick: false,
-      categoryOptionUpdate: false,
-      labelOptionUpdate: false,
-      contactOptionUpdate: false,
       notifyDate: props.bill ? ShowServiceComponent.customDate(props.bill.notifyDate_) : ShowServiceComponent.loadDateFormat(new Date()),
       dueDays: props.bill ? props.bill.dueDays : 0,
-      repeatEvery: '',
       repeatType: "DAY",
-      nextBillDate: '',
       endDate: this.setRepeatUntilDate(new Date(), 2),
       recurId: props.bill ? props.bill.recurId : '',
       dueDate: props.bill ? ShowServiceComponent.customDate(props.bill.dueDate_) : ShowServiceComponent.loadDateFormat(new Date()),
@@ -49,15 +39,12 @@ class BillForm extends Component {
       categoryOption: props.bill ? props.bill.categoryId : null,
       labelOption: props.bill ? props.bill.labelIds : null,
       checked: props.bill ? this.props.bill.notificationEnabled : false,
-      taxAmtChanged: false,
       taxPercent: props.bill ? props.bill.taxPercent : 0,
       taxAmount: props.bill ? this.setBillAmount(props.bill.taxAmount_) : 0,
       notifyDays: props.bill ? props.bill.notifyDays : 0,
       type: props.bill ? props.bill.type : 'EXPENSE_PAYABLE',
       moreOptions: this.handleMoreOptions(props.bill),
-      recurConfig: props.bill && props.bill.recurId ? true : false, //bills
-      recurBillChanged: false,
-      createModal: false
+      recurConfig: props.bill && props.bill.recurId ? true : false //bills
     };
   }
 
@@ -498,7 +485,7 @@ class BillForm extends Component {
         <p>USING BELOW RECURRING CONFIGURATION: </p>
         <Row >
           <Col sm={3}>
-            <AvField name="every" label="Repeats Every *" placeholder="Ex: 1" type="number" value={repeatEvery} onChange={(e) => { this.handleEveryRecurBill(e) }}
+            <AvField name="every" label={<>Repeats Every <b style={{color:'red'}}> *</b></>} placeholder="Ex: 1" type="number" value={repeatEvery} onChange={(e) => { this.handleEveryRecurBill(e) }}
               errorMessage="Invalid day" />
           </Col>
           <Col sm={3}>
