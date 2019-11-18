@@ -5,7 +5,8 @@ import Loader from 'react-loader-spinner';
 import Config from '../../../data/Config';
 import BillingAddressApi from '../../../services/BillingAddressApi';
 import EditBillingAddress from './EditBillingAddress';
-import { handleApiResponseMsg, buttonAction, setSpinnerValue, getBillingAddress, updateStatus } from '../../../redux/actions/billingAddressActions';
+import { getBillingAddress, updateStatusValue } from "../../../redux/actions/BillingAddressAction";
+import { handleApiResponseMsg, buttonAction, setSpinnerValue } from "../../../redux/actions/UtilityActions";
 import '../../../css/style.css';
 
 let emptyBillingAddress = {
@@ -27,9 +28,10 @@ class BillingInfo extends Component {
   }
 
   componentWillReceiveProps = async () => {
+    const {updateStatus}=this.props.biliing
     // This condtions after update billAddress get billingAddress list.
-    if (this.props.updateStatus) {
-      this.props.dispatch(updateStatus(false))
+    if (updateStatus) {
+      this.props.dispatch(updateStatusValue(false))
       await new BillingAddressApi().getBillings(this.successcall, this.errorcall)
     }
   }
@@ -57,7 +59,8 @@ class BillingInfo extends Component {
   }
 
   render() {
-    const { billingAddress, addBilling, spinner } = this.props;
+    const { addBilling, spinner } = this.props.utility;
+    const { billingAddress }= this.props.biliing;
     if (addBilling) {
       return <EditBillingAddress handleCancelEditBillingAddress={this.cancelEditBillingAddress} />
     } else if (!billingAddress.country) {
@@ -67,7 +70,7 @@ class BillingInfo extends Component {
         return this.showingNoBillingMessage()
       }
     } else {
-      return this.billingAddress(billingAddress);
+      return this.billingAddress();
     }
   }
 
@@ -80,8 +83,9 @@ class BillingInfo extends Component {
       </Card>
     </div>
 
-  billingAddress = (billingAddress) => {
-    const { showAlert, color, message } = this.props;
+  billingAddress = () => {
+    const { showAlert, color, message } = this.props.utility;
+    const { billingAddress } = this.props.biliing;
     showAlert && setTimeout(() => {
       this.props.dispatch(handleApiResponseMsg('', '', false))
     }, Config.notificationMillis);
@@ -92,7 +96,7 @@ class BillingInfo extends Component {
             <Button color="success" className="float-right" onClick={this.editBillingAddress}> Edit Billing Address</Button>
           </CardHeader>
           <CardBody>
-            <Alert isOpen={showAlert} color={color}>{message} </Alert>
+            {color && <Alert color={color}>{message} </Alert>}
             {billingAddress &&
               <CardBody>
                 <center className="text-sm-left">

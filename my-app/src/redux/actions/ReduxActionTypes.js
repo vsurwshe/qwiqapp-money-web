@@ -1,0 +1,13 @@
+export const utilityAction = {
+    MESSAGE_CHANGE: "MESSAGE_CHANGE",
+    CLICK_BUTTON: "CLICK_BUTTON",
+    CANCEL_BUTTON: "CANCEL_BUTTON",
+    USER_ACTION: "USER_ACTION",
+    SET_SPINNER: "SET_SPINNER",
+    GET_COUNTRIES : "GET_COUNTRIES"
+}
+
+export const billingAddressAction = {
+    GET: "GET_BILLING_ADDRESS",
+    UPDATE_STATUS : "UPDATE_STATUS"
+}
