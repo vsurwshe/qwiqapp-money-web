@@ -470,11 +470,13 @@ class BillForm extends Component {
 
   // It loads the model if contacts/labels are Empty, then creating..  
   loadCreateModal = () =>{
-    const { createItem, createModal } = this.state
+    const { createItem, createModal, profileId } = this.state
+    const {labels} = this.props
     return <Modal isOpen={createModal} toggle={()=>this.toggleCreateModal()} style={{ paddingTop: "20%" }} backdrop={true}>
     <ModalHeader toggle={()=>this.toggleCreateModal()}>{createItem}</ModalHeader>
     <ModalBody>
-      {createItem === 'Labels' ? <LabelForm profileId={this.state.profileId} hideButton={true} toggleCreateModal={this.toggleCreateModal}/> : <ContactForm lables={this.state.labels} profileId={this.state.profileId} hideButton={true} toggleCreateModal={this.toggleCreateModal}/>}
+      {createItem === 'Labels' ? <LabelForm profileId={profileId} hideButton={true} toggleCreateModal={this.toggleCreateModal}/> 
+        : <ContactForm lables={labels} profileId={profileId} hideButton={true} toggleCreateModal={this.toggleCreateModal}/>}
     </ModalBody>
   </Modal>
   }
