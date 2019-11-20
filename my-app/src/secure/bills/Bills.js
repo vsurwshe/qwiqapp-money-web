@@ -74,7 +74,8 @@ class Bills extends Component {
     this.getLabels();
   };
 
-  // This Method execute the Label API Call
+  /* This Method execute the Label API Call
+     callContacts is a boolean value passed from BillForm after successfully creating Labels and it determines if getContacts() is called or not */
   getLabels = async (callContacts) => {
     new LabelApi().getSublabels((labels)=>this.successCallLabel(labels, callContacts), this.errorCall, this.state.profileId);
   }
@@ -87,10 +88,13 @@ class Bills extends Component {
     } else {
       await this.setState({ labels });
     }
-    !callContacts && this.getContacts();
+    if (!callContacts) {
+      this.getContacts();
+    }
   };
 
-  // This Method execute the Contacts API Call
+  /* This Method execute the Contacts API Call
+     callBills is a boolean value passed from BillForm after successfully creating Contacts and it determines if getBills() is called or not  */
   getContacts = (callBills) => {
     new ContactApi().getContacts((contacts)=>this.successCallContact(contacts, callBills), this.errorCall, this.state.profileId);
   }
@@ -103,7 +107,9 @@ class Bills extends Component {
     } else {
       await this.setState({ contacts });
     }
-    !callBills && this.getBills();
+    if (!callBills) {
+      this.getBills()
+    }
   };
 
   // This Method execute the Bill API Call

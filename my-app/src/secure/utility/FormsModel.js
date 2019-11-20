@@ -6,13 +6,13 @@ import Select from 'react-select';
 import Data from '../../data/SelectData';
 import Store from '../../data/Store';
 import { userAction, profileFeature, billType, DEFAULT_CURRENCY } from '../../data/GlobalKeys';
+import '../../css/style.css';
 
 // ======================= This Bill Form Code =======
 export const BillFormUI = (props) => {
   const featureMultiCurrency = Store.getProfile().features.includes(profileFeature.MULTICURRENCY);
   let categoryName;
   const { bill, currencies, labels, contacts, categories, type, amount, dueDays, dueDate, billDate, moreOptions, doubleClick } = props.data;
-  const required = <b style={{color:'red'}}> * </b>
   
   // If bill exists, take currency from bill. If not, takes the default currency from selected Profile
   const { currency, description } = bill ? bill : Store.getProfile(); 
@@ -37,13 +37,13 @@ export const BillFormUI = (props) => {
         </AvField>
       </Col>
       <Col sm={6}>
-        <AvField name="amount" id="amount" label={<>Amount <b style={{color:'red'}}> *</b></>} value={amount} placeholder="Amount" type="number" errorMessage="Invalid amount"
+        <AvField name="amount" id="amount" label={<>Amount <b className="text-color"> *</b></>} value={amount} placeholder="Amount" type="number" errorMessage="Invalid amount"
           onChange={e => { props.handleSetAmount(e) }} required />
       </Col>
     </Row>
     <Row>
       <Col>
-        <label>Category {required}</label>
+        <label > Category <b className="text-color">*</b> </label>
         <Select options={Data.categoriesOrLabels(categories)} styles={Data.singleStyles} defaultValue={categoryName} placeholder="Select Categories " onChange={props.categorySelected} required /></Col>
       <Col>
         <AvField name="billDate" label="Bill Date" value={billDate} type="date" onChange={(e) => { props.handleBillDate(e) }} errorMessage="Invalid Date" validate={{
@@ -124,7 +124,7 @@ export const LoadNotifications = (props) => {
 export const CategoryLabelForm = (props) => {
   const { doubleClick, collapse, parentId, chkMakeParent, type, componentType, items, itemName, itemColor, notes, updateItem, hideCancel } = props.data
   return <AvForm onValidSubmit={props.handleSubmitValue}>
-    <AvField type="text" name="name" label={<>{componentType} Name <b style={{color:'red'}}> * </b></>} errorMessage={componentType + " Name Required"} value={itemName} placeholder={"Enter "+ componentType +" name"} required />
+    <AvField type="text" name="name" label={<>{componentType} Name <b className="text-color"> * </b></>} errorMessage={componentType + " Name Required"} value={itemName} placeholder={"Enter "+ componentType +" name"} required />
     {componentType === "Label" ? <AvField type="textarea" name="notes" value={notes} placeholder="Description / Notes" label="Description / Notes" />
       : <AvField type="select" name="type" label="Type" value={type ? type :billType.PAYABLE } errorMessage="Select Type of Category" >
         <option value={billType.PAYABLE}>Payable</option>
@@ -209,7 +209,7 @@ export const ProfileFormUI = (props) => {
     {!action || ((profileType === 0)) ?
       // This Block execute only when user action is null or user selects to create a Free Profile
       <>{getCurrency(currencies, currencySymbol)}
-        <AvField type="text" name="name" value={profileName} placeholder="Enter Profile name" id="tool-tip" label="Profile Name *" required />
+        <AvField type="text" name="name" value={profileName} placeholder="Enter Profile name" id="tool-tip" label={<>Profile Name <b className="text-color"> * </b></>} required />
         <center>
           <FormGroup>
             <Button color="success"> {buttonMessage} </Button> &nbsp;

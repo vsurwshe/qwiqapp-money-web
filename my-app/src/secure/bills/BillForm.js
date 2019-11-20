@@ -467,6 +467,7 @@ class BillForm extends Component {
     </Collapse>
   }
 
+  // It loads the model if contacts/labels are Empty, then creating..  
   loadCreateModal = () =>{
     const { createItem, createModal } = this.state
     return <Modal isOpen={createModal} toggle={()=>this.toggleCreateModal()} style={{ paddingTop: "20%" }} backdrop={true}>
@@ -485,7 +486,7 @@ class BillForm extends Component {
         <p>USING BELOW RECURRING CONFIGURATION: </p>
         <Row >
           <Col sm={3}>
-            <AvField name="every" label={<>Repeats Every <b style={{color:'red'}}> *</b></>} placeholder="Ex: 1" type="number" value={repeatEvery} onChange={(e) => { this.handleEveryRecurBill(e) }}
+            <AvField name="every" label={<>Repeats Every <b className="text-color"> *</b></>} placeholder="Ex: 1" type="number" value={repeatEvery} onChange={(e) => { this.handleEveryRecurBill(e) }}
               errorMessage="Invalid day" />
           </Col>
           <Col sm={3}>

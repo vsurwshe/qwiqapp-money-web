@@ -60,7 +60,6 @@ class EditUser extends Component {
         return <Card>
             <CardHeader><b >EDIT USER</b></CardHeader>
             <CardBody>
-                {/* {this.state.updated && <><Alert color="success">Updated successfully </Alert> {this.callReload()}</>} */}
                 <Alert color={color}>{content} </Alert>
                 <AvForm onSubmit={this.userUpdate} >
                     <AvField name="email" type="email" label="Email" placeholder="Email" value={user.email} required />
