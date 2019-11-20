@@ -31,7 +31,7 @@ export const BillFormUI = (props) => {
         </AvField>
       </Col>
       <Col sm={3}>
-        <AvField type="select" name="type" label="Type of Bill" value={type} errorMessage="Select Type of Bill" required>
+        <AvField type="select" name="amountType" label="Type of Bill" value={type} errorMessage="Select Type of Bill" required>
           <option value={billType.PAYABLE}>Payable</option>
           <option value={billType.RECEIVABLE}>Receivable</option>
         </AvField>
@@ -79,48 +79,7 @@ export const BillFormUI = (props) => {
   </AvForm>
 }
 
-export const LoadMoreOptions = (props) => {
-  let labelName, contactName;
-  const { labels, contacts, recurBill, taxPercent, taxAmount, checked, notifyDate, notifyDays } = props.data.data
-  if (recurBill) {
-    const options = Data.categoriesOrLabels(labels);
-    labelName = !recurBill.labelIds ? '' : recurBill.labelIds.map(id => { return options.filter(item => { return item.value === id }) }).flat();
-    contactName = Data.contacts(contacts).filter(item => { return item.value === recurBill.contactId })
-  }
-  let taxAmt = taxAmount > 0 ? taxAmount : -taxAmount
-  return <Collapse isOpen={props.moreOptions} data-parent="#exampleAccordion"><br />
-    <Row>
-      <Col>
-        <AvField name="taxPercent" id="taxPercent" value={taxPercent} placeholder={0} label="Tax (in %)" type="number" onChange={(e) => { props.data.handleTaxAmount(e) }} />
-      </Col>
-      <Col>
-        <AvField name='dummy' label="Tax Amount" value={Math.round(taxAmt * 100) / 100} placeholder="0" type="number" onChange={(e) => { props.data.handleTaxPercent(e) }} />
-      </Col>
-    </Row>
-    <Row>
-      <Col>
-        <label >Select Labels</label>
-        <Select isMulti options={Data.categoriesOrLabels(labels)} defaultValue={labelName} styles={Data.colourStyles} placeholder="Select Labels " onChange={props.data.labelSelected} /></Col>
-      <Col>
-        <label >Contact Name</label>
-        <Select options={Data.contacts(contacts)} defaultValue={contactName} placeholder="Select Contact " onChange={props.data.contactSelected} /></Col>
-    </Row><br />
-    <Row style={{ marginLeft: 7 }}>
-      <Col><Input name="check" type="checkbox" checked={checked} onChange={props.data.handleChackboxState} />Enable Notification</Col>
-    </Row> <br />
-    {checked && <LoadNotifications notifyDays={notifyDays} notifyDate={notifyDate} handleDate={props.data.handleDate} />}
-  </Collapse>
-}
-
-export const LoadNotifications = (props) => {
-  return <Row>
-    <Col><AvField name="notifyDays" label="Notify Days" placeholder="Ex: 2" value={props.notifyDays} type="number" onChange={(e) => { props.handleDate(e) }} errorMessage="Invalid notify-days" /></Col>
-    <Col><AvField name="notifyDate" label="notify Date" disabled value={props.notifyDate} type="date" errorMessage="Invalid Date" validate={{ date: { format: 'dd/MM/yyyy' } }} /></Col>
-  </Row>
-}
-
 // =============== Categories Form =============
-
 export const CategoryLabelForm = (props) => {
   const { doubleClick, collapse, parentId, chkMakeParent, type, componentType, items, itemName, itemColor, notes, updateItem, hideCancel } = props.data
   return <AvForm onValidSubmit={props.handleSubmitValue}>

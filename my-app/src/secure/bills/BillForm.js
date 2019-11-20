@@ -10,10 +10,10 @@ import Store from "../../data/Store";
 import { BillFormUI } from "../utility/FormsModel";
 import { ShowServiceComponent } from "../utility/ShowServiceComponent";
 import RecurringBillsApi from "../../services/RecurringBillsApi";
-import { profileFeature } from "../../data/GlobalKeys";
-import '../../css/style.css';
+import { profileFeature, billType, billRepeatType, recurBillType } from "../../data/GlobalKeys";
 import ContactForm from "../contacts/ContactForm";
 import LabelForm from "../labels/LabelForm";
+import '../../css/style.css';
 
 
 
@@ -29,7 +29,7 @@ class BillForm extends Component {
       currencies: Store.getCurrencies() ? Store.getCurrencies() : [],
       notifyDate: props.bill ? ShowServiceComponent.customDate(props.bill.notifyDate_) : ShowServiceComponent.loadDateFormat(new Date()),
       dueDays: props.bill ? props.bill.dueDays : 0,
-      repeatType: "DAY",
+      repeatType: billRepeatType.DAY,
       endDate: this.setRepeatUntilDate(new Date(), 2),
       recurId: props.bill ? props.bill.recurId : '',
       dueDate: props.bill ? ShowServiceComponent.customDate(props.bill.dueDate_) : ShowServiceComponent.loadDateFormat(new Date()),
@@ -42,7 +42,7 @@ class BillForm extends Component {
       taxPercent: props.bill ? props.bill.taxPercent : 0,
       taxAmount: props.bill ? this.setBillAmount(props.bill.taxAmount_) : 0,
       notifyDays: props.bill ? props.bill.notifyDays : 0,
-      type: props.bill ? props.bill.type : 'EXPENSE_PAYABLE',
+      type: props.bill ? props.bill.amountType : billType.PAYABLE,
       moreOptions: this.handleMoreOptions(props.bill),
       recurConfig: props.bill && props.bill.recurId ? true : false //bills
     };
@@ -57,11 +57,11 @@ class BillForm extends Component {
   succesCallRecurById = (recurBill) => {
     this.setState({
       recurBillConfig: recurBill, // recurbill
-      endDate: ShowServiceComponent.customDate(recurBill.endsOn),
+      endDate: ShowServiceComponent.customDate(recurBill.endDate),
       repeatEvery: recurBill.every,
       nextBillDate: ShowServiceComponent.customDate(recurBill.nextBillDate),
       repeatType: recurBill.repeatType,
-      recurBillForever: recurBill.endsOn ? true : false,
+      recurBillForever: recurBill.endDate ? true : false,
       recurBillVersion: recurBill.version
     })
   }
@@ -125,7 +125,7 @@ class BillForm extends Component {
           data = {
             ...newData,
             "nextBillDate": Data.datePassToAPI(values.nextBillDate),
-            "endsOn": Data.datePassToAPI(this.state.endDate)
+            "endDate": Data.datePassToAPI(this.state.endDate)
           }
           if (!this.props.bill.recurId) {
             this.handleCreateRecurBill(event, data, true, this.props.bill.id)  // update Normal Bill with Recur Configuration Added
@@ -143,7 +143,7 @@ class BillForm extends Component {
           const data = {
             ...custData,
             "nextBillDate": Data.datePassToAPI(values.nextBillDate),
-            "endsOn": Data.datePassToAPI(this.state.endDate)
+            "endDate": Data.datePassToAPI(this.state.endDate)
           }
           this.handleCreateRecurBill(event, data)
         } else {
@@ -161,20 +161,20 @@ class BillForm extends Component {
 
   handleCreateRecurBill = async (event, data, billAction, billId) => {
     event.persist();
-    this.setState({ doubleClick: true })
+    this.setState({ doubleClick: true });
     await new RecurringBillsApi().createRecurringBill(this.successCreate, this.errorCall, this.state.profileId, data, billAction, billId);
   }
 
   //this method handle the Post method from user`
   handleCreateBillPost = async (e, data) => {
     e.persist();
-    this.setState({ doubleClick: true })
+    this.setState({ doubleClick: true });
     await new BillApi().createBill(this.successCreateBill, this.errorCall, this.state.profileId, data);
   };
 
   handleUpdateBill = (e, data) => {
     e.persist();
-    this.setState({ doubleClick: true })
+    this.setState({ doubleClick: true });
     new BillApi().updateBill(this.successUpdateBill, this.errorCall, this.state.profileId, this.props.bill.id, data)
   };
 
@@ -299,18 +299,19 @@ class BillForm extends Component {
     let date = this.state.billDate ? this.state.billDate : new Date();
     let billDate = new Date(date);
     if (repeatEvery && repeatEveryType) {
+      const { WEEK, MONTH, DAYOFMONTH, YEAR}=recurBillType;
       switch (repeatEveryType) {
-        case 'WEEK':
+        case WEEK:
           billDate.setDate(billDate.getDate() + parseInt(repeatEvery) * 7);
           break;
-        case 'MONTH':
+        case MONTH:
           billDate.setMonth(billDate.getMonth() + parseInt(repeatEvery));
           break;
-        case 'DAYOFMONTH':
+        case DAYOFMONTH:
           billDate.setMonth(billDate.getMonth() + 1);
           billDate.setDate(parseInt(repeatEvery))
           break;
-        case 'YEAR':
+        case YEAR:
           billDate.setYear(billDate.getFullYear() + parseInt(repeatEvery));
           break;
         default:
@@ -416,12 +417,12 @@ class BillForm extends Component {
 
   loadMoreOptions = () => {
     const featureRecurring = Store.getProfile().features.includes(profileFeature.RECURRING);
-    const { labels, contacts } = this.props;
+    const { labels, contacts, bill } = this.props;
     let labelName, contactName;
-    if (this.props.bill) {
-      const options = Data.categoriesOrLabels(this.props.labels);
-      labelName = this.props.bill.labelIds ? this.props.bill.labelIds.map(id => { return options.filter(item => { return item.value === id }) }).flat() : '';
-      contactName = Data.contacts(this.props.contacts).filter(item => { return item.value === this.props.bill.contactId })
+    if (bill) {
+      const options = Data.categoriesOrLabels(labels);
+      labelName = bill.labelIds ? bill.labelIds.map(id => { return options.filter(item => { return item.value === id }) }).flat() : '';
+      contactName = Data.contacts(contacts).filter(item => { return item.value === bill.contactId })
     }
     return <Collapse isOpen={this.state.moreOptions} data-parent="#exampleAccordion" id="exampleAccordion1">
       <Row>
@@ -481,6 +482,7 @@ class BillForm extends Component {
   // This Method Load Recuring Config.
   loadRecurBill = () => {
     const { repeatEvery, repeatType, nextBillDate, endDate, recurBillForever } = this.state;
+    const {DAY, WEEK, MONTH, DAYOFMONTH, YEAR}=recurBillType;
     return (
       <>
         <p>USING BELOW RECURRING CONFIGURATION: </p>
@@ -492,11 +494,11 @@ class BillForm extends Component {
           <Col sm={3}>
             <AvField type="select" name="repeatType" value={repeatType} label="Select Every" onChange={(e) => { this.recurBillOption(e) }}
               errorMessage="Select any Option" required>
-              <option value="DAY">Day(s)</option>
-              <option value="WEEK">Week(s)</option>
-              <option value="MONTH">Month(s)</option>
-              <option value="DAYOFMONTH">DayOfMonth(s)</option>
-              <option value="YEAR">Year(s)</option>
+              <option value={DAY}>Day(s)</option>
+              <option value={WEEK}>Week(s)</option>
+              <option value={MONTH}>Month(s)</option>
+              <option value={DAYOFMONTH}>DayOfMonth(s)</option>
+              <option value={YEAR}>Year(s)</option>
             </AvField>
           </Col>
           <Col>
@@ -511,7 +513,7 @@ class BillForm extends Component {
             <Input name="check" type="checkbox" checked={recurBillForever === true} value={recurBillForever} onChange={this.handlRecurBillForever} />{recurBillForever ? "Repeat until" : "Repeating forever"}
             <br />
             {recurBillForever && <>
-              <AvField name="endsOn" value={endDate} type="date" errorMessage="Invalid Date" onChange={(e) => { this.handleEndDate(e) }} validate={{
+              <AvField name="endDate" value={endDate} type="date" errorMessage="Invalid Date" onChange={(e) => { this.handleEndDate(e) }} validate={{
                 date: { format: 'dd/MM/yyyy' },
                 dateRange: { format: 'YYYY/MM/DD', start: { value: '1900/01/01' }, end: { value: '9999/12/31' } },
                 required: { value: true }

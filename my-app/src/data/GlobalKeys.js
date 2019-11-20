@@ -36,5 +36,20 @@ export const profileFeature = {
 
 export const billType = {
    PAYABLE: 'EXPENSE_PAYABLE',
-   RECEIVABLE: 'INCOME_RECEIVABLE'
+   RECEIVABLE: 'INCOME_RECEIVABLE',
+   paymentType: {
+      PAID:"Paid",
+      RECEIVED:"Received"
+   }
+}
+export const billRepeatType={
+   DAY:"DAY"
+}
+export const recurBillType={
+  DAY:"DAY",
+  WEEK:"Week",
+  MONTH:"MONTH",
+  DAYOFMONTH:"DAYOFMONTH",
+  YEAR:"YEAR"
+
 }

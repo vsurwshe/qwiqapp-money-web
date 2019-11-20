@@ -6,6 +6,7 @@ import Store from '../../../data/Store';
 import Config from '../../../data/Config';
 import {BillPaymentForm} from './BillPaymentForm'
 import { ShowServiceComponent } from '../../utility/ShowServiceComponent';
+import { billType } from '../../../data/GlobalKeys';
 
 class BillPayment extends Component {
     constructor(props) {
@@ -99,10 +100,11 @@ class BillPayment extends Component {
     }
 
     loadBillPaymentForm = (selectedCurrency, bill) => {
+        const { paymentType } = billType;
         let formData = {
             bill: bill,
             paidAmount: this.calculateRemAmt(this.props.paidAmount),
-            paymentType: bill.type === 'EXPENSE_PAYABLE' ? "Paid" : "Received",
+            paymentType: bill.amountType === billType.PAYABLE ? paymentType.PAID :paymentType.RECEIVED,
             doubleClick: this.state.doubleClick,
             amountLable: "Payment Amount ("+ selectedCurrency.symbol +")"
         }

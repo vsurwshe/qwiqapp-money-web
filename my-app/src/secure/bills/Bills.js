@@ -337,7 +337,7 @@ class Bills extends Component {
     } else if (createBillRequest) {
       return <BillForm profileId={profileId} labels={labels} categories={categories} contacts={contacts} getContacts={this.getContacts} getLabels={this.getLabels}/>
     } else if (updateBillRequest) {
-      return <BillForm profileId={profileId} bill={updateBill} labels={labels} categories={categories} contacts={contacts} />
+      return <BillForm profileId={profileId} bill={updateBill} labels={labels} categories={categories} contacts={contacts} getContacts={this.getContacts} getLabels={this.getLabels}/>
     } else if (deleteBillRequest) {
       return <DeleteBill billId={billId} profileId={profileId} removeDependents={this.state.removeDependents} />
     } else if (this.state.addPayment || this.state.markPaid) {
