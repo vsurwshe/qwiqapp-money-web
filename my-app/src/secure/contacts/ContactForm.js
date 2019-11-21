@@ -17,6 +17,7 @@ const nameOrOrganization = (value, field) => {
 }
 
 class ContactForm extends Component {
+  _isMount = false;
   constructor(props) {
     super(props);
     this.state = {
@@ -31,8 +32,13 @@ class ContactForm extends Component {
   }
 
   componentDidMount = () => {
+    this._isMount = true;
     const countries = Store.getCountries()
     this.setState({ countries })
+  }
+
+  componentWillUnmount() {
+    this._isMount = false;
   }
 
   handleInput = e => {
@@ -87,7 +93,9 @@ class ContactForm extends Component {
           this.setState({ hideCancel: '' })
           this.props.toggleCreateModal('', true)
         } else{
-          this.setState({ contactCreated: true });
+          if (this._isMount) {
+            this.setState({ contactCreated: true });
+          }
         }
       }, Config.notificationMillis);
     }

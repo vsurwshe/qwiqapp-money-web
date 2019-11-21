@@ -6,6 +6,7 @@ import Config from "../../data/Config";
 import { CategoryLabelForm } from "../utility/FormsModel";
 
 class LabelForm extends Component {
+  _isMount = false;
   constructor(props) {
     super(props);
     this.state = {
@@ -20,6 +21,14 @@ class LabelForm extends Component {
       index: props.index,
       hideCancel: props.hideButton
     };
+  }
+
+  componentDidMount(){
+    this._isMount = true;
+  }
+
+  componentWillUnmount() {
+    this._isMount = false;
   }
 
   // handle the submission from user
@@ -70,7 +79,9 @@ class LabelForm extends Component {
         this.setState({ hideCancel: '' })
         this.props.toggleCreateModal('', true)
       } else{
-      this.setState({ name: "", content: "", alertColor: "", labelAction: true });
+        if (this._isMount) {
+          this.setState({ name: "", content: "", alertColor: "", labelAction: true });
+        }
       }
     }, Config.notificationMillis);
   };
