@@ -1,6 +1,6 @@
 import React from 'react';
-import { AvForm, AvField, AvInput, AvRadio, AvRadioGroup } from 'availity-reactstrap-validation';
-import { Button, FormGroup, Col, Row, Label, Collapse, Input, Table } from "reactstrap";
+import { AvForm, AvField, AvInput } from 'availity-reactstrap-validation';
+import { Button, FormGroup, Col, Row, Label, Collapse, Input } from "reactstrap";
 import { Link } from 'react-router-dom';
 import Select from 'react-select';
 import Data from '../../data/SelectData';
@@ -161,14 +161,26 @@ export const ProfileFormUI = (props) => {
   // Default value set while creating profile in AvForm
   const defaultValues = { type: 0 }
   return <AvForm onValidSubmit={props.handleSubmit} model={defaultValues}>
-    {// This Block Shows the ProfileTypes when user actions is  not "VERIFY_EMAIL" and  profileTypes length is more than 0
-      (profileTypes.length > 0 && action !== userAction.VERIFY_EMAIL) &&
-      <> <h5><b>Choose Profile Type</b></h5> {createProfileTypes(profileTypes, props.setButtonText)}</>
-    }
-    {!action || ((profileType === 0)) ?
+        {!profileName && <Row>
+        <Col sm={3} ><Label>Profile Types</Label> </Col>
+        <Col sm={6}>
+        <AvField type="select" id="symbol" name="type" onChange={props.setButtonText} value={profileType}>  
+        {profileTypes.map((profile, key) => { return <option key={key} value={profile.type} data={profile.symbol} symbol={profile.symbol} >{`${profile.name} ${"-"} ${profile.cost} ${"per month - "} ${profile.description}`}</option> })}
+      </AvField></Col>
+        </Row>}
+    {!action || (profileType === 0) ?
       // This Block execute only when user action is null or user selects to create a Free Profile
-      <>{getCurrency(currencies, currencySymbol)}
-        <AvField type="text" name="name" value={profileName} placeholder="Enter Profile name" id="tool-tip" label={<>Profile Name <b className="text-color"> * </b></>} required />
+      <> 
+      <Row>
+        <Col sm={3}>
+      <Label>Profile Name</Label> 
+      </Col>
+      <Col sm={6}>
+      <AvField type="text" name="name" value={profileName} placeholder="Enter Profile name" id="tool-tip" required />
+      </Col>      
+      </Row>
+      {getCurrency(currencies, currencySymbol)}
+      <br/><br/>
         <center>
           <FormGroup>
             <Button color="success"> {buttonMessage} </Button> &nbsp;
@@ -185,44 +197,17 @@ export const ProfileFormUI = (props) => {
   </AvForm>
 }
 
-// Shows the ProfileTypes table for creating Profiles
-const createProfileTypes = (profileTypesOptions, setButtonText) => {
-  return <AvRadioGroup name="type">
-    <Table bordered striped hover>
-      <thead className="table-header-color">
-        <tr>
-          <th>Type</th>
-          <th>Profile Type</th>
-          <th>Cost</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-        {profileInfo(profileTypesOptions, setButtonText)}
-      </tbody>
-    </Table>
-  </AvRadioGroup>
-}
-
-// Returns the ProfileTypes table rows using profileTypeOptions
-const profileInfo = (profileTypesOptions, setButtonText) => {
-  const rowData = profileTypesOptions.map((proTypes, key) => {
-    return <tr key={key}>
-      <td> <AvRadio label={proTypes.name} value={proTypes.type} onChange={() => { return setButtonText(proTypes.type) }} /></td>
-      <td>{proTypes.name}</td>
-      <td>{proTypes.cost}</td>
-      <td>{proTypes.description}</td>
-    </tr>
-  })
-  return rowData
-}
 
 // Currency for profile form
 const getCurrency = (currencies, currencySymbol) => {
   if (currencies.length) {
-    return <AvField type="select" id="symbol" name="currency" value={currencySymbol} label="Default Currency">
-      <option value=""> Select</option>
-      {currencies.map((currency, key) => { return <option key={key} value={currency.code} data={currency.symbol} symbol={currency.symbol} >{currency.code + " - " + currency.name}</option> })}
-    </AvField>
+    return <div>
+      <Row>
+      <Col sm={3}> <Label>Default Currency </Label> </Col>
+      <Col sm={6}> <AvField type="select" id="symbol" name="currency" value={currencySymbol}>  
+        {currencies.map((currency, key) => { return <option key={key} value={currency.code} data={currency.symbol} symbol={currency.symbol} >{currency.code + " - " + currency.name}</option> })}
+      </AvField>
+      </Col></Row>
+    </div>
   }
 }

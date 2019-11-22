@@ -1,5 +1,6 @@
-import Avatar from 'react-avatar';
 import React, { Component } from "react";
+import { Link } from 'react-router-dom';
+import Avatar from 'react-avatar';
 import DeleteProfile from "./DeleteProfile";
 import { Redirect } from 'react-router';
 import ProfileApi from "../../services/ProfileApi";
@@ -74,7 +75,7 @@ class Profiles extends Component {
     if (action) {
       switch (action) {
         case userAction.ADD_BILLING: // This is Global variable(declared in GlobalKeys.js), to compare 'action' of user
-        this.callAlertTimer("danger", "Add your billing address", true);
+          this.callAlertTimer("danger", "Add your billing address", true);
           break;
         case userAction.ADD_CREDITS:
           this.callAlertTimer("danger", "Add credits", true);
@@ -89,12 +90,12 @@ class Profiles extends Component {
 
   upgradeSuccessCall = (profiles) => {
     this.setState({ profileUpgraded: true });
-    this.callAlertTimer("success","Your profile upgraded successfully", true);
+    this.callAlertTimer("success", "Your profile upgraded successfully", true);
   }
 
-  upgradeErrorCall = (error) =>{
+  upgradeErrorCall = (error) => {
     if (error.response.status === 400 && !error.response.data) {
-      this.callAlertTimer("danger", "Your credits are low, please add more credits", true );
+      this.callAlertTimer("danger", "Your credits are low, please add more credits", true);
     } else {
       this.callAlertTimer("danger", "Unable to process your request", true);
     }
@@ -103,7 +104,7 @@ class Profiles extends Component {
   callAlertTimer = (alertColor, alertMessage, emptyMessages) => {
     this.setState({ alertColor, alertMessage });
     if (emptyMessages) {
-      setTimeout(()=>{
+      setTimeout(() => {
         this.setState({ alertColor: "", alertMessage: "" });
       }, Config.apiTimeoutMillis);
     }
@@ -165,27 +166,38 @@ class Profiles extends Component {
 
   //if one or more profile is there then this method Call
   showProfile = (profiles) => {
+    let user = Store.getUser();
     return (
-      <div className="animated fadeIn">
-        {this.loadHeader()}
-        <CardBody>
-          {this.state.alertMessage && <Alert color={this.state.alertColor} >{this.state.alertMessage}</Alert>}
-          <Table bordered >
-            <thead>
-              <tr className="table-tr" align='center'>
-                <th>Profile Name</th>
-                <th>Profile Type </th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody className="tbody-padding">
-              {profiles.map((profile, key) => {
-                return this.loadSingleProfile(profile, key);
-              })}
-            </tbody>
-          </Table>
-        </CardBody>
-      </div>)
+      <Card>
+        <div className="animated fadeIn">
+          {this.loadHeader()}
+          <CardBody>
+            {this.state.alertMessage && <Alert color={this.state.alertColor} >{this.state.alertMessage}</Alert>}
+            <Table bordered >
+              <thead>
+                <tr className="table-tr" align='center'>
+                  <th>Profile Name</th>
+                  <th>Profile Type </th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody className="tbody-padding">
+                {profiles.map((profile, key) => {
+                  return this.loadSingleProfile(profile, key);
+                })}
+              </tbody>
+            </Table><br /><br />
+
+            <center>
+              {user && (userAction.ADD_BILLING === user.action ? <>
+                  <Link to="/billing/address/add"><Button color="primary" >Add Billing Address</Button></Link> <br /><br /><br />
+                  <p>Please Add Billing Address to upgrade your profile</p></>
+                  : userAction.ADD_CREDITS_LOW === user.action && <><Link to="/billing/paymentHistory"><Button color="primary" >Add Credits</Button></Link> <br /><br /><br />
+                    <p>Please Add Credits to upgrade your profile</p> </>)
+              }
+            </center>
+          </CardBody>
+        </div></Card>)
   }
 
   selectProfile = (selectedId) => {
@@ -200,7 +212,7 @@ class Profiles extends Component {
       <td style={{ paddingTop: 18 }}>{this.loadProfileType(profile.type)} </td>
       <td align="center">
         <Button style={{ backgroundColor: "#43A432", color: "#F0F3F4" }} onClick={() => { this.updateProfile(profile.id, profile.name) }}>Edit</Button> &nbsp;
-          {profile.upgradeTypes ? <UncontrolledDropdown group>
+          {!userAction.ADD_BILLING ? <UncontrolledDropdown group>
           <DropdownToggle caret >Upgrade to</DropdownToggle>
           {profileTypes && <DropdownMenu>
             {profile.upgradeTypes.map((upgradeType, id) => {
@@ -244,7 +256,6 @@ class Profiles extends Component {
       danger={this.state.userConfirmUpgrade}
       headerMessage="Upgrade Profile"
       bodyMessage="Upgrading a profile may incur some charges. Are you sure you want to upgrade "
-      // "This profile cost is higher than current profile, are you sure you want to upgrade ?"
       toggleDanger={this.handleUserConfirm}
       delete={this.handelUpgradeProfile}
       cancel={this.handleConfirmUpgrade}

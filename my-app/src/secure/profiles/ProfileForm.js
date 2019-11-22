@@ -20,7 +20,7 @@ class ProfileForm extends Component {
       profileName: props.profileName ? props.profileName : '',
       profileType: 0,
       profileTypes: [],
-      comparisionText: "View Feature Comparision",
+      comparisionText: "Hide Feature Comparision",
       buttonText: "Create Free Profile"
     };
   }
@@ -46,12 +46,13 @@ class ProfileForm extends Component {
     console.log(error);
   }
 
-  setButtonText = async (profileType) => {
-    let buttonText = "Create Free Profile";
+  setButtonText = async (event) => {
+    const { value } = event.target;
+    let buttonText = "";
     const { profileTypes } = this.state
     if (profileTypes.length) {
-      buttonText = await profileTypes.filter(profile => profile.type === profileType);
-      this.setState({ buttonText: "Create " + buttonText[0].name + " Profile", profileType })
+      buttonText = await profileTypes.filter(profile => profile.type === parseInt(value));
+      this.setState({ buttonText: "Create " + buttonText[0].name + " Profile", profileType: parseInt(value) })
     }
   }
 
@@ -69,7 +70,7 @@ class ProfileForm extends Component {
       new ProfileApi().updateProfile(this.successCall, this.errorCall, data, profileId);
     } else {
       if (action !== userAction.VERIFY_EMAIL) {
-        new ProfileApi().createProfile(this.successCall, (err) => { this.errorCall(err, data.type) }, data);
+        new ProfileApi().createProfile(this.successCall, (err) => { this.errorCall(err, data.type) }, { ...data, type: this.state.profileType });
       } else {
         this.callAlertTimer("danger", "First Please verify with the code sent to your Email.....")
       }
@@ -143,12 +144,12 @@ class ProfileForm extends Component {
           <Col>
             <Container>
               {this.loadProfileForm()}
-              <h5>
+              {!this.state.profileId && <><h5>
                 <span onClick={this.profileViewTable} className="float-right profile-comparision-text">
                   <u>{this.state.comparisionText}</u>
                 </span>
-              </h5>
-              {profileInfoTable && <ProfileInfoTable />}
+              </h5> <br />
+                {!profileInfoTable && <ProfileInfoTable />} </>}
             </Container>
           </Col>
         </CardBody>
