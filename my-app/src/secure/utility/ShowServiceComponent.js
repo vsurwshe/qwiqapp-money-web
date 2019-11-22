@@ -72,6 +72,7 @@ export const ShowServiceComponent = {
         <Col className="marigin-top" >
           <strong>{items ? headerMessage + " : " + items.length : headerMessage}</strong>
         </Col>
+        
         {(items && items.length) &&
           <Col md={7} className="shadow p-0 mb-3 bg-white rounded">
             <InputGroup>
@@ -117,9 +118,7 @@ export const ShowServiceComponent = {
   },
 
   billTypeAmount: function (currency, amount) {
-    return <span>
-      {new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(amount > 0 ? amount : -(amount))}
-    </span>
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(amount>0 ? amount : -(amount))
   },
 
   handleTax: function (amount, taxPercent, taxAmount) {

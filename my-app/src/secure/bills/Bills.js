@@ -355,8 +355,9 @@ class Bills extends Component {
     }
     else {
       return <div>
-        {this.displayAllBills(visible, bills, featureAttachment)}{danger && this.deleteBillModel()}
-        {this.loadDataTable()}
+        {/* {this.displayAllBills(visible, bills, featureAttachment)} */}
+        {danger && this.deleteBillModel()}
+        {this.loadDataTable(bills, featureAttachment,visible)}
         {this.state.markAsUnPaid && this.handleMarkAsUnPaid()}
       </div>
     }
@@ -373,7 +374,7 @@ class Bills extends Component {
   }
 
   loadHeader = (bills) => {
-    return new ShowServiceComponent.loadHeaderWithSearch("BILLS", bills, this.searchSelected, "Search Bills.....", this.createBillAction, true, this.handleDateFilter);
+    return new ShowServiceComponent.loadHeaderWithSearch("BILLS", bills, this.searchSelected, "Search Bills.....", this.createBillAction, false, this.handleDateFilter);
   }
 
   loadLoader = () => <div className="animated fadeIn">
@@ -399,7 +400,8 @@ class Bills extends Component {
   </div>
 
   // This Functions Loading Jquery DataTable into bills
-  loadDataTable=()=>{
+  loadDataTable=(bills, featureAttachment, visible)=>{
+    const color = this.props.color;
     // This array collection of header in DataTable
     let coloums=[
       {title:"Due Date"},
@@ -407,14 +409,46 @@ class Bills extends Component {
       {title:"Description"},
       {title:"Bill Amount"},
       {title:"Status"},
-      {title:"Last Transaction"},
+      // {title:"Last Transaction"},
+      {title:""},
       {title:""}
     ]
     // This is Returning DataTable Component
-    return <DataTable data='' coloums={coloums} />
+    return <div className="animated fadeIn">
+      <Card>
+        {this.loadHeader("")}
+        <h6>{visible && <Alert isOpen={visible} color={color}>{this.props.content}</Alert>}</h6>
+        <CardBody className="card-align">
+          <DataTable data={this.loadTableRows(bills, featureAttachment)} coloums={coloums} />
+        </CardBody>
+      </Card>
+    </div>
   }
-  
 
+  // This fucntion loading DataTable Rows.
+ loadTableRows=(bills, featureAttachment)=>{
+  var rows= bills.map((bill, key) => { return this.loadSingleRow(bill, key, featureAttachment); })
+  return rows;
+ }
+
+ // Show the Single Bill 
+ loadSingleRow = (bill, key, featureAttachment) => {
+  let strike = bill.paid;
+  let lastPaid = this.calculateLastPaid(bill, bill.amount);
+  let billDescription = bill.description ? bill.description : bill.categoryName.name;
+  let singleRow=[
+        strike ? "<strike>{"+ShowServiceComponent.customDate(bill.dueDate_, true)+"}</strike>" : ShowServiceComponent.customDate(bill.dueDate_, true),
+        strike ? "<strike> {"+ShowServiceComponent.customDate(bill.billDate, true)+"} </strike>" :ShowServiceComponent.customDate(bill.billDate, true),
+        strike ? "<strike> {"+billDescription+"} </strike>" :billDescription,
+        strike ? "<strike style='color:red'> {"+this.handleSignedBillAmount(bill)+"} </strike>" : "<span style='color:green'>"+this.handleSignedBillAmount(bill)+"</span>",
+        strike ? "<strike>Paid</strike>" : 'Unpaid',
+        // strike ? "<strike> {"+this.loadPaidStatus(bill, lastPaid)+"} </strike>" :this.loadPaidStatus(bill, lastPaid),
+        this.loadEditButton(bill, key, featureAttachment),
+        this.loadDropDown(bill, key, featureAttachment)
+
+  ]
+  return singleRow;
+}
 
   // Displays all the Bills one by one
   displayAllBills = (visible, bills, featureAttachment) => {
@@ -485,16 +519,10 @@ class Bills extends Component {
   }
   
   loadPaidStatus = (bill, lastPaid) => {
-    return <>
-      {lastPaid && <span style={{ color: '#0080ff' }}>Last paid:  {ShowServiceComponent.billDateFormat(lastPaid.date)} &nbsp;&nbsp;
-       {ShowServiceComponent.billTypeAmount(bill.currency, lastPaid.paymentAmt, true)}
-      </span>}
-    </>
+    return lastPaid ? "<span style={{ color: '#0080ff' }}>Last paid:  {"+ShowServiceComponent.billDateFormat(lastPaid.date)+"} &nbsp;&nbsp; {"+ShowServiceComponent.billTypeAmount(bill.currency, lastPaid.paymentAmt, true)+"}</span>": ""
   }
-
-  handleSignedBillAmount = (bill) => {
-    return bill.amount < 0 ? <span className="text-color"> -({ShowServiceComponent.billTypeAmount(bill.currency, bill.amount)})</span> : <span className="bill-amount-color">{ShowServiceComponent.billTypeAmount(bill.currency, bill.amount)}</span>
-  }
+    
+  handleSignedBillAmount = (bill) => { return  ShowServiceComponent.billTypeAmount(bill.currency, bill.amount)}
 
   loadPaymentDateAndAmount = (bill, lastPaid) => {
     return <> <b>Last paid</b> {this.dateFormat(lastPaid.date)} &nbsp; {this.loadBillAmount(bill.currency, lastPaid.paymentAmt)} </>
@@ -538,22 +566,41 @@ class Bills extends Component {
     }
   }
 
+  loadEditButton=(bill, key, featureAttachment)=>{
+    return "<span className='float-right' style='marginTop: -8px, marginBottom: -9px'> <Button class='rounded' style='backgroundColor:'transparent'; borderColor: #ada397; color: green; width: 67px' }}>Edit</Button> &nbsp;&nbsp;&nbsp; </span>"
+  }
+
   //this Method loads Browser DropDown
-  loadDropDown = (bill, key, featureAttachment) => <span className="float-right" style={{ marginTop: -8, marginBottom: -9 }} >
-    {bill.recurId ? <FaUndoAlt /> : ''} &nbsp;
-      <Button className="rounded" style={{ backgroundColor: "transparent", borderColor: '#ada397', color: "green", width: 67 }} onClick={() => this.updateBillAction(bill)}>Edit</Button> &nbsp;
-      <UncontrolledDropdown group>
-      <DropdownToggle caret onClick={() => this.handleShowPayment(bill)}> More ... </DropdownToggle>
-      <DropdownMenu right>
-        <DropdownItem onClick={this.handleAddPayment} >Add a payment</DropdownItem>
-        <DropdownItem onClick={this.handleViewPayment}>Payments History</DropdownItem>
-        {!bill.paid ? <DropdownItem onClick={this.handleMarkAsPaid}>Mark as PAID</DropdownItem> :
-          <DropdownItem onClick={this.handleMarkAsUnpaidPayment}>Mark as unpaid</DropdownItem>}
-        {featureAttachment ? <DropdownItem onClick={() => this.billAttachments(key, bill.id)}>Attachments</DropdownItem> : ''}
-        <DropdownItem onClick={() => this.setBillId(bill)}>Delete</DropdownItem>
-      </DropdownMenu>
-    </UncontrolledDropdown>
-  </span>
+  loadDropDown = (bill, key, featureAttachment) =>{
+    return "<span className='float-right' style='marginTop: -8px, marginBottom: -9px'>"+
+      "<select class=''>"+
+      "<option>More ... </option>"+
+      "<option>Add a payment</option>"+
+      "<option>Payments History</option>"+
+      "<option>Mark as PAID</option>"+
+      "<option>Attachments</option>"+
+      "<option>Delete</option>"+
+      "</select>"+
+      "</span>"
+  }
+
+  // loadDropDown = (bill, key, featureAttachment) =>{
+  //   return "<span className='float-right' style='marginTop: -8px, marginBottom: -9px'>"+
+  //   "{"+bill.recurId ? '<FaUndoAlt />' : ''+"} &nbsp;"+
+  //     <Button className='rounded' style='backgroundColor:'transparent'; borderColor: #ada397; color: green; width: 67px' }} onClick={() => this.updateBillAction(bill)}>Edit</Button> &nbsp;
+  //     <UncontrolledDropdown group>
+  //     <DropdownToggle caret onClick={() => this.handleShowPayment(bill)}> More ... </DropdownToggle>
+  //     <DropdownMenu right>
+  //       <DropdownItem onClick={this.handleAddPayment} >Add a payment</DropdownItem>
+  //       <DropdownItem onClick={this.handleViewPayment}>Payments History</DropdownItem>
+  //       {!bill.paid ? <DropdownItem onClick={this.handleMarkAsPaid}>Mark as PAID</DropdownItem> :
+  //         <DropdownItem onClick={this.handleMarkAsUnpaidPayment}>Mark as unpaid</DropdownItem>}
+  //       {featureAttachment ? <DropdownItem onClick={() => this.billAttachments(key, bill.id)}>Attachments</DropdownItem> : ''}
+  //       <DropdownItem onClick={() => this.setBillId(bill)}>Delete</DropdownItem>
+  //     </DropdownMenu>
+  //   </UncontrolledDropdown>
+  // </span>+""}
+
 
   //this method calls the delete model
   deleteBillModel = () => {
