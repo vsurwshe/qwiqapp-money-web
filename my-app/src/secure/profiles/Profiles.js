@@ -212,7 +212,8 @@ class Profiles extends Component {
       <td align="center" style={{ textAlign: "center" }}>
         <center><Row>&nbsp;&nbsp;&nbsp;
         <Button style={{ backgroundColor: "#43A432", color: "#F0F3F4" }} onClick={() => { this.updateProfile(profile.id, profile.name) }}>Edit</Button> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <UpgradeProfileType user={user} userProfile={profile} handleUserConfirm={this.handleUserConfirm} profileTypes={profileTypes} /></Row></center>
+        {user && !user.action && <UpgradeProfileType userProfile={profile} handleUserConfirm={this.handleUserConfirm} profileTypes={profileTypes} />}
+        </Row></center>
       </td>
       {this.state.userConfirmUpgrade && this.loadConfirmations()}
     </tr>

@@ -183,10 +183,10 @@ export const ProfileFormUI = (props) => {
             <Row>
               <Button color="success"> {buttonMessage} </Button> &nbsp;
               <Button active color="light" type="button" onClick={props.handleEditProfileCancel}>Cancel</Button>
-              <UpgradeProfileType user={user} userProfile={profile} profileTypes={profileTypes} handleUserConfirm={props.handleUserConfirm}/>
+              {user && !user.action && <UpgradeProfileType userProfile={profile} profileTypes={profileTypes} handleUserConfirm={props.handleUserConfirm}/>}
             </Row>
           </FormGroup>
-          {props.handleConfirmUpgrade}
+          {/* {props.handleConfirmUpgrade} */}
           { userConfirmUpgrade && <DeleteModel
           danger={userConfirmUpgrade}
           headerMessage="Upgrade Profile"

@@ -2,9 +2,9 @@ import React from 'react';
 import { UncontrolledDropdown, DropdownToggle, DropdownItem, DropdownMenu } from "reactstrap";
 
 export const UpgradeProfileType= (props)=>{
-  const {user, userProfile, profileTypes}=props;
+  const {userProfile, profileTypes}=props;
   return <div>
-    {user && !user.action && userProfile && userProfile.upgradeTypes && <UncontrolledDropdown group>
+    {userProfile && userProfile.upgradeTypes && <UncontrolledDropdown group>
       <DropdownToggle caret >Upgrade to</DropdownToggle>
       <DropdownMenu>
         {profileTypes && userProfile.upgradeTypes.map((upgradeType, id) => {
