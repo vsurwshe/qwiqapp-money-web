@@ -19,6 +19,7 @@ import ViewPayment from "./billPayment/ViewPayment";
 import PaymentApi from "../../services/PaymentApi";
 import { profileFeature } from "../../data/GlobalKeys";
 import '../../css/style.css';
+import { DataTable } from "../utility/DataTabel";
 
 class Bills extends Component { 
   constructor(props) {
@@ -355,6 +356,7 @@ class Bills extends Component {
     else {
       return <div>
         {this.displayAllBills(visible, bills, featureAttachment)}{danger && this.deleteBillModel()}
+        {this.loadDataTable()}
         {this.state.markAsUnPaid && this.handleMarkAsUnPaid()}
       </div>
     }
@@ -395,6 +397,24 @@ class Bills extends Component {
       </center>
     </Card>
   </div>
+
+  // This Functions Loading Jquery DataTable into bills
+  loadDataTable=()=>{
+    // This array collection of header in DataTable
+    let coloums=[
+      {title:"Due Date"},
+      {title:"Bill Date"},
+      {title:"Description"},
+      {title:"Bill Amount"},
+      {title:"Status"},
+      {title:"Last Transaction"},
+      {title:""}
+    ]
+    // This is Returning DataTable Component
+    return <DataTable data='' coloums={coloums} />
+  }
+  
+
 
   // Displays all the Bills one by one
   displayAllBills = (visible, bills, featureAttachment) => {

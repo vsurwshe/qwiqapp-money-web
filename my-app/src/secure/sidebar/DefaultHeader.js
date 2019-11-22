@@ -73,7 +73,7 @@ const DefaultHeader = (props) => {
       <DropdownToggle nav>
         <Avatar name={userName && userName.charAt(0)} className="avtar" size="40" round={true} />
       </DropdownToggle>
-      <DropdownMenu right style={{ right: 'auto' }}>
+      <DropdownMenu>
         <DropdownItem tag="div" className="text-center"><strong >{userName}</strong></DropdownItem>
         <DropdownItem tag={Link} to='/billing/address'><FaAddressCard className="faAddressCard" />Billing Address</DropdownItem>
         <DropdownItem tag={Link} to="/billing/paymentHistory"><FaRegCalendarAlt className="faRegCalendarAlt" />Payment History</DropdownItem>
@@ -90,7 +90,7 @@ const DefaultHeader = (props) => {
         <b>{profileName ? profileName.length <= 13 ? profileName : profileName.slice(0, 11) + "..." : ""}&nbsp;</b>&nbsp;
         <FaAngleDown size={18} className="faAngleDown"/>
       </DropdownToggle>
-      <DropdownMenu right style={{ right: 'auto' }}>
+      <DropdownMenu>
         {profiles && profiles.map((profile, id) => {
           let url = "/profiles/" + profile.id;
           return <DropdownItem key={id} tag={Link} to={url}>

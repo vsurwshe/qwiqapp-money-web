@@ -14,6 +14,7 @@
     "axios": "^0.18.0",
     "bootstrap": "^4.3.1",
     "chroma-js": "^2.0.3",
+    "datatables.net": "^1.10.20",
     "env-cmd": "^9.0.3",
     "eval": "^0.1.4",
     "flag-icon-css": "^3.3.0",
