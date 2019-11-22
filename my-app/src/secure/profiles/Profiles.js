@@ -6,11 +6,12 @@ import { Redirect } from 'react-router';
 import ProfileApi from "../../services/ProfileApi";
 import { DeleteModel } from "../utility/DeleteModel";
 import { ProfileEmptyMessage } from "../utility/ProfileEmptyMessage";
-import { Container, Button, Card, CardBody, Table, CardHeader, Alert, UncontrolledDropdown, DropdownToggle, DropdownItem, DropdownMenu } from "reactstrap";
+import { Container, Button, Card, CardBody, Table, CardHeader, Alert, Row } from "reactstrap";
 import ProfileForm from './ProfileForm';
 import Config from '../../data/Config';
 import Store from '../../data/Store';
 import { userAction } from '../../data/GlobalKeys';
+import { UpgradeProfileType } from "./UpgradeProfileType";
 /**
  * Display list of profiles,Manage profile like (update, delete)
  * Call Add,Update, delete Componets.
@@ -167,6 +168,7 @@ class Profiles extends Component {
   //if one or more profile is there then this method Call
   showProfile = (profiles) => {
     let user = Store.getUser();
+    let profileTypes = Store.getProfileTypes();
     return (
       <Card>
         <div className="animated fadeIn">
@@ -183,17 +185,16 @@ class Profiles extends Component {
               </thead>
               <tbody className="tbody-padding">
                 {profiles.map((profile, key) => {
-                  return this.loadSingleProfile(profile, key);
+                  return this.loadSingleProfile(profile, key, user, profileTypes);
                 })}
               </tbody>
             </Table><br /><br />
-
             <center>
               {user && (userAction.ADD_BILLING === user.action ? <>
-                  <Link to="/billing/address/add"><Button color="primary" >Add Billing Address</Button></Link> <br /><br /><br />
-                  <p>Please Add Billing Address to upgrade your profile</p></>
-                  : userAction.ADD_CREDITS_LOW === user.action && <><Link to="/billing/paymentHistory"><Button color="primary" >Add Credits</Button></Link> <br /><br /><br />
-                    <p>Please Add Credits to upgrade your profile</p> </>)
+                <Link to="/billing/address/add"><Button color="primary" >Add Billing Address</Button></Link> <br /><br /><br />
+                <p>Please Add Billing Address to upgrade your profile</p></>
+                : userAction.ADD_CREDITS_LOW === user.action && <><Link to="/billing/paymentHistory"><Button color="primary" >Add Credits</Button></Link> <br /><br /><br />
+                  <p>Please Add Credits to upgrade your profile</p> </>)
               }
             </center>
           </CardBody>
@@ -203,27 +204,15 @@ class Profiles extends Component {
   selectProfile = (selectedId) => {
     this.setState({ profileId: selectedId, selectProfile: true })
   }
-
   //this method load the single profile
-  loadSingleProfile = (profile, key) => {
-    let profileTypes = Store.getProfileTypes();
+  loadSingleProfile = (profile, key, user, profileTypes) => {
     return <tr key={key} >
       <td><b onClick={() => { this.selectProfile(profile.id) }} ><Avatar name={profile.name.charAt(0)} size="40" round={true} /> &nbsp;&nbsp;{profile.name}</b> </td>
       <td style={{ paddingTop: 18 }}>{this.loadProfileType(profile.type)} </td>
-      <td align="center">
-        <Button style={{ backgroundColor: "#43A432", color: "#F0F3F4" }} onClick={() => { this.updateProfile(profile.id, profile.name) }}>Edit</Button> &nbsp;
-          {!userAction.ADD_BILLING ? <UncontrolledDropdown group>
-          <DropdownToggle caret >Upgrade to</DropdownToggle>
-          {profileTypes && <DropdownMenu>
-            {profile.upgradeTypes.map((upgradeType, id) => {
-              const upgradeProfileType = profileTypes.filter(profile => profile.type === upgradeType);
-              return <DropdownItem key={id} onClick={() => this.handleUserConfirm(profile.id, upgradeProfileType[0].type)} >{upgradeProfileType[0].name} </DropdownItem>
-            })}
-          </DropdownMenu>
-          }
-        </UncontrolledDropdown>
-          : <span style={{ paddingRight: 110 }}></span>
-        }
+      <td align="center" style={{ textAlign: "center" }}>
+        <center><Row>&nbsp;&nbsp;&nbsp;
+        <Button style={{ backgroundColor: "#43A432", color: "#F0F3F4" }} onClick={() => { this.updateProfile(profile.id, profile.name) }}>Edit</Button> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <UpgradeProfileType user={user} userProfile={profile} handleUserConfirm={this.handleUserConfirm} profileTypes={profileTypes} /></Row></center>
       </td>
       {this.state.userConfirmUpgrade && this.loadConfirmations()}
     </tr>

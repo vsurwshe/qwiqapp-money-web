@@ -7,6 +7,8 @@ import Data from '../../data/SelectData';
 import Store from '../../data/Store';
 import { userAction, profileFeature, billType, DEFAULT_CURRENCY } from '../../data/GlobalKeys';
 import '../../css/style.css';
+import { UpgradeProfileType } from '../profiles/UpgradeProfileType';
+import { DeleteModel } from './DeleteModel';
 
 // ======================= This Bill Form Code =======
 export const BillFormUI = (props) => {
@@ -155,7 +157,7 @@ export const ContactFormUI = (props) => {
 // ==============ProfileFormUI ===========
 
 export const ProfileFormUI = (props) => {
-  const { profile, profileName, buttonMessage, currencies, profileType, profileTypes, action } = props.data;
+  const { profile, profileName, buttonMessage, currencies, profileType, profileTypes, action, user, userConfirmUpgrade } = props.data;
   const currencySymbol = profile ? profile.currency : DEFAULT_CURRENCY;
   let url = action === userAction.VERIFY_EMAIL ? "/verify" : (action === userAction.ADD_BILLING ? "/billing/address" : "/billing/paymentHistory");
   // Default value set while creating profile in AvForm
@@ -172,31 +174,38 @@ export const ProfileFormUI = (props) => {
       // This Block execute only when user action is null or user selects to create a Free Profile
       <> 
       <Row>
-        <Col sm={3}>
-      <Label>Profile Name</Label> 
-      </Col>
-      <Col sm={6}>
-      <AvField type="text" name="name" value={profileName} placeholder="Enter Profile name" id="tool-tip" required />
-      </Col>      
+        <Col sm={3}> <Label>Profile Name</Label> </Col>
+        <Col sm={6}><AvField type="text" name="name" value={profileName} placeholder="Enter Profile name" id="tool-tip" required /> </Col>      
       </Row>
-      {getCurrency(currencies, currencySymbol)}
-      <br/><br/>
+      {getCurrency(currencies, currencySymbol)} <br/><br/>
         <center>
           <FormGroup>
-            <Button color="success"> {buttonMessage} </Button> &nbsp;
-          <Button active color="light" type="button" onClick={props.handleEditProfileCancel}>Cancel</Button>
+            <Row>
+              <Button color="success"> {buttonMessage} </Button> &nbsp;
+              <Button active color="light" type="button" onClick={props.handleEditProfileCancel}>Cancel</Button>
+              <UpgradeProfileType user={user} userProfile={profile} profileTypes={profileTypes} handleUserConfirm={props.handleUserConfirm}/>
+            </Row>
           </FormGroup>
+          {props.handleConfirmUpgrade}
+          { userConfirmUpgrade && <DeleteModel
+          danger={userConfirmUpgrade}
+          headerMessage="Upgrade Profile"
+          bodyMessage="Upgrading a profile may incur some charges. Are you sure you want to upgrade "
+          toggleDanger={props.handleUserConfirm}
+          delete={props.handelUpgradeProfile}
+          cancel={props.handleConfirmUpgrade}
+          buttonText="Upgrade Profile"
+        />}
         </center>
       </> :
       // This Block execute when user actions are "ADD_BILLING" , "ADD_CREDITS_LOW" & "VERIFY_EMAIL"
       <center>
         <Button type="button" color="info"><Link to={url} style={{ color: "black" }}> {action}</Link></Button> &nbsp;
-        <Button active color="light" type="button" onClick={props.handleEditProfileCancel}>Cancel</Button>
+        <Button active color="light" type="button" onClick={props.handleEditProfileCancel}>Cancel</Button> &nbsp;
       </center>
     }
   </AvForm>
 }
-
 
 // Currency for profile form
 const getCurrency = (currencies, currencySymbol) => {
