@@ -20,6 +20,8 @@ import PaymentApi from "../../services/PaymentApi";
 import { profileFeature } from "../../data/GlobalKeys";
 import '../../css/style.css';
 import { DataTable } from "../utility/DataTabel";
+// This importing Jquery in react.
+const $ =require('jquery');
 
 class Bills extends Component { 
   constructor(props) {
@@ -50,6 +52,19 @@ class Bills extends Component {
       this.successCallBill(Store.getBills());
     }
   }
+
+  componentDidUpdate=()=>{
+    const {bills}=this.state
+    var _ = this; //this line holding the class this keyword.
+    // .display is css class name of datatable so we are using class name to identify which action is called.
+    $('.display').on('click','.editButton', function(evt){ 
+            var row = $(this).closest('tr'); // This fetches the data of the row when we click 'edit' in dataTable
+            var editData = $('.display').dataTable().fnGetData(row); //this line separates the required data from the fecthced row data.
+            var updateBill= editData && bills.filter(bill=>bill.id ===editData[0] ); // Filter the specific bill from the list of bills using id and assign to updatebill
+            updateBill && _.updateBillAction(updateBill[0]) // 
+    })
+}
+
 
   setProfileId = async () => {
     let profile = Store.getProfile();
@@ -206,7 +221,7 @@ class Bills extends Component {
 
   // This Method Execute the Bill Form Executions.
   createBillAction = () => { this.setState({ createBillRequest: true }) }
-  updateBillAction = updateBill => { this.setState({ updateBillRequest: true, updateBill }) };
+  updateBillAction = updateBill => {this.setState({ updateBillRequest: true, updateBill }) };
   deleteBillAction = () => { this.setState({ deleteBillRequest: true }) };
 
   setBillId = (bill) => {
@@ -404,6 +419,7 @@ class Bills extends Component {
     const color = this.props.color;
     // This array collection of header in DataTable
     let coloums=[
+      {title:'',visible: false},
       {title:"Due Date"},
       {title:"Bill Date"},
       {title:"Description"},
@@ -428,6 +444,7 @@ class Bills extends Component {
   // This fucntion loading DataTable Rows.
  loadTableRows=(bills, featureAttachment)=>{
   var rows= bills.map((bill, key) => { return this.loadSingleRow(bill, key, featureAttachment); })
+  console.log("Reows",rows)
   return rows;
  }
 
@@ -437,10 +454,11 @@ class Bills extends Component {
   let lastPaid = this.calculateLastPaid(bill, bill.amount);
   let billDescription = bill.description ? bill.description : bill.categoryName.name;
   let singleRow=[
-        strike ? "<strike>{"+ShowServiceComponent.customDate(bill.dueDate_, true)+"}</strike>" : ShowServiceComponent.customDate(bill.dueDate_, true),
-        strike ? "<strike> {"+ShowServiceComponent.customDate(bill.billDate, true)+"} </strike>" :ShowServiceComponent.customDate(bill.billDate, true),
-        strike ? "<strike> {"+billDescription+"} </strike>" :billDescription,
-        strike ? "<strike style='color:red'> {"+this.handleSignedBillAmount(bill)+"} </strike>" : "<span style='color:green'>"+this.handleSignedBillAmount(bill)+"</span>",
+        bill.id,
+        strike ? "<strike>"+ShowServiceComponent.customDate(bill.dueDate_, true)+"</strike>" : ShowServiceComponent.customDate(bill.dueDate_, true),
+        strike ? "<strike>"+ShowServiceComponent.customDate(bill.billDate, true)+"</strike>" : ShowServiceComponent.customDate(bill.billDate, true),
+        strike ? "<strike>"+billDescription+"</strike>" :billDescription,
+        strike ? "<strike style='color:red'>"+this.handleSignedBillAmount(bill)+"</strike>" : "<span style='color:green'>"+this.handleSignedBillAmount(bill)+"</span>",
         strike ? "<strike>Paid</strike>" : 'Unpaid',
         // strike ? "<strike> {"+this.loadPaidStatus(bill, lastPaid)+"} </strike>" :this.loadPaidStatus(bill, lastPaid),
         this.loadEditButton(bill, key, featureAttachment),
@@ -522,7 +540,10 @@ class Bills extends Component {
     return lastPaid ? "<span style={{ color: '#0080ff' }}>Last paid:  {"+ShowServiceComponent.billDateFormat(lastPaid.date)+"} &nbsp;&nbsp; {"+ShowServiceComponent.billTypeAmount(bill.currency, lastPaid.paymentAmt, true)+"}</span>": ""
   }
     
-  handleSignedBillAmount = (bill) => { return  ShowServiceComponent.billTypeAmount(bill.currency, bill.amount)}
+  handleSignedBillAmount = (bill) => { 
+    // return  ShowServiceComponent.billTypeAmount(bill.currency, bill.amount)
+    return bill.amount < 0 ? "<span class='text-color'>-"+ShowServiceComponent.billTypeAmount(bill.currency, bill.amount)+"</span>" : "<span class='bill-amount-color'>"+ShowServiceComponent.billTypeAmount(bill.currency, bill.amount)+"</span>";
+  }
 
   loadPaymentDateAndAmount = (bill, lastPaid) => {
     return <> <b>Last paid</b> {this.dateFormat(lastPaid.date)} &nbsp; {this.loadBillAmount(bill.currency, lastPaid.paymentAmt)} </>
@@ -567,13 +588,13 @@ class Bills extends Component {
   }
 
   loadEditButton=(bill, key, featureAttachment)=>{
-    return "<span className='float-right' style='marginTop: -8px, marginBottom: -9px'> <Button class='rounded' style='backgroundColor:'transparent'; borderColor: #ada397; color: green; width: 67px' }}>Edit</Button> &nbsp;&nbsp;&nbsp; </span>"
+    return "<span class='float-right editButton'> <Button class='rounded' style='background-color: transparent; border-color: #ada397; color: green;'>Edit</Button> &nbsp;&nbsp;&nbsp; </span>"
   }
 
   //this Method loads Browser DropDown
   loadDropDown = (bill, key, featureAttachment) =>{
-    return "<span className='float-right' style='marginTop: -8px, marginBottom: -9px'>"+
-      "<select class=''>"+
+    return "<span class='float-right'>"+
+      "<select class='dropdown-toggle'>"+
       "<option>More ... </option>"+
       "<option>Add a payment</option>"+
       "<option>Payments History</option>"+
