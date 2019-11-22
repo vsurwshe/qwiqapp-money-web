@@ -1,8 +1,7 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
-import {Redirect} from 'react-router';
-import { Card, CardBody, Alert, Table, FormGroup, Label, Input, UncontrolledDropdown, Button, DropdownMenu, DropdownItem, DropdownToggle, Tooltip } from "reactstrap";
-import { FaUndoAlt } from 'react-icons/fa';
+import { Redirect } from 'react-router';
+import { Card, CardBody, Alert,FormGroup, Label, Input} from "reactstrap";
 import BillForm from "./BillForm";
 import BillApi from "../../services/BillApi";
 import Store from "../../data/Store";
@@ -21,9 +20,18 @@ import { profileFeature } from "../../data/GlobalKeys";
 import '../../css/style.css';
 import { DataTable } from "../utility/DataTabel";
 // This importing Jquery in react.
-const $ =require('jquery');
+const $ = require('jquery');
 
-class Bills extends Component { 
+// Loads options for More Options in DataTable
+const moreOptions = {
+  ADDPAYMENT: 'Add a payment',
+  PAYHISTORY: 'Payments History',
+  MARKPAID: 'Mark as Paid',
+  ATTACHMENTS: 'Attachments',
+  DELETE: 'Delete'
+}
+
+class Bills extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -53,17 +61,43 @@ class Bills extends Component {
     }
   }
 
-  componentDidUpdate=()=>{
-    const {bills}=this.state
+  componentDidUpdate = () => {
+    const { bills } = this.state
     var _ = this; //this line holding the class this keyword.
     // .display is css class name of datatable so we are using class name to identify which action is called.
-    $('.display').on('click','.editButton', function(evt){ 
-            var row = $(this).closest('tr'); // This fetches the data of the row when we click 'edit' in dataTable
-            var editData = $('.display').dataTable().fnGetData(row); //this line separates the required data from the fecthced row data.
-            var updateBill= editData && bills.filter(bill=>bill.id ===editData[0] ); // Filter the specific bill from the list of bills using id and assign to updatebill
-            updateBill && _.updateBillAction(updateBill[0]) // 
+    $('.display').on('click', '.editButton', function () {
+      var row = $(this).closest('tr'); // This fetches the data of the row when we click 'edit' in dataTable
+      var editData = $('.display').dataTable().fnGetData(row); //this line separates the required data from the fecthced row data.
+      var updateBill = editData && bills.filter(bill => bill.id === editData[0]); // Filter the specific bill from the list of bills using id and assign to updatebill
+      updateBill && _.updateBillAction(updateBill[0]) // 
     })
-}
+    $('.display').on('change', 'select', function () {
+      console.log("Val = ", $(this).val())
+      var row = $(this).closest('tr'); // This fetches the data of the row when we click 'edit' in dataTable
+      var editData = $('.display').dataTable().fnGetData(row); //this line separates the required data from the fecthced row data.
+      var requiredBill = editData && bills.filter(bill => bill.id === editData[0]); // Filter the specific bill from the list of bills using id and assign to updatebill
+      requiredBill && _.handleShowPayment(requiredBill[0])
+      switch ($(this).val()) {
+        case moreOptions.ADDPAYMENT:
+          _.handleAddPayment();
+          break;
+        case moreOptions.ATTACHMENTS:
+          requiredBill && _.billAttachments(requiredBill[0].id)
+          break;
+        case moreOptions.DELETE:
+          requiredBill && _.setBillId(requiredBill[0])
+          break;
+        case moreOptions.MARKPAID:
+          _.handleMarkAsPaid();
+          break;
+        case moreOptions.PAYHISTORY:
+          _.handleViewPayment();
+          break;
+        default:
+           break;
+      }
+    })
+  }
 
 
   setProfileId = async () => {
@@ -71,7 +105,7 @@ class Bills extends Component {
     if (profile) {
       await this.setState({ profileId: profile.id, profileFeatures: profile.features });
       // This condition checking whether api call first time or reptely 
-      this.state.categories !== undefined && this.state.categories.length <= 0 ? this.getCategory() : this.forceUpdate(); 
+      this.state.categories !== undefined && this.state.categories.length <= 0 ? this.getCategory() : this.forceUpdate();
     }
   }
 
@@ -172,7 +206,7 @@ class Bills extends Component {
 
   // category name color append to bills
   billsWithcategoryNameColor = (bills) => {
-    let previousPayments = []; 
+    let previousPayments = [];
     const prevState = bills;
     const state = prevState.map((bill, index) => {
       this.getPayments(bill.id, previousPayments);
@@ -183,10 +217,7 @@ class Bills extends Component {
 
   getPayments = async (billId, previousPayments) => {
     await new PaymentApi().getBillPayments((payments) => {
-      let newRespData = {
-        payments: payments,
-        billId: billId
-      }
+      let newRespData = { payments: payments, billId: billId }
       this.successCallPayments(newRespData, previousPayments)
     }, err => { console.log("error") }, this.state.profileId, billId)
   }
@@ -206,9 +237,7 @@ class Bills extends Component {
   errorCall = (err) => {
     if (err.response && (err.response.status === 500 && err.response.data.error.debugMessage)) {
       this.setState({ visible: true, color: 'danger', content: 'Something went wrong, unable to fetch bills...' });
-      setTimeout(() => {
-        this.setState({ visible: false, spinner: true });
-      }, Config.apiTimeoutMillis);
+      setTimeout(() => { this.setState({ visible: false, spinner: true }); }, Config.apiTimeoutMillis);
     } else {
       this.setState({ color: 'danger', content: 'Unable to Process Request, Please try Again....' });
     }
@@ -221,7 +250,7 @@ class Bills extends Component {
 
   // This Method Execute the Bill Form Executions.
   createBillAction = () => { this.setState({ createBillRequest: true }) }
-  updateBillAction = updateBill => {this.setState({ updateBillRequest: true, updateBill }) };
+  updateBillAction = updateBill => { this.setState({ updateBillRequest: true, updateBill }) };
   deleteBillAction = () => { this.setState({ deleteBillRequest: true }) };
 
   setBillId = (bill) => {
@@ -259,10 +288,10 @@ class Bills extends Component {
   handleMarkAsUnpaidPayment = () => { this.setState({ markAsUnPaid: true }) }
 
   calculateLastPaid = (bill) => {
-    const { billPayments }=this.state
+    const { billPayments } = this.state
     if (billPayments.length > 0) {
       // Filtering billpayments according to billId
-      let filteredBillPayment =  billPayments.filter(billPayment => billPayment.billId === bill.id);
+      let filteredBillPayment = billPayments.filter(billPayment => billPayment.billId === bill.id);
       let paidAmount = bill.amount;
       if (filteredBillPayment && filteredBillPayment.length && filteredBillPayment[0].payments.length) {
         // Calculating the total paidAmount of all billpayments
@@ -281,57 +310,7 @@ class Bills extends Component {
     }
   }
 
-  setBillsForFilter = (bill, filteredBills, key) => {
-    let difference = new Date(ShowServiceComponent.customDate(bill.billDate)) - new Date(this.state.filterDate);
-    let daysDifference = difference / (1000 * 60 * 60 * 24);
-    if (daysDifference >= 0) {
-      if (this.state.yearSelected) { // This for all the bills in current year
-        let billDate = ShowServiceComponent.customDate(bill.billDate);
-        let currentDate = new Date().getFullYear();
-        if (new Date(billDate).getFullYear() === currentDate) {
-          filteredBills.push(bill);
-        }
-      } else if (daysDifference === 0) { // This for all the bills of today
-        filteredBills.push(bill);
-      } else if (daysDifference <= this.state.filterValue) { // This for all the bills of last 7days (or) 30Days
-        filteredBills.push(bill);
-      }
-    }
-    return 0;
-  }
-
-  handleDateFilter = (dateFilter) => {
-    let filterDate = new Date();
-    switch (dateFilter) {
-      case 7:
-        filterDate.setDate(filterDate.getDate() - 7);
-        this.setState({ filterValue: 7 });
-        break;
-      case 30:
-        filterDate.setDate(filterDate.getDate() - 30);
-        this.setState({ filterValue: 30 });
-        break;
-      case 'year':
-        filterDate = new Date(filterDate.getFullYear(), 0, 1);
-        this.setState({ yearSelected: true });
-        break;
-      case 'today':
-        this.setState({ filterValue: 'today' });
-        break;
-      default:
-        filterDate = null;
-        break;
-    }
-    if (filterDate) {
-      this.setState({ filterDate: ShowServiceComponent.loadDateFormat(filterDate) });
-    } else {
-      this.setState({ filterDate: '' });
-    }
-  }
-
-  billAttachments = (key, billId) => {
-    this.setState({ billId: billId, attachments: true })
-  }
+  billAttachments = (billId) => { this.setState({ billId: billId, attachments: true }) }
 
   descriptionToggle = () => {
     this.setState({ tooltipOpen: !this.state.tooltipOpen });
@@ -339,7 +318,7 @@ class Bills extends Component {
 
   render() {
     const { bills, createBillRequest, updateBillRequest, billId, deleteBillRequest, visible, profileId,
-       updateBill, spinner, labels, categories, contacts, danger, paidAmount, requiredBill, markPaid, profileFeatures } = this.state;
+      updateBill, spinner, labels, categories, contacts, danger, paidAmount, requiredBill, markPaid, profileFeatures } = this.state;
     let featureAttachment = profileFeatures && profileFeatures.includes(profileFeature.ATTACHMENTS) // return true/false
     if (!profileId) {
       return <ProfileEmptyMessage />
@@ -361,35 +340,24 @@ class Bills extends Component {
     } else if (this.state.viewPayment) {
       return <ViewPayment bill={this.state.requiredBill} paidAmount={paidAmount} profileId={profileId} cancel={this.handleViewPayment} />
     } else if (this.state.attachments) {
-       let data = {
-                profileId: profileId,
-                billId: billId
+      let data = {
+        profileId: profileId,
+        billId: billId
       }
       Store.saveProfileIdAndBillId(data);
-      return  <Redirect to="/bills/attachments"/>
+      return <Redirect to="/bills/attachments" />
     }
     else {
       return <div>
-        {/* {this.displayAllBills(visible, bills, featureAttachment)} */}
         {danger && this.deleteBillModel()}
-        {this.loadDataTable(bills, featureAttachment,visible)}
+        {this.loadDataTable(bills, featureAttachment, visible)}
         {this.state.markAsUnPaid && this.handleMarkAsUnPaid()}
       </div>
     }
   }
 
-  searchSelected = (e) => {
-    this.setState({ selectedOption: e.target.value });
-  }
-
-  searchingFor = (searchTerm) => {
-    return function (bill) {
-      return ((bill.description ? bill.description.toLowerCase() : '' + bill.amount + bill.categoryName.name ? bill.categoryName.name.toLowerCase() : '').includes(searchTerm.toLowerCase())) || !searchTerm
-    }
-  }
-
   loadHeader = (bills) => {
-    return new ShowServiceComponent.loadHeaderWithSearch("BILLS", bills, this.searchSelected, "Search Bills.....", this.createBillAction, false, this.handleDateFilter);
+    return new ShowServiceComponent.loadHeaderWithSearch("BILLS", bills, this.searchSelected, "Search Bills.....", this.createBillAction, false, null);
   }
 
   loadLoader = () => <div className="animated fadeIn">
@@ -415,19 +383,18 @@ class Bills extends Component {
   </div>
 
   // This Functions Loading Jquery DataTable into bills
-  loadDataTable=(bills, featureAttachment, visible)=>{
+  loadDataTable = (bills, featureAttachment, visible) => {
     const color = this.props.color;
     // This array collection of header in DataTable
-    let coloums=[
-      {title:'',visible: false},
-      {title:"Due Date"},
-      {title:"Bill Date"},
-      {title:"Description"},
-      {title:"Bill Amount"},
-      {title:"Status"},
-      // {title:"Last Transaction"},
-      {title:""},
-      {title:""}
+    let columns = [
+      { title: '', visible: false },
+      { title: "Due Date" },
+      { title: "Bill Date" },
+      { title: "Description" },
+      { title: "Bill Amount" },
+      { title: "Status" },
+      { title: "",orderable: false }, //This colunm
+      { title: "", orderable: false } //
     ]
     // This is Returning DataTable Component
     return <div className="animated fadeIn">
@@ -435,76 +402,35 @@ class Bills extends Component {
         {this.loadHeader("")}
         <h6>{visible && <Alert isOpen={visible} color={color}>{this.props.content}</Alert>}</h6>
         <CardBody className="card-align">
-          <DataTable data={this.loadTableRows(bills, featureAttachment)} coloums={coloums} />
+          <DataTable billData={this.loadTableRows(bills, featureAttachment)} columns={columns} />
         </CardBody>
       </Card>
     </div>
   }
 
   // This fucntion loading DataTable Rows.
- loadTableRows=(bills, featureAttachment)=>{
-  var rows= bills.map((bill, key) => { return this.loadSingleRow(bill, key, featureAttachment); })
-  console.log("Reows",rows)
-  return rows;
- }
+  loadTableRows = (bills, featureAttachment) => {
+    var rows = bills.map((bill, key) => { return this.loadSingleRow(bill, key, featureAttachment); })
+    return rows;
+  }
 
- // Show the Single Bill 
- loadSingleRow = (bill, key, featureAttachment) => {
-  let strike = bill.paid;
-  let lastPaid = this.calculateLastPaid(bill, bill.amount);
-  let billDescription = bill.description ? bill.description : bill.categoryName.name;
-  let singleRow=[
-        bill.id,
-        strike ? "<strike>"+ShowServiceComponent.customDate(bill.dueDate_, true)+"</strike>" : ShowServiceComponent.customDate(bill.dueDate_, true),
-        strike ? "<strike>"+ShowServiceComponent.customDate(bill.billDate, true)+"</strike>" : ShowServiceComponent.customDate(bill.billDate, true),
-        strike ? "<strike>"+billDescription+"</strike>" :billDescription,
-        strike ? "<strike style='color:red'>"+this.handleSignedBillAmount(bill)+"</strike>" : "<span style='color:green'>"+this.handleSignedBillAmount(bill)+"</span>",
-        strike ? "<strike>Paid</strike>" : 'Unpaid',
-        // strike ? "<strike> {"+this.loadPaidStatus(bill, lastPaid)+"} </strike>" :this.loadPaidStatus(bill, lastPaid),
-        this.loadEditButton(bill, key, featureAttachment),
-        this.loadDropDown(bill, key, featureAttachment)
-
-  ]
-  return singleRow;
-}
-
-  // Displays all the Bills one by one
-  displayAllBills = (visible, bills, featureAttachment) => {
-    const color = this.props.color;
-    if (color) {
-      this.callAlertTimer(visible);
-    }
-    let filteredBills = [];
-    this.state.filterDate && bills.map((bill, key) => {
-      return this.setBillsForFilter(bill, filteredBills, key);
-    });
-    return <div className="animated fadeIn">
-      <Card>
-        {this.state.filterDate ? (filteredBills.length ? this.loadHeader(filteredBills) : this.loadHeader()) : this.loadHeader(bills)}
-        <br />
-        <div className="header-search">
-          <h6>{visible && <Alert isOpen={visible} color={color}>{this.props.content}</Alert>}</h6>
-          <CardBody className="card-align">
-            <Table striped frame="box" style={{ borderColor: "#DEE9F2" }}>
-              <thead className="table-header-color" >
-                <tr>
-                  <th>Due Date</th>
-                  <th>Bill Date</th>
-                  <th>Description</th>
-                  <th>Bill Amount</th>
-                  <th>Status</th>
-                  <th>Last Transaction</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {this.state.filterDate ? this.loadFilterAndNonFilteredBills(filteredBills, featureAttachment) : this.loadFilterAndNonFilteredBills(bills, featureAttachment)}
-              </tbody>
-            </Table>
-          </CardBody>
-        </div>
-      </Card>
-    </div>
+  // Show the Single Bill 
+  loadSingleRow = (bill, key, featureAttachment) => {
+    let strike = bill.paid;
+    // let lastPaid = this.calculateLastPaid(bill, bill.amount);
+    let billDescription = bill.description ? bill.description : bill.categoryName.name;
+    let singleRow = [
+      bill.id,
+      strike ? "<strike>" + ShowServiceComponent.customDate(bill.dueDate_, true) + "</strike>" : ShowServiceComponent.customDate(bill.dueDate_, true),
+      strike ? "<strike>" + ShowServiceComponent.customDate(bill.billDate, true) + "</strike>" : ShowServiceComponent.customDate(bill.billDate, true),
+      strike ? "<strike>" + billDescription + "</strike>" : billDescription,
+      strike ? "<strike style='color:red'>" + this.handleSignedBillAmount(bill) + "</strike>" : "<span style='color:green'>" + this.handleSignedBillAmount(bill) + "</span>",
+      strike ? "<strike>Paid</strike>" : 'Unpaid',
+      // strike ? "<strike> {"+this.loadPaidStatus(bill, lastPaid)+"} </strike>" :this.loadPaidStatus(bill, lastPaid),
+      this.loadEditButton(bill, key, featureAttachment),
+      this.loadDropDown(bill, key, featureAttachment)
+    ]
+    return singleRow;
   }
 
   loadFilterAndNonFilteredBills = (bills, featureAttachment) => {
@@ -513,36 +439,12 @@ class Bills extends Component {
     })
   }
   
-  // Show the Single Bill 
-  loadSingleBill = (bill, key, featureAttachment) => {
-    let strike = bill.paid;
-    let lastPaid = this.calculateLastPaid(bill, bill.amount);
-    let billDescription = bill.description ? (bill.description.length>50 ? bill.description.slice(0,50)+"..." : bill.description) : bill.categoryName.name;
-    return <tr width={50} key={key}>
-      <td>{strike ? <strike>{ShowServiceComponent.customDate(bill.dueDate_, true)}</strike> : ShowServiceComponent.customDate(bill.dueDate_, true)}</td>
-      <td>{strike ? <strike> {ShowServiceComponent.customDate(bill.billDate, true)} </strike> : ShowServiceComponent.customDate(bill.billDate, true)}</td>
-      <td> <>
-        <div className="description" id="TooltipExample" >  
-          {strike ? <strike> {billDescription} </strike> : billDescription}
-        </div> 
-        {bill.description && bill.description.length > 50 && <Tooltip placement="bottom-start" className="tooltip-main tooltip-inner tooltip-arrow" isOpen={this.state.tooltipOpen} target="TooltipExample" toggle={this.descriptionToggle}> 
-          {bill.description}
-        </Tooltip>} </>
-      </td>
-      <td>{strike ? <strike>{this.handleSignedBillAmount(bill)}</strike> : this.handleSignedBillAmount(bill)}</td>
-      <td style={{ color: bill.paid ? 'green' : 'red' }}> {strike ? <strike>Paid</strike> : 'Unpaid'} </td>
-      <td> {strike ? <strike>{this.loadPaidStatus(bill, lastPaid)} </strike> : <>{this.loadPaidStatus(bill, lastPaid)}</>} </td>
-      <td><h6>{this.loadDropDown(bill, key, featureAttachment)}</h6></td>
-    </tr>   
-  }
-  
   loadPaidStatus = (bill, lastPaid) => {
-    return lastPaid ? "<span style={{ color: '#0080ff' }}>Last paid:  {"+ShowServiceComponent.billDateFormat(lastPaid.date)+"} &nbsp;&nbsp; {"+ShowServiceComponent.billTypeAmount(bill.currency, lastPaid.paymentAmt, true)+"}</span>": ""
+    return lastPaid ? "<span style={{ color: '#0080ff' }}>Last paid:  {" + ShowServiceComponent.billDateFormat(lastPaid.date) + "} &nbsp;&nbsp; {" + ShowServiceComponent.billTypeAmount(bill.currency, lastPaid.paymentAmt, true) + "}</span>" : ""
   }
-    
-  handleSignedBillAmount = (bill) => { 
-    // return  ShowServiceComponent.billTypeAmount(bill.currency, bill.amount)
-    return bill.amount < 0 ? "<span class='text-color'>-"+ShowServiceComponent.billTypeAmount(bill.currency, bill.amount)+"</span>" : "<span class='bill-amount-color'>"+ShowServiceComponent.billTypeAmount(bill.currency, bill.amount)+"</span>";
+
+  handleSignedBillAmount = (bill) => {
+    return bill.amount < 0 ? "<span class='text-color'>- " + ShowServiceComponent.billTypeAmount(bill.currency, bill.amount) + "</span>" : "<span class='bill-amount-color'>" + ShowServiceComponent.billTypeAmount(bill.currency, bill.amount) + "</span>";
   }
 
   loadPaymentDateAndAmount = (bill, lastPaid) => {
@@ -554,6 +456,7 @@ class Bills extends Component {
   dateFormat = (userDate) => {
     let date = "" + userDate
     let dateString = date.substring(0, 4) + "-" + date.substring(4, 6) + "-" + date.substring(6, 8)
+
     const formatDate = ShowServiceComponent.billDateFormat(new Date(dateString));
     return formatDate;
   }
@@ -587,41 +490,23 @@ class Bills extends Component {
     }
   }
 
-  loadEditButton=(bill, key, featureAttachment)=>{
+  loadEditButton = () => {
     return "<span class='float-right editButton'> <Button class='rounded' style='background-color: transparent; border-color: #ada397; color: green;'>Edit</Button> &nbsp;&nbsp;&nbsp; </span>"
   }
 
   //this Method loads Browser DropDown
-  loadDropDown = (bill, key, featureAttachment) =>{
-    return "<span class='float-right'>"+
-      "<select class='dropdown-toggle'>"+
-      "<option>More ... </option>"+
-      "<option>Add a payment</option>"+
-      "<option>Payments History</option>"+
-      "<option>Mark as PAID</option>"+
-      "<option>Attachments</option>"+
-      "<option>Delete</option>"+
-      "</select>"+
+  loadDropDown = () => {
+    return "<span class='float-right'>" +
+      "<select id='more' class='dropdown-toggle'>" +
+      "<option>More ... </option>" +
+      "<option>" + moreOptions.ADDPAYMENT + "</option>" +
+      "<option>" + moreOptions.PAYHISTORY + "</option>" +
+      "<option>" + moreOptions.MARKPAID + "</option>" +
+      "<option>" + moreOptions.ATTACHMENTS + "</option>" +
+      "<option>" + moreOptions.DELETE + "</option>" +
+      "</select>" +
       "</span>"
   }
-
-  // loadDropDown = (bill, key, featureAttachment) =>{
-  //   return "<span className='float-right' style='marginTop: -8px, marginBottom: -9px'>"+
-  //   "{"+bill.recurId ? '<FaUndoAlt />' : ''+"} &nbsp;"+
-  //     <Button className='rounded' style='backgroundColor:'transparent'; borderColor: #ada397; color: green; width: 67px' }} onClick={() => this.updateBillAction(bill)}>Edit</Button> &nbsp;
-  //     <UncontrolledDropdown group>
-  //     <DropdownToggle caret onClick={() => this.handleShowPayment(bill)}> More ... </DropdownToggle>
-  //     <DropdownMenu right>
-  //       <DropdownItem onClick={this.handleAddPayment} >Add a payment</DropdownItem>
-  //       <DropdownItem onClick={this.handleViewPayment}>Payments History</DropdownItem>
-  //       {!bill.paid ? <DropdownItem onClick={this.handleMarkAsPaid}>Mark as PAID</DropdownItem> :
-  //         <DropdownItem onClick={this.handleMarkAsUnpaidPayment}>Mark as unpaid</DropdownItem>}
-  //       {featureAttachment ? <DropdownItem onClick={() => this.billAttachments(key, bill.id)}>Attachments</DropdownItem> : ''}
-  //       <DropdownItem onClick={() => this.setBillId(bill)}>Delete</DropdownItem>
-  //     </DropdownMenu>
-  //   </UncontrolledDropdown>
-  // </span>+""}
-
 
   //this method calls the delete model
   deleteBillModel = () => {

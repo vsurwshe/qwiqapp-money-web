@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Card, CardHeader, CardBody, Col, Alert, Row, Input, InputGroup, InputGroupAddon, Button, Collapse, UncontrolledDropdown, DropdownMenu, DropdownItem, DropdownToggle } from 'reactstrap';
+import { Card, CardHeader, CardBody, Col, Alert, Row, Input, InputGroup, InputGroupAddon, Button, Collapse } from 'reactstrap';
 import Loader from 'react-loader-spinner';
 import Avatar from 'react-avatar';
 import { FaAngleDown } from 'react-icons/fa';
@@ -66,7 +66,7 @@ export const ShowServiceComponent = {
       </span></>
   },
 
-  loadHeaderWithSearch: function (headerMessage, items, setSearch, placeHolder, addItem, filter, handleDateFilter) {
+  loadHeaderWithSearch: function (headerMessage, items, setSearch, placeHolder, addItem) {
     return <CardHeader>
       <Row form>
         <Col className="marigin-top" >
@@ -81,16 +81,6 @@ export const ShowServiceComponent = {
               </InputGroupAddon>
             </InputGroup>
           </Col>}
-        {filter && <>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<UncontrolledDropdown >
-          <DropdownToggle caret>Filter bills by date</DropdownToggle>
-          <DropdownMenu>
-            <DropdownItem onClick={() => { handleDateFilter('today') }}>Today</DropdownItem>
-            <DropdownItem onClick={() => { handleDateFilter(7) }} >Last 7 days</DropdownItem>
-            <DropdownItem onClick={() => { handleDateFilter(30) }} >Last 30 days </DropdownItem>
-            <DropdownItem onClick={() => { handleDateFilter("year") }}>This year</DropdownItem>
-            <DropdownItem onClick={() => { handleDateFilter('all') }}>All</DropdownItem>
-          </DropdownMenu>
-        </UncontrolledDropdown></>}
         <Col >
           <Button color="success" className="float-right" onClick={addItem}> + ADD </Button>
         </Col>

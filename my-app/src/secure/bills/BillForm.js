@@ -15,8 +15,6 @@ import ContactForm from "../contacts/ContactForm";
 import LabelForm from "../labels/LabelForm";
 import '../../css/style.css';
 
-
-
 class BillForm extends Component {
   constructor(props) {
     super(props);
