@@ -85,14 +85,39 @@ export const BillFormUI = (props) => {
 export const CategoryLabelForm = (props) => {
   const { doubleClick, collapse, parentId, chkMakeParent, type, componentType, items, itemName, itemColor, notes, updateItem, hideCancel } = props.data
   return <AvForm onValidSubmit={props.handleSubmitValue}>
-    <AvField type="text" name="name" label={<>{componentType} Name <b className="text-color"> * </b></>} errorMessage={componentType + " Name Required"} value={itemName} placeholder={"Enter " + componentType + " name"} required />
-    {componentType === "Label" ? <AvField type="textarea" name="notes" value={notes} placeholder="Description / Notes" label="Description / Notes" />
-      : <AvField type="select" name="type" label="Type" value={type ? type : billType.PAYABLE} errorMessage="Select Type of Category" >
-        <option value={billType.PAYABLE}>Payable</option>
-        <option value={billType.RECEIVABLE}>Receivable</option>
-      </AvField>
+    <Row>
+      <Col sm={3} >
+        <Label><>{componentType} Name <b className="text-color"> * </b></></Label>
+      </Col>
+      <Col sm={6}>
+        <AvField type="text" name="name" errorMessage="Category Name Required" value={itemName} placeholder="Enter Category name" required />
+      </Col>
+    </Row>
+    {componentType === "Label" ?
+      <Row>
+        <Col sm={3} >
+          <Label>Description / Notes </Label>
+        </Col>
+        <Col sm={6}>
+          <AvField type="text" name="notes" value={notes} placeholder="Description / Notes" />
+        </Col>
+      </Row>
+      : <Row>
+        <Col sm={3} >
+          <Label>Type</Label></Col>
+        <Col sm={6}><AvField type="select" name="type" value={type ? type : billType.PAYABLE} errorMessage="Select Type of Category" >
+          <option value={billType.PAYABLE}>Payable</option>
+          <option value={billType.RECEIVABLE}>Receivable</option>
+        </AvField></Col>
+      </Row>
     }
-    <AvField type="color" name="color" list="colors" label={componentType + " Color"} value={itemColor} />
+    <Row>
+      <Col sm={3} >
+        <Label>{componentType + " color"} </Label>
+      </Col>
+      <Col sm={6}><AvField type="color" name="color" list="colors" value={itemColor} />
+      </Col>
+    </Row>
 
     {items && (items.length > 0 && // checking Label / Categories are there, then only showing "Nest option" while creating Label / Categories 
       (updateItem ? // checking the item(Label / Categories) is creating / updating, if creating then showing "Nest option"
@@ -107,11 +132,17 @@ export const CategoryLabelForm = (props) => {
     }
 
     <Collapse isOpen={collapse}>
-      <AvField type="select" name="parentId" label={"Select " + componentType + " name"}
-        value={parentId} required={collapse}>
-        <option value="">Select {componentType}</option>
-        {items && items.map((item, key) => { return <option key={key} value={item.id}>{item.name}</option> })}
-      </AvField>
+      <br/><Row>
+      <Col sm={3}>
+        <Label>{"Select parent " + componentType.toLowerCase()}</Label>
+      </Col>
+      <Col sm={6}>
+        <AvField type="select" name="parentId" value={parentId} required={collapse}>
+          <option value="">Select {componentType}</option>
+          {items.map((item, key) => { return <option key={key} value={item.id}>{item.name}</option> })}
+        </AvField>
+      </Col>
+      </Row>
     </Collapse><br />
     <center>
       <FormGroup>

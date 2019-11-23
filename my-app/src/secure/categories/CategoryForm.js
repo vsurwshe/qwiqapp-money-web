@@ -101,7 +101,7 @@ class CategoryForm extends Component {
   };
 
   render() {
-    const { cancelCategory, categoryAction, index} = this.state;
+    const { cancelCategory, categoryAction, index } = this.state;
     if (cancelCategory) {
       return <Categories index={index} />;
     } else {
@@ -123,7 +123,7 @@ class CategoryForm extends Component {
       collapse: collapse,
       doubleClick: doubleClick,
       chkMakeParent: chkMakeParent,
-      type : type,
+      type: type,
       componentType: "Category",
       updateItem: this.props.category
     };
@@ -134,12 +134,12 @@ class CategoryForm extends Component {
     return (
       <Card className="card-width">
         <CardHeader>
-          <strong>Category</strong>
+          <strong>CATEGORIES</strong>
         </CardHeader>
         <CardBody>
-          <Col sm="1" md={{ size: 8, offset: 2 }}>
-            <center><h5> <b>{!this.props.category ? "NEW CATEGORY" : "EDIT CATEGORY"}</b> </h5> </center>
-            {alertColor && <Alert color={alertColor}>{content}</Alert>}
+          <center><h5> <b>{!this.props.category ? "New Category Details" : "Category Details"}</b> </h5> </center>
+          <Col sm="1" md={{ size: 6, offset: 3 }}>
+            <Alert color={alertColor}>{content}</Alert>
             <CategoryLabelForm
               data={categoryFields}
               handleSubmitValue={this.handleSubmitValue}

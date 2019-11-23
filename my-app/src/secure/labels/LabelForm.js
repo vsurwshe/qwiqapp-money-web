@@ -118,13 +118,12 @@ class LabelForm extends Component {
       hideCancel: hideCancel
     };
     return <Card>
-      {!hideCancel && 
       <CardHeader>
-        <strong>Label</strong>
-      </CardHeader> }
+        <strong>LABELS</strong>
+      </CardHeader>
       <CardBody>
-        <Col sm="1" md={{ size: 8, offset: 2 }}>
-          <center><h5> <b>{!this.props.label ? "NEW LABEL" : "EDIT LABEL"}</b> </h5> </center>
+        <br /><center><h5> <b>{!this.props.label ? "New Label Details" : "Label Details"}</b> </h5> </center><br />
+        <Col sm="1" md={{ size: 6, offset: 3 }}>
           {alertColor && <Alert color={alertColor}>{content}</Alert>}
           <CategoryLabelForm
             data={labelFields}
