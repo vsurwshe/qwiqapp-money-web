@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import {Redirect} from 'react-router';
-import { Card, CardBody, Alert, Table, FormGroup, Label, Input, UncontrolledDropdown, Button, DropdownMenu, DropdownItem, DropdownToggle } from "reactstrap";
+import { Card, CardBody, Alert, Table, FormGroup, Label, Input, UncontrolledDropdown, Button, DropdownMenu, DropdownItem, DropdownToggle, Tooltip } from "reactstrap";
 import { FaUndoAlt } from 'react-icons/fa';
 import BillForm from "./BillForm";
 import BillApi from "../../services/BillApi";
@@ -71,39 +71,45 @@ class Bills extends Component {
     } else {
       await this.setState({ categories: categories });
     }
-    this.getLabel();
+    this.getLabels();
   };
 
-  // This Method execute the Label API Call
-  getLabel = async () => {
-    new LabelApi().getSublabels(this.successCallLabel, this.errorCall, this.state.profileId);
+  /* This Method execute the Label API Call
+     callContacts is a boolean value passed from BillForm after successfully creating Labels and it determines if getContacts() is called or not */
+  getLabels = async (callContacts) => {
+    new LabelApi().getSublabels((labels)=>this.successCallLabel(labels, callContacts), this.errorCall, this.state.profileId);
   }
 
   // Handle Label response
-  successCallLabel = async (label) => {
+  successCallLabel = async (labels, callContacts) => {
     this.setState({ spinner: true })
-    if (label.length === 0 && this.state.labels !== undefined) {
+    if (labels.length === 0 && this.state.labels !== undefined) {
       this.setState({ labels: undefined });
     } else {
-      await this.setState({ labels: label });
+      await this.setState({ labels });
     }
-    this.getContacts();
+    if (!callContacts) {
+      this.getContacts();
+    }
   };
 
-  // This Method execute the Contacts API Call
-  getContacts = () => {
-    new ContactApi().getContacts(this.successCallContact, this.errorCall, this.state.profileId);
+  /* This Method execute the Contacts API Call
+     callBills is a boolean value passed from BillForm after successfully creating Contacts and it determines if getBills() is called or not  */
+  getContacts = (callBills) => {
+    new ContactApi().getContacts((contacts)=>this.successCallContact(contacts, callBills), this.errorCall, this.state.profileId);
   }
 
   // Handle Contacts response
-  successCallContact = async (contacts) => {
+  successCallContact = async (contacts, callBills) => {
     this.setState({ spinner: true });
     if (contacts.length === 0 && this.state.contacts !== undefined) {
       this.setState({ contacts: undefined });
     } else {
       await this.setState({ contacts });
     }
-    this.getBills();
+    if (!callBills) {
+      this.getBills()
+    }
   };
 
   // This Method execute the Bill API Call
@@ -307,9 +313,12 @@ class Bills extends Component {
     }
   }
 
-
   billAttachments = (key, billId) => {
     this.setState({ billId: billId, attachments: true })
+  }
+
+  descriptionToggle = () => {
+    this.setState({ tooltipOpen: !this.state.tooltipOpen });
   }
 
   render() {
@@ -326,9 +335,9 @@ class Bills extends Component {
         }
       </div>
     } else if (createBillRequest) {
-      return <BillForm profileId={profileId} labels={labels} categories={categories} contacts={contacts} />
+      return <BillForm profileId={profileId} labels={labels} categories={categories} contacts={contacts} getContacts={this.getContacts} getLabels={this.getLabels}/>
     } else if (updateBillRequest) {
-      return <BillForm profileId={profileId} bill={updateBill} labels={labels} categories={categories} contacts={contacts} />
+      return <BillForm profileId={profileId} bill={updateBill} labels={labels} categories={categories} contacts={contacts} getContacts={this.getContacts} getLabels={this.getLabels}/>
     } else if (deleteBillRequest) {
       return <DeleteBill billId={billId} profileId={profileId} removeDependents={this.state.removeDependents} />
     } else if (this.state.addPayment || this.state.markPaid) {
@@ -431,23 +440,30 @@ class Bills extends Component {
       return this.loadSingleBill(bill, key, featureAttachment);
     })
   }
-
+  
   // Show the Single Bill 
   loadSingleBill = (bill, key, featureAttachment) => {
     let strike = bill.paid;
     let lastPaid = this.calculateLastPaid(bill, bill.amount);
-    let billDescription = bill.description ? bill.description : bill.categoryName.name;
+    let billDescription = bill.description ? (bill.description.length>50 ? bill.description.slice(0,50)+"..." : bill.description) : bill.categoryName.name;
     return <tr width={50} key={key}>
       <td>{strike ? <strike>{ShowServiceComponent.customDate(bill.dueDate_, true)}</strike> : ShowServiceComponent.customDate(bill.dueDate_, true)}</td>
       <td>{strike ? <strike> {ShowServiceComponent.customDate(bill.billDate, true)} </strike> : ShowServiceComponent.customDate(bill.billDate, true)}</td>
-      <td>{strike ? <strike> {billDescription} </strike> : billDescription}</td>
+      <td> <>
+        <div className="description" id="TooltipExample" >  
+          {strike ? <strike> {billDescription} </strike> : billDescription}
+        </div> 
+        {bill.description && bill.description.length > 50 && <Tooltip placement="bottom-start" className="tooltip-main tooltip-inner tooltip-arrow" isOpen={this.state.tooltipOpen} target="TooltipExample" toggle={this.descriptionToggle}> 
+          {bill.description}
+        </Tooltip>} </>
+      </td>
       <td>{strike ? <strike>{this.handleSignedBillAmount(bill)}</strike> : this.handleSignedBillAmount(bill)}</td>
       <td style={{ color: bill.paid ? 'green' : 'red' }}> {strike ? <strike>Paid</strike> : 'Unpaid'} </td>
       <td> {strike ? <strike>{this.loadPaidStatus(bill, lastPaid)} </strike> : <>{this.loadPaidStatus(bill, lastPaid)}</>} </td>
       <td><h6>{this.loadDropDown(bill, key, featureAttachment)}</h6></td>
-    </tr>
+    </tr>   
   }
-
+  
   loadPaidStatus = (bill, lastPaid) => {
     return <>
       {lastPaid && <span style={{ color: '#0080ff' }}>Last paid:  {ShowServiceComponent.billDateFormat(lastPaid.date)} &nbsp;&nbsp;

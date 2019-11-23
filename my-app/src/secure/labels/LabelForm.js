@@ -1,11 +1,12 @@
 import React, { Component } from "react";
-import { Alert, Card, CardHeader, Col} from "reactstrap";
+import { Alert, Card, CardHeader, CardBody, Col } from "reactstrap";
 import LabelApi from "../../services/LabelApi";
 import Lables from './Labels';
 import Config from "../../data/Config";
 import { CategoryLabelForm } from "../utility/FormsModel";
 
 class LabelForm extends Component {
+  _isMount = false;
   constructor(props) {
     super(props);
     this.state = {
@@ -17,8 +18,17 @@ class LabelForm extends Component {
       cancelLabel: false,
       doubleClick: false,
       chkMakeParent: false,
-      index: props.index
+      index: props.index,
+      hideCancel: props.hideButton
     };
+  }
+
+  componentDidMount(){
+    this._isMount = true;
+  }
+
+  componentWillUnmount() {
+    this._isMount = false;
   }
 
   // handle the submission from user
@@ -65,12 +75,19 @@ class LabelForm extends Component {
   callAlertTimer = (alertColor, content) => {
     this.setState({ alertColor, content });
     setTimeout(() => {
-      this.setState({ name: "", content: "", alertColor: "", labelAction: true });
+      if(this.state.hideCancel){
+        this.setState({ hideCancel: '' })
+        this.props.toggleCreateModal('', true)
+      } else{
+        if (this._isMount) {
+          this.setState({ name: "", content: "", alertColor: "", labelAction: true });
+        }
+      }
     }, Config.notificationMillis);
   };
 
   //this method makes true or false for the collapse
-  toggle = () => { this.setState({ collapse: !this.state.collapse });}
+  toggle = () => { this.setState({ collapse: !this.state.collapse }); }
 
   render() {
     const { cancelLabel, labelAction, index } = this.state;
@@ -83,7 +100,7 @@ class LabelForm extends Component {
 
   //this Method shows the input fields to Create a Label.
   loadCreatingLable = () => {
-    const { alertColor, content, profileId, collapse, doubleClick, chkMakeParent, labels } = this.state;
+    const { alertColor, content, profileId, collapse, doubleClick, chkMakeParent, labels, hideCancel } = this.state;
     const { parentId, notes, name, color } = this.props.label ? this.props.label : ''
     let filteredLabels = this.props.label && labels.filter(label => label.id !== this.props.label.id)
     const labelFields = {
@@ -97,13 +114,16 @@ class LabelForm extends Component {
       chkMakeParent: chkMakeParent,
       notes: notes,
       componentType: "Label",
-      updateItem: this.props.label
+      updateItem: this.props.label,
+      hideCancel: hideCancel
     };
     return <Card>
-        <CardHeader>
-          <strong>Label</strong>
-        </CardHeader>
-        <Col sm="1" md={{ size: 8, offset: 1 }}>
+      {!hideCancel && 
+      <CardHeader>
+        <strong>Label</strong>
+      </CardHeader> }
+      <CardBody>
+        <Col sm="1" md={{ size: 8, offset: 2 }}>
           <center><h5> <b>{!this.props.label ? "NEW LABEL" : "EDIT LABEL"}</b> </h5> </center>
           {alertColor && <Alert color={alertColor}>{content}</Alert>}
           <CategoryLabelForm
@@ -115,7 +135,8 @@ class LabelForm extends Component {
             buttonText={this.props.label ? "Edit Label" : "Save Label"}
           />
         </Col>
-      </Card>;
+      </CardBody>
+    </Card>;
   }
 }
 

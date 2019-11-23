@@ -127,19 +127,19 @@ class CategoryForm extends Component {
       componentType: "Category",
       updateItem: this.props.category
     };
-    return this.loadFileds(categoryFields, alertColor, content);
+    return this.loadFields(categoryFields, alertColor, content);
   };
 
-  loadFileds = (categoryFields, alertColor, content) => {
+  loadFields = (categoryFields, alertColor, content) => {
     return (
       <Card className="card-width">
         <CardHeader>
           <strong>Category</strong>
         </CardHeader>
         <CardBody>
-          <Col sm="1" md={{ size: 8, offset: 1 }}>
+          <Col sm="1" md={{ size: 8, offset: 2 }}>
             <center><h5> <b>{!this.props.category ? "NEW CATEGORY" : "EDIT CATEGORY"}</b> </h5> </center>
-            <Alert color={alertColor}>{content}</Alert>
+            {alertColor && <Alert color={alertColor}>{content}</Alert>}
             <CategoryLabelForm
               data={categoryFields}
               handleSubmitValue={this.handleSubmitValue}

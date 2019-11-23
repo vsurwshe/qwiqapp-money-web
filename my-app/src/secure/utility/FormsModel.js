@@ -6,12 +6,14 @@ import Select from 'react-select';
 import Data from '../../data/SelectData';
 import Store from '../../data/Store';
 import { userAction, profileFeature, billType, DEFAULT_CURRENCY } from '../../data/GlobalKeys';
+import '../../css/style.css';
 
 // ======================= This Bill Form Code =======
 export const BillFormUI = (props) => {
   const featureMultiCurrency = Store.getProfile().features.includes(profileFeature.MULTICURRENCY);
   let categoryName;
   const { bill, currencies, labels, contacts, categories, type, amount, dueDays, dueDate, billDate, moreOptions, doubleClick } = props.data;
+  
   // If bill exists, take currency from bill. If not, takes the default currency from selected Profile
   const { currency, description } = bill ? bill : Store.getProfile(); 
   if (bill) {
@@ -29,19 +31,19 @@ export const BillFormUI = (props) => {
         </AvField>
       </Col>
       <Col sm={3}>
-        <AvField type="select" name="type" label="Type of Bill" value={type} errorMessage="Select Type of Bill" required>
+        <AvField type="select" name="amountType" label="Type of Bill" value={type} errorMessage="Select Type of Bill" required>
           <option value={billType.PAYABLE}>Payable</option>
           <option value={billType.RECEIVABLE}>Receivable</option>
         </AvField>
       </Col>
       <Col sm={6}>
-        <AvField name="amount" id="amount" label="Amount" value={amount} placeholder="Amount" type="number" errorMessage="Invalid amount"
+        <AvField name="amount" id="amount" label={<>Amount <b className="text-color"> *</b></>} value={amount} placeholder="Amount" type="number" errorMessage="Invalid amount"
           onChange={e => { props.handleSetAmount(e) }} required />
       </Col>
     </Row>
     <Row>
       <Col>
-        <label>Category</label>
+        <label > Category <b className="text-color">*</b> </label>
         <Select options={Data.categoriesOrLabels(categories)} styles={Data.singleStyles} defaultValue={categoryName} placeholder="Select Categories " onChange={props.categorySelected} required /></Col>
       <Col>
         <AvField name="billDate" label="Bill Date" value={billDate} type="date" onChange={(e) => { props.handleBillDate(e) }} errorMessage="Invalid Date" validate={{
@@ -61,7 +63,7 @@ export const BillFormUI = (props) => {
     <Row>
       <Col>
         <label>Description / Notes</label>
-        <AvField name="description" type="text" list="colors" value={description} placeholder="Ex: Recharge" errorMessage="Invalid Notes" /></Col>
+        <AvField name="description" type="textarea" list="colors" value={description} placeholder="Ex: Recharge" errorMessage="Invalid Notes" /></Col>
     </Row>
     {!props.data.moreOptions &&
       <Button className="m-0 p-0" color="link" onClick={() => props.toggleCustom()} aria-expanded={moreOptions} aria-controls="exampleAccordion1">
@@ -77,61 +79,20 @@ export const BillFormUI = (props) => {
   </AvForm>
 }
 
-export const LoadMoreOptions = (props) => {
-  let labelName, contactName;
-  const { labels, contacts, recurBill, taxPercent, taxAmount, checked, notifyDate, notifyDays } = props.data.data
-  if (recurBill) {
-    const options = Data.categoriesOrLabels(labels);
-    labelName = !recurBill.labelIds ? '' : recurBill.labelIds.map(id => { return options.filter(item => { return item.value === id }) }).flat();
-    contactName = Data.contacts(contacts).filter(item => { return item.value === recurBill.contactId })
-  }
-  let taxAmt = taxAmount > 0 ? taxAmount : -taxAmount
-  return <Collapse isOpen={props.moreOptions} data-parent="#exampleAccordion"><br />
-    <Row>
-      <Col>
-        <AvField name="taxPercent" id="taxPercent" value={taxPercent} placeholder={0} label="Tax (in %)" type="number" onChange={(e) => { props.data.handleTaxAmount(e) }} />
-      </Col>
-      <Col>
-        <AvField name='dummy' label="Tax Amount" value={Math.round(taxAmt * 100) / 100} placeholder="0" type="number" onChange={(e) => { props.data.handleTaxPercent(e) }} />
-      </Col>
-    </Row>
-    <Row>
-      <Col>
-        <label >Select Labels</label>
-        <Select isMulti options={Data.categoriesOrLabels(labels)} defaultValue={labelName} styles={Data.colourStyles} placeholder="Select Labels " onChange={props.data.labelSelected} /></Col>
-      <Col>
-        <label >Contact Name</label>
-        <Select options={Data.contacts(contacts)} defaultValue={contactName} placeholder="Select Contact " onChange={props.data.contactSelected} /></Col>
-    </Row><br />
-    <Row style={{ marginLeft: 7 }}>
-      <Col><Input name="check" type="checkbox" checked={checked} onChange={props.data.handleChackboxState} />Enable Notification</Col>
-    </Row> <br />
-    {checked && <LoadNotifications notifyDays={notifyDays} notifyDate={notifyDate} handleDate={props.data.handleDate} />}
-  </Collapse>
-}
-
-export const LoadNotifications = (props) => {
-  return <Row>
-    <Col><AvField name="notifyDays" label="Notify Days" placeholder="Ex: 2" value={props.notifyDays} type="number" onChange={(e) => { props.handleDate(e) }} errorMessage="Invalid notify-days" /></Col>
-    <Col><AvField name="notifyDate" label="notify Date" disabled value={props.notifyDate} type="date" errorMessage="Invalid Date" validate={{ date: { format: 'dd/MM/yyyy' } }} /></Col>
-  </Row>
-}
-
 // =============== Categories Form =============
-
 export const CategoryLabelForm = (props) => {
-  const { doubleClick, collapse, parentId, chkMakeParent, type, componentType, items, itemName, itemColor, notes, updateItem } = props.data
+  const { doubleClick, collapse, parentId, chkMakeParent, type, componentType, items, itemName, itemColor, notes, updateItem, hideCancel } = props.data
   return <AvForm onValidSubmit={props.handleSubmitValue}>
-    <AvField type="text" name="name" label={componentType + " name"} errorMessage="Category Name Required" value={itemName} placeholder="Enter Category name" required />
-    {componentType === "Label" ? <AvField type="text" name="notes" value={notes} placeholder="Description / Notes" label="Description / Notes" />
+    <AvField type="text" name="name" label={<>{componentType} Name <b className="text-color"> * </b></>} errorMessage={componentType + " Name Required"} value={itemName} placeholder={"Enter "+ componentType +" name"} required />
+    {componentType === "Label" ? <AvField type="textarea" name="notes" value={notes} placeholder="Description / Notes" label="Description / Notes" />
       : <AvField type="select" name="type" label="Type" value={type ? type :billType.PAYABLE } errorMessage="Select Type of Category" >
         <option value={billType.PAYABLE}>Payable</option>
         <option value={billType.RECEIVABLE}>Receivable</option>
       </AvField>
     }
-    <AvField type="color" name="color" list="colors" label={componentType + " color"} value={itemColor} />
+    <AvField type="color" name="color" list="colors" label={componentType + " Color"} value={itemColor} />
 
-    {items.length > 0 && // checking Label / Categories are there, then only showing "Nest option" while creating Label / Categories 
+    {items && (items.length > 0 && // checking Label / Categories are there, then only showing "Nest option" while creating Label / Categories 
       (updateItem ? // checking the item(Label / Categories) is creating / updating, if creating then showing "Nest option"
         (updateItem.parentId ? // Checking whether Label / Categories has ParentId. If parentId is there then we are showing "Make it as Parent" or else checking for subLabel/subcategory 
           (!chkMakeParent && <><Label style={{ paddingLeft: 20 }} check>
@@ -140,20 +101,20 @@ export const CategoryLabelForm = (props) => {
             <><Label style={{ paddingLeft: 20 }} check>
               <AvInput type="checkbox" name="checkbox1" onChange={props.toggle} /> Nest {componentType} under </Label> <br /> </>)) //checking for subItems, if there dont show anything or else showing "Nest option"
         : !collapse && <><Label style={{ paddingLeft: 20 }} check>
-          <AvInput type="checkbox" name="checkbox1" onChange={props.toggle} /> Nest {componentType} under </Label> <br /> <br /></>) // If creating Label/ category then showing "Nest option"
+          <AvInput type="checkbox" name="checkbox1" onChange={props.toggle} /> Nest {componentType} under </Label> <br /> <br /></>)) // If creating Label/ category then showing "Nest option"
     }
 
     <Collapse isOpen={collapse}>
       <AvField type="select" name="parentId" label={"Select " + componentType + " name"}
         value={parentId} required={collapse}>
         <option value="">Select {componentType}</option>
-        {items.map((item, key) => { return <option key={key} value={item.id}>{item.name}</option> })}
+        {items && items.map((item, key) => { return <option key={key} value={item.id}>{item.name}</option> })}
       </AvField>
     </Collapse><br />
     <center>
       <FormGroup>
         <Button color="info" disabled={doubleClick} > {props.buttonText} </Button> &nbsp;&nbsp;
-        <Button active color="light" type="button" onClick={props.cancelCategory} >Cancel</Button>
+        {!hideCancel && <Button active color="light" type="button" onClick={props.cancelCategory} >Cancel</Button>}
       </FormGroup>
     </center>
   </AvForm>
@@ -187,7 +148,7 @@ export const ContactFormUI = (props) => {
       </Col>
       <Col><AvField name="website" placeholder="Website" value={website} /></Col>
     </Row>
-    <Row><Col>{labels.length === 0 ? <center>You dont have Labels</center> : props.loadAvCollapse(contact)}</Col></Row> <br />
+    <Row><Col>{labels && (!labels.length ? <center>You dont have Labels</center> : props.loadAvCollapse(contact))}</Col></Row> <br />
   </>);
 }
 
@@ -207,7 +168,7 @@ export const ProfileFormUI = (props) => {
     {!action || ((profileType === 0)) ?
       // This Block execute only when user action is null or user selects to create a Free Profile
       <>{getCurrency(currencies, currencySymbol)}
-        <AvField type="text" name="name" value={profileName} placeholder="Enter Profile name" id="tool-tip" label="Profile Name" required />
+        <AvField type="text" name="name" value={profileName} placeholder="Enter Profile name" id="tool-tip" label={<>Profile Name <b className="text-color"> * </b></>} required />
         <center>
           <FormGroup>
             <Button color="success"> {buttonMessage} </Button> &nbsp;

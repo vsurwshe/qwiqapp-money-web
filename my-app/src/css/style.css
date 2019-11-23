@@ -332,8 +332,25 @@ dropdown-align {
     color: black; 
     text-decoration: none;
 }
+.tooltip-main {
+    color: #737373;
+    background-color: #f3f3f3;
+}
+.tooltip-inner {
+    max-width: 650px !important; /* define whatever width you want */
+    color: #0C7223;
+}
+.tooltip-arrow {
+   background-color: inherit;
+}
 
 .dashboardLink:hover{
     color: black; 
     text-decoration: none;
 }
+/* Bill Description */
+  
+  .description, th {
+    position: relative;
+  }
+  
