@@ -6,7 +6,7 @@ import { Redirect } from 'react-router';
 import ProfileApi from "../../services/ProfileApi";
 import { DeleteModel } from "../utility/DeleteModel";
 import { ProfileEmptyMessage } from "../utility/ProfileEmptyMessage";
-import { Container, Button, Card, CardBody, Table, CardHeader, Alert, Row } from "reactstrap";
+import { Container, Button, Card, CardBody, Table, CardHeader, Alert } from "reactstrap";
 import ProfileForm from './ProfileForm';
 import Config from '../../data/Config';
 import Store from '../../data/Store';
@@ -15,7 +15,7 @@ import { UpgradeProfileType } from "./UpgradeProfileType";
 /**
  * Display list of profiles,Manage profile like (update, delete)
  * Call Add,Update, delete Componets.
- * TODO: handel Error Message
+ * TODO: handle Error Message
  */
 class Profiles extends Component {
   constructor(props) {
@@ -69,7 +69,7 @@ class Profiles extends Component {
     this.setState({ profileId, profileType, alertColor: undefined, alertMessage: undefined })
   }
 
-  handelUpgradeProfile = () => {
+  handleUpgradeProfile = () => {
     this.handleConfirmUpgrade();
     // After login, userAction getting undefined through ComponetDidMount, to resolve this issue, it is placed here.
     const action = Store.getUser() ? Store.getUser().action : true; // This is user action(actually from store(API response))
@@ -133,7 +133,7 @@ class Profiles extends Component {
     } else if (createProfile) {
       return <ProfileForm />
     } else if (updateProfile) {
-      return <ProfileForm profileId={profileId} profileName={profileName} />
+      return <ProfileForm profileId={profileId} profileName={profileName} loadProfileType={this.loadProfileType} />
     } else if (deleteProfile) {
       return <DeleteProfile profileId={profileId} />
     } else {
@@ -204,16 +204,15 @@ class Profiles extends Component {
   selectProfile = (selectedId) => {
     this.setState({ profileId: selectedId, selectProfile: true })
   }
+
   //this method load the single profile
   loadSingleProfile = (profile, key, user, profileTypes) => {
     return <tr key={key} >
       <td><b onClick={() => { this.selectProfile(profile.id) }} ><Avatar name={profile.name.charAt(0)} size="40" round={true} /> &nbsp;&nbsp;{profile.name}</b> </td>
       <td style={{ paddingTop: 18 }}>{this.loadProfileType(profile.type)} </td>
-      <td align="center" style={{ textAlign: "center" }}>
-        <center><Row>&nbsp;&nbsp;&nbsp;
-        <Button style={{ backgroundColor: "#43A432", color: "#F0F3F4" }} onClick={() => { this.updateProfile(profile.id, profile.name) }}>Edit</Button> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        {user && !user.action && <UpgradeProfileType userProfile={profile} handleUserConfirm={this.handleUserConfirm} profileTypes={profileTypes} />}
-        </Row></center>
+      <td>
+        <Button style={{ backgroundColor: "#43A432", color: "#F0F3F4"}} onClick={() => { this.updateProfile(profile.id, profile.name) }}>Edit</Button> &nbsp;&nbsp;
+        {(user && !user.action) && <UpgradeProfileType userProfile={profile} handleUserConfirm={this.handleUserConfirm} profileTypes={profileTypes} /> }
       </td>
       {this.state.userConfirmUpgrade && this.loadConfirmations()}
     </tr>
@@ -247,7 +246,7 @@ class Profiles extends Component {
       headerMessage="Upgrade Profile"
       bodyMessage="Upgrading a profile may incur some charges. Are you sure you want to upgrade "
       toggleDanger={this.handleUserConfirm}
-      delete={this.handelUpgradeProfile}
+      delete={this.handleUpgradeProfile}
       cancel={this.handleConfirmUpgrade}
       buttonText="Upgrade Profile"
     />

@@ -28,13 +28,13 @@ class ProfileForm extends Component {
   componentDidMount = async () => {
     // This Condtions Checks the Profile is Edit or Create
     if (this.state.profileId) {
-      await new ProfileApi().getProfileById(this.successCallById, this.errorCallById, this.state.profileId);
-    } 
-      let user = Store.getUser();
-      await new ProfileTypesApi().getProfileTypes((profileTypes) => { this.setState({ profileTypes }) }, (error) => { console.log("error", error); })
-      if (user) {
-        this.setState({ action: user.action, user });
-      }
+      await new ProfileApi().getProfileById(this.successCallById, this.errorCallById, this.state.profileId);    
+    }
+    let user = Store.getUser();
+    await new ProfileTypesApi().getProfileTypes((profileTypes) => { this.setState({ profileTypes }) }, (error) => { console.log("error", error); })
+    if (user) {
+      this.setState({ action: user.action, user });
+    }
   }
 
   successCallById = (profile) => {
@@ -103,8 +103,8 @@ class ProfileForm extends Component {
     if (color === "success") {
       setTimeout(() => {
         this.setState({ content: '', color: '', profileName: '', profileCreated: true });
-      }, Config.apiTimeoutMillis);
-    }
+        }, Config.apiTimeoutMillis);
+      } 
   };
 
   profileViewTable = () => {
@@ -165,21 +165,7 @@ class ProfileForm extends Component {
     </div>
   }
 
-  upgradeSuccessCall = (profiles) => {
-    this.setState({ profileUpgraded: true });
-    this.callAlertTimer("success", "Your profile upgraded successfully", true);
-  }
-
-  upgradeErrorCall = (error) => {
-    if (error.response.status === 400 && !error.response.data) {
-      this.callAlertTimer("danger", "Your credits are low, please add more credits", true);
-    } else {
-      this.callAlertTimer("danger", "Unable to process your request", true);
-    }
-  }
-
-
-  handelUpgradeProfile = () => {
+  handleUpgradeProfile = () => {
     this.handleConfirmUpgrade();
     // After login, userAction getting undefined through ComponetDidMount, to resolve this issue, it is placed here.
     const action = Store.getUser() ? Store.getUser().action : true; // This is user action(actually from store(API response))
@@ -196,6 +182,19 @@ class ProfileForm extends Component {
       }
     } else {
       new ProfileApi().upgradeProfile(this.upgradeSuccessCall, this.upgradeErrorCall, this.state.profileId, this.state.profileType);
+    }
+  }
+
+  upgradeSuccessCall = (profiles) => {
+    this.setState({ profileUpgraded: true });
+    this.callAlertTimer("success", "Your profile upgraded successfully !", true);
+  }
+
+  upgradeErrorCall = (error) => {
+    if (error.response.status === 400 && !error.response.data) {
+      this.callAlertTimer("danger", "Your credits are low, please add more credits", true);
+    } else {
+      this.callAlertTimer("danger", "Unable to process your request", true);
     }
   }
 
@@ -221,7 +220,8 @@ class ProfileForm extends Component {
       handleEditProfileCancel={this.handleEditProfileCancel}
       handleUserConfirm={this.handleUserConfirm}
       handleConfirmUpgrade={this.handleConfirmUpgrade}
-      handelUpgradeProfile={this.handelUpgradeProfile}
+      handleUpgradeProfile={this.handleUpgradeProfile}
+      loadProfileType={this.props.loadProfileType}
     />
   }
 }
