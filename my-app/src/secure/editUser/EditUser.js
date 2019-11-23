@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
-import { Card, CardBody, CardHeader, Alert } from 'reactstrap';
+import { Card, CardBody, CardHeader, Alert, Row, Col, Label } from 'reactstrap';
 import { Button } from 'reactstrap';
 import { AvForm, AvField } from 'availity-reactstrap-validation';
 import { Link } from 'react-router-dom'
 import UserApi from '../../services/UserApi';
 import Config from '../../data/Config';
 import Store from '../../data/Store';
+import '../../css/style.css'
 
 
 class EditUser extends Component {
@@ -15,7 +16,7 @@ class EditUser extends Component {
             updated: false,
             user: "",
             color: '',
-            doubleClick: false,
+            doubleClick: false
         }
     }
 
@@ -61,16 +62,26 @@ class EditUser extends Component {
             <CardHeader><b >EDIT USER</b></CardHeader>
             <CardBody>
                 <Alert color={color}>{content} </Alert>
+                <center>
                 <AvForm onSubmit={this.userUpdate} >
-                    <AvField name="email" type="email" label="Email" placeholder="Email" value={user.email} required />
-                    <AvField name="name" type="text" label="User Name" placeholder="User Name" value={user.name} required />
-                    <center>
-                        <Button color="success" disabled={this.state.doubleClick}>Edit</Button>
-                        <Link to="/dashboard" style={{ marginLeft: 10 }} ><Button color="secondary" type="button" >Cancel</Button></Link>
-                    </center>
+                    <Row>
+                        <Col sm={2} className="label-align"><Label>Email</Label></Col>
+                        <Col sm={4}><AvField name="email" type="email" placeholder="Email" value={user.email} required /></Col>
+                    </Row>
+                    <Row>
+                        <Col sm={2} className="label-align"><Label>User Name</Label></Col>
+                        <Col  sm={4}><AvField name="name" type="text" placeholder="User Name" value={user.name} required /></Col>
+                    </Row><br/>
+                    <Row>
+                        <Col sm={{ size: 'auto', offset: 3 }}>
+                           <Button color="success" disabled={this.state.doubleClick}>Edit</Button>
+                           <Link to="/dashboard" style={{ marginLeft: 10 }} ><Button color="secondary" type="button" >Cancel</Button></Link>
+                       </Col>
+                    </Row>
                 </AvForm>
+                </center>
             </CardBody>
-        </Card>;
+        </Card>
     }
 }
 

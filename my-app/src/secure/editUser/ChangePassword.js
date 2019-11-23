@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Card, CardBody, CardHeader, Alert, Button } from 'reactstrap';
+import { Card, CardBody, CardHeader, Alert, Button, Row, Col, Label, InputGroup, InputGroupAddon } from 'reactstrap';
 import { Redirect } from 'react-router';
 import { Link } from 'react-router-dom'
 import { AvField, AvForm, AvInput } from 'availity-reactstrap-validation';
@@ -67,10 +67,36 @@ class ChangePassword extends Component {
                     </> : <>
                             {(color !== "success" || color) && <Alert color={color}>{content}</Alert>}
                             <AvForm onSubmit={this.updatePassword} >
-                                <AvField name="old" type="password" label="Old Password" errorMessage="Enter Correct Password" placeholder="Enter Old Password" value={color === "danger" && ""} required />
-                                <AvField name="new" type={type} label="New Password" errorMessage="New Password Required" placeholder="Enter  New Password" required />
+                                <Row>
+                                    <Col sm={2}>
+                                    <Label>Old Password</Label>
+                                    </Col>
+                                    <Col sm={4}>
+                                    <AvField name="old" type="password" errorMessage="Enter Correct Password" placeholder="Enter Old Password" value={color === "danger" && ""} required />
+                                    </Col>
+                                    </Row>
+                                    <Row>
+                                    <Col sm={2}>
+                                    <Label>New Password</Label>
+                                    </Col>
+                                    <Col sm={4}>
+                                    <AvField name="new" type={type} label="" errorMessage="New Password Required" placeholder="Enter  New Password" required />
+                                    </Col>
+                                    <Col sm={3}>
+                                    <InputGroup>
+                                    <InputGroupAddon addonType="append">
+                                      <Button color="success">To the Right!</Button>
+                                    </InputGroupAddon>
+                                    </InputGroup>
+        
+                                    </Col>
+                                    </Row>
                                 <span className="padding-left"><AvInput name="show" type="checkbox" onChange={e=>this.setChecked(e)}/>Show Password<br/><br/></span>
-                                <AvField name="renew" type="password" label="ReEnter New Password" errorMessage="New password and re-enter password doesn't match" placeholder="Enter  New Password" validate={{match:{value:'new'}}} required />
+                                <Row>
+                                    <Col sm={2}><Label>Confirm Password</Label></Col>
+                                    <Col sm={4}><AvField name="renew" type="password" errorMessage="New password and confirm password doesn't match" placeholder="Enter  New Password" validate={{match:{value:'new'}}} required />
+                                    </Col>
+                                    </Row>
                                 <center>
                                     <Button color="success" disabled={this.state.doubleClick}>Edit</Button>
                                     <Link to="/dashboard" style={{ marginLeft: 10 }} ><Button color="secondary" type="button" >Cancel</Button></Link>
