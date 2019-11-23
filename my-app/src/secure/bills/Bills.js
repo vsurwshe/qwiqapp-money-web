@@ -49,9 +49,7 @@ class Bills extends Component {
     };
   }
 
-  componentDidMount = () => {
-    this.setProfileId();
-  }
+  componentDidMount = () => { this.setProfileId(); }
 
   componentWillReceiveProps = () => {
     if (this.state.categories !== undefined && this.state.categories.length <= 0) {
@@ -101,8 +99,7 @@ class Bills extends Component {
       }
     })
   }
-
-
+  // This Method seting your profile id.
   setProfileId = async () => {
     let profile = Store.getProfile();
     if (profile) {
@@ -113,8 +110,9 @@ class Bills extends Component {
   }
 
   // This Method execute the Category API Call
-  getCategory = () => {
-    new CategoryApi().getCategories(this.successCallCategory, this.errorCall, this.state.profileId);
+  getCategory = () => { 
+    const { profileId } =this.state
+    new CategoryApi().getCategories(this.successCallCategory, this.errorCall, profileId);
   }
 
   // Handle Categories response
@@ -167,10 +165,11 @@ class Bills extends Component {
 
   // This Method execute the Bill API Call
   getBills = async () => {
+    const { profileId } =this.state
     if (this.props.paid) {
-      await new BillApi().getBills(this.successCallBill, this.errorCall, this.state.profileId, true);
+      await new BillApi().getBills(this.successCallBill, this.errorCall, profileId, true);
     } else {
-      await new BillApi().getBills(this.successCallBill, this.errorCall, this.state.profileId);
+      await new BillApi().getBills(this.successCallBill, this.errorCall, profileId);
     }
   }
 
@@ -219,10 +218,11 @@ class Bills extends Component {
   }
 
   getPayments = async (billId, previousPayments) => {
+    const { profileId } =this.state
     await new PaymentApi().getBillPayments((payments) => {
       let newRespData = { payments: payments, billId: billId }
       this.successCallPayments(newRespData, previousPayments)
-    }, err => { console.log("error") }, this.state.profileId, billId)
+    }, err => { console.log("error") }, profileId, billId)
   }
 
   successCallPayments = async (payments, previousPayments) => {
@@ -230,7 +230,10 @@ class Bills extends Component {
     return await this.setState({ billPayments: previousPayments })
   }
 
-  handleMarkAsUnPaid = () => { new BillApi().markAsUnPaid(this.successUnpaidBill, this.errorCall, this.state.profileId, this.state.requiredBill.id);}
+  handleMarkAsUnPaid = () => { 
+    const { profileId , requiredBill } =this.state
+    new BillApi().markAsUnPaid(this.successUnpaidBill, this.errorCall, profileId, requiredBill.id);
+  }
 
   successUnpaidBill = () => { this.callAlertTimer("success", "Your bill succefully made as unpaid bill") }
 
@@ -429,12 +432,6 @@ class Bills extends Component {
     return singleRow;
   }
 
-  loadFilterAndNonFilteredBills = (bills, featureAttachment) => {
-    return bills.filter(this.searchingFor(this.state.selectedOption)).map((bill, key) => {
-      return this.loadSingleBill(bill, key, featureAttachment);
-    })
-  }
-  
   loadPaidStatus = (bill, lastPaid) => {
     return lastPaid ? "<span style='color: #0080ff'>Last paid: " + ShowServiceComponent.billDateFormat(lastPaid.date) + "&nbsp;&nbsp;" + ShowServiceComponent.billTypeAmount(bill.currency, lastPaid.paymentAmt, true) + "</span>" : ""
   }
@@ -443,16 +440,11 @@ class Bills extends Component {
     return bill.amount < 0 ? "<span class='text-color'>- " + ShowServiceComponent.billTypeAmount(bill.currency, bill.amount) + "</span>" : "<span class='bill-amount-color'>" + ShowServiceComponent.billTypeAmount(bill.currency, bill.amount) + "</span>";
   }
 
-  loadPaymentDateAndAmount = (bill, lastPaid) => {
-    return <> <b>Last paid</b> {this.dateFormat(lastPaid.date)} &nbsp; {this.loadBillAmount(bill.currency, lastPaid.paymentAmt)} </>
-  }
-
   loadBillAmount = (currency, amount) => { return new Intl.NumberFormat('en-US', { style: 'currency', currency: currency }).format(amount) }
 
   dateFormat = (userDate) => {
     let date = "" + userDate
     let dateString = date.substring(0, 4) + "-" + date.substring(4, 6) + "-" + date.substring(6, 8)
-
     const formatDate = ShowServiceComponent.billDateFormat(new Date(dateString));
     return formatDate;
   }
