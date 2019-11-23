@@ -45,5 +45,5 @@ export class DataTable extends Component{
         })
     }
 
-    render(){ return <table  className="display" width="100%" ref={el=> this.el=el}> </table> }
+    render(){ return <div className="table-responsive">  <table  className="display" width="100%" ref={el=> this.el=el}> </table> </div> }
 }
