@@ -26,8 +26,7 @@ class ContactForm extends Component {
       labels: props.lables,
       contact: props.contact,
       selectedOption: [],
-      selectedCountry: props.contact ? props.contact.country : "",
-      hideCancel: props.hideButton
+      selectedCountry: props.contact && props.contact.country
     };
   }
 
@@ -110,10 +109,6 @@ class ContactForm extends Component {
     }
   }
 
-  loadHeader = () => {
-    return <CardHeader><strong>Contacts</strong></CardHeader>
-  }
-
   handleCountrySelect = e => {
     this.setState({ selectedCountry: e.target.value, alertColor: '', alertMessage: '' });
   }
@@ -124,13 +119,14 @@ class ContactForm extends Component {
       countries: countries,
       labels: labels,
       selectedCountry: selectedCountry,
-      contact: contact,
+      contact: contact, 
       labelUpdate: labelUpdate
     }
     return <Card>
+      <CardHeader><strong>CONTACTS</strong></CardHeader>
       <CardBody>
         {alertColor && <Alert color={alertColor}>{alertMessage}</Alert>}
-        <center><h5>Create Contact</h5></center><br />
+        <center><h5>{!this.props.contact ? "New Contact Details" : "Contact Details"}</h5></center><br />
         <AvForm ref={refId => this.form = refId} onSubmit={this.handleSubmit}>
           <ContactFormUI 
             data = {contactData}
