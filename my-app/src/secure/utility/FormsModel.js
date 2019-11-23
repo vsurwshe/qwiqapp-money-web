@@ -124,24 +124,26 @@ export const CategoryLabelForm = (props) => {
         (updateItem.parentId ? // Checking whether Label / Categories has ParentId. If parentId is there then we are showing "Make it as Parent" or else checking for subLabel/subcategory 
           (!chkMakeParent && <><Label style={{ paddingLeft: 20 }} check>
             <AvInput type="checkbox" name="makeParent" onChange={props.toggle} /> Make it as Parent </Label> <br /></>) // if selected make it as parent, then assigning "null" to "parentId"
-          : !(updateItem.subLabels || updateItem.subCategories) && (!collapse &&
-            <><Label style={{ paddingLeft: 20 }} check>
-              <AvInput type="checkbox" name="checkbox1" onChange={props.toggle} /> Nest {componentType} under </Label> <br /> </>)) //checking for subItems, if there dont show anything or else showing "Nest option"
-        : !collapse && <><Label style={{ paddingLeft: 20 }} check>
-          <AvInput type="checkbox" name="checkbox1" onChange={props.toggle} /> Nest {componentType} under </Label> <br /> <br /></>)) // If creating Label/ category then showing "Nest option"
+          : !(updateItem.subLabels || updateItem.subCategories) &&
+          <><Label style={{ paddingLeft: 20 }} check>
+            <AvInput type="checkbox" name="checkbox1" onChange={props.toggle} /> Nest {componentType} under </Label> <br /><br /> </>) //checking for subItems, if there dont show anything or else showing "Nest option"
+        : <><Label style={{ paddingLeft: 20 }} check>
+          <AvInput type="checkbox" name="checkbox1" onChange={props.toggle} /> Nest {componentType} under </Label> <br /> <br /></>) // If creating Label/ category then showing "Nest option"
+      )
     }
+    
 
     <Collapse isOpen={collapse}>
-      <br/><Row>
-      <Col sm={3}>
-        <Label>{"Select parent " + componentType.toLowerCase()}</Label>
-      </Col>
-      <Col sm={6}>
-        <AvField type="select" name="parentId" value={parentId} required={collapse}>
-          <option value="">Select {componentType}</option>
-          {items.map((item, key) => { return <option key={key} value={item.id}>{item.name}</option> })}
-        </AvField>
-      </Col>
+      <Row>
+        <Col sm={3}>
+          <Label>{"Select parent " + componentType.toLowerCase()}</Label>
+        </Col>
+        <Col sm={6}>
+          <AvField type="select" name="parentId" value={parentId} required={collapse}>
+            <option value="">Select {componentType}</option>
+            {items.map((item, key) => { return <option key={key} value={item.id}>{item.name}</option> })}
+          </AvField>
+        </Col>
       </Row>
     </Collapse><br />
     <center>
