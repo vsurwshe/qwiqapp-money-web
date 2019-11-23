@@ -27,6 +27,7 @@ const moreOptions = {
   ADDPAYMENT: 'Add a payment',
   PAYHISTORY: 'Payments History',
   MARKPAID: 'Mark as Paid',
+  UNMARKPAID:'Mark as Un-Paid',
   ATTACHMENTS: 'Attachments',
   DELETE: 'Delete'
 }
@@ -72,7 +73,6 @@ class Bills extends Component {
       updateBill && _.updateBillAction(updateBill[0]) // 
     })
     $('.display').on('change', 'select', function () {
-      console.log("Val = ", $(this).val())
       var row = $(this).closest('tr'); // This fetches the data of the row when we click 'edit' in dataTable
       var editData = $('.display').dataTable().fnGetData(row); //this line separates the required data from the fecthced row data.
       var requiredBill = editData && bills.filter(bill => bill.id === editData[0]); // Filter the specific bill from the list of bills using id and assign to updatebill
@@ -92,6 +92,9 @@ class Bills extends Component {
           break;
         case moreOptions.PAYHISTORY:
           _.handleViewPayment();
+          break;
+        case moreOptions.UNMARKPAID:
+          _.handleMarkAsUnpaidPayment();
           break;
         default:
            break;
@@ -227,9 +230,7 @@ class Bills extends Component {
     return await this.setState({ billPayments: previousPayments })
   }
 
-  handleMarkAsUnPaid = () => {
-    new BillApi().markAsUnPaid(this.successUnpaidBill, this.errorCall, this.state.profileId, this.state.requiredBill.id);
-  }
+  handleMarkAsUnPaid = () => { new BillApi().markAsUnPaid(this.successUnpaidBill, this.errorCall, this.state.profileId, this.state.requiredBill.id);}
 
   successUnpaidBill = () => { this.callAlertTimer("success", "Your bill succefully made as unpaid bill") }
 
@@ -244,9 +245,7 @@ class Bills extends Component {
   }
 
   //this toggle for Delete Model
-  toggleDanger = () => {
-    this.setState({ danger: !this.state.danger });
-  }
+  toggleDanger = () => { this.setState({ danger: !this.state.danger });}
 
   // This Method Execute the Bill Form Executions.
   createBillAction = () => { this.setState({ createBillRequest: true }) }
@@ -280,9 +279,7 @@ class Bills extends Component {
     this.setState({ requiredBill: bill });
   }
 
-  handleAddPayment = () => {
-    this.setState({ addPayment: true });
-  }
+  handleAddPayment = () => {this.setState({ addPayment: true });}
   handleMarkAsPaid = () => { this.setState({ markPaid: true }); }
   handleViewPayment = () => { this.setState({ viewPayment: !this.state.viewPayment }); }
   handleMarkAsUnpaidPayment = () => { this.setState({ markAsUnPaid: true }) }
@@ -324,8 +321,8 @@ class Bills extends Component {
       return <ProfileEmptyMessage />
     } else if (!bills.length && !createBillRequest) {  // Checks for bills not there and no bill create Request, then executes
       return <div>
-        {/*  If spinner is true and bills are there, it shows the loader function, until bills are loaded */}
-        {(spinner && bills.length) ? <>{visible && <Alert isOpen={visible} color={this.state.color}>{this.state.content}</Alert>} {this.loadLoader()}
+        {/*  If spinner is true and bills are there, it shows the loader function, until bills are loaded */
+        (spinner && bills.length) ? <>{visible && <Alert isOpen={visible} color={this.state.color}>{this.state.content}</Alert>} {this.loadLoader()}
         </> : !bills.length && this.emptyBills() // If bills not there, it will show Empty message 
         }
       </div>
@@ -393,8 +390,8 @@ class Bills extends Component {
       { title: "Description" },
       { title: "Bill Amount" },
       { title: "Status" },
-      { title: "",orderable: false }, //This colunm
-      { title: "", orderable: false } //
+      { title: "", orderable: false }, // This column used for edit Button
+      { title: "", orderable: false } // This column used for more options
     ]
     // This is Returning DataTable Component
     return <div className="animated fadeIn">
@@ -417,7 +414,7 @@ class Bills extends Component {
   // Show the Single Bill 
   loadSingleRow = (bill, key, featureAttachment) => {
     let strike = bill.paid;
-    // let lastPaid = this.calculateLastPaid(bill, bill.amount);
+    let lastPaid = this.calculateLastPaid(bill, bill.amount);
     let billDescription = bill.description ? bill.description : bill.categoryName.name;
     let singleRow = [
       bill.id,
@@ -425,8 +422,7 @@ class Bills extends Component {
       strike ? "<strike>" + ShowServiceComponent.customDate(bill.billDate, true) + "</strike>" : ShowServiceComponent.customDate(bill.billDate, true),
       strike ? "<strike>" + billDescription + "</strike>" : billDescription,
       strike ? "<strike style='color:red'>" + this.handleSignedBillAmount(bill) + "</strike>" : "<span style='color:green'>" + this.handleSignedBillAmount(bill) + "</span>",
-      strike ? "<strike>Paid</strike>" : 'Unpaid',
-      // strike ? "<strike> {"+this.loadPaidStatus(bill, lastPaid)+"} </strike>" :this.loadPaidStatus(bill, lastPaid),
+      strike ? "<strike>"+this.loadPaidStatus(bill, lastPaid)+"</strike>" :this.loadPaidStatus(bill, lastPaid),
       this.loadEditButton(bill, key, featureAttachment),
       this.loadDropDown(bill, key, featureAttachment)
     ]
@@ -440,7 +436,7 @@ class Bills extends Component {
   }
   
   loadPaidStatus = (bill, lastPaid) => {
-    return lastPaid ? "<span style={{ color: '#0080ff' }}>Last paid:  {" + ShowServiceComponent.billDateFormat(lastPaid.date) + "} &nbsp;&nbsp; {" + ShowServiceComponent.billTypeAmount(bill.currency, lastPaid.paymentAmt, true) + "}</span>" : ""
+    return lastPaid ? "<span style='color: #0080ff'>Last paid: " + ShowServiceComponent.billDateFormat(lastPaid.date) + "&nbsp;&nbsp;" + ShowServiceComponent.billTypeAmount(bill.currency, lastPaid.paymentAmt, true) + "</span>" : ""
   }
 
   handleSignedBillAmount = (bill) => {
@@ -495,17 +491,16 @@ class Bills extends Component {
   }
 
   //this Method loads Browser DropDown
-  loadDropDown = () => {
-    return "<span class='float-right'>" +
-      "<select id='more' class='dropdown-toggle'>" +
-      "<option>More ... </option>" +
-      "<option>" + moreOptions.ADDPAYMENT + "</option>" +
-      "<option>" + moreOptions.PAYHISTORY + "</option>" +
-      "<option>" + moreOptions.MARKPAID + "</option>" +
-      "<option>" + moreOptions.ATTACHMENTS + "</option>" +
-      "<option>" + moreOptions.DELETE + "</option>" +
-      "</select>" +
-      "</span>"
+  loadDropDown = (bill, key, featureAttachment) => {
+    var moreOption= "<span class='float-right'> <select id='more' class='dropdown-toggle'> <option>More ... </option>" +
+    "<option>" + moreOptions.ADDPAYMENT + "</option>" +
+    "<option>" + moreOptions.PAYHISTORY + "</option>";
+    // This Checking Bill is Paid or not according to adding mark as paid or mark as un paid
+    moreOption=moreOption.concat(bill.paid ? "<option>" + moreOptions.UNMARKPAID + "</option>" : "<option>" + moreOptions.MARKPAID + "</option>");
+    // This  its have feature attachment or not Checking
+    moreOption=moreOption.concat(featureAttachment ? "<option>" + moreOptions.ATTACHMENTS + "</option>" : '');
+    moreOption=moreOption.concat("<option>" + moreOptions.DELETE + "</option> </select> </span>");
+    return  moreOption;
   }
 
   //this method calls the delete model
