@@ -434,7 +434,7 @@ class Bills extends Component {
     let singleRow = [
       bill.id,
       strike ? "<strike>" + ShowServiceComponent.customDate(bill.dueDate_, true) + "</strike>" : ShowServiceComponent.customDate(bill.dueDate_, true),
-      strike ? "<strike>" + ShowServiceComponent.customDate(bill.billDate, true) + "</strike>" : ShowServiceComponent.customDate(bill.billDate, true),
+      strike ? "<strike>" + ShowServiceComponent.customDate(bill.billDate, false, true) + "</strike>" : ShowServiceComponent.customDate(bill.billDate, false, true),
       strike ? "<strike>" + billDescription + "</strike>" : billDescription,
       strike ? "<strike style='color:red'>" + this.handleSignedBillAmount(bill) + "</strike>" : "<span style='color:green'>" + this.handleSignedBillAmount(bill) + "</span>",
       strike ? "<strike>"+this.loadPaidStatus(bill, lastPaid)+"</strike>" :this.loadPaidStatus(bill, lastPaid),
@@ -449,7 +449,7 @@ class Bills extends Component {
   }
 
   handleSignedBillAmount = (bill) => {
-    return bill.amount < 0 ? "<span class='text-color'>- " + ShowServiceComponent.billTypeAmount(bill.currency, bill.amount) + "</span>" : "<span class='bill-amount-color'>" + ShowServiceComponent.billTypeAmount(bill.currency, bill.amount) + "</span>";
+    return bill.amount < 0 ? "<span class='text-color'>" + ShowServiceComponent.billTypeAmount(bill.currency, bill.amount) + "</span>" : "<span class='bill-amount-color'>" + ShowServiceComponent.billTypeAmount(bill.currency, bill.amount) + "</span>";
   }
 
   loadBillAmount = (currency, amount) => { return new Intl.NumberFormat('en-US', { style: 'currency', currency: currency }).format(amount) }

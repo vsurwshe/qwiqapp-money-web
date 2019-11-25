@@ -72,7 +72,6 @@ export const ShowServiceComponent = {
         <Col className="marigin-top" >
           <strong>{items ? headerMessage + " : " + items.length : headerMessage}</strong>
         </Col>
-        
         {(items && items.length) &&
           <Col md={7} className="shadow p-0 mb-3 bg-white rounded">
             <InputGroup>
@@ -87,12 +86,14 @@ export const ShowServiceComponent = {
       </Row>
     </CardHeader>
   },
-
-  customDate: function (dateParam, day) {
+  
+  customDate: function (dateParam, monWeekDay, monWeekDayYear) {
     let toStr = "" + dateParam
     let dateString = toStr.substring(0, 4) + "-" + toStr.substring(4, 6) + "-" + toStr.substring(6, 8)
-    if (day) {
+    if (monWeekDay) {
       return this.billDateFormat(new Date(dateString));
+    } else if (monWeekDayYear) {
+      return this.billDataTableDateFormat(new Date(dateString));
     } else {
       return this.loadDateFormat(new Date(dateString));
     }
@@ -104,10 +105,20 @@ export const ShowServiceComponent = {
   },
   // this method return formate date like ex: Mon, 03 DeC
   billDateFormat: function (date) {
-    return new Intl.DateTimeFormat('en-gb', { month: 'short', weekday: 'short', day: '2-digit' }).format(date);
+    return new Intl.DateTimeFormat('en-gb', { month: 'short', weekday: 'short', day: '2-digit'}).format(date); 
+  },
+
+  billDataTableDateFormat: function (date) {
+    return new Intl.DateTimeFormat('en-gb', { month: 'short', weekday: 'short', day: '2-digit', year: 'numeric' }).format(date); 
   },
 
   billTypeAmount: function (currency, amount) {
+    // const currencies=Store.getCurrencies();
+    // const result= currencies.filter(singleCurrency=>singleCurrency.code===currency);
+    // const data=amount>0? amount :amount;
+
+    // return `${data}`;
+    // return data;
     return new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(amount>0 ? amount : -(amount))
   },
 

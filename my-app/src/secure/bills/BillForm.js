@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { AvField } from 'availity-reactstrap-validation';
-import { Alert, Card, Col, Row, Container, Input, Collapse, Modal, ModalBody, ModalHeader } from "reactstrap";
+import { Alert, Card, Col, Row, Input, Collapse, Modal, ModalBody, ModalHeader, Label } from "reactstrap";
 import Select from 'react-select';
 import BillApi from "../../services/BillApi";
 import Bills from "./Bills";
@@ -297,7 +297,7 @@ class BillForm extends Component {
     let date = this.state.billDate ? this.state.billDate : new Date();
     let billDate = new Date(date);
     if (repeatEvery && repeatEveryType) {
-      const { WEEK, MONTH, DAYOFMONTH, YEAR}=recurBillType;
+      const { WEEK, MONTH, DAYOFMONTH, YEAR } = recurBillType;
       switch (repeatEveryType) {
         case WEEK:
           billDate.setDate(billDate.getDate() + parseInt(repeatEvery) * 7);
@@ -342,12 +342,12 @@ class BillForm extends Component {
     }
   }
 
-  toggleCreateModal = (item, success) =>{
-    this.setState({ createModal : !this.state.createModal });
-    item && this.setState({ createItem : item });
-    if(success){
+  toggleCreateModal = (item, success) => {
+    this.setState({ createModal: !this.state.createModal });
+    item && this.setState({ createItem: item });
+    if (success) {
       this.state.createItem === 'Contacts' ? this.props.getContacts(true) : this.props.getLabels(true)
-    } 
+    }
   }
 
   render() {
@@ -382,8 +382,8 @@ class BillForm extends Component {
     }
     let headerMessage = this.props.bill ? " " : " New Bill Details "
     return <>
-    {this.loadBillForm(FormData, alertColor, alertMessage, headerMessage)}
-    {this.state.createModal && this.loadCreateModal()}
+      {this.loadBillForm(FormData, alertColor, alertMessage, headerMessage)}
+      {this.state.createModal && this.loadCreateModal()}
     </>
   }
 
@@ -391,24 +391,22 @@ class BillForm extends Component {
     return <div className="animated fadeIn" >
       <Card>
         <h4 className="padding-top"><b><center>{headerMessage}</center></b></h4>
-        <Container>
-          <Col>
-            {alertColor && <Alert color={alertColor}>{alertMessage}</Alert>}
-            <BillFormUI data={formData}
-              handleSubmitValue={this.handleSubmitValue}
-              handleSetAmount={this.handleSetAmount}
-              handleBillDate={this.handleBillDate}
-              handleDate={this.handleDate}
-              toggleCustom={this.toggleCustom}
-              loadMoreOptions={this.loadMoreOptions}
-              cancel={this.cancelCreateBill}
-              labelSelected={this.labelSelected}
-              contactSelected={this.contactSelected}
-              categorySelected={this.categorySelected}
-              buttonText={this.props.bill ? "Update Bill " : "New Bill"}
-            />
-          </Col>
-        </Container>
+        <Col><br />
+          {alertColor && <Alert color={alertColor}>{alertMessage}</Alert>}
+          <BillFormUI data={formData}
+            handleSubmitValue={this.handleSubmitValue}
+            handleSetAmount={this.handleSetAmount}
+            handleBillDate={this.handleBillDate}
+            handleDate={this.handleDate}
+            toggleCustom={this.toggleCustom}
+            loadMoreOptions={this.loadMoreOptions}
+            cancel={this.cancelCreateBill}
+            labelSelected={this.labelSelected}
+            contactSelected={this.contactSelected}
+            categorySelected={this.categorySelected}
+            buttonText={this.props.bill ? "Update Bill " : "New Bill"}
+          />
+        </Col>
       </Card>
     </div>;
   }
@@ -423,106 +421,134 @@ class BillForm extends Component {
       contactName = Data.contacts(contacts).filter(item => { return item.value === bill.contactId })
     }
     return <Collapse isOpen={this.state.moreOptions} data-parent="#exampleAccordion" id="exampleAccordion1">
+      {this.loadHorizantalLine()}
       <Row>
         <Col>
-          <AvField name="taxPercent" id="taxPercent" value={this.state.taxPercent} placeholder={0}
-            label="Tax (in %)" type="number" onChange={(e) => { this.handleTaxAmount(e) }} />
+          <Row>
+            <Col sm={3}> <label>Tax (in %)</label></Col>
+            <Col><AvField name="taxPercent" id="taxPercent" value={this.state.taxPercent} placeholder={0}
+              label="" type="number" onChange={(e) => { this.handleTaxAmount(e) }} /></Col>
+          </Row>
         </Col>
         <Col>
-          <AvField name='dummy' label="Tax Amount" value={Math.round(this.state.taxAmount * 100) / 100} placeholder="0" type="number" onChange={(e) => { this.handleTaxPercent(e) }} />
+          <Row>
+            <Col sm={3}> <label>Tax amount</label></Col>
+            <Col><AvField name='dummy' value={Math.round(this.state.taxAmount * 100) / 100} placeholder="0" type="number" onChange={(e) => { this.handleTaxPercent(e) }} /> </Col>
+          </Row>
         </Col>
       </Row>
       <Row>
-        <Col>
-          <label>Labels</label>
-          {labels ? <>
-            <Select isMulti options={Data.categoriesOrLabels(labels)} styles={Data.colourStyles} defaultValue={labelName} placeholder="Select Labels" onChange={this.labelSelected} /></> : <p style={{ paddingTop: contacts && "10px", textDecoration: "underline" }} onClick={()=>this.toggleCreateModal("Labels")}>You don't have Labels, Click here to Create </p>}
-        </Col>
-        <Col>
-          <label>Contacts</label>
-          {contacts ? <>
-            <Select options={Data.contacts(contacts)} defaultValue={contactName} placeholder="Select Contacts" onChange={this.contactSelected} /></> : <p style={{ paddingTop: labels && "10px", textDecoration: "underline" }} onClick={()=>this.toggleCreateModal("Contacts")}> {labels && <span ></span>}You don't have Contacts, Click here to  Create</p>}
-        </Col>
-      </Row><br />
-      <Row style={{ marginLeft: 7 }}>
-        <Col>
-          <Input name="check" type="checkbox" checked={this.state.checked} value={this.state.checked} onChange={this.handleNotificationCheck} />Enable Notification </Col>
-      </Row> <br />
-      {this.state.checked &&
+      <Col>
         <Row>
-          <Col><AvField name="notifyDays" label="Notify Days" value={this.state.notifyDays} placeholder="Ex: 1" type="number" onChange={(e) => { this.handleDate(e) }} errorMessage="Invalid notify-days" /></Col>
-          <Col><AvField name="notifyDate" label="Notify Date" disabled value={this.state.notifyDate} type="date" errorMessage="Invalid Date" validate={{ date: { format: 'dd/MM/yyyy' } }} /></Col>
+          <Col sm={3}> <Label>Labels</Label></Col>
+          <Col>{labels ? <>
+            <Select isMulti options={Data.categoriesOrLabels(labels)} styles={Data.colourStyles} defaultValue={labelName} placeholder="Select Labels" onChange={this.labelSelected} /></> : <p style={{ paddingTop: contacts && "10px", textDecoration: "underline" }} onClick={() => this.toggleCreateModal("Labels")}>You don't have Labels, Click here to Create </p>}
+          </Col>
+          <Col sm={3}> <Label>Contacts</Label></Col>
+          <Col>{contacts ? <>
+            <Select options={Data.contacts(contacts)} defaultValue={contactName} placeholder="Select Contacts" onChange={this.contactSelected} /></> : <p style={{ paddingTop: labels && "10px", textDecoration: "underline" }} onClick={() => this.toggleCreateModal("Contacts")}> {labels && <span ></span>}You don't have Contacts, Click here to  Create</p>}
+          </Col>
         </Row>
-      }
+      </Col>
+      </Row><br />
+      <Row style={{ paddingLeft: 38 }}>
+        <Input name="check" type="checkbox" checked={this.state.checked} value={this.state.checked} onChange={this.handleNotificationCheck} />Enable notification
+          {this.state.checked && <>&nbsp;  from  &nbsp; <AvField name="notifyDays" style={{ all: 'unset', borderBottom: '1px solid', width: 50 }} value={this.state.notifyDays} placeholder="0" type="number" onChange={(e) => { this.handleDate(e) }} errorMessage="Invalid notify-days" />
+          &nbsp;days of Bill Date &nbsp;({this.state.notifyDate} &nbsp;onwards)
+            </>}
+      </Row> <br />
       {
         // This checks the profile feature Recurring and shows Recurring Configuration logic if the feature exists
         featureRecurring && <>
-        <Row style={{ marginLeft: 7 }}>
-          <Col>
-            <Input name="check" type="checkbox" checked={this.state.recurConfig} value={this.state.recurConfig} onChange={this.handleRecurBillCheck} /> Recurring Bill</Col>
-        </Row> <br />
-        {this.state.recurConfig ? this.loadRecurBill() : ''}</>}
-    
+          <Row style={{ paddingLeft: 38 }}>
+            <Input name="check" type="checkbox" checked={this.state.recurConfig} value={this.state.recurConfig} onChange={this.handleRecurBillCheck} /> Recurring Bill {this.state.recurConfig && <p style={{ paddingLeft: 5 }}>USING BELOW RECURRING CONFIGURATION: </p>}
+          </Row>
+          <br />
+          {this.state.recurConfig ? this.loadRecurBill() : ''}</>}
     </Collapse>
   }
 
   // It loads the model if contacts/labels are Empty, then creating..  
-  loadCreateModal = () =>{
+  loadCreateModal = () => {
     const { createItem, createModal, profileId } = this.state
-    const {labels} = this.props
-    return <Modal isOpen={createModal} toggle={()=>this.toggleCreateModal()} style={{ paddingTop: "20%" }} backdrop={true}>
-    <ModalHeader toggle={()=>this.toggleCreateModal()}>{createItem}</ModalHeader>
-    <ModalBody>
-      {createItem === 'Labels' ? <LabelForm profileId={profileId} hideButton={true} toggleCreateModal={this.toggleCreateModal}/> 
-        : <ContactForm lables={labels} profileId={profileId} hideButton={true} toggleCreateModal={this.toggleCreateModal}/>}
-    </ModalBody>
-  </Modal>
+    const { labels } = this.props
+    return <Modal isOpen={createModal} toggle={() => this.toggleCreateModal()} style={{ paddingTop: "20%" }} backdrop={true}>
+      <ModalHeader toggle={() => this.toggleCreateModal()}>{createItem}</ModalHeader>
+      <ModalBody>
+        {createItem === 'Labels' ? <LabelForm profileId={profileId} hideButton={true} toggleCreateModal={this.toggleCreateModal} />
+          : <ContactForm lables={labels} profileId={profileId} hideButton={true} toggleCreateModal={this.toggleCreateModal} />}
+      </ModalBody>
+    </Modal>
   }
+
+  loadHorizantalLine = () => <><br /> <div className="hr-main">
+    <span className="hr-text">
+      &nbsp; Optional &nbsp;
+      </span>
+  </div><br /> </>
 
   // This Method Load Recuring Config.
   loadRecurBill = () => {
     const { repeatEvery, repeatType, nextBillDate, endDate, recurBillForever } = this.state;
-    const {DAY, WEEK, MONTH, DAYOFMONTH, YEAR}=recurBillType;
+    const { DAY, WEEK, MONTH, DAYOFMONTH, YEAR } = recurBillType;
+    let smValue = recurBillForever ? 3 : 5
     return (
       <>
-        <p>USING BELOW RECURRING CONFIGURATION: </p>
-        <Row >
-          <Col sm={3}>
-            <AvField name="every" label={<>Repeats Every <b className="text-color"> *</b></>} placeholder="Ex: 1" type="number" value={repeatEvery} onChange={(e) => { this.handleEveryRecurBill(e) }}
-              errorMessage="Invalid day" />
+        <Row>
+          <Col >
+            <Row>
+              <Col sm={3}><label>Repeats Every</label> </Col>
+              <Col><AvField name="every" placeholder="Ex: 1" type="number" value={repeatEvery} onChange={(e) => { this.handleEveryRecurBill(e) }} errorMessage="Invalid day" /></Col>
+            </Row>
           </Col>
-          <Col sm={3}>
-            <AvField type="select" name="repeatType" value={repeatType} label="Select Every" onChange={(e) => { this.recurBillOption(e) }}
-              errorMessage="Select any Option" required>
-              <option value={DAY}>Day(s)</option>
-              <option value={WEEK}>Week(s)</option>
-              <option value={MONTH}>Month(s)</option>
-              <option value={DAYOFMONTH}>DayOfMonth(s)</option>
-              <option value={YEAR}>Year(s)</option>
-            </AvField>
+          <Col >
+            <Row>
+              <Col sm={3}><label>Select Every</label> </Col>
+              <Col>
+                <AvField type="select" name="repeatType" value={repeatType} onChange={(e) => { this.recurBillOption(e) }}
+                  errorMessage="Select any Option" required>
+                  <option value={DAY}>Day(s)</option>
+                  <option value={WEEK}>Week(s)</option>
+                  <option value={MONTH}>Month(s)</option>
+                  <option value={DAYOFMONTH}>DayOfMonth(s)</option>
+                  <option value={YEAR}>Year(s)</option>
+                </AvField>
+              </Col>
+            </Row>
           </Col>
-          <Col>
-            <AvField name="nextBillDate" label="Next Bill Date" value={nextBillDate} type="date" errorMessage="Invalid Date" onChange={(e) => { this.handleNextDate(e) }}
-              validate={{
-                date: { format: 'dd/MM/yyyy' },
-                dateRange: { format: 'YYYY/MM/DD', start: { value: '1900/01/01' }, end: { value: '9999/12/31' } },
-                required: { value: true }
-              }} />
-          </Col>
-          <Col sm-={3} style={{ marginLeft: 7 }}>
-            <Input name="check" type="checkbox" checked={recurBillForever === true} value={recurBillForever} onChange={this.handlRecurBillForever} />{recurBillForever ? "Repeat until" : "Repeating forever"}
-            <br />
-            {recurBillForever && <>
-              <AvField name="endDate" value={endDate} type="date" errorMessage="Invalid Date" onChange={(e) => { this.handleEndDate(e) }} validate={{
-                date: { format: 'dd/MM/yyyy' },
-                dateRange: { format: 'YYYY/MM/DD', start: { value: '1900/01/01' }, end: { value: '9999/12/31' } },
-                required: { value: true }
-              }} /></>}
-          </Col>
+          <Row>
+            <Col>
+              <Row>
+                <Col sm={3}><label>Next bill date</label> </Col>
+                <Col> <AvField name="nextBillDate" value={nextBillDate} type="date" errorMessage="Invalid Date" onChange={(e) => { this.handleNextDate(e) }}
+                  validate={{
+                    date: { format: 'dd/MM/yyyy' },
+                    dateRange: { format: 'YYYY/MM/DD', start: { value: '1900/01/01' }, end: { value: '9999/12/31' } },
+                    required: { value: true }
+                  }} />
+                </Col>
+              </Row>
+            </Col>
+            <Col >
+              <Row>
+                <Col sm={smValue}>
+                  <span style={{ marginLeft: 25 }} >
+                    <Input name="check" type="checkbox" checked={recurBillForever === true} value={recurBillForever} onChange={this.handlRecurBillForever} />
+                    {recurBillForever ? "End date" : "Repeating forever"}</span></Col>
+                <br />
+                <Col>
+                  {recurBillForever && <>
+                    <AvField name="endDate" value={endDate} type="date" errorMessage="Invalid Date" onChange={(e) => { this.handleEndDate(e) }} validate={{
+                      date: { format: 'dd/MM/yyyy' },
+                      dateRange: { format: 'YYYY/MM/DD', start: { value: '1900/01/01' }, end: { value: '9999/12/31' } },
+                      required: { value: true }
+                    }} /></>}</Col>
+              </Row>
+            </Col>
+          </Row>
         </Row>
       </>
     )
   }
-
 }
 export default BillForm;
