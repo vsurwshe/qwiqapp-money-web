@@ -27,7 +27,7 @@ class ViewPayment extends Component {
   }
 
   getPayments = () => {
-    new PaymentApi().getBillPayments(this.paymentSuccessCall, this.errorCall, this.props.profileId, this.state.bill.id)
+    this.state.bill && new PaymentApi().getBillPayments(this.paymentSuccessCall, this.errorCall, this.props.profileId, this.state.bill.id)
   }
   paymentSuccessCall = async (payments) => {
     await this.setState({ payments });
@@ -67,7 +67,7 @@ class ViewPayment extends Component {
       paddingLeft: 30
     }
     return <Card>
-      {this.loadHeader("Bill Payments")}
+      {/* {this.loadHeader("Bill Payments")} */}
       <CardBody className="card-align">
         <Table frame="box" style={{ borderColor: "#DEE9F2" }}>
           <thead className="table-header-color" >
