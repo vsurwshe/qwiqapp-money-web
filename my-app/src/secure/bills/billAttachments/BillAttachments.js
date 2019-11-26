@@ -9,6 +9,7 @@ import { ShowServiceComponent } from '../../utility/ShowServiceComponent';
 import Config from '../../../data/Config';
 import Store from '../../../data/Store';
 import '../../../css/style.css';
+import AddBillAttachment from './AddBillAttachment';
 
 class BillAttachments extends Component {
     /*
@@ -26,17 +27,18 @@ class BillAttachments extends Component {
             reAttachment: ''
         }
     }
-    componentWillMount() {
-        this._iMount = true;
-        const { profileId, billId } = Store.getProfileIdAndBillId();
-        this.setState({ profileId, billId })
-    }
+    // componentWillMount() {
+    //     this._iMount = true;
+    //     const { profileId, billId } = Store.getProfileIdAndBillId();
+    //     this.setState({ profileId, billId })
+    // }
 
     componentDidMount() {
         this._iMount = true;
-        const { profileId, billId } = this.state
-        if (profileId && billId) {
-            new BillAttachmentsApi().getBillAttachments(this.successCall, this.errorCall, profileId, billId);
+        const { profileId, bill } = this.props
+        // const { profileId, billId } = this.state
+        if (profileId && bill && bill.id) {
+            new BillAttachmentsApi().getBillAttachments(this.successCall, this.errorCall, profileId, bill.id);
         }
     }
 
@@ -45,7 +47,7 @@ class BillAttachments extends Component {
     }
 
     componentDidUpdate = () => {
-        if (this.state.color === "success") {
+        if (this.state.color === "success" && this.props.profileId) {
             new BillAttachmentsApi().getBillAttachments(this.successCall, this.errorCall, this.state.profileId, this.state.billId);
         }
     }
@@ -102,16 +104,26 @@ class BillAttachments extends Component {
 
     viewLink = (reAttachment) => { AttachmentUtils.viewAttachment(reAttachment).then(response => this.toggleView(response, reAttachment)) }
 
+    addBillAttachment = () =>{
+        console.log(this.props.bill);
+        this.setState( { addAttachmentRequest: !this.state.addAttachmentRequest });
+    }
     render() {
-        const { attachments, danger, spinner } = this.state;
-        if (!spinner) {
-            return ShowServiceComponent.loadSpinner('ATTACHMENTS')
-        } else if (!attachments.length) {
-            return this.showNoAttachments()
-        } else if (danger) {
-            return <div>{danger && this.deleteAttachment()} {this.loadAttachments()} </div>
+        const { attachments, danger, spinner, addAttachmentRequest } = this.state;
+        if (this.props.bill) {
+            if (!spinner) {
+                return ShowServiceComponent.loadSpinner('ATTACHMENTS')
+            } else if (addAttachmentRequest) {
+                return <div> <AddBillAttachment profileId={this.props.profileId} bill={this.props.bill}/> </div>
+            } else if (!attachments.length) {
+                return this.showNoAttachments()
+            } else if (danger) {
+                return <div>{danger && this.deleteAttachment()} {this.loadAttachments()} </div>
+            } else {
+                return <div>{this.loadAttachments()}{this.displayAttachment()} </div>
+            }
         } else {
-            return <div>{this.loadAttachments()}{this.displayAttachment()} </div>
+            return this.showNoAttachments()
         }
     }
 
@@ -119,9 +131,9 @@ class BillAttachments extends Component {
         return <CardHeader>
             <div className="black-color padding-top">
                 <strong>ATTACHMENTS
-                    <Link to="/bills/attachments/add" >
-                        <FaCloudUploadAlt style={{ marginRight: 10 }} className="float-right" color="#020b71" size={20} />
-                    </Link>
+                    {/* <Link to="/bills/attachments/add" > */}
+                    {this.props.bill && <FaCloudUploadAlt style={{ marginRight: 10 }} onClick={()=>this.addBillAttachment()} className="float-right" color="#020b71" size={20} />}
+                    {/* </Link> */}
                 </strong>
             </div>
         </CardHeader>
@@ -131,7 +143,7 @@ class BillAttachments extends Component {
         return <Card>
             {this.loadHeader()}
             <center className="column-text"> <CardBody>
-                <h5><b>You haven't added any attachments for this Bill. Please add now...</b></h5><br /> </CardBody> </center>
+            <h5><b>{this.props.bill && this.props.bill.id ? "You haven't added any attachments for this Bill. Please add now..." :  "For attchments you need bill id"}</b></h5><br /> </CardBody> </center>
         </Card>
     }
 

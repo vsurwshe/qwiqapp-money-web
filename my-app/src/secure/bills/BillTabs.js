@@ -10,6 +10,7 @@ import {
 } from "reactstrap";
 import BillForm from "./BillForm";
 import ViewPayment from "./billPayment/ViewPayment";
+import BillAttachments from "./billAttachments/BillAttachments";
 
 class BillTabs extends Component {
   constructor(props) {
@@ -40,6 +41,7 @@ class BillTabs extends Component {
         console.log(this.props);
         const {categories, bill, contacts,  getContacts, getLabels, labels, profileId} = this.props.tabData
         const {paidAmount, cancelButton} =this.props
+       
     return (
       <>
         {/* <TabPane tabId="1">Bill Edit /Add</TabPane> */}
@@ -52,7 +54,8 @@ class BillTabs extends Component {
         <TabPane tabId="2">
               <ViewPayment bill={bill} paidAmount={paidAmount} profileId={profileId} cancel={cancelButton} />
         </TabPane>
-        <TabPane tabId="3">Attachments</TabPane>
+        {<TabPane tabId="3"><BillAttachments  profileId={profileId} bill={bill} /></TabPane>}
+        {/* <TabPane tabId="3">Attachments</TabPane> */}
       </>
     );
   }

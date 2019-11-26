@@ -179,9 +179,6 @@ class BillForm extends Component {
   //this method call when labels created successfully
   successCreateBill = () => {
     this.callAlertTimer("success", "New Bill Created....");
-    // setTimeout(()=>{ // Solved Bills component load issue in Tabs
-    //   this.props.cancelButton();
-    // }, Config.apiTimeoutMillis);
     this.timerForBillsList()
   }
 

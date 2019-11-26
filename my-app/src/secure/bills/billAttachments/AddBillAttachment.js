@@ -26,14 +26,15 @@ class AddBillAttachment extends Component {
   }
 
   handlePostData = () => {
-    const { profileId, billId } = Store.getProfileIdAndBillId();
+    const { profileId, bill } = this.props
+    // const { profileId, billId } = Store.getProfileIdAndBillId();
     const { file } = this.state;
     if (file) {
       let reader = new FormData();
       reader.append('file', file);
-      if (profileId && billId) {
+      if (profileId && bill && bill.id) {
         this.setState({ doubleClick: false });
-        new BillAttachmentsApi().createBillAttachment(this.successCall, this.errorCall, profileId, billId, reader);
+        new BillAttachmentsApi().createBillAttachment(this.successCall, this.errorCall, profileId, bill.id, reader);
       } 
     } else {
       this.callAlertTimer('danger', "Please select a file to upload");
@@ -71,9 +72,10 @@ class AddBillAttachment extends Component {
 
   render() {
     const { addSuccess, cancelAddAttachment } = this.state;
-    const { profileId, billId } = this.props.location.query ? this.props.location.query : '';
+    // const { profileId, billId } = this.props.location.query ? this.props.location.query : '';
+    const { profileId, bill } = this.props
     if (addSuccess || cancelAddAttachment) {
-      return <Redirect to={{ pathname: "/bills/attachments", query: { profileId: profileId, billId: billId } }} />
+      return <Redirect to={{ pathname: "/bills/attachments", query: { profileId: profileId, billId: bill.id } }} />
     } else {
       return this.loadAddAttachment();
     }

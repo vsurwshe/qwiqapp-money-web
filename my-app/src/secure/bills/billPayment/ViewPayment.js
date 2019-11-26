@@ -44,18 +44,22 @@ class ViewPayment extends Component {
   render() {
     const { payments, bill, currencies } = this.state;
     let selectedCurrency;
-    if (payments.length === 0) {
-      return this.noPaymentsAdded();
-    } else if (this.state.addBillPayment) {
-      return <BillPayment bill={this.state.bill} paidAmount={this.props.paidAmount} profileId={this.props.profileId}/>
-    } else if (this.state.updateBillPayment) {
-      return <UpdateBillPayment profileId={this.props.profileId} bill={this.state.bill} updatePayment={this.state.updatePayment} cancelViewPay={this.props.cancel} currency={this.state.currency}
-        paymentDate={this.dateFormat} />
-    } else if (this.state.deleteBillPayment) {
-      return <DeleteBillPayment profileId={this.props.profileId} cancelViewPay={this.props.cancel} bill={this.state.bill} taxId={this.state.deleteTxId} />
+    if (bill) {
+      if (payments.length === 0) {
+        return this.noPaymentsAdded();
+      } else if (this.state.addBillPayment) {
+        return <BillPayment bill={this.state.bill} paidAmount={this.props.paidAmount} profileId={this.props.profileId}/>
+      } else if (this.state.updateBillPayment) {
+        return <UpdateBillPayment profileId={this.props.profileId} bill={this.state.bill} updatePayment={this.state.updatePayment} cancelViewPay={this.props.cancel} currency={this.state.currency}
+          paymentDate={this.dateFormat} />
+      } else if (this.state.deleteBillPayment) {
+        return <DeleteBillPayment profileId={this.props.profileId} cancelViewPay={this.props.cancel} bill={this.state.bill} taxId={this.state.deleteTxId} />
+      } else {
+        selectedCurrency = currencies.filter((currency, index) => { return currency.code === bill.currency })
+        return this.loadBillPayments(payments, selectedCurrency);
+      }
     } else {
-      selectedCurrency = currencies.filter((currency, index) => { return currency.code === bill.currency })
-      return this.loadBillPayments(payments, selectedCurrency);
+      return this.noPaymentsAdded();
     }
   }
 
@@ -143,7 +147,7 @@ class ViewPayment extends Component {
         {this.loadHeader("Bill Payments")}
         <CardBody>
           <center>
-            <h5>No payments added yet..!</h5>
+            <h5>{this.state.bill ? "No payments added yet..!" : "Bill id is required..!"}</h5>
           </center>
         </CardBody>
       </Card>

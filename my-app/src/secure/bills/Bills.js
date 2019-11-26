@@ -251,11 +251,15 @@ class Bills extends Component {
   toggleDanger = () => { this.setState({ danger: !this.state.danger }); }
 
   // This Method Execute the Bill Form Executions.
-  createBillAction = () => { this.setState({ createBillRequest: !this.state.createBillRequest }) }
+  createBillAction = (dummy, createdSuccess) => { 
+    this.setState({ createBillRequest: !this.state.createBillRequest });
+    if (createdSuccess) {
+      this.successCallBill(Store.getBills());
+    }
+  }
   // createBillAction = () => { this.setState({ createBillRequest: true }) }
   updateBillAction = (updateBill, updatedSucc) => { 
     this.setState({ updateBillRequest: !this.state.updateBillRequest, updateBill });
-    console.log("updatedSucc", updatedSucc);
     if (updatedSucc) {
       this.successCallBill(Store.getBills());
     }
@@ -384,13 +388,13 @@ class Bills extends Component {
       cancelButton={this.handleViewPayment} />
       // return <ViewPayment bill={this.state.requiredBill} paidAmount={paidAmount} profileId={profileId} cancel={this.handleViewPayment} />
     } else if (this.state.attachments) {
-      let data = {
-        profileId: profileId,
-        billId: billId
-      }
-      Store.saveProfileIdAndBillId(data);
-      return <Redirect to="/bills/attachments" />
-    }
+      //  let data = {
+      //           profileId: profileId,
+      //           billId: billId
+      // }
+      // Store.saveProfileIdAndBillId(data);
+      // return  <Redirect to="/bills/attachments"/>
+      return <BillTabs tabData={tabData} paidAmount={paidAmount}  cancelButton={this.handleViewPayment} /> }
     else {
       return <div>
         {danger && this.deleteBillModel()}
