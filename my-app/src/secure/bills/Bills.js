@@ -285,9 +285,9 @@ class Bills extends Component {
   handleShowPayment = (bill) => {
     let lastPaid = this.calculateLastPaid(bill);
     if (lastPaid) {
-      this.setState({ requiredBill: bill, paidAmount: lastPaid.paidAmount });
+      this.setState({ updateBill: bill, paidAmount: lastPaid.paidAmount });
     }
-    this.setState({ requiredBill: bill });
+    this.setState({ updateBill: bill });
   }
 
   // This is more options handle methods
@@ -339,6 +339,16 @@ class Bills extends Component {
     const { bills, createBillRequest, updateBillRequest, billId, deleteBillRequest, visible, profileId,
       updateBill, spinner, labels, categories, contacts, danger, paidAmount, requiredBill, markPaid, profileFeatures, markAsUnPaid } = this.state;
     let featureAttachment = profileFeatures && profileFeatures.includes(profileFeature.ATTACHMENTS) // return true/false
+    let tabData = {
+      profileId: profileId,
+      labels: labels,
+      categories: categories,
+      contacts: contacts,
+      getContacts: this.getContacts,
+      getLabels: this.getLabels,
+      bill : updateBill
+    }
+
     if (!profileId) {
       return <ProfileEmptyMessage />
     } else if (!bills.length && !createBillRequest) {  // Checks for bills not there and no bill create Request, then executes
@@ -349,10 +359,17 @@ class Bills extends Component {
         }
       </div>
     } else if (createBillRequest) {
-      return <BillTabs for="form" profileId={profileId} labels={labels} categories={categories} contacts={contacts} getContacts={this.getContacts} getLabels={this.getLabels} cancelButton={this.createBillAction} />
+      var newTabData={...tabData,bill:null};
+      return <BillTabs for="form" 
+      tabData={newTabData}
+      // profileId={profileId} labels={labels} categories={categories} contacts={contacts} getContacts={this.getContacts} getLabels={this.getLabels} 
+      cancelButton={this.createBillAction} />
       // return <BillForm profileId={profileId} labels={labels} categories={categories} contacts={contacts} getContacts={this.getContacts} getLabels={this.getLabels}/>
     } else if (updateBillRequest) {
-      return <BillTabs for="form" profileId={profileId} bill={updateBill} labels={labels} categories={categories} contacts={contacts} getContacts={this.getContacts} getLabels={this.getLabels} cancelButton={this.updateBillAction} />
+      return <BillTabs for="form" 
+      tabData={tabData}
+      // profileId={profileId} bill={updateBill} labels={labels} categories={categories} contacts={contacts} getContacts={this.getContacts} getLabels={this.getLabels} 
+      cancelButton={this.updateBillAction} />
       // return <BillForm profileId={profileId} bill={updateBill} labels={labels} categories={categories} contacts={contacts} getContacts={this.getContacts} getLabels={this.getLabels}/>
     } else if (deleteBillRequest) {
       return <DeleteBill billId={billId} profileId={profileId} removeDependents={this.state.removeDependents} />
@@ -360,7 +377,11 @@ class Bills extends Component {
       // return <BillTabs for="payments" bill={requiredBill} markPaid={markPaid} paidAmount={paidAmount} profileId={profileId} />
       return <BillPayment bill={requiredBill} markPaid={markPaid} paidAmount={paidAmount} profileId={profileId} />
     } else if (this.state.viewPayment) {
-      return <BillTabs for="payments" bill={this.state.requiredBill} categories={categories} paidAmount={paidAmount} profileId={profileId} cancelButton={this.handleViewPayment} />
+      return <BillTabs for="payments" 
+      // bill={this.state.requiredBill} 
+      tabData={tabData}
+      paidAmount={paidAmount} 
+      cancelButton={this.handleViewPayment} />
       // return <ViewPayment bill={this.state.requiredBill} paidAmount={paidAmount} profileId={profileId} cancel={this.handleViewPayment} />
     } else if (this.state.attachments) {
       let data = {

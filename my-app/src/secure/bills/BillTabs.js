@@ -38,7 +38,8 @@ class BillTabs extends Component {
 
   tabPane() {
         console.log(this.props);
-        const {cancelButton, categories,  contacts,  getContacts, getLabels, labels, profileId, bill, paidAmount} = this.props
+        const {categories, bill, contacts,  getContacts, getLabels, labels, profileId} = this.props.tabData
+        const {paidAmount, cancelButton} =this.props
     return (
       <>
         {/* <TabPane tabId="1">Bill Edit /Add</TabPane> */}

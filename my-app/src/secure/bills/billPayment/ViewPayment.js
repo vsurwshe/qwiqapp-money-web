@@ -67,7 +67,7 @@ class ViewPayment extends Component {
       paddingLeft: 30
     }
     return <Card>
-      {/* {this.loadHeader("Bill Payments")} */}
+      {this.loadHeader("Bill Payments")}
       <CardBody className="card-align">
         <Table frame="box" style={{ borderColor: "#DEE9F2" }}>
           <thead className="table-header-color" >
