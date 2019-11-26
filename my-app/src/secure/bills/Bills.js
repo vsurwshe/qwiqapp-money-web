@@ -19,6 +19,7 @@ import PaymentApi from "../../services/PaymentApi";
 import { profileFeature, moreOptions } from "../../data/GlobalKeys";
 import '../../css/style.css';
 import { DataTable } from "../utility/DataTable";
+import BillTabs from "./BillTabs";
 
 // This importing Jquery in react.
 const $ = require('jquery');
@@ -250,9 +251,26 @@ class Bills extends Component {
   toggleDanger = () => { this.setState({ danger: !this.state.danger }); }
 
   // This Method Execute the Bill Form Executions.
-  handleCreateBillAction = () => { this.setState({ createBillRequest: true }) }
-  handleUpdateBillAction = updateBill => { this.setState({ updateBillRequest: true, updateBill }) };
-  handleDeleteBillAction = () => { this.setState({ deleteBillRequest: true }) };
+  createBillAction = () => { this.setState({ createBillRequest: !this.state.createBillRequest }) }
+  // createBillAction = () => { this.setState({ createBillRequest: true }) }
+  updateBillAction = (updateBill, updatedSucc) => { 
+    this.setState({ updateBillRequest: !this.state.updateBillRequest, updateBill });
+    console.log("updatedSucc", updatedSucc);
+    if (updatedSucc) {
+      this.successCallBill(Store.getBills());
+    }
+  };
+  // updateBillAction = updateBill => { this.setState({ updateBillRequest: true, updateBill }) };
+  deleteBillAction = () => { this.setState({ deleteBillRequest: true }) };
+
+  setBillId = (bill) => {
+    let data = {
+      "deletBillDescription": bill.description,
+      "deletBillCategoryName": bill.categoryName.name
+    }
+    this.setState({ billId: bill.id, deleteBillName: data });
+    this.toggleDanger();
+  }
 
   callAlertTimer = (visible, reload) => {
     if (visible) {
@@ -331,15 +349,19 @@ class Bills extends Component {
         }
       </div>
     } else if (createBillRequest) {
-      return <BillForm profileId={profileId} labels={labels} categories={categories} contacts={contacts} getContacts={this.getContacts} getLabels={this.getLabels} />
+      return <BillTabs for="form" profileId={profileId} labels={labels} categories={categories} contacts={contacts} getContacts={this.getContacts} getLabels={this.getLabels} cancelButton={this.createBillAction} />
+      // return <BillForm profileId={profileId} labels={labels} categories={categories} contacts={contacts} getContacts={this.getContacts} getLabels={this.getLabels}/>
     } else if (updateBillRequest) {
-      return <BillForm profileId={profileId} bill={updateBill} labels={labels} categories={categories} contacts={contacts} getContacts={this.getContacts} getLabels={this.getLabels} />
+      return <BillTabs for="form" profileId={profileId} bill={updateBill} labels={labels} categories={categories} contacts={contacts} getContacts={this.getContacts} getLabels={this.getLabels} cancelButton={this.updateBillAction} />
+      // return <BillForm profileId={profileId} bill={updateBill} labels={labels} categories={categories} contacts={contacts} getContacts={this.getContacts} getLabels={this.getLabels}/>
     } else if (deleteBillRequest) {
       return <DeleteBill billId={billId} profileId={profileId} removeDependents={this.state.removeDependents} />
     } else if (this.state.addPayment || this.state.markPaid) {
+      // return <BillTabs for="payments" bill={requiredBill} markPaid={markPaid} paidAmount={paidAmount} profileId={profileId} />
       return <BillPayment bill={requiredBill} markPaid={markPaid} paidAmount={paidAmount} profileId={profileId} />
     } else if (this.state.viewPayment) {
-      return <ViewPayment bill={this.state.requiredBill} paidAmount={paidAmount} profileId={profileId} cancel={this.handleViewPayment} />
+      return <BillTabs for="payments" bill={this.state.requiredBill} categories={categories} paidAmount={paidAmount} profileId={profileId} cancelButton={this.handleViewPayment} />
+      // return <ViewPayment bill={this.state.requiredBill} paidAmount={paidAmount} profileId={profileId} cancel={this.handleViewPayment} />
     } else if (this.state.attachments) {
       let data = {
         profileId: profileId,

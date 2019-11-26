@@ -179,19 +179,31 @@ class BillForm extends Component {
   //this method call when labels created successfully
   successCreateBill = () => {
     this.callAlertTimer("success", "New Bill Created....");
+    // setTimeout(()=>{ // Solved Bills component load issue in Tabs
+    //   this.props.cancelButton();
+    // }, Config.apiTimeoutMillis);
+    this.timerForBillsList()
+  }
+
+  timerForBillsList = () => {
+    setTimeout(()=>{ // Solved Bills component load issue in Tabs
+      this.props.cancelButton(null, true); // Parameters for update values showing in bills list view
+    }, Config.apiTimeoutMillis);
   }
 
   // updated bill
   successUpdateBill = () => {
     this.callAlertTimer("success", "Bill Updated Successfully !! ");
+    this.timerForBillsList()
   };
 
   //this method call when labels created successfully
-  successCreate = () => { this.callAlertTimer("success", "New recuring bill created....!!"); }
+  successCreate = () => { this.callAlertTimer("success", "New recuring bill created....!!");  this.timerForBillsList()}
 
   //this handle the error response the when api calling
   errorCall = err => {
     this.callAlertTimer("danger", "Unable to Process Request, Please try Again....");
+    this.timerForBillsList()
   };
 
   cancelCreateBill = () => {
@@ -388,6 +400,7 @@ class BillForm extends Component {
   }
 
   loadBillForm = (formData, alertColor, alertMessage, headerMessage) => {
+
     return <div className="animated fadeIn" >
       <Card>
         <h4 className="padding-top"><b><center>{headerMessage}</center></b></h4>
