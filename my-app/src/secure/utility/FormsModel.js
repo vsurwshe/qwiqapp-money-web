@@ -15,7 +15,7 @@ export const BillFormUI = (props) => {
   const featureMultiCurrency = Store.getProfile().features.includes(profileFeature.MULTICURRENCY);
   let categoryName;
   const { bill, currencies, labels, contacts, categories, type, amount, dueDays, dueDate, billDate, moreOptions, doubleClick } = props.data;
-  
+
   // If bill exists, take currency from bill. If not, takes the default currency from selected Profile
   const { currency, description } = bill ? bill : Store.getProfile();
   if (bill) {
@@ -85,9 +85,9 @@ export const BillFormUI = (props) => {
 export const CategoryLabelForm = (props) => {
   const { doubleClick, collapse, parentId, chkMakeParent, type, componentType, items, itemName, itemColor, notes, updateItem, hideCancel } = props.data
   return <AvForm onValidSubmit={props.handleSubmitValue}>
-    <AvField type="text" name="name" label={<>{componentType} Name <b className="text-color"> * </b></>} errorMessage={componentType + " Name Required"} value={itemName} placeholder={"Enter "+ componentType +" name"} required />
+    <AvField type="text" name="name" label={<>{componentType} Name <b className="text-color"> * </b></>} errorMessage={componentType + " Name Required"} value={itemName} placeholder={"Enter " + componentType + " name"} required />
     {componentType === "Label" ? <AvField type="textarea" name="notes" value={notes} placeholder="Description / Notes" label="Description / Notes" />
-      : <AvField type="select" name="type" label="Type" value={type ? type :billType.PAYABLE } errorMessage="Select Type of Category" >
+      : <AvField type="select" name="type" label="Type" value={type ? type : billType.PAYABLE} errorMessage="Select Type of Category" >
         <option value={billType.PAYABLE}>Payable</option>
         <option value={billType.RECEIVABLE}>Receivable</option>
       </AvField>
@@ -163,53 +163,38 @@ export const ProfileFormUI = (props) => {
   // Default value set while creating profile in AvForm
   const defaultValues = { type: 0 }
   return <AvForm onValidSubmit={props.handleSubmit} model={defaultValues}>
-    {!profileName && <Row>
-      <Col sm={3} ><Label>Profile Type</Label> </Col>
-      <Col sm={6}>
-        <AvField type="select" id="symbol" name="type" onChange={props.setButtonText} value={profileType}>
-          {profileTypes.map((profile, key) => { return <option key={key} value={profile.type} data={profile.symbol} symbol={profile.symbol} >{`${profile.name} ${"-"} ${profile.cost} ${"per month - "} ${profile.description}`}</option> })}
-        </AvField></Col>
-    </Row>}
-    {!action || (profileType === 0) ?
-      // This Block execute only when user action is null or user selects to create a Free Profile
-      <>
-        <Row>
-          <Col sm={3}> <Label>Profile Name</Label> </Col>
-          <Col sm={6}><AvField type="text" name="name" value={profileName} placeholder="Enter Profile name" id="tool-tip" required /> </Col>
-        </Row>
-        {getCurrency(currencies, currencySymbol)}<br />
-          {((user && !user.action) && (profile && profile.upgradeTypes)) &&
-            <>
-            {/* <div>If you want to upgrade your profile, click on Upgrade to </div> */}
+    <Col sm="14" md={{ size: 10, offset: 2 }}>
+      {!profileName && showProfileType(props, profileType, profileTypes)}  {/* This method is called when user clicks on create profile (no profile name) */}
+      {!action || (profileType === 0) ?
+          // This Block execute only when user action is null or user selects to create a Free Profile
+        showProfileForm(props, profile, profileName, profileTypes, currencies, currencySymbol, user, buttonMessage, userConfirmUpgrade)
+          // This Block execute when user actions are "ADD_BILLING" , "ADD_CREDITS_LOW" & "VERIFY_EMAIL"
+        : <>
             <Row>
-              <Col sm={3}>Profile type : </Col>
-              <Col sm={6}>&nbsp;{props.loadProfileType(profile.type)} &nbsp;&nbsp;&nbsp;
-              <UpgradeProfileType userProfile={profile} profileTypes={profileTypes} handleUserConfirm={props.handleUserConfirm} /></Col>
-           </Row><br/></>}
-        <br />
-        <center>
-          <FormGroup>
-            <Button color="success"> {buttonMessage} </Button> &nbsp;
-            <Button active color="light" type="button" onClick={props.handleEditProfileCancel}>Cancel</Button>
-          </FormGroup>
-          {userConfirmUpgrade && <DeleteModel
-            danger={userConfirmUpgrade}
-            headerMessage="Upgrade Profile"
-            bodyMessage="Upgrading a profile may incur some charges. Are you sure you want to upgrade "
-            toggleDanger={props.handleUserConfirm}
-            delete={props.handleUpgradeProfile}
-            cancel={props.handleConfirmUpgrade}
-            buttonText="Upgrade Profile"
-          />}
-        </center><br /><br /><br />
-      </> :
-      // This Block execute when user actions are "ADD_BILLING" , "ADD_CREDITS_LOW" & "VERIFY_EMAIL"
-      <center>
-        <Button type="button" color="info"><Link to={url} style={{ color: "black" }}> {action}</Link></Button> &nbsp;
-        <Button active color="light" type="button" onClick={props.handleEditProfileCancel}>Cancel</Button> &nbsp;
-      </center>
-    }
+              {(user.action === userAction.ADD_CREDITS || user.action === userAction.ADD_CREDITS_LOW) ? <Col><b>! No sufficient credits available to create new profile, please click on add credits to make a payment. </b><br /><br /></Col>
+                : <Col sm="8" style={{ textAlign: 'center' }}><b>! No billing address added, please click on add billing to continue. </b><br /><br /></Col>}
+            </Row>
+            <Row>
+              <Col sm={2}></Col>
+              <Col sm={6}>
+                <Button type="button" color="info"><Link to={url} style={{ color: "black" }}> {action}</Link></Button> &nbsp;
+                <Button active color="light" type="button" onClick={props.handleEditProfileCancel}>Cancel</Button> &nbsp;
+              </Col>
+            </Row>
+          </>
+        }
+    </Col>
   </AvForm>
+}
+
+const showProfileType = (props, profileType, profileTypes) => {
+  return <Row>
+    <Col sm={2} style={{ textAlign: 'right' }}><Label>Profile Type</Label> </Col>
+    <Col sm={6}>
+      <AvField type="select" id="symbol" name="type" onChange={props.setButtonText} value={profileType}>
+        {profileTypes.map((profile, key) => { return <option key={key} value={profile.type} data={profile.symbol} symbol={profile.symbol} >{`${profile.name} - ${profile.cost} per month - ${profile.description}`}</option> })}
+      </AvField></Col>
+  </Row>
 }
 
 // Currency for profile form
@@ -217,11 +202,46 @@ const getCurrency = (currencies, currencySymbol) => {
   if (currencies.length) {
     return <div>
       <Row>
-        <Col sm={3}> <Label>Default Currency </Label> </Col>
-        <Col sm={6}> <AvField type="select" id="symbol" name="currency" value={currencySymbol}>
+        <Col sm={2} style={{ textAlign: 'right' }}><Label>Default Currency </Label> </Col>
+        <Col sm={6}><AvField type="select" id="symbol" name="currency" value={currencySymbol}>
           {currencies.map((currency, key) => { return <option key={key} value={currency.code} data={currency.symbol} symbol={currency.symbol} >{currency.code + " - " + currency.name}</option> })}
         </AvField>
-        </Col></Row>
+        </Col>
+      </Row>
     </div>
   }
+}
+
+const showProfileUpgrade = (props, profile, profileTypes) => {
+  return <Row>
+    <Col sm={2} style={{ textAlign: 'right' }}><Label>Profile type : </Label></Col>
+    <Col sm={6}>&nbsp;{props.loadProfileType(profile.type)} &nbsp;&nbsp;&nbsp;
+      <UpgradeProfileType userProfile={profile} profileTypes={profileTypes} handleUserConfirm={props.handleUserConfirm} />
+    </Col>
+  </Row>
+}
+
+const showProfileForm = (props, profile, profileName, profileTypes, currencies, currencySymbol, user, buttonMessage, userConfirmUpgrade) =>{
+  return <>
+    <Row>
+      <Col sm={2} style={{ textAlign: 'right' }}><Label>Profile Name</Label> </Col>
+      <Col sm={6}><AvField type="text" name="name" value={profileName} placeholder="Enter Profile name" id="tool-tip" required /> </Col>
+    </Row>
+    {getCurrency(currencies, currencySymbol)}<br />
+    {((user && !user.action) && (profile && profile.upgradeTypes)) && showProfileUpgrade(props, profile, profileTypes)}
+    {userConfirmUpgrade && confirmDeleteModel(props, userConfirmUpgrade)}
+    <br />
+    <Row>
+      <Col sm={2}></Col>
+      <Col sm={6}>
+       <Button color="success"> {buttonMessage} </Button>&nbsp;&nbsp;
+      <Button active color="light" type="button" onClick={props.handleEditProfileCancel}>Cancel</Button>
+      </Col>
+    </Row>
+  </>
+}
+
+const confirmDeleteModel = (props, userConfirmUpgrade) => {
+  return <DeleteModel danger={userConfirmUpgrade} headerMessage="Upgrade Profile" toggleDanger={props.handleUserConfirm} delete={props.handleUpgradeProfile} 
+    bodyMessage="Upgrading a profile may incur some charges. Are you sure you want to upgrade " buttonText="Upgrade Profile" cancel={props.handleConfirmUpgrade}/>
 }

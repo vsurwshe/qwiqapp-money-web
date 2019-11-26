@@ -191,10 +191,10 @@ class Profiles extends Component {
             </Table><br /><br />
             <center>
               {user && (userAction.ADD_BILLING === user.action ? <>
-                <Link to="/billing/address/add"><Button color="primary" >Add Billing Address</Button></Link> <br /><br /><br />
-                <p>Please Add Billing Address to upgrade your profile</p></>
-                : userAction.ADD_CREDITS_LOW === user.action && <><Link to="/billing/paymentHistory"><Button color="primary" >Add Credits</Button></Link> <br /><br /><br />
-                  <p>Please Add Credits to upgrade your profile</p> </>)
+                <b>Please Add Billing Address to upgrade your profile</b>&nbsp;<Link to="/billing/address/add">Add Billing Address</Link> <br /><br /><br />
+              </>
+                : userAction.ADD_CREDITS_LOW === user.action && <><b>Please add credits to upgrade your profile</b>&nbsp; <Link to="/billing/paymentHistory">Add Credits</Link> <br /><br />
+                </>)
               }
             </center>
           </CardBody>
@@ -211,8 +211,8 @@ class Profiles extends Component {
       <td><b onClick={() => { this.selectProfile(profile.id) }} ><Avatar name={profile.name.charAt(0)} size="40" round={true} /> &nbsp;&nbsp;{profile.name}</b> </td>
       <td style={{ paddingTop: 18 }}>{this.loadProfileType(profile.type)} </td>
       <td>
-        <Button style={{ backgroundColor: "#43A432", color: "#F0F3F4"}} onClick={() => { this.updateProfile(profile.id, profile.name) }}>Edit</Button> &nbsp;&nbsp;
-        {(user && !user.action) && <UpgradeProfileType userProfile={profile} handleUserConfirm={this.handleUserConfirm} profileTypes={profileTypes} /> }
+        <Button style={{ backgroundColor: "#43A432", color: "#F0F3F4" }} onClick={() => { this.updateProfile(profile.id, profile.name) }}>Edit</Button> &nbsp;&nbsp;
+        {(user && !user.action) && <UpgradeProfileType userProfile={profile} profileTypes={profileTypes} handleUserConfirm={this.handleUserConfirm} />}
       </td>
       {this.state.userConfirmUpgrade && this.loadConfirmations()}
     </tr>

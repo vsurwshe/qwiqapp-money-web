@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Card, CardBody, CardHeader, Col, Alert, Container } from "reactstrap";
+import { Card, CardBody, CardHeader, Col, Alert } from "reactstrap";
 import Store from "../../data/Store";
 import ProfileApi from "../../services/ProfileApi";
 import Profiles from "./Profiles";
@@ -28,7 +28,7 @@ class ProfileForm extends Component {
   componentDidMount = async () => {
     // This Condtions Checks the Profile is Edit or Create
     if (this.state.profileId) {
-      await new ProfileApi().getProfileById(this.successCallById, this.errorCallById, this.state.profileId);    
+      await new ProfileApi().getProfileById(this.successCallById, this.errorCallById, this.state.profileId);
     }
     let user = Store.getUser();
     await new ProfileTypesApi().getProfileTypes((profileTypes) => { this.setState({ profileTypes }) }, (error) => { console.log("error", error); })
@@ -103,8 +103,8 @@ class ProfileForm extends Component {
     if (color === "success") {
       setTimeout(() => {
         this.setState({ content: '', color: '', profileName: '', profileCreated: true });
-        }, Config.apiTimeoutMillis);
-      } 
+      }, Config.apiTimeoutMillis);
+    }
   };
 
   profileViewTable = () => {
@@ -150,15 +150,13 @@ class ProfileForm extends Component {
         <CardBody>
           {color && <Alert color={color}>{content}</Alert>}
           <Col>
-            <Container>
-              {this.loadProfileForm()}
-              {!this.state.profileId && <><h5>
-                <span onClick={this.profileViewTable} className="float-right profile-comparision-text">
-                  <u>{this.state.comparisionText}</u>
-                </span>
-              </h5> <br />
-                {!profileInfoTable && <ProfileInfoTable />} </>}
-            </Container>
+            {this.loadProfileForm()}
+            {!this.state.profileId && <><h5>
+              <span onClick={this.profileViewTable} className="float-right profile-comparision-text">
+                <u>{this.state.comparisionText}</u>
+              </span>
+            </h5> <br />
+              {!profileInfoTable && <ProfileInfoTable />} </>}
           </Col>
         </CardBody>
       </Card>
