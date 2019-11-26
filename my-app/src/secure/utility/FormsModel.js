@@ -171,16 +171,17 @@ export const ProfileFormUI = (props) => {
           // This Block execute when user actions are "ADD_BILLING" , "ADD_CREDITS_LOW" & "VERIFY_EMAIL"
         : <>
             <Row>
-              {(user.action === userAction.ADD_CREDITS || user.action === userAction.ADD_CREDITS_LOW) ? <Col><b>! No sufficient credits available to create new profile, please click on add credits to make a payment. </b><br /><br /></Col>
+              {(user.action === userAction.ADD_CREDITS || user.action === userAction.ADD_CREDITS_LOW) ? <Col sm={10} style={{ textAlign: 'center' }}><b>! No sufficient credits available to create new profile, please click on add credits to make a payment. </b><br /><br /></Col>
                 : <Col sm="8" style={{ textAlign: 'center' }}><b>! No billing address added, please click on add billing to continue. </b><br /><br /></Col>}
             </Row>
+            <center>
             <Row>
-              <Col sm={2}></Col>
-              <Col sm={6}>
-                <Button type="button" color="info"><Link to={url} style={{ color: "black" }}> {action}</Link></Button> &nbsp;
+              <Col sm={8}>
+                <Button type="button" color="info"><Link to={url} style={{ color: "black" }}> {action === userAction.ADD_BILLING ? "Add Billing" : "Add Credits"}</Link></Button> &nbsp;
                 <Button active color="light" type="button" onClick={props.handleEditProfileCancel}>Cancel</Button> &nbsp;
               </Col>
             </Row>
+            </center>
           </>
         }
     </Col>
@@ -213,12 +214,12 @@ const getCurrency = (currencies, currencySymbol) => {
 }
 
 const showProfileUpgrade = (props, profile, profileTypes) => {
-  return <Row>
+  return <><Row>
     <Col sm={2} style={{ textAlign: 'right' }}><Label>Profile type : </Label></Col>
     <Col sm={6}>&nbsp;{props.loadProfileType(profile.type)} &nbsp;&nbsp;&nbsp;
       <UpgradeProfileType userProfile={profile} profileTypes={profileTypes} handleUserConfirm={props.handleUserConfirm} />
     </Col>
-  </Row>
+  </Row><br /></>
 }
 
 const showProfileForm = (props, profile, profileName, profileTypes, currencies, currencySymbol, user, buttonMessage, userConfirmUpgrade) =>{
@@ -230,14 +231,12 @@ const showProfileForm = (props, profile, profileName, profileTypes, currencies, 
     {getCurrency(currencies, currencySymbol)}<br />
     {((user && !user.action) && (profile && profile.upgradeTypes)) && showProfileUpgrade(props, profile, profileTypes)}
     {userConfirmUpgrade && confirmDeleteModel(props, userConfirmUpgrade)}
-    <br />
-    <Row>
-      <Col sm={2}></Col>
-      <Col sm={6}>
-       <Button color="success"> {buttonMessage} </Button>&nbsp;&nbsp;
-      <Button active color="light" type="button" onClick={props.handleEditProfileCancel}>Cancel</Button>
-      </Col>
-    </Row>
+    <center>
+      <Row> <Col sm={8}>
+        <Button color="success"> {buttonMessage} </Button>&nbsp;&nbsp;
+        <Button active color="light" type="button" onClick={props.handleEditProfileCancel}>Cancel</Button>
+      </Col> </Row>
+    </center> 
   </>
 }
 
