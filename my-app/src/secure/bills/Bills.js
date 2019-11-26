@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
 import { Redirect } from 'react-router';
-import { Card, CardBody, Alert,FormGroup, Label, Input} from "reactstrap";
+import { Card, CardBody, Alert, FormGroup, Label, Input } from "reactstrap";
 import BillForm from "./BillForm";
 import BillApi from "../../services/BillApi";
 import Store from "../../data/Store";
@@ -18,7 +18,7 @@ import ViewPayment from "./billPayment/ViewPayment";
 import PaymentApi from "../../services/PaymentApi";
 import { profileFeature } from "../../data/GlobalKeys";
 import '../../css/style.css';
-import { DataTable } from "../utility/DataTabel";
+import { DataTable } from "../utility/DataTable";
 
 // This importing Jquery in react.
 const $ = require('jquery');
@@ -28,7 +28,7 @@ const moreOptions = {
   ADDPAYMENT: 'Add a payment',
   PAYHISTORY: 'Payments History',
   MARKPAID: 'Mark as Paid',
-  UNMARKPAID:'Mark as Un-Paid',
+  UNMARKPAID: 'Mark as Un-Paid',
   ATTACHMENTS: 'Attachments',
   DELETE: 'Delete'
 }
@@ -51,9 +51,9 @@ class Bills extends Component {
     };
   }
 
-  componentDidMount = () => { 
+  componentDidMount = () => {
     this._isMounted = true;
-    this.setProfileId(); 
+    this.setProfileId();
   }
 
   componentWillReceiveProps = () => {
@@ -69,42 +69,42 @@ class Bills extends Component {
     const { bills } = this.state
     var _ = this; //this line holding the class this keyword.
     if (this._isMounted) {
-    // .display is css class name of datatable so we are using class name to identify which action is called.
-    $('.display').on('click', '.editButton', function () {
-      var row = $(this).closest('tr'); // This fetches the data of the row when we click 'edit' in dataTable
-      var editData = $('.display').dataTable().fnGetData(row); //this line separates the required data from the fecthced row data.
-      var updateBill = editData && bills.filter(bill => bill.id === editData[0]); // Filter the specific bill from the list of bills using id and assign to updatebill
-      updateBill && _.handleUpdateBillAction(updateBill[0]) // 
-    })
-    $('.display').on('change', 'select', function () {
-      var row = $(this).closest('tr'); // This fetches the data of the row when we click 'edit' in dataTable
-      var editData = $('.display').dataTable().fnGetData(row); //this line separates the required data from the fecthced row data.
-      var requiredBill = editData && bills.filter(bill => bill.id === editData[0]); // Filter the specific bill from the list of bills using id and assign to updatebill
-      requiredBill && _.handleShowPayment(requiredBill[0])
-      switch ($(this).val()) {
-        case moreOptions.ADDPAYMENT:
+      // .display is css class name of datatable so we are using class name to identify which action is called.
+      $('.display').on('click', '.editButton', function () {
+        var row = $(this).closest('tr'); // This fetches the data of the row when we click 'edit' in dataTable
+        var editData = $('.display').dataTable().fnGetData(row); //this line separates the required data from the fecthced row data.
+        var updateBill = editData && bills.filter(bill => bill.id === editData[0]); // Filter the specific bill from the list of bills using id and assign to updatebill
+        updateBill && _.handleUpdateBillAction(updateBill[0]) // 
+      })
+      $('.display').on('change', 'select', function () {
+        var row = $(this).closest('tr'); // This fetches the data of the row when we click 'edit' in dataTable
+        var editData = $('.display').dataTable().fnGetData(row); //this line separates the required data from the fecthced row data.
+        var requiredBill = editData && bills.filter(bill => bill.id === editData[0]); // Filter the specific bill from the list of bills using id and assign to updatebill
+        requiredBill && _.handleShowPayment(requiredBill[0])
+        switch ($(this).val()) {
+          case moreOptions.ADDPAYMENT:
             requiredBill && _.handleAddPayment();
             break;
-        case moreOptions.ATTACHMENTS:
+          case moreOptions.ATTACHMENTS:
             requiredBill && _.handleBillAttachments(requiredBill[0].id)
             break;
-        case moreOptions.DELETE:
+          case moreOptions.DELETE:
             requiredBill && _.handleSetBillId(requiredBill[0])
             break;
-        case moreOptions.MARKPAID:
+          case moreOptions.MARKPAID:
             requiredBill && _.handleMarkAsPaid();
             break;
-        case moreOptions.PAYHISTORY:
+          case moreOptions.PAYHISTORY:
             requiredBill && _.handleViewPayment();
             break;
-        case moreOptions.UNMARKPAID:
+          case moreOptions.UNMARKPAID:
             requiredBill && _.handleMarkAsUnpaidPayment();
             break;
-        default:
-           break;
-      }
-    })
-  }
+          default:
+            break;
+        }
+      })
+    }
   }
 
   componentWillUnmount() { this._isMounted = false; }
@@ -120,8 +120,8 @@ class Bills extends Component {
   }
 
   // This Method execute the Category API Call
-  getCategory = () => { 
-    const { profileId } =this.state
+  getCategory = () => {
+    const { profileId } = this.state
     new CategoryApi().getCategories(this.successCallCategory, this.errorCall, profileId);
   }
 
@@ -175,7 +175,7 @@ class Bills extends Component {
 
   // This Method execute the Bill API Call
   getBills = async () => {
-    const { profileId } =this.state
+    const { profileId } = this.state
     if (this.props.paid) {
       await new BillApi().getBills(this.successCallBill, this.errorCall, profileId, true);
     } else {
@@ -228,7 +228,7 @@ class Bills extends Component {
   }
 
   getPayments = async (billId, previousPayments) => {
-    const { profileId } =this.state
+    const { profileId } = this.state
     await new PaymentApi().getBillPayments((payments) => {
       let newRespData = { payments: payments, billId: billId }
       this.successCallPayments(newRespData, previousPayments)
@@ -240,8 +240,8 @@ class Bills extends Component {
     return await this.setState({ billPayments: previousPayments })
   }
 
-  handleMarkAsUnPaid = () => { 
-    const { profileId , requiredBill } =this.state
+  handleMarkAsUnPaid = () => {
+    const { profileId, requiredBill } = this.state
     new BillApi().markAsUnPaid(this.successUnpaidBill, this.errorCall, profileId, requiredBill.id);
   }
 
@@ -258,7 +258,7 @@ class Bills extends Component {
   }
 
   //this toggle for Delete Model
-  toggleDanger = () => { this.setState({ danger: !this.state.danger });}
+  toggleDanger = () => { this.setState({ danger: !this.state.danger }); }
 
   // This Method Execute the Bill Form Executions.
   handleCreateBillAction = () => { this.setState({ createBillRequest: true }) }
@@ -281,9 +281,9 @@ class Bills extends Component {
   }
 
   // This is more options handle methods
-  handleAddPayment = () => {this.setState({ addPayment: true });}
+  handleAddPayment = () => { this.setState({ addPayment: true }); }
   handleMarkAsPaid = () => { this.setState({ markPaid: true }); }
-  handleViewPayment = () => {this.setState({ viewPayment: !this.state.viewPayment }); }
+  handleViewPayment = () => { this.setState({ viewPayment: !this.state.viewPayment }); }
   handleMarkAsUnpaidPayment = () => { this.setState({ markAsUnPaid: true }) }
   handleBillAttachments = (billId) => { this.setState({ billId: billId, attachments: true }) }
   handleSetBillId = (bill) => {
@@ -300,7 +300,8 @@ class Bills extends Component {
 
   // This is method calulate last paying amount for bill
   calculateLastPaid = (bill) => {
-    const { billPayments } = this.state
+    const { billPayments } = this.state;
+    let totalPaid = 0;
     if (billPayments.length > 0) {
       // Filtering billpayments according to billId
       let filteredBillPayment = billPayments.filter(billPayment => billPayment.billId === bill.id);
@@ -309,23 +310,19 @@ class Bills extends Component {
         // Calculating the total paidAmount of all billpayments
         filteredBillPayment[0].payments.forEach((payment) => {
           paidAmount = paidAmount - (payment.amount);
+          totalPaid = totalPaid + payment.amount
         })
         let sortedPayment = filteredBillPayment[0].payments.sort((a, b) => (a.date > b.date ? -1 : 1))[0]
         let lastPaid = {
           payments: filteredBillPayment[0].payments, //  Getting payments list of a specific bill
           date: sortedPayment.date,  // Sorting and getting last payment date
           paymentAmt: sortedPayment.amount,  // Sorting and getting last payment amount
-          paidAmount: paidAmount   // setting the total paid amount
+          paidAmount: paidAmount,   // setting the total paid amount
+          totalPaid: totalPaid
         }
         return lastPaid;
       }
     }
-  }
-
-
-
-  descriptionToggle = () => {
-    this.setState({ tooltipOpen: !this.state.tooltipOpen });
   }
 
   render() {
@@ -337,8 +334,8 @@ class Bills extends Component {
     } else if (!bills.length && !createBillRequest) {  // Checks for bills not there and no bill create Request, then executes
       return <div>
         {/*  If spinner is true and bills are there, it shows the loader function, until bills are loaded */
-        (spinner && bills.length) ? <>{visible && <Alert isOpen={visible} color={this.state.color}>{this.state.content}</Alert>} {this.loadLoader()}
-        </> : !bills.length && this.emptyBills() // If bills not there, it will show Empty message 
+          (spinner && bills.length) ? <>{visible && <Alert isOpen={visible} color={this.state.color}>{this.state.content}</Alert>} {this.loadLoader()}
+          </> : !bills.length && this.emptyBills() // If bills not there, it will show Empty message 
         }
       </div>
     } else if (createBillRequest) {
@@ -403,6 +400,7 @@ class Bills extends Component {
       { title: "Due Date" },
       { title: "Bill Date" },
       { title: "Description" },
+      { title: '', orderable: false },
       { title: "Bill Amount" },
       { title: "Status" },
       { title: "", orderable: false }, // This column used for edit button
@@ -436,23 +434,29 @@ class Bills extends Component {
       strike ? "<strike>" + ShowServiceComponent.customDate(bill.dueDate_, true) + "</strike>" : ShowServiceComponent.customDate(bill.dueDate_, true),
       strike ? "<strike>" + ShowServiceComponent.customDate(bill.billDate, false, true) + "</strike>" : ShowServiceComponent.customDate(bill.billDate, false, true),
       strike ? "<strike>" + billDescription + "</strike>" : billDescription,
-      strike ? "<strike style='color:red'>" + this.handleSignedBillAmount(bill) + "</strike>" : "<span style='color:green'>" + this.handleSignedBillAmount(bill) + "</span>",
-      strike ? "<strike>"+this.loadPaidStatus(bill, lastPaid)+"</strike>" :this.loadPaidStatus(bill, lastPaid),
+      strike ? "<strike>" + this.getBillCurrency(bill.currency, bill.amount) + "</strike>" : this.getBillCurrency(bill.currency, bill.amount),
+      strike ? "<strike style='color:red'>" + this.handleSignedBillAmount(bill.amount) + "</strike>" : "<span style='color:green'>" + this.handleSignedBillAmount(bill.amount) + "</span>",
+      strike ? "<strike>" + this.loadPaidStatus(bill, lastPaid) + "</strike>" : this.loadPaidStatus(bill, lastPaid),
       this.loadEditButton(bill, key, featureAttachment),
       this.loadDropDown(bill, key, featureAttachment)
     ]
     return singleRow;
   }
 
+  getBillCurrency = (currencyCode, billAmount) => {
+    const data = Store.getCurrencies();
+    const result = data.filter(currenct => currenct.code === currencyCode);
+    return this.handleSignedBillAmount(billAmount, result[0].symbol)
+  }
+
   loadPaidStatus = (bill, lastPaid) => {
-    return lastPaid ? "<span style='color: #0080ff'>Last paid: " + ShowServiceComponent.billDateFormat(lastPaid.date) + "&nbsp;&nbsp;" + ShowServiceComponent.billTypeAmount(bill.currency, lastPaid.paymentAmt, true) + "</span>" : ""
+    return lastPaid ? "<span class='bill-amount-color'>Total paid: " + ShowServiceComponent.billDateFormat(lastPaid.date) + "&nbsp;&nbsp;" + ShowServiceComponent.billTypeAmount(bill.currency, lastPaid.totalPaid, true) + "</span>" : ""
   }
 
-  handleSignedBillAmount = (bill) => {
-    return bill.amount < 0 ? "<span class='text-color'>" + ShowServiceComponent.billTypeAmount(bill.currency, bill.amount) + "</span>" : "<span class='bill-amount-color'>" + ShowServiceComponent.billTypeAmount(bill.currency, bill.amount) + "</span>";
+  handleSignedBillAmount = (billAmount, data) => {
+    let value = data ? data : billAmount;
+    return billAmount < 0 ? "<span class='text-color'>" + value + "</span>" : "<span class='bill-amount-color'>" + value + "</span>";
   }
-
-  loadBillAmount = (currency, amount) => { return new Intl.NumberFormat('en-US', { style: 'currency', currency: currency }).format(amount) }
 
   dateFormat = (userDate) => {
     let date = "" + userDate
@@ -491,20 +495,20 @@ class Bills extends Component {
   }
 
   loadEditButton = () => {
-    return "<span class='float-right editButton'> <Button class='rounded' style='background-color: transparent; border-color: #ada397; color: green;'>Edit</Button> &nbsp;&nbsp;&nbsp; </span>"
+    return "<span class='float-right editButton'> <Button class='rounded' style='background-color: transparent; border-color: #ada397'>Edit</Button> &nbsp;&nbsp;&nbsp; </span>"
   }
 
   //this Method loads Browser DropDown
   loadDropDown = (bill, key, featureAttachment) => {
-    var moreOption= "<span class='float-right'> <select id='more' class='dropdown-toggle'> <option>More ... </option>" +
-    "<option>" + moreOptions.ADDPAYMENT + "</option>" +
-    "<option>" + moreOptions.PAYHISTORY + "</option>";
+    var moreOption = "<span class='float-right'> <select id='more' class='dropdown-toggle'> <option>More ... </option>" +
+      "<option>" + moreOptions.ADDPAYMENT + "</option>" +
+      "<option>" + moreOptions.PAYHISTORY + "</option>";
     // This Checking Bill is Paid or not according to adding mark as paid or mark as un paid
-    moreOption=moreOption.concat(bill.paid ? "<option>" + moreOptions.UNMARKPAID + "</option>" : "<option>" + moreOptions.MARKPAID + "</option>");
+    moreOption = moreOption.concat(bill.paid ? "<option>" + moreOptions.UNMARKPAID + "</option>" : "<option>" + moreOptions.MARKPAID + "</option>");
     // This  its have feature attachment or not Checking
-    moreOption=moreOption.concat(featureAttachment && "<option>" + moreOptions.ATTACHMENTS + "</option>");
-    moreOption=moreOption.concat("<option>" + moreOptions.DELETE + "</option> </select> </span>");
-    return  moreOption;
+    moreOption = moreOption.concat(featureAttachment && "<option>" + moreOptions.ATTACHMENTS + "</option>");
+    moreOption = moreOption.concat("<option>" + moreOptions.DELETE + "</option> </select> </span>");
+    return moreOption;
   }
 
   //this method calls the delete model

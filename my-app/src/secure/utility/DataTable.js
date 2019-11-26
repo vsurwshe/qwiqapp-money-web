@@ -46,12 +46,14 @@ export class DataTable extends Component{
                 }
             },
             columnDefs: [
+                {targets: [3], width:"25%"},
                 {targets: [4], width:"1%"},
                 {targets: [1], width:"7%"},
-                {targets: [2], width:"15%"},
-                {targets: [6], width:"8%"},
+                {targets: [ 5], width:"9%"},
+                {targets: [2], width:"10%"},
+                {targets: [6], width:"25%"}, // reduced width And fixed padding/marigin Top of edit button
                 {sType: "date", aTargets: [ 1, 2 ]}, // Sorting on Date format
-                {sType: "amount", aTargets: [ 4 ]}
+                // {sType: "num-fmt", aTargets: [ 4 ]}
                 // {sType: "currency", aTargets: [ 4 ]} // 
                 // {sType: "numeric-comma", aTargets: [ 4 ]}
                 // {sType: "natural", aTargets: [ 4 ]}
