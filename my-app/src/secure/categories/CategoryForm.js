@@ -138,7 +138,7 @@ class CategoryForm extends Component {
         </CardHeader>
         <CardBody>
           <center><h5> <b>{!this.props.category ? "New Category Details" : "Category Details"}</b> </h5> </center>
-          <Col sm="1" md={{ size: 6, offset: 3 }}>
+          <Col sm={{ size: 12, offset: 1 }} md={{ size: 12, offset: 1 }} lg={{ size: 8, offset: 3 }} xl={{ size: 6, offset: 3 }}>
             <Alert color={alertColor}>{content}</Alert>
             <CategoryLabelForm
               data={categoryFields}
