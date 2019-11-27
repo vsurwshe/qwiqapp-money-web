@@ -45,11 +45,12 @@ class ProfileForm extends Component {
     console.log(error);
   }
 
+  // Set button text according to user (selected profile type)
   setButtonText = async (event) => {
-    const { value } = event.target;
+    const { value } = event.target; // value type is String, like "1", "0"
     let buttonText = "";
     const { profileTypes } = this.state
-    if (profileTypes.length) {
+    if (profileTypes.length) { 
       buttonText = await profileTypes.filter(profile => profile.type === parseInt(value));
       this.setState({ buttonText: "Create " + buttonText[0].name + " Profile", profileType: parseInt(value) })
     }
@@ -64,12 +65,12 @@ class ProfileForm extends Component {
   }
 
   handleSubmit = (e, data) => {
-    const { profileId, action } = this.state;
+    const { profileId, action, profileType } = this.state;
     if (profileId) {
       new ProfileApi().updateProfile(this.successCall, this.errorCall, data, profileId);
     } else {
       if (action !== userAction.VERIFY_EMAIL) {
-        new ProfileApi().createProfile(this.successCall, (err) => { this.errorCall(err, data.type) }, { ...data, type: this.state.profileType });
+        new ProfileApi().createProfile(this.successCall, (err) => { this.errorCall(err, data.type) }, { ...data, type: profileType });
       } else {
         this.callAlertTimer("danger", "First Please verify with the code sent to your Email.....")
       }
@@ -197,7 +198,7 @@ class ProfileForm extends Component {
   }
 
   loadProfileForm = () => {
-    const { profile, profileName, tooltipOpen, currencies, profileTypes, action, buttonText, profileType } = this.state;
+    const { profile, profileName, tooltipOpen, currencies, profileTypes, action, buttonText, profileType, user, userConfirmUpgrade } = this.state;
     const profileFields = {
       profile: profile,
       action: action,
@@ -207,8 +208,8 @@ class ProfileForm extends Component {
       tooltipOpen: tooltipOpen,
       buttonMessage: this.props.profileId ? 'Update' : buttonText,
       currencies: currencies,
-      user: this.state.user,
-      userConfirmUpgrade: this.state.userConfirmUpgrade
+      user: user,
+      userConfirmUpgrade: userConfirmUpgrade
     }
     return <ProfileFormUI
       data={profileFields}

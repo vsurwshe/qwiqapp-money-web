@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from "prop-types";
 import { UncontrolledDropdown, DropdownToggle, DropdownItem, DropdownMenu } from "reactstrap";
 
+// Profile upgrade dropdown loads according to profile.upgradeTypes
 export const UpgradeProfileType = (props) => {
   const {userProfile,profileTypes } = props;
   return <>

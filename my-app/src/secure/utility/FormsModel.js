@@ -163,7 +163,7 @@ export const ProfileFormUI = (props) => {
   // Default value set while creating profile in AvForm
   const defaultValues = { type: 0 }
   return <AvForm onValidSubmit={props.handleSubmit} model={defaultValues}>
-    <Col sm="14" md={{ size: 10, offset: 2 }}>
+    <Col sm={12} md={{ size: 8, offset: 1}} lg={{size: 5, offset: 3}}>
       {!profileName && showProfileType(props, profileType, profileTypes)}  {/* This method is called when user clicks on create profile (no profile name) */}
       {!action || (profileType === 0) ?
           // This Block execute only when user action is null or user selects to create a Free Profile
@@ -171,12 +171,12 @@ export const ProfileFormUI = (props) => {
           // This Block execute when user actions are "ADD_BILLING" , "ADD_CREDITS_LOW" & "VERIFY_EMAIL"
         : <>
             <Row>
-              {(user.action === userAction.ADD_CREDITS || user.action === userAction.ADD_CREDITS_LOW) ? <Col sm={10} style={{ textAlign: 'center' }}><b>! No sufficient credits available to create new profile, please click on add credits to make a payment. </b><br /><br /></Col>
-                : <Col sm="8" style={{ textAlign: 'center' }}><b>! No billing address added, please click on add billing to continue. </b><br /><br /></Col>}
+              {(user.action === userAction.ADD_CREDITS || user.action === userAction.ADD_CREDITS_LOW) ? <Col sm={{size: 12, offset: 1}} md={{size: 12, offset:1}}><p>! No sufficient credits available to create new profile, please click on add credits to make a payment. </p><br /></Col>
+                : <Col sm={{size: 8, offset: 1}} md={{size: 12, offset: 1}} ><p>! No billing address added, please click on add billing to continue. </p><br /></Col>}
             </Row>
             <center>
             <Row>
-              <Col sm={8}>
+              <Col sm={{size: 8, offset: 1}} md={{size: 8, offset: 2}}>
                 <Button type="button" color="info"><Link to={url} style={{ color: "black" }}> {action === userAction.ADD_BILLING ? "Add Billing" : "Add Credits"}</Link></Button> &nbsp;
                 <Button active color="light" type="button" onClick={props.handleEditProfileCancel}>Cancel</Button> &nbsp;
               </Col>
@@ -190,8 +190,8 @@ export const ProfileFormUI = (props) => {
 
 const showProfileType = (props, profileType, profileTypes) => {
   return <Row>
-    <Col sm={2} style={{ textAlign: 'right' }}><Label>Profile Type</Label> </Col>
-    <Col sm={6}>
+    <Col sm={3}><Label style={{marginTop: 7}}>Profile Type</Label> </Col>
+    <Col sm={8}>
       <AvField type="select" id="symbol" name="type" onChange={props.setButtonText} value={profileType}>
         {profileTypes.map((profile, key) => { return <option key={key} value={profile.type} data={profile.symbol} symbol={profile.symbol} >{`${profile.name} - ${profile.cost} per month - ${profile.description}`}</option> })}
       </AvField></Col>
@@ -203,8 +203,8 @@ const getCurrency = (currencies, currencySymbol) => {
   if (currencies.length) {
     return <div>
       <Row>
-        <Col sm={2} style={{ textAlign: 'right' }}><Label>Default Currency </Label> </Col>
-        <Col sm={6}><AvField type="select" id="symbol" name="currency" value={currencySymbol}>
+        <Col sm={3}><Label>Default Currency </Label> </Col>
+        <Col sm={8}><AvField type="select" id="symbol" name="currency" value={currencySymbol}>
           {currencies.map((currency, key) => { return <option key={key} value={currency.code} data={currency.symbol} symbol={currency.symbol} >{currency.code + " - " + currency.name}</option> })}
         </AvField>
         </Col>
@@ -215,8 +215,9 @@ const getCurrency = (currencies, currencySymbol) => {
 
 const showProfileUpgrade = (props, profile, profileTypes) => {
   return <><Row>
-    <Col sm={2} style={{ textAlign: 'right' }}><Label>Profile type : </Label></Col>
-    <Col sm={6}>&nbsp;{props.loadProfileType(profile.type)} &nbsp;&nbsp;&nbsp;
+    <Col sm={3}><Label>Profile type  </Label></Col>
+    {/* <Col sm={2} style={{ textAlign: 'right' }}><Label>Profile type : </Label></Col> */}
+    <Col sm={9}>&nbsp;{props.loadProfileType(profile.type)} &nbsp;&nbsp;&nbsp;
       <UpgradeProfileType userProfile={profile} profileTypes={profileTypes} handleUserConfirm={props.handleUserConfirm} />
     </Col>
   </Row><br /></>
@@ -225,14 +226,14 @@ const showProfileUpgrade = (props, profile, profileTypes) => {
 const showProfileForm = (props, profile, profileName, profileTypes, currencies, currencySymbol, user, buttonMessage, userConfirmUpgrade) =>{
   return <>
     <Row>
-      <Col sm={2} style={{ textAlign: 'right' }}><Label>Profile Name</Label> </Col>
-      <Col sm={6}><AvField type="text" name="name" value={profileName} placeholder="Enter Profile name" id="tool-tip" required /> </Col>
+      <Col sm={3}><Label>Profile Name</Label> </Col>
+      <Col sm={8}><AvField type="text" name="name" value={profileName} placeholder="Enter Profile name" id="tool-tip" required /> </Col>
     </Row>
     {getCurrency(currencies, currencySymbol)}<br />
     {((user && !user.action) && (profile && profile.upgradeTypes)) && showProfileUpgrade(props, profile, profileTypes)}
     {userConfirmUpgrade && confirmDeleteModel(props, userConfirmUpgrade)}
     <center>
-      <Row> <Col sm={8}>
+      <Row> <Col sm={{size: 8, offset: 3}} md={{size: 8, offset: 3}}  lg={{size: 8, offset: 2}} > 
         <Button color="success"> {buttonMessage} </Button>&nbsp;&nbsp;
         <Button active color="light" type="button" onClick={props.handleEditProfileCancel}>Cancel</Button>
       </Col> </Row>

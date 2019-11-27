@@ -190,7 +190,9 @@ class Profiles extends Component {
               </tbody>
             </Table><br /><br />
             <center>
-              {user && (userAction.ADD_BILLING === user.action ? <>
+              {/* If user action is not null then excutes this conditions for create profile */}
+              {/* Button text changed according to user action */}
+              {user && user.action && (userAction.ADD_BILLING === user.action ? <>
                 <b>Please Add Billing Address to upgrade your profile</b>&nbsp;<Link to="/billing/address/add">Add Billing Address</Link> <br /><br /><br />
               </>
                 : userAction.ADD_CREDITS_LOW === user.action && <><b>Please add credits to upgrade your profile</b>&nbsp; <Link to="/billing/paymentHistory">Add Credits</Link> <br /><br />
