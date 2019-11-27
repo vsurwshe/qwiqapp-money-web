@@ -5,7 +5,6 @@ import { Redirect } from 'react-router';
 import BillAttachmentsApi from '../../../services/BillAttachmentsApi';
 import { ShowServiceComponent } from '../../utility/ShowServiceComponent';
 import Config from '../../../data/Config';
-import Store from '../../../data/Store';
 
 class AddBillAttachment extends Component {
    constructor(props){
@@ -27,7 +26,6 @@ class AddBillAttachment extends Component {
 
   handlePostData = () => {
     const { profileId, bill } = this.props
-    // const { profileId, billId } = Store.getProfileIdAndBillId();
     const { file } = this.state;
     if (file) {
       let reader = new FormData();

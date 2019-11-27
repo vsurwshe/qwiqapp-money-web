@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Suspense, lazy  } from "react";
 import { withRouter } from "react-router-dom";
 import { Redirect } from 'react-router';
 import { Card, CardBody, Alert, FormGroup, Label, Input } from "reactstrap";
@@ -13,13 +13,14 @@ import { ProfileEmptyMessage } from "../utility/ProfileEmptyMessage";
 import { DeleteModel } from "../utility/DeleteModel";
 import { ShowServiceComponent } from "../utility/ShowServiceComponent";
 import Config from "../../data/Config";
-import BillPayment from "./billPayment/ BillPayment";
-import ViewPayment from "./billPayment/ViewPayment";
 import PaymentApi from "../../services/PaymentApi";
 import { profileFeature, moreOptions } from "../../data/GlobalKeys";
 import '../../css/style.css';
 import { DataTable } from "../utility/DataTable";
 import BillTabs from "./BillTabs";
+import '../../css/style.css';
+
+const BillPayment = lazy(() => import('./billPayment/ BillPayment'));
 
 // This importing Jquery in react.
 const $ = require('jquery');
@@ -247,6 +248,13 @@ class Bills extends Component {
     }
   }
 
+  callAlertTimer = (alertColor, alertMessage) => {
+    this.setState({alertColor, alertMessage});
+    setTimeout(()=>{
+      this.setState({alertColor: undefined, alertMessage: undefined});
+    },  Config.apiTimeoutMillis);
+  }
+
   //this toggle for Delete Model
   toggleDanger = () => { this.setState({ danger: !this.state.danger }); }
 
@@ -352,7 +360,7 @@ class Bills extends Component {
       getLabels: this.getLabels,
       bill : updateBill
     }
-
+    
     if (!profileId) {
       return <ProfileEmptyMessage />
     } else if (!bills.length && !createBillRequest) {  // Checks for bills not there and no bill create Request, then executes
@@ -378,15 +386,13 @@ class Bills extends Component {
     } else if (deleteBillRequest) {
       return <DeleteBill billId={billId} profileId={profileId} removeDependents={this.state.removeDependents} />
     } else if (this.state.addPayment || this.state.markPaid) {
-      // return <BillTabs for="payments" bill={requiredBill} markPaid={markPaid} paidAmount={paidAmount} profileId={profileId} />
-      return <BillPayment bill={requiredBill} markPaid={markPaid} paidAmount={paidAmount} profileId={profileId} />
+      return <Suspense fallback={<div>Loadding...</div>}><BillPayment bill={updateBill} markPaid={markPaid} paidAmount={paidAmount} profileId={profileId} /></Suspense>
     } else if (this.state.viewPayment) {
       return <BillTabs for="payments" 
       // bill={this.state.requiredBill} 
       tabData={tabData}
       paidAmount={paidAmount} 
       cancelButton={this.handleViewPayment} />
-      // return <ViewPayment bill={this.state.requiredBill} paidAmount={paidAmount} profileId={profileId} cancel={this.handleViewPayment} />
     } else if (this.state.attachments) {
       //  let data = {
       //           profileId: profileId,

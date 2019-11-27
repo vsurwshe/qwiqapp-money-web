@@ -1,15 +1,14 @@
 import React, { Component } from 'react';
 import { Card, CardHeader, CardBody, Button, Row, Col, Modal, ModalHeader, Alert } from 'reactstrap';
 import { FaTrashAlt, FaCloudUploadAlt, FaEye } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
 import BillAttachmentsApi from '../../../services/BillAttachmentsApi';
 import AttachmentUtils from '../../utility/AttachmentUtils';
 import { DeleteModel } from '../../utility/DeleteModel';
 import { ShowServiceComponent } from '../../utility/ShowServiceComponent';
 import Config from '../../../data/Config';
-import Store from '../../../data/Store';
-import '../../../css/style.css';
 import AddBillAttachment from './AddBillAttachment';
+import '../../../css/style.css';
+
 
 class BillAttachments extends Component {
     /*
@@ -27,16 +26,10 @@ class BillAttachments extends Component {
             reAttachment: ''
         }
     }
-    // componentWillMount() {
-    //     this._iMount = true;
-    //     const { profileId, billId } = Store.getProfileIdAndBillId();
-    //     this.setState({ profileId, billId })
-    // }
-
+  
     componentDidMount() {
         this._iMount = true;
         const { profileId, bill } = this.props
-        // const { profileId, billId } = this.state
         if (profileId && bill && bill.id) {
             new BillAttachmentsApi().getBillAttachments(this.successCall, this.errorCall, profileId, bill.id);
         }

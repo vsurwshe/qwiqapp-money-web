@@ -25,7 +25,6 @@ class BillPayment extends Component {
             this.setState({ amount: tempAmount.split('-')[1] });
         }
     }
-
     handleSubmitValue = async (event, errors, values) => {
         const  {profileId, bill} =this.props
         if (errors.length === 0) {
@@ -59,14 +58,21 @@ class BillPayment extends Component {
 
     cancelPayment = () => { this.setState({ cancelPayment: true }); }
 
-    render() {
-        const { cancelPayment, currencies } = this.state
-        const { bill } = this.props
-        let selectedCurrency = currencies.filter((currency) => { return currency.code === bill.currency })
+     render() {
+       //  console.log("render");
+        const { cancelPayment, currencies } = this.state;
+      //  console.log(currencies);
+        const { bill } = this.props;
+     //   console.log("object: ", bill);
+        let selectedCurrency = currencies && currencies.filter(currency=> currency.code === bill.currency);
+        //debugger;
+       // console.log("object: ", selectedCurrency);
         return cancelPayment ? <Bills paid={this.state.paid} /> : <div> {this.loadPayment(bill, selectedCurrency[0])} </div>
+       //return null;
     }
 
     loadPayment = (bill, selectedCurrency) => {
+        //console.log("====: ",selectedCurrency);
         const name = bill.description ? bill.description : bill.categoryName.name
         let billDate = (bill.billDate + "").slice(0, 4) + "-" + (bill.billDate + "").slice(4, 6) + "-" + (bill.billDate + "").slice(6, 8);
         return <Card className="card-accent-primary">
