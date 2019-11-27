@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { AvField } from 'availity-reactstrap-validation';
-import { Alert, Card, Col, Row, Input, Collapse, Modal, ModalBody, ModalHeader, Label } from "reactstrap";
+import { Alert, Card, Col, Row, Input, Collapse, Modal, ModalBody, ModalHeader } from "reactstrap";
 import Select from 'react-select';
 import BillApi from "../../services/BillApi";
 import Bills from "./Bills";
@@ -439,27 +439,35 @@ class BillForm extends Component {
       </Row>
       <Row>
       <Col>
-        <Row>
-          <Col sm={3}> <Label>Labels</Label></Col>
-          <Col>{labels ? <>
-            <Select isMulti options={Data.categoriesOrLabels(labels)} styles={Data.colourStyles} defaultValue={labelName} placeholder="Select Labels" onChange={this.labelSelected} /></> : <p style={{ paddingTop: contacts && "10px", textDecoration: "underline" }} onClick={() => this.toggleCreateModal("Labels")}>You don't have Labels, Click here to Create </p>}
+          <Row>
+            <Col sm={3}> <label>Labels</label></Col>
+            <Col>{labels ? <>
+            <Select isMulti options={Data.categoriesOrLabels(labels)} styles={Data.colourStyles} defaultValue={labelName} placeholder="Select Labels" onChange={this.labelSelected} /></> 
+                  : <p style={{ paddingTop: contacts && "10px", textDecoration: "none" }} onClick={() => this.toggleCreateModal("Labels")}>You don't have Labels, <u>Click here</u> to Create </p>}
           </Col>
-          <Col sm={3}> <Label>Contacts</Label></Col>
-          <Col>{contacts ? <>
-            <Select options={Data.contacts(contacts)} defaultValue={contactName} placeholder="Select Contacts" onChange={this.contactSelected} /></> : <p style={{ paddingTop: labels && "10px", textDecoration: "underline" }} onClick={() => this.toggleCreateModal("Contacts")}> {labels && <span ></span>}You don't have Contacts, Click here to  Create</p>}
+          </Row>
+        </Col>
+        <Col>
+          <Row>
+            <Col sm={3}> <label>Contacts</label></Col>
+            <Col>{contacts ? <>
+            <Select options={Data.contacts(contacts)} defaultValue={contactName} placeholder="Select Contacts" onChange={this.contactSelected} /></> 
+              : <p style={{ paddingTop: labels && "10px", textDecoration: "none" }} onClick={() => this.toggleCreateModal("Contacts")}> You don't have Contacts, <u>Click here</u> to  Create</p>}
           </Col>
-        </Row>
-      </Col>
+            </Row>
+        </Col>
+      </Row>
+      <Row>
       </Row><br />
       <Row style={{ paddingLeft: 38 }}>
         <Input name="check" type="checkbox" checked={this.state.checked} value={this.state.checked} onChange={this.handleNotificationCheck} />Enable notification
-          {this.state.checked && <>&nbsp;  from  &nbsp; <AvField name="notifyDays" style={{ all: 'unset', borderBottom: '1px solid', width: 50 }} value={this.state.notifyDays} placeholder="0" type="number" onChange={(e) => { this.handleDate(e) }} errorMessage="Invalid notify-days" />
+          {this.state.checked && <>&nbsp;  from  &nbsp; <AvField name="notifyDays" style={{ all: 'unset', borderBottom: '1px solid', width: 50 }} 
+          value={this.state.notifyDays} placeholder="0" type="number" onChange={(e) => { this.handleDate(e) }} errorMessage="Invalid notify-days" />
           &nbsp;days of Bill Date &nbsp;({this.state.notifyDate} &nbsp;onwards)
             </>}
       </Row> <br />
-      {
-        // This checks the profile feature Recurring and shows Recurring Configuration logic if the feature exists
-        featureRecurring && <>
+      {/* This checks the profile feature Recurring and shows Recurring Configuration logic if the feature exists */}
+      {featureRecurring && <>
           <Row style={{ paddingLeft: 38 }}>
             <Input name="check" type="checkbox" checked={this.state.recurConfig} value={this.state.recurConfig} onChange={this.handleRecurBillCheck} /> Recurring Bill {this.state.recurConfig && <p style={{ paddingLeft: 5 }}>USING BELOW RECURRING CONFIGURATION: </p>}
           </Row>
@@ -516,6 +524,7 @@ class BillForm extends Component {
               </Col>
             </Row>
           </Col>
+          </Row>       
           <Row>
             <Col>
               <Row>
@@ -546,7 +555,6 @@ class BillForm extends Component {
               </Row>
             </Col>
           </Row>
-        </Row>
       </>
     )
   }
