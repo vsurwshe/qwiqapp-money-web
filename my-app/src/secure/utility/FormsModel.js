@@ -1,21 +1,23 @@
 import React from 'react';
-import { AvForm, AvField, AvInput, AvRadio, AvRadioGroup } from 'availity-reactstrap-validation';
-import { Button, FormGroup, Col, Row, Label, Collapse, Input, Table } from "reactstrap";
+import { AvForm, AvField, AvInput } from 'availity-reactstrap-validation';
+import { Button, FormGroup, Col, Row, Label, Collapse, Input } from "reactstrap";
 import { Link } from 'react-router-dom';
 import Select from 'react-select';
 import Data from '../../data/SelectData';
 import Store from '../../data/Store';
 import { userAction, profileFeature, billType, DEFAULT_CURRENCY } from '../../data/GlobalKeys';
 import '../../css/style.css';
+import { UpgradeProfileType } from '../profiles/UpgradeProfileType';
+import { DeleteModel } from './DeleteModel';
 
 // ======================= This Bill Form Code =======
 export const BillFormUI = (props) => {
   const featureMultiCurrency = Store.getProfile().features.includes(profileFeature.MULTICURRENCY);
   let categoryName;
   const { bill, currencies, labels, contacts, categories, type, amount, dueDays, dueDate, billDate, moreOptions, doubleClick } = props.data;
-  
+
   // If bill exists, take currency from bill. If not, takes the default currency from selected Profile
-  const { currency, description } = bill ? bill : Store.getProfile(); 
+  const { currency, description } = bill ? bill : Store.getProfile();
   if (bill) {
     categoryName = Data.categoriesOrLabels(categories).filter(item => { return item.value === bill.categoryId })
   }
@@ -26,7 +28,7 @@ export const BillFormUI = (props) => {
           <option value="">Select</option>
           {currencies.map((currency, key) => {
             return <option key={key} value={currency.code}
-              data={currency.symbol} symbol={currency.symbol} >{currency.code + " - "+ currency.name}</option>
+              data={currency.symbol} symbol={currency.symbol} >{currency.code + " - " + currency.name}</option>
           })}
         </AvField>
       </Col>
@@ -83,9 +85,9 @@ export const BillFormUI = (props) => {
 export const CategoryLabelForm = (props) => {
   const { doubleClick, collapse, parentId, chkMakeParent, type, componentType, items, itemName, itemColor, notes, updateItem, hideCancel } = props.data
   return <AvForm onValidSubmit={props.handleSubmitValue}>
-    <AvField type="text" name="name" label={<>{componentType} Name <b className="text-color"> * </b></>} errorMessage={componentType + " Name Required"} value={itemName} placeholder={"Enter "+ componentType +" name"} required />
+    <AvField type="text" name="name" label={<>{componentType} Name <b className="text-color"> * </b></>} errorMessage={componentType + " Name Required"} value={itemName} placeholder={"Enter " + componentType + " name"} required />
     {componentType === "Label" ? <AvField type="textarea" name="notes" value={notes} placeholder="Description / Notes" label="Description / Notes" />
-      : <AvField type="select" name="type" label="Type" value={type ? type :billType.PAYABLE } errorMessage="Select Type of Category" >
+      : <AvField type="select" name="type" label="Type" value={type ? type : billType.PAYABLE} errorMessage="Select Type of Category" >
         <option value={billType.PAYABLE}>Payable</option>
         <option value={billType.RECEIVABLE}>Receivable</option>
       </AvField>
@@ -155,74 +157,91 @@ export const ContactFormUI = (props) => {
 // ==============ProfileFormUI ===========
 
 export const ProfileFormUI = (props) => {
-  const { profile, profileName, buttonMessage, currencies, profileType, profileTypes, action } = props.data;
+  const { profile, profileName, buttonMessage, currencies, profileType, profileTypes, action, user, userConfirmUpgrade } = props.data;
   const currencySymbol = profile ? profile.currency : DEFAULT_CURRENCY;
   let url = action === userAction.VERIFY_EMAIL ? "/verify" : (action === userAction.ADD_BILLING ? "/billing/address" : "/billing/paymentHistory");
   // Default value set while creating profile in AvForm
   const defaultValues = { type: 0 }
   return <AvForm onValidSubmit={props.handleSubmit} model={defaultValues}>
-    {// This Block Shows the ProfileTypes when user actions is  not "VERIFY_EMAIL" and  profileTypes length is more than 0
-      (profileTypes.length > 0 && action !== userAction.VERIFY_EMAIL) &&
-      <> <h5><b>Choose Profile Type</b></h5> {createProfileTypes(profileTypes, props.setButtonText)}</>
-    }
-    {!action || ((profileType === 0)) ?
-      // This Block execute only when user action is null or user selects to create a Free Profile
-      <>{getCurrency(currencies, currencySymbol)}
-        <AvField type="text" name="name" value={profileName} placeholder="Enter Profile name" id="tool-tip" label={<>Profile Name <b className="text-color"> * </b></>} required />
-        <center>
-          <FormGroup>
-            <Button color="success"> {buttonMessage} </Button> &nbsp;
-          <Button active color="light" type="button" onClick={props.handleEditProfileCancel}>Cancel</Button>
-          </FormGroup>
-        </center>
-      </> :
-      // This Block execute when user actions are "ADD_BILLING" , "ADD_CREDITS_LOW" & "VERIFY_EMAIL"
-      <center>
-        <Button type="button" color="info"><Link to={url} style={{ color: "black" }}> {action}</Link></Button> &nbsp;
-        <Button active color="light" type="button" onClick={props.handleEditProfileCancel}>Cancel</Button>
-      </center>
-    }
+    <Col sm={12} md={{ size: 8, offset: 1}} lg={{size: 5, offset: 3}}>
+      {!profileName && showProfileType(props, profileType, profileTypes)}  {/* This method is called when user clicks on create profile (no profile name) */}
+      {!action || (profileType === 0) ?
+          // This Block execute only when user action is null or user selects to create a Free Profile
+        showProfileForm(props, profile, profileName, profileTypes, currencies, currencySymbol, user, buttonMessage, userConfirmUpgrade)
+          // This Block execute when user actions are "ADD_BILLING" , "ADD_CREDITS_LOW" & "VERIFY_EMAIL"
+        : <>
+            <Row>
+              {(user.action === userAction.ADD_CREDITS || user.action === userAction.ADD_CREDITS_LOW) ? <Col sm={{size: 12, offset: 1}} md={{size: 12, offset:1}}><p>! No sufficient credits available to create new profile, please click on add credits to make a payment. </p><br /></Col>
+                : <Col sm={{size: 8, offset: 1}} md={{size: 12, offset: 1}} ><p>! No billing address added, please click on add billing to continue. </p><br /></Col>}
+            </Row>
+            <center>
+            <Row>
+              <Col sm={{size: 8, offset: 1}} md={{size: 8, offset: 2}}>
+                <Button type="button" color="info"><Link to={url} style={{ color: "black" }}> {action === userAction.ADD_BILLING ? "Add Billing" : "Add Credits"}</Link></Button> &nbsp;
+                <Button active color="light" type="button" onClick={props.handleEditProfileCancel}>Cancel</Button> &nbsp;
+              </Col>
+            </Row>
+            </center>
+          </>
+        }
+    </Col>
   </AvForm>
 }
 
-// Shows the ProfileTypes table for creating Profiles
-const createProfileTypes = (profileTypesOptions, setButtonText) => {
-  return <AvRadioGroup name="type">
-    <Table bordered striped hover>
-      <thead className="table-header-color">
-        <tr>
-          <th>Type</th>
-          <th>Profile Type</th>
-          <th>Cost</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-        {profileInfo(profileTypesOptions, setButtonText)}
-      </tbody>
-    </Table>
-  </AvRadioGroup>
-}
-
-// Returns the ProfileTypes table rows using profileTypeOptions
-const profileInfo = (profileTypesOptions, setButtonText) => {
-  const rowData = profileTypesOptions.map((proTypes, key) => {
-    return <tr key={key}>
-      <td> <AvRadio label={proTypes.name} value={proTypes.type} onChange={() => { return setButtonText(proTypes.type) }} /></td>
-      <td>{proTypes.name}</td>
-      <td>{proTypes.cost}</td>
-      <td>{proTypes.description}</td>
-    </tr>
-  })
-  return rowData
+const showProfileType = (props, profileType, profileTypes) => {
+  return <Row>
+    <Col sm={3}><Label style={{marginTop: 7}}>Profile Type</Label> </Col>
+    <Col sm={8}>
+      <AvField type="select" id="symbol" name="type" onChange={props.setButtonText} value={profileType}>
+        {profileTypes.map((profile, key) => { return <option key={key} value={profile.type} data={profile.symbol} symbol={profile.symbol} >{`${profile.name} - ${profile.cost} per month - ${profile.description}`}</option> })}
+      </AvField></Col>
+  </Row>
 }
 
 // Currency for profile form
 const getCurrency = (currencies, currencySymbol) => {
   if (currencies.length) {
-    return <AvField type="select" id="symbol" name="currency" value={currencySymbol} label="Default Currency">
-      <option value=""> Select</option>
-      {currencies.map((currency, key) => { return <option key={key} value={currency.code} data={currency.symbol} symbol={currency.symbol} >{currency.code + " - " + currency.name}</option> })}
-    </AvField>
+    return <div>
+      <Row>
+        <Col sm={3}><Label>Default Currency </Label> </Col>
+        <Col sm={8}><AvField type="select" id="symbol" name="currency" value={currencySymbol}>
+          {currencies.map((currency, key) => { return <option key={key} value={currency.code} data={currency.symbol} symbol={currency.symbol} >{currency.code + " - " + currency.name}</option> })}
+        </AvField>
+        </Col>
+      </Row>
+    </div>
   }
+}
+
+const showProfileUpgrade = (props, profile, profileTypes) => {
+  return <><Row>
+    <Col sm={3}><Label>Profile type  </Label></Col>
+    {/* <Col sm={2} style={{ textAlign: 'right' }}><Label>Profile type : </Label></Col> */}
+    <Col sm={9}>&nbsp;{props.loadProfileType(profile.type)} &nbsp;&nbsp;&nbsp;
+      <UpgradeProfileType userProfile={profile} profileTypes={profileTypes} handleUserConfirm={props.handleUserConfirm} />
+    </Col>
+  </Row><br /></>
+}
+
+const showProfileForm = (props, profile, profileName, profileTypes, currencies, currencySymbol, user, buttonMessage, userConfirmUpgrade) =>{
+  return <>
+    <Row>
+      <Col sm={3}><Label>Profile Name</Label> </Col>
+      <Col sm={8}><AvField type="text" name="name" value={profileName} placeholder="Enter Profile name" id="tool-tip" required /> </Col>
+    </Row>
+    {getCurrency(currencies, currencySymbol)}<br />
+    {((user && !user.action) && (profile && profile.upgradeTypes)) && showProfileUpgrade(props, profile, profileTypes)}
+    {userConfirmUpgrade && confirmDeleteModel(props, userConfirmUpgrade)}
+    <center>
+      <Row> <Col sm={{size: 8, offset: 3}} md={{size: 8, offset: 3}}  lg={{size: 8, offset: 2}} > 
+        <Button color="success"> {buttonMessage} </Button>&nbsp;&nbsp;
+        <Button active color="light" type="button" onClick={props.handleEditProfileCancel}>Cancel</Button>
+      </Col> </Row>
+    </center> 
+  </>
+}
+
+const confirmDeleteModel = (props, userConfirmUpgrade) => {
+  return <DeleteModel danger={userConfirmUpgrade} headerMessage="Upgrade Profile" toggleDanger={props.handleUserConfirm} delete={props.handleUpgradeProfile} 
+    bodyMessage="Upgrading a profile may incur some charges. Are you sure you want to upgrade " buttonText="Upgrade Profile" cancel={props.handleConfirmUpgrade}/>
 }

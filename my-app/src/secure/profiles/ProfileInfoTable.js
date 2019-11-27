@@ -92,7 +92,7 @@ export default class ProfileInfoTable extends React.Component {
             <td><FaMinus style={red} /></td>
             <td><FaCheck style={green} /></td>
           </tr>
-          <tr>
+          {/* <tr>
             <td style={featureColor}>Multi User</td>
             <td><FaMinus style={red} /></td>
             <td><FaMinus style={red} /></td>
@@ -115,7 +115,7 @@ export default class ProfileInfoTable extends React.Component {
             <td><FaMinus style={red} /></td>
             <td><FaMinus style={red} /></td>
             <td><FaCheck style={green} /></td>
-          </tr>
+          </tr> */}
         </tbody>
       </Table>
     );

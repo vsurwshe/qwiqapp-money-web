@@ -125,7 +125,7 @@ class Main extends Component {
       return this.loadSecureRoutes();
     } else {
       return this.loadRoutes();
-    }
+    } 
   }
 
   //This Method Routes Components
@@ -170,7 +170,7 @@ class Main extends Component {
           {this.loadSideBar()}
           <main className="main" >
             {Config.isLive() ? '' : <p> Non live Environment is: {Config.environment()}</p>}
-            {this.loadNotification(user)}
+            {user.action === userAction.VERIFY_EMAIL && this.loadNotification(user)}
             <Container fluid>
               <Suspense fallback={this.loading()}>{this.loadRoutes()}</Suspense>
             </Container>

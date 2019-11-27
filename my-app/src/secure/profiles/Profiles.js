@@ -1,19 +1,21 @@
-import Avatar from 'react-avatar';
 import React, { Component } from "react";
+import { Link } from 'react-router-dom';
+import Avatar from 'react-avatar';
 import DeleteProfile from "./DeleteProfile";
 import { Redirect } from 'react-router';
 import ProfileApi from "../../services/ProfileApi";
 import { DeleteModel } from "../utility/DeleteModel";
 import { ProfileEmptyMessage } from "../utility/ProfileEmptyMessage";
-import { Container, Button, Card, CardBody, Table, CardHeader, Alert, UncontrolledDropdown, DropdownToggle, DropdownItem, DropdownMenu } from "reactstrap";
+import { Container, Button, Card, CardBody, Table, CardHeader, Alert } from "reactstrap";
 import ProfileForm from './ProfileForm';
 import Config from '../../data/Config';
 import Store from '../../data/Store';
 import { userAction } from '../../data/GlobalKeys';
+import { UpgradeProfileType } from "./UpgradeProfileType";
 /**
  * Display list of profiles,Manage profile like (update, delete)
  * Call Add,Update, delete Componets.
- * TODO: handel Error Message
+ * TODO: handle Error Message
  */
 class Profiles extends Component {
   constructor(props) {
@@ -67,14 +69,14 @@ class Profiles extends Component {
     this.setState({ profileId, profileType, alertColor: undefined, alertMessage: undefined })
   }
 
-  handelUpgradeProfile = () => {
+  handleUpgradeProfile = () => {
     this.handleConfirmUpgrade();
     // After login, userAction getting undefined through ComponetDidMount, to resolve this issue, it is placed here.
     const action = Store.getUser() ? Store.getUser().action : true; // This is user action(actually from store(API response))
     if (action) {
       switch (action) {
         case userAction.ADD_BILLING: // This is Global variable(declared in GlobalKeys.js), to compare 'action' of user
-        this.callAlertTimer("danger", "Add your billing address", true);
+          this.callAlertTimer("danger", "Add your billing address", true);
           break;
         case userAction.ADD_CREDITS:
           this.callAlertTimer("danger", "Add credits", true);
@@ -89,12 +91,12 @@ class Profiles extends Component {
 
   upgradeSuccessCall = (profiles) => {
     this.setState({ profileUpgraded: true });
-    this.callAlertTimer("success","Your profile upgraded successfully", true);
+    this.callAlertTimer("success", "Your profile upgraded successfully", true);
   }
 
-  upgradeErrorCall = (error) =>{
+  upgradeErrorCall = (error) => {
     if (error.response.status === 400 && !error.response.data) {
-      this.callAlertTimer("danger", "Your credits are low, please add more credits", true );
+      this.callAlertTimer("danger", "Your credits are low, please add more credits", true);
     } else {
       this.callAlertTimer("danger", "Unable to process your request", true);
     }
@@ -103,7 +105,7 @@ class Profiles extends Component {
   callAlertTimer = (alertColor, alertMessage, emptyMessages) => {
     this.setState({ alertColor, alertMessage });
     if (emptyMessages) {
-      setTimeout(()=>{
+      setTimeout(() => {
         this.setState({ alertColor: "", alertMessage: "" });
       }, Config.apiTimeoutMillis);
     }
@@ -131,7 +133,7 @@ class Profiles extends Component {
     } else if (createProfile) {
       return <ProfileForm />
     } else if (updateProfile) {
-      return <ProfileForm profileId={profileId} profileName={profileName} />
+      return <ProfileForm profileId={profileId} profileName={profileName} loadProfileType={this.loadProfileType} />
     } else if (deleteProfile) {
       return <DeleteProfile profileId={profileId} />
     } else {
@@ -165,27 +167,40 @@ class Profiles extends Component {
 
   //if one or more profile is there then this method Call
   showProfile = (profiles) => {
+    let user = Store.getUser();
+    let profileTypes = Store.getProfileTypes();
     return (
-      <div className="animated fadeIn">
-        {this.loadHeader()}
-        <CardBody>
-          {this.state.alertMessage && <Alert color={this.state.alertColor} >{this.state.alertMessage}</Alert>}
-          <Table bordered >
-            <thead>
-              <tr className="table-tr" align='center'>
-                <th>Profile Name</th>
-                <th>Profile Type </th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody className="tbody-padding">
-              {profiles.map((profile, key) => {
-                return this.loadSingleProfile(profile, key);
-              })}
-            </tbody>
-          </Table>
-        </CardBody>
-      </div>)
+      <Card>
+        <div className="animated fadeIn">
+          {this.loadHeader()}
+          <CardBody>
+            {this.state.alertMessage && <Alert color={this.state.alertColor} >{this.state.alertMessage}</Alert>}
+            <Table bordered >
+              <thead>
+                <tr className="table-tr" align='center'>
+                  <th>Profile Name</th>
+                  <th>Profile Type </th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody className="tbody-padding">
+                {profiles.map((profile, key) => {
+                  return this.loadSingleProfile(profile, key, user, profileTypes);
+                })}
+              </tbody>
+            </Table><br /><br />
+            <center>
+              {/* If user action is not null then excutes this conditions for create profile */}
+              {/* Button text changed according to user action */}
+              {user && user.action && (userAction.ADD_BILLING === user.action ? <>
+                <b>Please Add Billing Address to upgrade your profile</b>&nbsp;<Link to="/billing/address/add">Add Billing Address</Link> <br /><br /><br />
+              </>
+                : userAction.ADD_CREDITS_LOW === user.action && <><b>Please add credits to upgrade your profile</b>&nbsp; <Link to="/billing/paymentHistory">Add Credits</Link> <br /><br />
+                </>)
+              }
+            </center>
+          </CardBody>
+        </div></Card>)
   }
 
   selectProfile = (selectedId) => {
@@ -193,25 +208,13 @@ class Profiles extends Component {
   }
 
   //this method load the single profile
-  loadSingleProfile = (profile, key) => {
-    let profileTypes = Store.getProfileTypes();
+  loadSingleProfile = (profile, key, user, profileTypes) => {
     return <tr key={key} >
       <td><b onClick={() => { this.selectProfile(profile.id) }} ><Avatar name={profile.name.charAt(0)} size="40" round={true} /> &nbsp;&nbsp;{profile.name}</b> </td>
       <td style={{ paddingTop: 18 }}>{this.loadProfileType(profile.type)} </td>
-      <td align="center">
-        <Button style={{ backgroundColor: "#43A432", color: "#F0F3F4" }} onClick={() => { this.updateProfile(profile.id, profile.name) }}>Edit</Button> &nbsp;
-          {profile.upgradeTypes ? <UncontrolledDropdown group>
-          <DropdownToggle caret >Upgrade to</DropdownToggle>
-          {profileTypes && <DropdownMenu>
-            {profile.upgradeTypes.map((upgradeType, id) => {
-              const upgradeProfileType = profileTypes.filter(profile => profile.type === upgradeType);
-              return <DropdownItem key={id} onClick={() => this.handleUserConfirm(profile.id, upgradeProfileType[0].type)} >{upgradeProfileType[0].name} </DropdownItem>
-            })}
-          </DropdownMenu>
-          }
-        </UncontrolledDropdown>
-          : <span style={{ paddingRight: 110 }}></span>
-        }
+      <td>
+        <Button style={{ backgroundColor: "#43A432", color: "#F0F3F4" }} onClick={() => { this.updateProfile(profile.id, profile.name) }}>Edit</Button> &nbsp;&nbsp;
+        {(user && !user.action) && <UpgradeProfileType userProfile={profile} profileTypes={profileTypes} handleUserConfirm={this.handleUserConfirm} />}
       </td>
       {this.state.userConfirmUpgrade && this.loadConfirmations()}
     </tr>
@@ -244,9 +247,8 @@ class Profiles extends Component {
       danger={this.state.userConfirmUpgrade}
       headerMessage="Upgrade Profile"
       bodyMessage="Upgrading a profile may incur some charges. Are you sure you want to upgrade "
-      // "This profile cost is higher than current profile, are you sure you want to upgrade ?"
       toggleDanger={this.handleUserConfirm}
-      delete={this.handelUpgradeProfile}
+      delete={this.handleUpgradeProfile}
       cancel={this.handleConfirmUpgrade}
       buttonText="Upgrade Profile"
     />
