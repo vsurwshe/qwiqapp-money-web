@@ -67,7 +67,7 @@ class Bills extends Component {
 
   componentDidUpdate = () => {
     const { bills } = this.state
-    var _ = this; //this line holding the class this keyword.
+    var _ = this; //assigns the class's this keyword to _.
     if (this._isMounted) {
       // .display is css class name of datatable so we are using class name to identify which action is called.
       $('.display').on('click', '.editButton', function () {
@@ -138,7 +138,7 @@ class Bills extends Component {
   /* This Method execute the Label API Call
      callContacts is a boolean value passed from BillForm after successfully creating Labels and it determines if getContacts() is called or not */
   getLabels = async (callContacts) => {
-    new LabelApi().getSublabels((labels)=>this.successCallLabel(labels, callContacts), this.errorCall, this.state.profileId);
+    new LabelApi().getSublabels((labels) => this.successCallLabel(labels, callContacts), this.errorCall, this.state.profileId);
   }
 
   // Handle Label response
@@ -154,10 +154,9 @@ class Bills extends Component {
     }
   };
 
-  /* This Method execute the Contacts API Call
-     callBills is a boolean value passed from BillForm after successfully creating Contacts and it determines if getBills() is called or not  */
+  /* This Method execute the Contacts API Call callBills is a boolean value passed from BillForm after successfully creating Contacts and it determines if getBills() is called or not  */
   getContacts = (callBills) => {
-    new ContactApi().getContacts((contacts)=>this.successCallContact(contacts, callBills), this.errorCall, this.state.profileId);
+    new ContactApi().getContacts((contacts) => this.successCallContact(contacts, callBills), this.errorCall, this.state.profileId);
   }
 
   // Handle Contacts response
@@ -216,7 +215,7 @@ class Bills extends Component {
     }
   }
 
-  // category name color append to bills
+  // category name color appended to bills
   billsWithcategoryNameColor = (bills) => {
     let previousPayments = [];
     const prevState = bills;
@@ -295,7 +294,7 @@ class Bills extends Component {
     this.toggleDanger();
   }
 
-  // this method handle remove dependts while deleteing bill
+  // this method handle remove dependents while deleteing bill
   handleRemoveDependents = () => { this.setState({ removeDependents: !this.state.removeDependents }); }
 
   // This is method calulate last paying amount for bill
@@ -327,7 +326,7 @@ class Bills extends Component {
 
   render() {
     const { bills, createBillRequest, updateBillRequest, billId, deleteBillRequest, visible, profileId,
-      updateBill, spinner, labels, categories, contacts, danger, paidAmount, requiredBill, markPaid, profileFeatures } = this.state;
+      updateBill, spinner, labels, categories, contacts, danger, paidAmount, requiredBill, markPaid, profileFeatures, markAsUnPaid } = this.state;
     let featureAttachment = profileFeatures && profileFeatures.includes(profileFeature.ATTACHMENTS) // return true/false
     if (!profileId) {
       return <ProfileEmptyMessage />
@@ -339,9 +338,9 @@ class Bills extends Component {
         }
       </div>
     } else if (createBillRequest) {
-      return <BillForm profileId={profileId} labels={labels} categories={categories} contacts={contacts} getContacts={this.getContacts} getLabels={this.getLabels}/>
+      return <BillForm profileId={profileId} labels={labels} categories={categories} contacts={contacts} getContacts={this.getContacts} getLabels={this.getLabels} />
     } else if (updateBillRequest) {
-      return <BillForm profileId={profileId} bill={updateBill} labels={labels} categories={categories} contacts={contacts} getContacts={this.getContacts} getLabels={this.getLabels}/>
+      return <BillForm profileId={profileId} bill={updateBill} labels={labels} categories={categories} contacts={contacts} getContacts={this.getContacts} getLabels={this.getLabels} />
     } else if (deleteBillRequest) {
       return <DeleteBill billId={billId} profileId={profileId} removeDependents={this.state.removeDependents} />
     } else if (this.state.addPayment || this.state.markPaid) {
@@ -360,7 +359,7 @@ class Bills extends Component {
       return <div>
         {danger && this.deleteBillModel()}
         {this.loadDataTable(bills, featureAttachment, visible)}
-        {this.state.markAsUnPaid && this.handleMarkAsUnPaid()}
+        {markAsUnPaid && this.handleMarkAsUnPaid()}
       </div>
     }
   }
@@ -437,34 +436,31 @@ class Bills extends Component {
       strike ? "<strike>" + this.getBillCurrency(bill.currency, bill.amount) + "</strike>" : this.getBillCurrency(bill.currency, bill.amount),
       strike ? "<strike style='color:red'>" + this.handleSignedBillAmount(bill.amount) + "</strike>" : "<span style='color:green'>" + this.handleSignedBillAmount(bill.amount) + "</span>",
       strike ? "<strike>" + this.loadPaidStatus(bill, lastPaid) + "</strike>" : this.loadPaidStatus(bill, lastPaid),
-      this.loadEditButton(bill, key, featureAttachment),
+      '',
       this.loadDropDown(bill, key, featureAttachment)
     ]
     return singleRow;
   }
 
+  //This filters the currency symbol using currency code in currencies 
   getBillCurrency = (currencyCode, billAmount) => {
     const data = Store.getCurrencies();
     const result = data.filter(currenct => currenct.code === currencyCode);
     return this.handleSignedBillAmount(billAmount, result[0].symbol)
   }
 
+  // This shows the last transaction details
   loadPaidStatus = (bill, lastPaid) => {
     return lastPaid ? "<span class='bill-amount-color'>Total paid: " + ShowServiceComponent.billDateFormat(lastPaid.date) + "&nbsp;&nbsp;" + ShowServiceComponent.billTypeAmount(bill.currency, lastPaid.totalPaid, true) + "</span>" : ""
   }
 
+  // Checks with billAmount and applies styles accordingly
   handleSignedBillAmount = (billAmount, data) => {
     let value = data ? data : billAmount;
     return billAmount < 0 ? "<span class='text-color'>" + value + "</span>" : "<span class='bill-amount-color'>" + value + "</span>";
   }
 
-  dateFormat = (userDate) => {
-    let date = "" + userDate
-    let dateString = date.substring(0, 4) + "-" + date.substring(4, 6) + "-" + date.substring(6, 8)
-    const formatDate = ShowServiceComponent.billDateFormat(new Date(dateString));
-    return formatDate;
-  }
-
+  // This converts api date into actual Date format
   loadDateFormat = (dateParam) => {
     let toStr = "" + dateParam
     let dateString = toStr.substring(0, 4) + "-" + toStr.substring(4, 6) + "-" + toStr.substring(6, 8)
@@ -472,6 +468,7 @@ class Bills extends Component {
     return date;
   }
 
+  // This method is used to display category names in description for bills
   displayCategoryName = (categoryId) => {
     const { categories } = this.state;
     var data = categories.filter(item => { return item.id === categoryId });
@@ -494,11 +491,7 @@ class Bills extends Component {
     }
   }
 
-  loadEditButton = () => {
-    return "<span class='float-right editButton'> <Button class='rounded' style='background-color: transparent; border-color: #ada397'>Edit</Button> &nbsp;&nbsp;&nbsp; </span>"
-  }
-
-  //this Method loads Browser DropDown
+  //this method loads Browser DropDown
   loadDropDown = (bill, key, featureAttachment) => {
     var moreOption = "<span class='float-right'> <select id='more' class='dropdown-toggle'> <option>More ... </option>" +
       "<option>" + moreOptions.ADDPAYMENT + "</option>" +
@@ -519,6 +512,7 @@ class Bills extends Component {
       delete={this.handleDeleteBillAction} cancel={this.toggleDanger} loadDeleteOptions={this.loadDeleteOptions}>bill</DeleteModel>
   }
 
+  // This method shows the options while deleting a bill
   loadDeleteOptions = () => <FormGroup check >
     <Label check>
       <Input type="radio" name="radio2" value="true" onChange={this.handleRemoveDependents} checked={this.state.removeDependents === true} />
