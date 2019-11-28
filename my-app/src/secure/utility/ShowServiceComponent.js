@@ -113,12 +113,6 @@ export const ShowServiceComponent = {
   },
 
   billTypeAmount: function (currency, amount) {
-    // const currencies=Store.getCurrencies();
-    // const result= currencies.filter(singleCurrency=>singleCurrency.code===currency);
-    // const data=amount>0? amount :amount;
-
-    // return `${data}`;
-    // return data;
     return new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(amount>0 ? amount : -(amount))
   },
 
