@@ -63,14 +63,15 @@ class EditUser extends Component {
             <CardBody>
                 <Alert color={color}>{content} </Alert>
                 <center>
+                <Col sm={12} md={{ size: 8, offset: 1}}>
                 <AvForm onSubmit={this.userUpdate} >
                     <Row>
-                        <Col sm={2} className="label-align"><Label>Email</Label></Col>
-                        <Col sm={4}><AvField name="email" type="email" placeholder="Email" value={user.email} required /></Col>
+                        <Col sm={2} ><Label>Email</Label></Col>
+                        <Col sm={5}><AvField name="email" type="email" placeholder="Email" value={user.email} required /></Col>
                     </Row>
                     <Row>
-                        <Col sm={2} className="label-align"><Label>User Name</Label></Col>
-                        <Col  sm={4}><AvField name="name" type="text" placeholder="User Name" value={user.name} required /></Col>
+                        <Col sm={2} ><Label>User Name</Label></Col>
+                        <Col  sm={5}><AvField name="name" type="text" placeholder="User Name" value={user.name} required /></Col>
                     </Row><br/>
                     <Row>
                         <Col sm={{ size: 'auto', offset: 3 }}>
@@ -79,6 +80,7 @@ class EditUser extends Component {
                        </Col>
                     </Row>
                 </AvForm>
+                </Col>
                 </center>
             </CardBody>
         </Card>

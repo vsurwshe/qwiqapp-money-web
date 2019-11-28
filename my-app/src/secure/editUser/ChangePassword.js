@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import { Card, CardBody, CardHeader, Alert, Button, Row, Col, Label, InputGroup, InputGroupAddon } from 'reactstrap';
-import { Redirect } from 'react-router';
-import { Link } from 'react-router-dom'
-import { AvField, AvForm, AvInput } from 'availity-reactstrap-validation';
-import UserApi from '../../services/UserApi';
+import { Link, Redirect } from 'react-router-dom';
+import { Card, CardBody, CardHeader, Alert, Button, Row, Col, Label, InputGroup, InputGroupAddon, InputGroupText } from 'reactstrap';
+import { AvField, AvForm, AvInput, AvGroup } from 'availity-reactstrap-validation';
 import Config from '../../data/Config';
+import UserApi from '../../services/UserApi';
+import { FaEyeSlash, FaEye } from "react-icons/fa";
 import '../../css/style.css';
 
 class ChangePassword extends Component {
@@ -14,11 +14,13 @@ class ChangePassword extends Component {
             color: '',
             content: '',
             doubleClick: false,
-            checked : 'true'
+            checked: 'true',
+            isOpen: false
         }
     }
 
     updatePassword = (event, error, values) => {
+        //console.log(values.pwd, "===", values.show);
         if (error.length === 0) {
             this.setState({ doubleClick: true });
             new UserApi().changePassword(this.changePasswordSuccess, this.changePwdError, values);
@@ -47,8 +49,8 @@ class ChangePassword extends Component {
         }
     }
 
-    setChecked = (e) =>{
-        this.setState({ checked : e.target.value})
+    setChecked = (e) => {
+        this.setState({ checked: e.target.value, isOpen: !this.state.isOpen })
     }
 
     render() {
@@ -57,7 +59,7 @@ class ChangePassword extends Component {
     }
 
     loadChangePassword = (color, content) => {
-        let type = this.state.checked !== 'true' ? "text" : "password"
+        let type = this.state.isOpen ? "text" : "password"
         return (
             <Card>
                 <CardHeader><b>CHANGE PASSWORD</b></CardHeader>
@@ -68,53 +70,40 @@ class ChangePassword extends Component {
                             {(color !== "success" || color) && <Alert color={color}>{content}</Alert>}
                             <AvForm onSubmit={this.updatePassword} >
                                 <Row>
-                                    <Col sm={2}>
-                                    <Label>Old Password</Label>
-                                    </Col>
+                                    <Col sm={2}> <Label>Old password</Label> </Col>
                                     <Col sm={4}>
-                                    <AvField name="old" type="password" errorMessage="Enter Correct Password" placeholder="Enter Old Password" value={color === "danger" && ""} required />
+                                        <AvField name="old" type="password" errorMessage="Enter Correct Password" placeholder="Enter Old Password" value={color === "danger" && ""} required />
                                     </Col>
-                                    </Row>
-                                    <Row>
-                                    <Col sm={2}>
-                                    <Label>New Password</Label>
-                                    </Col>
-                                    <Col sm={4}>
-                                    <AvField name="new" type={type} label="" errorMessage="New Password Required" placeholder="Enter  New Password" required />
-                                    </Col>
-                                    <Col sm={3}>
-                                    <InputGroup>
-                                    <InputGroupAddon addonType="append">
-                                      <Button color="success">To the Right!</Button>
-                                    </InputGroupAddon>
-                                    </InputGroup>
-        
-                                    </Col>
-                                    </Row>
-                                <span className="padding-left"><AvInput name="show" type="checkbox" onChange={e=>this.setChecked(e)}/>Show Password<br/><br/></span>
+                                </Row>
                                 <Row>
-                                    <Col sm={2}><Label>Confirm Password</Label></Col>
-                                    <Col sm={4}><AvField name="renew" type="password" errorMessage="New password and confirm password doesn't match" placeholder="Enter  New Password" validate={{match:{value:'new'}}} required />
+                                    <Col sm={2}> <Label>New password</Label> </Col>
+                                    <Col sm={4}>
+                                        <AvGroup>
+                                            <InputGroup>
+                                                <AvInput name="new" type={type} errorMessage="New Password Required" placeholder="Enter  New Password" required />
+                                                <InputGroupAddon addonType="prepend">
+                                                    <InputGroupText>{this.state.isOpen ? <FaEye onClick={this.setChecked} /> : <FaEyeSlash onClick={this.setChecked} />}</InputGroupText>
+                                                </InputGroupAddon>
+                                            </InputGroup>
+                                        </AvGroup>
                                     </Col>
-                                    </Row>
+                                </Row>
+                                <Row>
+                                    <Col sm={2}><Label>Confirm password</Label></Col>
+                                    <Col sm={4}><AvField name="renew" type="password" errorMessage="New password and confirm password doesn't match" placeholder="Enter  New Password"
+                                        validate={{ match: { value: 'new' } }} required />
+                                    </Col>
+                                </Row>
                                 <center>
                                     <Button color="success" disabled={this.state.doubleClick}>Edit</Button>
                                     <Link to="/dashboard" style={{ marginLeft: 10 }} ><Button color="secondary" type="button" >Cancel</Button></Link>
                                 </center>
-                            </AvForm></>
+                            </AvForm>
+                        </>
                     }
                 </CardBody>
             </Card>
         );
-    }
-
-    loadResponse = (content) => {
-        return <Card>
-            <CardHeader><b>CHANGE PASSWORD</b></CardHeader>
-            <CardBody>
-                <center style={{ color: 'green' }}>{content} <br /><br />
-                </center> </CardBody>
-        </Card>
     }
 }
 
