@@ -87,7 +87,7 @@ export const CategoryLabelForm = (props) => {
   return <AvForm onValidSubmit={props.handleSubmitValue}>
     <Row>
       <Col sm={3} >
-        <Label><>{componentType} Name <b className="text-color"> * </b></></Label>
+        <Label><>{componentType} name <b className="text-color"> * </b></></Label>
       </Col>
       <Col sm={8}>
         <AvField type="text" name="name" errorMessage={componentType + " name required"} value={itemName} placeholder={"Enter " + componentType.toLowerCase() +  " name"} required />
@@ -126,6 +126,7 @@ export const CategoryLabelForm = (props) => {
       )
     }
 
+    {/* It loads the options of Labels/Categories, when user selects Nest Category/label under */}
     <Collapse isOpen={collapse}>
       <Row>
         <Col sm={3}> <Label>{"Select parent " + componentType.toLowerCase()}</Label> </Col>
@@ -240,7 +241,6 @@ const getCurrency = (currencies, currencySymbol) => {
 const showProfileUpgrade = (props, profile, profileTypes) => {
   return <><Row>
     <Col sm={3}><Label>Profile type  </Label></Col>
-    {/* <Col sm={2} style={{ textAlign: 'right' }}><Label>Profile type : </Label></Col> */}
     <Col sm={9}>&nbsp;{props.loadProfileType(profile.type)} &nbsp;&nbsp;&nbsp;
       <UpgradeProfileType userProfile={profile} profileTypes={profileTypes} handleUserConfirm={props.handleUserConfirm} />
     </Col>

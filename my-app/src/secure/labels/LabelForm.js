@@ -11,19 +11,14 @@ class LabelForm extends Component {
     super(props);
     this.state = {
       labels: props.lables,
-      alertColor: "",
-      content: "",
       labelAction: false,
       collapse: props.label ? (props.label.parentId ? true : false) : false,
-      cancelLabel: false,
-      doubleClick: false,
-      chkMakeParent: false,
       index: props.index,
       hideCancel: props.hideButton
     };
   }
 
-  componentDidMount(){
+  componentDidMount() {
     this._isMount = true;
   }
 
@@ -75,10 +70,10 @@ class LabelForm extends Component {
   callAlertTimer = (alertColor, content) => {
     this.setState({ alertColor, content });
     setTimeout(() => {
-      if(this.state.hideCancel){
+      if (this.state.hideCancel) {
         this.setState({ hideCancel: '' })
         this.props.toggleCreateModal('', true)
-      } else{
+      } else {
         if (this._isMount) {
           this.setState({ name: "", content: "", alertColor: "", labelAction: true });
         }
