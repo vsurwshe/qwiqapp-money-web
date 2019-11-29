@@ -42,9 +42,11 @@ export const billType = {
       RECEIVED:"Received"
    }
 }
+
 export const billRepeatType={
    DAY:"DAY"
 }
+
 export const recurBillType={
   DAY:"DAY",
   WEEK:"Week",

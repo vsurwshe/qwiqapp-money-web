@@ -19,12 +19,9 @@ class ChangePassword extends Component {
         }
     }
 
-    updatePassword = (event, error, values) => {
-        //console.log(values.pwd, "===", values.show);
-        if (error.length === 0) {
-            this.setState({ doubleClick: true });
-            new UserApi().changePassword(this.changePasswordSuccess, this.changePwdError, values);
-        }
+    updatePassword = (event, values) => {
+        this.setState({ doubleClick: true });
+        new UserApi().changePassword(this.changePasswordSuccess, this.changePwdError, values);
     }
 
     changePasswordSuccess = (resp) => {
@@ -54,7 +51,7 @@ class ChangePassword extends Component {
     }
 
     render() {
-        const { color, content, } = this.state;
+        const { color, content } = this.state;
         return this.loadChangePassword(color, content)
     }
 
@@ -64,20 +61,20 @@ class ChangePassword extends Component {
             <Card>
                 <CardHeader><b>CHANGE PASSWORD</b></CardHeader>
                 <CardBody>
-                    {color === "success" ? <><Alert color={color}>{content}</Alert>
-                        {this.state.redirectTo && <Redirect to="/dashboard" style={{ marginLeft: 10 }} ></Redirect>}
-                    </> : <>
+                    {color === "success" ? <> <Alert color={color}>{content}</Alert>
+                        {this.state.redirectTo && <Redirect to="/dashboard" style={{ marginLeft: 10 }} ></Redirect>} </>
+                        : <Col sm={12} md={{ size: 8, offset: 1}} lg={{size: 8, offset: 3}} xl={{size: 4, offset: 4}}>
                             {(color !== "success" || color) && <Alert color={color}>{content}</Alert>}
-                            <AvForm onSubmit={this.updatePassword} >
+                            <AvForm onValidSubmit={this.updatePassword} >
                                 <Row>
-                                    <Col sm={2}> <Label>Old password</Label> </Col>
-                                    <Col sm={4}>
+                                    <Col sm={4}> <Label>Old password</Label> </Col>
+                                    <Col sm={8}>
                                         <AvField name="old" type="password" errorMessage="Enter Correct Password" placeholder="Enter Old Password" value={color === "danger" && ""} required />
                                     </Col>
                                 </Row>
                                 <Row>
-                                    <Col sm={2}> <Label>New password</Label> </Col>
-                                    <Col sm={4}>
+                                    <Col sm={4}> <Label>New password</Label> </Col>
+                                    <Col sm={8}>
                                         <AvGroup>
                                             <InputGroup>
                                                 <AvInput name="new" type={type} errorMessage="New Password Required" placeholder="Enter  New Password" required />
@@ -89,17 +86,22 @@ class ChangePassword extends Component {
                                     </Col>
                                 </Row>
                                 <Row>
-                                    <Col sm={2}><Label>Confirm password</Label></Col>
-                                    <Col sm={4}><AvField name="renew" type="password" errorMessage="New password and confirm password doesn't match" placeholder="Enter  New Password"
+                                    <Col sm={4}><Label>Confirm password</Label></Col>
+                                    <Col sm={8}><AvField name="renew" type="password" errorMessage="New password and confirm password doesn't match" placeholder="Enter  New Password"
                                         validate={{ match: { value: 'new' } }} required />
                                     </Col>
                                 </Row>
-                                <center>
-                                    <Button color="success" disabled={this.state.doubleClick}>Edit</Button>
-                                    <Link to="/dashboard" style={{ marginLeft: 10 }} ><Button color="secondary" type="button" >Cancel</Button></Link>
-                                </center>
+                                {/* <center> */}
+                                <Row>
+                                    <Col sm={4}></Col>
+                                    <Col sm={8}>
+                                        <Button color="success" disabled={this.state.doubleClick}>Edit</Button>
+                                        <Link to="/dashboard" style={{ marginLeft: 10 }} ><Button color="secondary" type="button" >Cancel</Button></Link>
+                                    </Col>
+                                </Row>
+                                {/* </center> */}
                             </AvForm>
-                        </>
+                        </Col>
                     }
                 </CardBody>
             </Card>

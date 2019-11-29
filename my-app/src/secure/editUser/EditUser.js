@@ -27,11 +27,9 @@ class EditUser extends Component {
         }
     }
 
-    userUpdate = (event, error, values) => {
-        if (error.length === 0) {
-            this.setState({ doubleClick: true });
-            new UserApi().updateUser(this.updateSuccessCall, this.updateErrorCall, values);
-        }
+    userUpdate = (event, values) => {
+        this.setState({ doubleClick: true });
+        new UserApi().updateUser(this.updateSuccessCall, this.updateErrorCall, values);
     }
 
     updateSuccessCall = (user) => {
@@ -58,32 +56,32 @@ class EditUser extends Component {
     }
 
     loadEditUser = (user, color, content) => {
-        return <Card>
-            <CardHeader><b >EDIT USER</b></CardHeader>
-            <CardBody>
-                <Alert color={color}>{content} </Alert>
-                <center>
-                <Col sm={12} md={{ size: 8, offset: 1}}>
-                <AvForm onSubmit={this.userUpdate} >
-                    <Row>
-                        <Col sm={2} ><Label>Email</Label></Col>
-                        <Col sm={5}><AvField name="email" type="email" placeholder="Email" value={user.email} required /></Col>
-                    </Row>
-                    <Row>
-                        <Col sm={2} ><Label>User Name</Label></Col>
-                        <Col  sm={5}><AvField name="name" type="text" placeholder="User Name" value={user.name} required /></Col>
-                    </Row><br/>
-                    <Row>
-                        <Col sm={{ size: 'auto', offset: 3 }}>
-                           <Button color="success" disabled={this.state.doubleClick}>Edit</Button>
-                           <Link to="/dashboard" style={{ marginLeft: 10 }} ><Button color="secondary" type="button" >Cancel</Button></Link>
-                       </Col>
-                    </Row>
-                </AvForm>
-                </Col>
-                </center>
-            </CardBody>
-        </Card>
+        return (
+            <Card>
+                <CardHeader><b >EDIT USER</b></CardHeader>
+                <CardBody>
+                    <Alert color={color}>{content}</Alert>
+                    <Col sm={12} md={{ size: 8, offset: 1 }} lg={{ size: 8, offset: 3 }} xl={{ size: 4, offset: 4 }}>
+                        <AvForm onValidSubmit={this.userUpdate}>
+                            <Row>
+                                <Col sm={3} ><Label>Email</Label></Col>
+                                <Col sm={6}><AvField name="email" type="email" placeholder="Email" value={user.email} required /></Col>
+                            </Row>
+                            <Row>
+                                <Col sm={3} ><Label>User Name</Label></Col>
+                                <Col sm={6}><AvField name="name" type="text" placeholder="User Name" value={user.name} required /></Col>
+                            </Row><br />
+                            <Row>
+                                <Col sm={3}></Col>
+                                <Col sm={6}>
+                                    <Button color="success" disabled={this.state.doubleClick}>Edit</Button>
+                                    <Link to="/dashboard" style={{ marginLeft: 10 }} ><Button color="secondary" type="button" >Cancel</Button></Link>
+                                </Col>
+                            </Row>
+                        </AvForm>
+                    </Col>
+                </CardBody>
+            </Card>)
     }
 }
 
