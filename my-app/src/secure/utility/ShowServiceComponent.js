@@ -103,7 +103,8 @@ export const ShowServiceComponent = {
   loadDateFormat: function (date) {
     return new Intl.DateTimeFormat('sv-SE', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(date);
   },
-  // this method return formate date like ex: Mon, 03 DeC
+
+ // this method return formate date like ex: Mon, 03 DeC
   billDateFormat: function (date) {
     return new Intl.DateTimeFormat('en-gb', { month: 'short', weekday: 'short', day: '2-digit'}).format(date); 
   },
