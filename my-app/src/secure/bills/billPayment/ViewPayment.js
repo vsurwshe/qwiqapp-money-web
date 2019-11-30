@@ -19,6 +19,7 @@ class ViewPayment extends Component {
       accordion: [],
       onHover: false,
       cancelBtn: props.cancel,
+      addBillPayment: props.payform ? props.payform :false
     };
   }
 
@@ -41,7 +42,7 @@ class ViewPayment extends Component {
     this.setState({ deleteBillPayment: true, deleteTxId });
   }
 
-  handleAddPayment = () => { this.setState({ addBillPayment: true }); }
+  handleAddPayment = () => { this.setState({ addBillPayment: !this.state.addBillPayment }); }
 
   render() {
     const { payments, bill, currencies, addBillPayment, updatePayment, updateBillPayment } = this.state;

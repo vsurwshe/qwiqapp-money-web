@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Card, FormGroup, Button, Alert, Col, CardBody, Label } from 'reactstrap';
 import { AvForm, AvField } from 'availity-reactstrap-validation';
-import { Redirect } from 'react-router';
 import BillAttachmentsApi from '../../../services/BillAttachmentsApi';
 import { ShowServiceComponent } from '../../utility/ShowServiceComponent';
 import Config from '../../../data/Config';

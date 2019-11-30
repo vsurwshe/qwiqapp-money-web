@@ -1,4 +1,4 @@
-import React, { Component, Suspense, lazy  } from "react";
+import React, { Component, Suspense  } from "react";
 import { withRouter } from "react-router-dom";
 import { Redirect } from 'react-router';
 import { Card, CardBody, Alert, FormGroup, Label, Input } from "reactstrap";
@@ -383,10 +383,9 @@ class Bills extends Component {
     } else if (deleteBillRequest) {
       return <DeleteBill billId={billId} profileId={profileId} removeDependents={removeDependents} />
     } else if (addPayment || markPaid) {
-      return <Suspense fallback={<div>Loadding...</div>}>
-              <BillPayment bill={updateBill} markPaid={markPaid} paidAmount={paidAmount} profileId={profileId} />
-        </Suspense>
-    } else if (viewPayment) {
+      let cancelHandle = addPayment ? this.handleAddPayment : this.handleMarkAsPaid
+      return <Suspense fallback={<div>Loadding...</div>}> <BillTabs form="payments" payform={true} tabData={tabData} paidAmount={paidAmount}  cancelButton={cancelHandle} /></Suspense>
+    }else if (viewPayment) {
       // This bill tabs called for Payments.
       return <BillTabs form="payments" tabData={tabData} paidAmount={paidAmount}  cancelButton={this.handleViewPayment} />
     } else if (attachments) {

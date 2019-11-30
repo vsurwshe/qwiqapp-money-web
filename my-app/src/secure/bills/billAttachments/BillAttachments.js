@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Card, CardHeader, CardBody, Button, Row, Col, Modal, ModalHeader, Alert } from 'reactstrap';
+import { Button, Row, Col, Modal, ModalHeader, Alert } from 'reactstrap';
 import { FaTrashAlt, FaCloudUploadAlt, FaEye } from 'react-icons/fa';
 import BillAttachmentsApi from '../../../services/BillAttachmentsApi';
 import AttachmentUtils from '../../utility/AttachmentUtils';
@@ -26,7 +26,7 @@ class BillAttachments extends Component {
             reAttachment: ''
         }
     }
-  
+
     componentDidMount() {
         this._iMount = true;
         const { profileId, bill } = this.props
@@ -36,7 +36,7 @@ class BillAttachments extends Component {
     }
 
     // while deleted attachment then call the attachment API for updated result.
-    componentWillUpdate(){
+    componentWillUpdate() {
         const { profileId, bill } = this.props
         if (this.state.color === 'success') {
             new BillAttachmentsApi().getBillAttachments(this.successCall, this.errorCall, profileId, bill.id);
@@ -58,7 +58,7 @@ class BillAttachments extends Component {
     }
 
     attachementAdded = () => {
-        this.setState({attachementAdded: !this.state.attachementAdded});
+        this.setState({ attachementAdded: !this.state.attachementAdded });
     }
 
     successCall = async (attachments) => {
@@ -113,8 +113,8 @@ class BillAttachments extends Component {
 
     viewLink = (reAttachment) => { AttachmentUtils.viewAttachment(reAttachment).then(response => this.toggleView(response, reAttachment)) }
 
-    addBillAttachment = () =>{
-        this.setState( { addAttachmentRequest: !this.state.addAttachmentRequest });
+    addBillAttachment = () => {
+        this.setState({ addAttachmentRequest: !this.state.addAttachmentRequest });
     }
 
     addAttachmentSuccess = (color, content) => {
@@ -127,12 +127,12 @@ class BillAttachments extends Component {
 
     render() {
         const { attachments, danger, spinner, addAttachmentRequest } = this.state;
-        const {bill, profileId} = this.props
+        const { bill, profileId } = this.props
         if (bill) {
             if (!spinner) {
                 return ShowServiceComponent.loadSpinner('ATTACHMENTS')
             } else if (addAttachmentRequest) {
-                return <div> <AddBillAttachment  profileId={profileId} bill={bill} addAttachmentSuccess={this.addAttachmentSuccess} attachementAdded={this.attachementAdded} cancel={this.addBillAttachment} /> </div>
+                return <div> <AddBillAttachment profileId={profileId} bill={bill} addAttachmentSuccess={this.addAttachmentSuccess} attachementAdded={this.attachementAdded} cancel={this.addBillAttachment} /> </div>
             } else if (!attachments.length) {
                 return this.showNoAttachments()
             } else if (danger) {
@@ -145,36 +145,30 @@ class BillAttachments extends Component {
         }
     }
 
-    loadHeader = () => {
-        const {bill} = this.props
-        return <CardHeader>
-            <div className="black-color padding-top">
-                <strong>ATTACHMENTS
-                    {bill && <FaCloudUploadAlt style={{ marginRight: 10 }} onClick={()=>this.addBillAttachment()} className="float-right" color="#020b71" size={20} />}
-                </strong>
-            </div>
-        </CardHeader>
-    }
-
     showNoAttachments = () => {
-        const {bill} = this.props
-        return <Card>
-            {this.loadHeader()}
-            <center className="column-text"> <CardBody>
-            <h5><b>{bill && bill.id ? "You haven't added any attachments for this Bill. Please add now..." :  "For attchments you need bill id"}</b></h5><br /> </CardBody> </center>
-        </Card>
+        const { bill } = this.props
+        return <>
+            <Row style={{ float: 'right' }}>
+                <div >{bill && <FaCloudUploadAlt style={{ marginRight: 10, }} onClick={() => this.addBillAttachment()} color="#020b71" size={35} />}</div>
+            </Row> <br /><br />
+            <center className="column-text">
+                <h5><b>{bill && bill.id ? "You haven't added any attachments for this Bill. Please add now..." : "For attchments you need bill id"}</b></h5><br />
+            </center>
+        </>
     }
 
     loadAttachments() {
         const { attachments, color, content } = this.state
-        return (
-            <Card>
-                {this.loadHeader()}
-                <CardBody>
-                    {content && <Alert color={color}>{content}</Alert>}
-                    {attachments.map((attachment, key) => { return <div key={key}>{this.loadAttachment(attachment, key)}</div> })}
-                </CardBody>
-            </Card>)
+        const { bill } = this.props
+        return <>
+            <Row style={{ float: 'right' }}>
+                <div >{bill && <FaCloudUploadAlt style={{ marginRight: 10, }} onClick={() => this.addBillAttachment()} color="#020b71" size={35} />}</div>
+            </Row> <br /><br /><br />
+            {content && <Alert color={color}>{content}</Alert>}
+            <Row><Col>
+                {attachments.map((attachment, key) => { return <div key={key}>{this.loadAttachment(attachment, key)}</div> })}</Col>
+            </Row>
+        </>
     }
 
     loadAttachment = (attachment, key) => {

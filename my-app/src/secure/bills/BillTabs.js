@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Card, CardHeader, CardBody, Row, Col, Button, Nav, NavItem, NavLink, TabPane, TabContent, Container } from "reactstrap";
+import { Card, CardHeader, CardBody, Row, Col, Button, Nav, NavItem, NavLink, TabPane, TabContent } from "reactstrap";
 import BillForm from "./BillForm";
 import ViewPayment from "./billPayment/ViewPayment";
 import BillAttachments from "./billAttachments/BillAttachments";
@@ -35,7 +35,7 @@ class BillTabs extends Component {
 
   tabPane() {
     const { categories, bill, contacts, getContacts, getLabels, labels, profileId } = this.props.tabData
-    const { paidAmount, cancelButton } = this.props
+    const { paidAmount, cancelButton,payform } = this.props
 
     return (
       <>
@@ -44,7 +44,7 @@ class BillTabs extends Component {
             : <BillForm cancelButton={cancelButton} profileId={profileId} labels={labels} categories={categories} contacts={contacts} getContacts={getContacts} getLabels={getLabels} />}
         </TabPane>
         <TabPane tabId="2">
-          <ViewPayment bill={bill} paidAmount={paidAmount} profileId={profileId} cancel={cancelButton} />
+          <ViewPayment payform={payform} bill={bill} paidAmount={paidAmount} profileId={profileId} cancel={cancelButton} />
         </TabPane>
         {<TabPane tabId="3"><BillAttachments profileId={profileId} bill={bill} cancelButton={cancelButton} /></TabPane>}
       </>
@@ -54,6 +54,7 @@ class BillTabs extends Component {
     const { profile } = this.state;
     const { bill } = this.props.tabData;
     let featureAttachment = profile && profile.features.length > 0 ? profile.features.includes(profileFeature.ATTACHMENTS) : false
+    console.log(this.props.cancelButton);
     return (
       <div className="animated fadeIn">
         <Card>
