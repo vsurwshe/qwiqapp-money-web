@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import { Card, CardHeader, CardBody, Button, Table } from 'reactstrap';
 import Store from '../../../data/Store';
-import UpdateBillPayment from './UpdateBillPayment';
 import DeleteBillPayment from './DeleteBillPayment';
 import BillApi from '../../../services/BillApi';
 import PaymentApi from '../../../services/PaymentApi';
 import BillPayment from './ BillPayment';
+import '../../../css/style.css';
 
 class ViewPayment extends Component {
   constructor(props) {
@@ -41,17 +41,33 @@ class ViewPayment extends Component {
     this.setState({ deleteBillPayment: true, deleteTxId });
   }
 
+  handleAddPayment = () => { this.setState({ addBillPayment: true }); }
+
   render() {
-    const { payments, bill, currencies } = this.state;
+    const { payments, bill, currencies, addBillPayment, updatePayment, updateBillPayment } = this.state;
+    const { paidAmount} =this.props
+    const { profileId} =this.props.tabData ? this.props.tabData : this.props
     let selectedCurrency;
     if (bill) {
-      if (payments.length === 0) {
+      if (payments.length === 0 && !addBillPayment) {
         return this.noPaymentsAdded();
-      } else if (this.state.addBillPayment) {
-        return <BillPayment bill={this.state.bill} paidAmount={this.props.paidAmount} profileId={this.props.profileId}/>
-      } else if (this.state.updateBillPayment) {
-        return <UpdateBillPayment profileId={this.props.profileId} bill={this.state.bill} updatePayment={this.state.updatePayment} cancelViewPay={this.props.cancel} currency={this.state.currency}
-          paymentDate={this.dateFormat} />
+      } else if (addBillPayment) {
+        let paymentData={
+          bill:bill,
+          paidAmount:paidAmount,
+          profileId:profileId
+        }
+        return <BillPayment data ={paymentData} />
+      } else if (updateBillPayment) {
+        let updatePayementData={
+          bill : bill,
+          paidAmount : paidAmount,
+          profileId : profileId,
+          updatePayment :updatePayment ,
+          currency : this.state.currency,
+          paymentDate: this.dateFormat
+        }
+        return <BillPayment update={updateBillPayment} data={updatePayementData} />
       } else if (this.state.deleteBillPayment) {
         return <DeleteBillPayment profileId={this.props.profileId} cancelViewPay={this.props.cancel} bill={this.state.bill} taxId={this.state.deleteTxId} />
       } else {
@@ -70,9 +86,7 @@ class ViewPayment extends Component {
       fontSize: 15,
       paddingLeft: 30
     }
-    return <Card>
-      {this.loadHeader("Bill Payments")}
-      <CardBody className="card-align">
+    return <>
         <Table frame="box" style={{ borderColor: "#DEE9F2" }}>
           <thead className="table-header-color" >
             <tr>
@@ -98,10 +112,9 @@ class ViewPayment extends Component {
             </tr>
           </tbody>
         </Table>
-        <br /> {this.state.bill.paid ? this.loadPaidMessage() : this.loadDueMessage(selectedCurrency[0], billAmount, totalAmount, paymentStyle)}
-        
-      </CardBody>
-    </Card>
+        <br /> 
+        {this.state.bill.paid ? this.loadPaidMessage() : this.loadDueMessage(selectedCurrency[0], billAmount, totalAmount, paymentStyle)}
+    </>
   }
 
   loadPaidMessage = () => {
@@ -114,8 +127,6 @@ class ViewPayment extends Component {
       <Button color="info" style={{marginLeft: 20}} onClick={this.handleAddPayment}> Add payment </Button>
     </b>
   }
-
-  handleAddPayment = () => { this.setState({ addBillPayment: true }); }
 
   callBillsApi = () => {
     new BillApi().getBills(() => { console.log("successcall") }, () => { console.log("errorCall") }, this.props.profileId, "True")
@@ -144,10 +155,9 @@ class ViewPayment extends Component {
   noPaymentsAdded = () => {
     return <div>
       <Card>
-        {this.loadHeader("Bill Payments")}
         <CardBody>
           <center>
-            <h5>{this.state.bill ? "No payments added yet..!" : "Bill id is required..!"}</h5>
+            <h5>{this.state.bill ? <p className="loader-color" onClick={()=>this.handleAddPayment()} >No payments added yet..! Click here to add payment</p> : "Bill id is required..!"}</h5>
           </center>
         </CardBody>
       </Card>

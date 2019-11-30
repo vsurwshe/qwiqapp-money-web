@@ -47,9 +47,9 @@ class BillAttachments extends Component {
         this._iMount = false;
     }
 
-    // while add attachment then call the attachment API for updated result.
-    // we can use one method(componentDidUpdate/ componentWillUpdate) for updated result of add/delete, 
-    //  but in addaing attachment we are using another component(AddBillAttachment). Here only our Success message showing
+    /* while add attachment then call the attachment API for updated result.
+       we can use one method(componentDidUpdate/ componentWillUpdate) for updated result of add/delete, 
+       but in addaing attachment we are using another component(AddBillAttachment). Here only our Success message showing */
     componentDidUpdate = () => {
         if (this.state.attachementAdded && this.props.profileId) {
             new BillAttachmentsApi().getBillAttachments(this.successCall, this.errorCall, this.state.profileId, this.state.billId);
@@ -127,11 +127,12 @@ class BillAttachments extends Component {
 
     render() {
         const { attachments, danger, spinner, addAttachmentRequest } = this.state;
-        if (this.props.bill) {
+        const {bill, profileId} = this.props
+        if (bill) {
             if (!spinner) {
                 return ShowServiceComponent.loadSpinner('ATTACHMENTS')
             } else if (addAttachmentRequest) {
-                return <div> <AddBillAttachment  profileId={this.props.profileId} bill={this.props.bill} addAttachmentSuccess={this.addAttachmentSuccess} attachementAdded={this.attachementAdded} cancel={this.addBillAttachment} /> </div>
+                return <div> <AddBillAttachment  profileId={profileId} bill={bill} addAttachmentSuccess={this.addAttachmentSuccess} attachementAdded={this.attachementAdded} cancel={this.addBillAttachment} /> </div>
             } else if (!attachments.length) {
                 return this.showNoAttachments()
             } else if (danger) {
@@ -145,20 +146,22 @@ class BillAttachments extends Component {
     }
 
     loadHeader = () => {
+        const {bill} = this.props
         return <CardHeader>
             <div className="black-color padding-top">
                 <strong>ATTACHMENTS
-                    {this.props.bill && <FaCloudUploadAlt style={{ marginRight: 10 }} onClick={()=>this.addBillAttachment()} className="float-right" color="#020b71" size={20} />}
+                    {bill && <FaCloudUploadAlt style={{ marginRight: 10 }} onClick={()=>this.addBillAttachment()} className="float-right" color="#020b71" size={20} />}
                 </strong>
             </div>
         </CardHeader>
     }
 
     showNoAttachments = () => {
+        const {bill} = this.props
         return <Card>
             {this.loadHeader()}
             <center className="column-text"> <CardBody>
-            <h5><b>{this.props.bill && this.props.bill.id ? "You haven't added any attachments for this Bill. Please add now..." :  "For attchments you need bill id"}</b></h5><br /> </CardBody> </center>
+            <h5><b>{bill && bill.id ? "You haven't added any attachments for this Bill. Please add now..." :  "For attchments you need bill id"}</b></h5><br /> </CardBody> </center>
         </Card>
     }
 

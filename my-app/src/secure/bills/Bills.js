@@ -348,9 +348,10 @@ class Bills extends Component {
   }
 
   render() {
-    const { bills, createBillRequest, updateBillRequest, billId, deleteBillRequest, visible, profileId,
-      updateBill, spinner, labels, categories, contacts, danger, paidAmount, requiredBill, markPaid, profileFeatures, markAsUnPaid } = this.state;
+    const { bills, createBillRequest, updateBillRequest, billId, deleteBillRequest, visible, profileId, addPayment, viewPayment, attachments, removeDependents,color,content,
+      markAsUnPaid, updateBill, spinner, labels, categories, contacts, danger, paidAmount, markPaid, profileFeatures } = this.state;
     let featureAttachment = profileFeatures && profileFeatures.includes(profileFeature.ATTACHMENTS) // return true/false
+    // Passing required data to Tabs
     let tabData = {
       profileId: profileId,
       labels: labels,
@@ -362,32 +363,37 @@ class Bills extends Component {
     }
     
     if (!profileId) {
+      // If no profile then showing message 
       return <ProfileEmptyMessage />
-    } else if (!bills.length && !createBillRequest) {  // Checks for bills not there and no bill create Request, then executes
+    } else if (!bills.length && !createBillRequest) {  
+      // Checks for bills not there and no bill create Request, then executes
       return <div>
-        {/*  If spinner is true and bills are there, it shows the loader function, until bills are loaded */
-          (spinner && bills.length) ? <>{visible && <Alert isOpen={visible} color={this.state.color}>{this.state.content}</Alert>} {this.loadLoader()}
-          </> : !bills.length && this.emptyBills() // If bills not there, it will show Empty message 
+        {/*  If spinner is true and bills are there, it shows the loader function, until bills are loaded */}
+        {(spinner && bills.length) ? <>{visible && <Alert isOpen={visible} color={color}>{content}</Alert>} {this.loadLoader()}
+        </> : !bills.length && this.emptyBills() // If bills not there, it will show Empty message 
         }
       </div>
     } else if (createBillRequest) {
       var newTabData={...tabData,bill:null};
-      return <BillTabs for="form" tabData={newTabData} cancelButton={this.createBillAction} />
+      // This bill tabs called for create a bill.
+      return <BillTabs form="form" tabData={newTabData} cancelButton={this.createBillAction} />
     } else if (updateBillRequest) {
-      return <BillTabs for="form" tabData={tabData} cancelButton={this.updateBillAction} />
+      // This bill tabs called for bill update.
+      return <BillTabs form="form" tabData={tabData} cancelButton={this.updateBillAction} />
     } else if (deleteBillRequest) {
-      return <DeleteBill billId={billId} profileId={profileId} removeDependents={this.state.removeDependents} />
-    } else if (this.state.addPayment || this.state.markPaid) {
-      return <Suspense fallback={<div>Loadding...</div>}><BillPayment bill={updateBill} markPaid={markPaid} paidAmount={paidAmount} profileId={profileId} /></Suspense>
-    } else if (this.state.viewPayment) {
-      return <BillTabs for="payments" 
-      // bill={this.state.requiredBill} 
-      tabData={tabData}
-      paidAmount={paidAmount} 
-      cancelButton={this.handleViewPayment} />
-    } else if (this.state.attachments) {
+      return <DeleteBill billId={billId} profileId={profileId} removeDependents={removeDependents} />
+    } else if (addPayment || markPaid) {
+      return <Suspense fallback={<div>Loadding...</div>}>
+              <BillPayment bill={updateBill} markPaid={markPaid} paidAmount={paidAmount} profileId={profileId} />
+        </Suspense>
+    } else if (viewPayment) {
+      // This bill tabs called for Payments.
+      return <BillTabs form="payments" tabData={tabData} paidAmount={paidAmount}  cancelButton={this.handleViewPayment} />
+    } else if (attachments) {
+      // This bill tabs called for Attachments.
       return <BillTabs tabData={tabData} paidAmount={paidAmount}  cancelButton={this.handleAttachemntAction} /> }
     else {
+      // displaying all bills
       return <div>
         {danger && this.deleteBillModel()}
         {this.loadDataTable(bills, featureAttachment, visible)}

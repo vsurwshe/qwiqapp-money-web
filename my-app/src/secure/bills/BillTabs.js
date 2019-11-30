@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Card, CardBody, Row, Col, Nav, NavItem, NavLink, TabPane, TabContent } from "reactstrap";
+import { Card, CardHeader, CardBody, Row, Col, Button, Nav, NavItem, NavLink, TabPane, TabContent, Container } from "reactstrap";
 import BillForm from "./BillForm";
 import ViewPayment from "./billPayment/ViewPayment";
 import BillAttachments from "./billAttachments/BillAttachments";
@@ -16,15 +16,17 @@ class BillTabs extends Component {
   }
 
   componentDidMount() {
-    if (this.props.for === "form") {
+    const {form} =this.props
+    if (form === "form") {
       this.toggle(0, "1");
-    } else if (this.props.for === "payments") {
+    } else if (form === "payments") {
       this.toggle(0, "2");
     } else {
       this.toggle(0, "3");
     }
   }
-
+  
+  // This is tabs method toggle 
   toggle(tabPane, tab) {
     const newArray = this.state.activeTab.slice();
     newArray[tabPane] = tab;
@@ -55,6 +57,8 @@ class BillTabs extends Component {
     return (
       <div className="animated fadeIn">
         <Card>
+          <CardHeader>
+                  <Button className="float-right" color="info" onClick={()=>this.props.cancelButton()} >Goto bills</Button> </CardHeader>
           <CardBody>
             <Row>
               <Col className="mb-4">

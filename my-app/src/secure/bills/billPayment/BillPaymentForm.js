@@ -1,33 +1,51 @@
 import React from 'react';
 import { AvForm, AvField } from 'availity-reactstrap-validation';
-import { FormGroup, Button, Col, Row } from 'reactstrap';
+import { FormGroup, Button, Col, Row, Label } from 'reactstrap';
+import { ShowServiceComponent } from '../../utility/ShowServiceComponent';
 
 export const BillPaymentForm = (props) =>{
-    let date = props.data.updateDate ? props.data.updateDate : new Date()
+    const {updateDate, buttonText}= props.data
+    let date = updateDate ? props.handlePaidDate(updateDate)  : ShowServiceComponent.loadDateFormat(new Date())
+
     return <AvForm onSubmit={props.handleSubmitValue}>
         <Row>
             <Col xs="12" sm="5">
-                <AvField type="number" name="amount" label={props.data.amountLable} placeholder="Amount" value={props.data.paidAmount} errorMessage="Invaild payment amount" required />
+                <Row>
+                    <Col xl={3}><Label>{props.data.amountLable}</Label></Col>
+                    <Col> <AvField type="number" name="amount" placeholder="Amount" value={props.data.paidAmount} errorMessage="Invaild payment amount" required /></Col>
+                </Row>
             </Col>
             <Col xs="6" sm="4">
-                <AvField type="date" name="date" label="Payment Date" value={props.handlePaidDate(date)} errorMessage="Select payment date" required />
+                <Row>
+                    <Col xl={3}><Label>Payment Date</Label></Col>
+                    <Col> <AvField type="date" name="date" value={date} errorMessage="Select payment date" required /></Col>
+                </Row>
             </Col>
             <Col xs="6" sm="3" >
-                <AvField type="select" name="type" label="Payment Type" errorMessage="Select type of payment" value={props.data.paymentType} required>
-                    <option value="">Select type of payment</option>
-                    <option value="Paid">Paid</option>
-                    <option value="Received">Received</option>
-                </AvField>
+            <Row>
+                    <Col xl={3}><Label>Payment Type</Label></Col>
+                    <Col>
+                        <AvField type="select" name="type" errorMessage="Select type of payment" value={props.data.paymentType} required>
+                            <option value="">Select type of payment</option>
+                            <option value="Paid">Paid</option>
+                            <option value="Received">Received</option>
+                        </AvField>
+                    </Col>
+                </Row>
+                
             </Col>
         </Row>
         <Row>
             <Col>
-                <AvField type="textarea" name="notes" label="Payment Notes/ Description" value={props.data.updateNote} placeholder="Payment description" />
+                <Row>
+                    <Col xl={1}><Label>Payment Type</Label></Col>
+                    <Col><AvField type="textarea" name="notes" value={props.data.updateNote} placeholder="Payment description" /></Col>
+                </Row>
             </Col>
         </Row>
         <FormGroup >
-            <Button color="success" disabled={props.data.doubleClick}> Save  </Button> &nbsp;&nbsp;
-                <Button type="button" onClick={props.cancelPayment}>Cancel</Button>
+            <Button color="success" disabled={props.data.doubleClick}> {buttonText}  </Button> &nbsp;&nbsp;
+            <Button type="button" onClick={props.cancelPayment}>Go to Payment History</Button>
         </FormGroup>
     </AvForm>
 }
