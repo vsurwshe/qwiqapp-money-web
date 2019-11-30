@@ -244,7 +244,7 @@ class Bills extends Component {
     new BillApi().markAsUnPaid(this.successUnpaidBill, this.errorCall, profileId, requiredBill.id);
   }
 
-  successUnpaidBill = () => { this.callAlertTimer("success", "Your bill succefully made as unpaid bill") }
+  successUnpaidBill = () => { this.callAlertTimer(this.state.visible, true) }
 
   // This method handle Error Call of API 
   errorCall = (err) => {
@@ -264,9 +264,12 @@ class Bills extends Component {
   handleUpdateBillAction = updateBill => { this.setState({ updateBillRequest: true, updateBill }) };
   handleDeleteBillAction = () => { this.setState({ deleteBillRequest: true }) };
 
-  callAlertTimer = (visible) => {
+  callAlertTimer = (visible, reload) => {
     if (visible) {
       setTimeout(() => { this.setState({ visible: false }); }, Config.apiTimeoutMillis)
+    }
+    if(reload){
+      window.location.reload()
     }
   };
 
@@ -411,6 +414,7 @@ class Bills extends Component {
         {this.loadHeader("")}
         <h6>{visible && <Alert isOpen={visible} color={color}>{this.props.content}</Alert>}</h6>
         <CardBody className="card-align">
+          {/* Calling jquery datatable component providing rows and columns */}
           <DataTable billData={this.loadTableRows(bills, featureAttachment)} columns={columns} />
         </CardBody>
       </Card>
@@ -427,14 +431,14 @@ class Bills extends Component {
   loadSingleRow = (bill, key, featureAttachment) => {
     let strike = bill.paid;
     let lastPaid = this.calculateLastPaid(bill, bill.amount);
-    let billDescription = bill.description ? bill.description : bill.categoryName.name;
+    let billDescription = bill.description ? bill.description.length > 25 ? bill.description.substring(0, 25) + "..." : bill.description : bill.categoryName.name;
     let singleRow = [
       bill.id,
       strike ? "<strike>" + ShowServiceComponent.customDate(bill.dueDate_, true) + "</strike>" : ShowServiceComponent.customDate(bill.dueDate_, true),
       strike ? "<strike>" + ShowServiceComponent.customDate(bill.billDate, false, true) + "</strike>" : ShowServiceComponent.customDate(bill.billDate, false, true),
       strike ? "<strike>" + billDescription + "</strike>" : billDescription,
       strike ? "<strike>" + this.getBillCurrency(bill.currency, bill.amount) + "</strike>" : this.getBillCurrency(bill.currency, bill.amount),
-      strike ? "<strike style='color:red'>" + this.handleSignedBillAmount(bill.amount) + "</strike>" : "<span style='color:green'>" + this.handleSignedBillAmount(bill.amount) + "</span>",
+      strike ? "<strike>" + this.handleSignedBillAmount(bill.amount) + "</strike>" : "<span style='color:green'>" + this.handleSignedBillAmount(bill.amount) + "</span>",
       strike ? "<strike>" + this.loadPaidStatus(bill, lastPaid) + "</strike>" : this.loadPaidStatus(bill, lastPaid),
       '',
       this.loadDropDown(bill, key, featureAttachment)
@@ -451,7 +455,7 @@ class Bills extends Component {
 
   // This shows the last transaction details
   loadPaidStatus = (bill, lastPaid) => {
-    return lastPaid ? "<span class='bill-amount-color'>Total paid: " + ShowServiceComponent.billDateFormat(lastPaid.date) + "&nbsp;&nbsp;" + ShowServiceComponent.billTypeAmount(bill.currency, lastPaid.totalPaid, true) + "</span>" : ""
+    return lastPaid ? "<span class='bill-amount-color'>Total paid: " + ShowServiceComponent.customDate(lastPaid.date, true) + "&nbsp;&nbsp;" + ShowServiceComponent.billTypeAmount(bill.currency, lastPaid.totalPaid, true) + "</span>" : ""
   }
 
   // Checks with billAmount and applies styles accordingly
