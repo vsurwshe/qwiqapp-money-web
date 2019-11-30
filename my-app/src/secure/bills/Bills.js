@@ -372,17 +372,9 @@ class Bills extends Component {
       </div>
     } else if (createBillRequest) {
       var newTabData={...tabData,bill:null};
-      return <BillTabs for="form" 
-      tabData={newTabData}
-      // profileId={profileId} labels={labels} categories={categories} contacts={contacts} getContacts={this.getContacts} getLabels={this.getLabels} 
-      cancelButton={this.createBillAction} />
-      // return <BillForm profileId={profileId} labels={labels} categories={categories} contacts={contacts} getContacts={this.getContacts} getLabels={this.getLabels}/>
+      return <BillTabs for="form" tabData={newTabData} cancelButton={this.createBillAction} />
     } else if (updateBillRequest) {
-      return <BillTabs for="form" 
-      tabData={tabData}
-      // profileId={profileId} bill={updateBill} labels={labels} categories={categories} contacts={contacts} getContacts={this.getContacts} getLabels={this.getLabels} 
-      cancelButton={this.updateBillAction} />
-      // return <BillForm profileId={profileId} bill={updateBill} labels={labels} categories={categories} contacts={contacts} getContacts={this.getContacts} getLabels={this.getLabels}/>
+      return <BillTabs for="form" tabData={tabData} cancelButton={this.updateBillAction} />
     } else if (deleteBillRequest) {
       return <DeleteBill billId={billId} profileId={profileId} removeDependents={this.state.removeDependents} />
     } else if (this.state.addPayment || this.state.markPaid) {
@@ -394,13 +386,7 @@ class Bills extends Component {
       paidAmount={paidAmount} 
       cancelButton={this.handleViewPayment} />
     } else if (this.state.attachments) {
-      //  let data = {
-      //           profileId: profileId,
-      //           billId: billId
-      // }
-      // Store.saveProfileIdAndBillId(data);
-      // return  <Redirect to="/bills/attachments"/>
-      return <BillTabs tabData={tabData} paidAmount={paidAmount}  cancelButton={this.handleViewPayment} /> }
+      return <BillTabs tabData={tabData} paidAmount={paidAmount}  cancelButton={this.handleAttachemntAction} /> }
     else {
       return <div>
         {danger && this.deleteBillModel()}

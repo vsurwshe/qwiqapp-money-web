@@ -35,9 +35,9 @@ async function process(success, failure, apiUrl, requestMethod, data, reload) {
 }
 
 let handleAccessTokenError = (err, failure, apiUrl, requestMethod, data, success, reload) => {
-  if (err.request.status === 0) {
+  if (err.request && err.request.status === 0) {
     errorResponse(err, failure)
-  } else if (err.response.status === 401 || err.response.status === 403) {
+  } else if (err.response && (err.response.status === 401 || err.response.status === 403)) {
     if (!reload) {
       new LoginApi().refresh(() => process(success, failure, apiUrl, requestMethod, data, "ristrict"), errorResponse(err, failure))  
     } else {

@@ -19,8 +19,8 @@ class BillAttachments extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            profileId:'',
-            billId:'',
+            profileId: props.profileId,
+            billId: props.bill && props.bill.id,
             attachments: [],
             dropdownOpen: [],
             reAttachment: ''
@@ -35,14 +35,30 @@ class BillAttachments extends Component {
         }
     }
 
+    // while deleted attachment then call the attachment API for updated result.
+    componentWillUpdate(){
+        const { profileId, bill } = this.props
+        if (this.state.color === 'success') {
+            new BillAttachmentsApi().getBillAttachments(this.successCall, this.errorCall, profileId, bill.id);
+        }
+    }
+
     componentWillUnmount() {
         this._iMount = false;
     }
 
+    // while add attachment then call the attachment API for updated result.
+    // we can use one method(componentDidUpdate/ componentWillUpdate) for updated result of add/delete, 
+    //  but in addaing attachment we are using another component(AddBillAttachment). Here only our Success message showing
     componentDidUpdate = () => {
-        if (this.state.color === "success" && this.props.profileId) {
+        if (this.state.attachementAdded && this.props.profileId) {
             new BillAttachmentsApi().getBillAttachments(this.successCall, this.errorCall, this.state.profileId, this.state.billId);
+            this.attachementAdded();
         }
+    }
+
+    attachementAdded = () => {
+        this.setState({attachementAdded: !this.state.attachementAdded});
     }
 
     successCall = async (attachments) => {
@@ -98,16 +114,24 @@ class BillAttachments extends Component {
     viewLink = (reAttachment) => { AttachmentUtils.viewAttachment(reAttachment).then(response => this.toggleView(response, reAttachment)) }
 
     addBillAttachment = () =>{
-        console.log(this.props.bill);
         this.setState( { addAttachmentRequest: !this.state.addAttachmentRequest });
     }
+
+    addAttachmentSuccess = (color, content) => {
+        this.callAlertTimer(color, content)
+        this.addBillAttachment();
+    }
+    addAttachmentFail = (err) => {
+        this.addBillAttachment();
+    }
+
     render() {
         const { attachments, danger, spinner, addAttachmentRequest } = this.state;
         if (this.props.bill) {
             if (!spinner) {
                 return ShowServiceComponent.loadSpinner('ATTACHMENTS')
             } else if (addAttachmentRequest) {
-                return <div> <AddBillAttachment profileId={this.props.profileId} bill={this.props.bill}/> </div>
+                return <div> <AddBillAttachment  profileId={this.props.profileId} bill={this.props.bill} addAttachmentSuccess={this.addAttachmentSuccess} attachementAdded={this.attachementAdded} cancel={this.addBillAttachment} /> </div>
             } else if (!attachments.length) {
                 return this.showNoAttachments()
             } else if (danger) {
@@ -124,9 +148,7 @@ class BillAttachments extends Component {
         return <CardHeader>
             <div className="black-color padding-top">
                 <strong>ATTACHMENTS
-                    {/* <Link to="/bills/attachments/add" > */}
                     {this.props.bill && <FaCloudUploadAlt style={{ marginRight: 10 }} onClick={()=>this.addBillAttachment()} className="float-right" color="#020b71" size={20} />}
-                    {/* </Link> */}
                 </strong>
             </div>
         </CardHeader>
@@ -146,7 +168,7 @@ class BillAttachments extends Component {
             <Card>
                 {this.loadHeader()}
                 <CardBody>
-                    {color && <Alert color={color}>{content}</Alert>}
+                    {content && <Alert color={color}>{content}</Alert>}
                     {attachments.map((attachment, key) => { return <div key={key}>{this.loadAttachment(attachment, key)}</div> })}
                 </CardBody>
             </Card>)

@@ -44,11 +44,12 @@ class AddBillAttachment extends Component {
   }
 
   successCall = (json) => {
+    this.props.attachementAdded();
     this.callAlertTimer("success", "Attachment added Successfully !!");
   }
 
   errorCall = (err) => {
-    if (err.response.status === 500) {
+    if ( err.response && err.response.status === 500) {
       if (err.response.data && err.response.data.error.debugMessage) {
         this.callAlertTimer('danger', "You can not add this file, please try another file");
       } else {
@@ -63,20 +64,14 @@ class AddBillAttachment extends Component {
     this.setState({ color, content })
     if (color === 'success') {
       setTimeout(() => {
-        this.setState({ color: '', content: '', addSuccess: true });
+        this.setState({ color: '', content: ''});
+        this.props.cancel()
       }, Config.apiTimeoutMillis)
     }
   }
 
   render() {
-    const { addSuccess, cancelAddAttachment } = this.state;
-    // const { profileId, billId } = this.props.location.query ? this.props.location.query : '';
-    const { profileId, bill } = this.props
-    if (addSuccess || cancelAddAttachment) {
-      return <Redirect to={{ pathname: "/bills/attachments", query: { profileId: profileId, billId: bill.id } }} />
-    } else {
       return this.loadAddAttachment();
-    }
   }
 
   loadAddAttachment = () => {
@@ -91,7 +86,7 @@ class AddBillAttachment extends Component {
             <AvField type="file" name="file" onChange={e => this.handleInput(e)} />
             <FormGroup>
               <Button color="info" disabled={this.state.doubleClick} > Upload </Button> &nbsp;&nbsp;
-              <Button active color="light" type="button" onClick={this.cancelAddAttachment} >Cancel</Button>
+              <Button active color="light" type="button" onClick={this.props.cancel} >Cancel</Button>
             </FormGroup>
           </AvForm>
         </Col>
