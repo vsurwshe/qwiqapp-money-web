@@ -15,7 +15,6 @@ class EditUser extends Component {
         this.state = {
             updated: false,
             user: "",
-            color: '',
             doubleClick: false
         }
     }
@@ -23,7 +22,7 @@ class EditUser extends Component {
     componentDidMount = () => {
         let user = Store.getUser();
         if (user) {
-            this.setState({ user });
+            this.setState({ user : user });
         }
     }
 
@@ -60,7 +59,7 @@ class EditUser extends Component {
             <Card>
                 <CardHeader><b >EDIT USER</b></CardHeader>
                 <CardBody>
-                    <Alert color={color}>{content}</Alert>
+                    {color && <Alert color={color}>{content}</Alert>}
                     <Col sm={12} md={{ size: 8, offset: 1 }} lg={{ size: 8, offset: 3 }} xl={{ size: 4, offset: 4 }}>
                         <AvForm onValidSubmit={this.userUpdate}>
                             <Row>
