@@ -160,7 +160,7 @@ class MakePayment extends Component {
   }
 
   paypalOnApprove = async (data, actions) =>{
-    let paymentURL = Config.settings().cloudBaseURL + "/billing/paypal-completed"
+    let paymentURL = Config.settings().cloudBaseURL + "/billing/paypal-completed";
     let code = this.state.selectedItem.code;
     let response = await this.savePaymentDetailsToApi(data, actions, paymentURL, code);
     if(response){
@@ -183,17 +183,17 @@ class MakePayment extends Component {
 
   loadPayPalButton = (paypalURL) => {
     return <Card>
-      <CardHeader> <legend><b>BUY CREDITS</b></legend></CardHeader>
+      <CardHeader><strong>BUY CREDITS</strong></CardHeader>
       <Script
         url={paypalURL}
         onCreate={this.handleScriptCreate.bind(this)}
         onError={this.handleScriptError.bind(this)}
         onLoad={this.handleScriptLoad.bind(this)} />
-      <h4 className= "padding-top" ><center>Select a payment option</center></h4><br />
+      <h4 className= "padding-top" ><center>Select an amount to pay</center></h4><br />
       <div className="form-group"> 
         <center>
-          {this.state.showAlert && <Alert color="warning"><b className="warning-
-          " >Please Select your Payment option to continue</b></Alert>}
+          {this.state.showAlert && <Alert color="warning">
+            <b className="warning-" >Please Select your Payment option to continue</b></Alert>}
          </center>
         <FormGroup check>
           {this.state.billingItems && this.state.billingItems.map((item, index) => {
@@ -213,7 +213,7 @@ class MakePayment extends Component {
   loadRadioButtons = (item, index) => {
     return (
       <React.Fragment key={index}>
-        <Col sm="12" md={{ size: 6, offset: 3 }}>
+        <Col sm="12" md={{ size: 10, offset: 1 }}>
           <Label check>
             <Input type="radio" name="radio1" value={item.amount} checked={this.state.selectedItem.code === item.code}
               onChange={() => this.itemId(item.amount, item.code)} />{' '}

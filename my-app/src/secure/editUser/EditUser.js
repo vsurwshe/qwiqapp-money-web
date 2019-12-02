@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
-import { Card, CardBody, CardHeader, Alert } from 'reactstrap';
+import { Card, CardBody, CardHeader, Alert, Row, Col, Label } from 'reactstrap';
 import { Button } from 'reactstrap';
 import { AvForm, AvField } from 'availity-reactstrap-validation';
 import { Link } from 'react-router-dom'
 import UserApi from '../../services/UserApi';
 import Config from '../../data/Config';
 import Store from '../../data/Store';
+import '../../css/style.css'
 
 
 class EditUser extends Component {
@@ -14,23 +15,20 @@ class EditUser extends Component {
         this.state = {
             updated: false,
             user: "",
-            color: '',
-            doubleClick: false,
+            doubleClick: false
         }
     }
 
     componentDidMount = () => {
         let user = Store.getUser();
         if (user) {
-            this.setState({ user });
+            this.setState({ user : user });
         }
     }
 
-    userUpdate = (event, error, values) => {
-        if (error.length === 0) {
-            this.setState({ doubleClick: true });
-            new UserApi().updateUser(this.updateSuccessCall, this.updateErrorCall, values);
-        }
+    userUpdate = (event, values) => {
+        this.setState({ doubleClick: true });
+        new UserApi().updateUser(this.updateSuccessCall, this.updateErrorCall, values);
     }
 
     updateSuccessCall = (user) => {
@@ -57,20 +55,32 @@ class EditUser extends Component {
     }
 
     loadEditUser = (user, color, content) => {
-        return <Card>
-            <CardHeader><b >EDIT USER</b></CardHeader>
-            <CardBody>
-                <Alert color={color}>{content} </Alert>
-                <AvForm onSubmit={this.userUpdate} >
-                    <AvField name="email" type="email" label="Email" placeholder="Email" value={user.email} required />
-                    <AvField name="name" type="text" label="User Name" placeholder="User Name" value={user.name} required />
-                    <center>
-                        <Button color="success" disabled={this.state.doubleClick}>Edit</Button>
-                        <Link to="/dashboard" style={{ marginLeft: 10 }} ><Button color="secondary" type="button" >Cancel</Button></Link>
-                    </center>
-                </AvForm>
-            </CardBody>
-        </Card>;
+        return (
+            <Card>
+                <CardHeader><b >EDIT USER</b></CardHeader>
+                <CardBody>
+                    {color && <Alert color={color}>{content}</Alert>}
+                    <Col sm={12} md={{ size: 8, offset: 1 }} lg={{ size: 8, offset: 3 }} xl={{ size: 4, offset: 4 }}>
+                        <AvForm onValidSubmit={this.userUpdate}>
+                            <Row>
+                                <Col sm={3} ><Label>Email</Label></Col>
+                                <Col sm={6}><AvField name="email" type="email" placeholder="Email" value={user.email} required /></Col>
+                            </Row>
+                            <Row>
+                                <Col sm={3} ><Label>User Name</Label></Col>
+                                <Col sm={6}><AvField name="name" type="text" placeholder="User Name" value={user.name} required /></Col>
+                            </Row><br />
+                            <Row>
+                                <Col sm={3}></Col>
+                                <Col sm={6}>
+                                    <Button color="success" disabled={this.state.doubleClick}>Edit</Button>
+                                    <Link to="/dashboard" style={{ marginLeft: 10 }} ><Button color="secondary" type="button" >Cancel</Button></Link>
+                                </Col>
+                            </Row>
+                        </AvForm>
+                    </Col>
+                </CardBody>
+            </Card>)
     }
 }
 

@@ -59,6 +59,9 @@
     border-radius: 0.4em;
     padding: 7px
 }
+.label-align{
+    text-align:right;
+}
 
 /* ============ Profiles Styles ========*/
 .table-tr{
