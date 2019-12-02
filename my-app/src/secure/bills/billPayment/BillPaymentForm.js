@@ -9,32 +9,32 @@ export const BillPaymentForm = (props) =>{
 
     return <AvForm onSubmit={props.handleSubmitValue}>
         <Row>
-            <Col xs="12" sm="5">
+        <Col xs="3" style={{paddingRight:10, paddingBottom:0, marginRight:15}}> 
                 <Row>
-                    <Col xl={3}><Label>{props.data.amountLable}</Label></Col>
-                    <Col> <AvField type="number" name="amount" placeholder="Amount" value={props.data.paidAmount} errorMessage="Invaild payment amount" required /></Col>
+                    <Col sm={5}><Label>{props.data.amountLable}</Label></Col>
+                    <Col sm={7}> <AvField type="number" name="amount" placeholder="Amount" value={props.data.paidAmount} errorMessage="Invaild payment amount" required /></Col>
                 </Row>
-            </Col>
-            <Col xs="6" sm="4">
-                <Row>
-                    <Col xl={3}><Label>Payment Date</Label></Col>
-                    <Col> <AvField type="date" name="date" value={date} errorMessage="Select payment date" required /></Col>
-                </Row>
-            </Col>
-            <Col xs="6" sm="3" >
+                </Col>
+        <Col xs="auto"  style={{paddingRight:10}}>
             <Row>
-                    <Col xl={3}><Label>Payment Type</Label></Col>
-                    <Col>
+                <Col sm={5}><Label>Payment Date</Label></Col>
+                <Col sm={7} > <AvField type="date" name="date" value={date} errorMessage="Select payment date" required /></Col>
+            </Row>
+        </Col>
+
+        <Col xs="3"  style={{paddingRight:10}}>
+            <Row>
+                <Col sm={5} ><Label>Payment Type</Label></Col>
+                    <Col sm={7}>
                         <AvField type="select" name="type" errorMessage="Select type of payment" value={props.data.paymentType} required>
-                            <option value="">Select type of payment</option>
                             <option value="Paid">Paid</option>
                             <option value="Received">Received</option>
                         </AvField>
+                </Col>
+           </Row>
                     </Col>
-                </Row>
-                
-            </Col>
-        </Row>
+                    <Col xs="3"></Col>
+      </Row>
         <Row>
             <Col>
                 <Row>

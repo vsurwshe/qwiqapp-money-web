@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, Col, Row, Alert } from 'reactstrap';
+import { Button, Col, Row, Alert} from 'reactstrap';
 import PaymentApi from '../../../services/PaymentApi';
 import Store from '../../../data/Store';
 import Config from '../../../data/Config';
@@ -80,18 +80,20 @@ class BillPayment extends Component {
         let billDate = (bill.billDate + "").slice(0, 4) + "-" + (bill.billDate + "").slice(4, 6) + "-" + (bill.billDate + "").slice(6, 8);
         return <div>
             {this.state.alertMessage && <Alert color={this.state.alertColor} >{this.state.alertMessage}</Alert>}
+            <div className=" container shadow p-3 mb-1 md-white rounded border border-dark">
             <Row>
-                <Col sm={3} md={3} xl={3} lg={3}>Bill Amount:</Col>
-                <Col> {selectedCurrency.symbol} &nbsp;{bill.amount > 0 ? bill.amount : -(bill.amount)} </Col>
+                <Col sm={3}>Bill Amount:</Col>
+                <Col sm={9}> {selectedCurrency.symbol} &nbsp;{bill.amount > 0 ? bill.amount : -(bill.amount)} </Col>
             </Row> <br />
             <Row>
-                <Col sm={3} md={3} xl={3} lg={3}>Bill Date:</Col>
-                <Col>{billDate}</Col>
+                <Col sm={3}>Bill Date:</Col>
+                <Col sm={9}>{billDate}</Col>
             </Row> <br />
             <Row>
-                <Col sm={3} md={3} xl={3} lg={3}>Bill Notes / Description: </Col>
-                <Col>{name}</Col>
-            </Row> <br />
+                <Col sm={3}>Bill Notes / Description: </Col>
+                <Col sm={9}>{name}</Col>
+            </Row>
+            </div> <br />
             {bill.paid ? this.loadPaidMessage() : this.loadBillPaymentForm(selectedCurrency[0], bill)}
         </div>
     }
