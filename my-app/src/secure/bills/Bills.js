@@ -1,4 +1,4 @@
-import React, { Component, Suspense  } from "react";
+import React, { Component, Suspense } from "react";
 import { withRouter } from "react-router-dom";
 import { Redirect } from 'react-router';
 import { Card, CardBody, Alert, FormGroup, Label, Input } from "reactstrap";
@@ -249,26 +249,26 @@ class Bills extends Component {
   }
 
   callAlertTimer = (alertColor, alertMessage) => {
-    this.setState({alertColor, alertMessage});
-    setTimeout(()=>{
-      this.setState({alertColor: undefined, alertMessage: undefined});
-    },  Config.apiTimeoutMillis);
+    this.setState({ alertColor, alertMessage });
+    setTimeout(() => {
+      this.setState({ alertColor: undefined, alertMessage: undefined });
+    }, Config.apiTimeoutMillis);
   }
 
   //this toggle for Delete Model
   toggleDanger = () => { this.setState({ danger: !this.state.danger }); }
 
   // This Method Execute the Bill Form Executions.
-  createBillAction = (dummy, createdSuccess) => { 
+  createBillAction = (dummy, createdSuccess) => {
     this.setState({ createBillRequest: !this.state.createBillRequest });
     if (createdSuccess) {
       this.successCallBill(Store.getBills());
     }
   }
   // createBillAction = () => { this.setState({ createBillRequest: true }) }
-  updateBillAction = (updateBill, updatedSucc) => { 
+  updateBillAction = (updateBill, updatedSuccess) => {
     this.setState({ updateBillRequest: !this.state.updateBillRequest, updateBill });
-    if (updatedSucc) {
+    if (updatedSuccess) {
       this.successCallBill(Store.getBills());
     }
   };
@@ -348,7 +348,7 @@ class Bills extends Component {
   }
 
   render() {
-    const { bills, createBillRequest, updateBillRequest, billId, deleteBillRequest, visible, profileId, addPayment, viewPayment, attachments, removeDependents,color,content,
+    const { bills, createBillRequest, updateBillRequest, billId, deleteBillRequest, visible, profileId, addPayment, viewPayment, attachments, removeDependents, color, content,
       markAsUnPaid, updateBill, spinner, labels, categories, contacts, danger, paidAmount, markPaid, profileFeatures } = this.state;
     let featureAttachment = profileFeatures && profileFeatures.includes(profileFeature.ATTACHMENTS) // return true/false
     // Passing required data to Tabs
@@ -359,13 +359,13 @@ class Bills extends Component {
       contacts: contacts,
       getContacts: this.getContacts,
       getLabels: this.getLabels,
-      bill : updateBill
+      bill: updateBill
     }
-    
+
     if (!profileId) {
       // If no profile then showing message 
       return <ProfileEmptyMessage />
-    } else if (!bills.length && !createBillRequest) {  
+    } else if (!bills.length && !createBillRequest) {
       // Checks for bills not there and no bill create Request, then executes
       return <div>
         {/*  If spinner is true and bills are there, it shows the loader function, until bills are loaded */}
@@ -374,7 +374,7 @@ class Bills extends Component {
         }
       </div>
     } else if (createBillRequest) {
-      var newTabData={...tabData,bill:null};
+      var newTabData = { ...tabData, bill: null };
       // This bill tabs called for create a bill.
       return <BillTabs form="form" tabData={newTabData} cancelButton={this.createBillAction} />
     } else if (updateBillRequest) {
@@ -384,13 +384,14 @@ class Bills extends Component {
       return <DeleteBill billId={billId} profileId={profileId} removeDependents={removeDependents} />
     } else if (addPayment || markPaid) {
       let cancelHandle = addPayment ? this.handleAddPayment : this.handleMarkAsPaid
-      return <Suspense fallback={<div>Loadding...</div>}> <BillTabs form="payments" payform={true} tabData={tabData} paidAmount={paidAmount}  cancelButton={cancelHandle} /></Suspense>
-    }else if (viewPayment) {
+      return <Suspense fallback={<div>Loadding...</div>}> <BillTabs form="payments" payform={true} tabData={tabData} paidAmount={paidAmount} cancelButton={cancelHandle} /></Suspense>
+    } else if (viewPayment) {
       // This bill tabs called for Payments.
-      return <BillTabs form="payments" tabData={tabData} paidAmount={paidAmount}  cancelButton={this.handleViewPayment} />
+      return <BillTabs form="payments" tabData={tabData} paidAmount={paidAmount} cancelButton={this.handleViewPayment} />
     } else if (attachments) {
       // This bill tabs called for Attachments.
-      return <BillTabs tabData={tabData} paidAmount={paidAmount}  cancelButton={this.handleAttachemntAction} /> }
+      return <BillTabs tabData={tabData} paidAmount={paidAmount} cancelButton={this.handleAttachmentAction} />
+    }
     else {
       // displaying all bills
       return <div>

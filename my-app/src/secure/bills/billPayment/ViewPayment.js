@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Card, CardHeader, CardBody, Button, Table } from 'reactstrap';
+import { CardHeader, Button, Table } from 'reactstrap';
 import Store from '../../../data/Store';
 import DeleteBillPayment from './DeleteBillPayment';
 import BillApi from '../../../services/BillApi';
@@ -155,13 +155,9 @@ class ViewPayment extends Component {
 
   noPaymentsAdded = () => {
     return <div>
-      <Card>
-        <CardBody>
-          <center>
-            <h5>{this.state.bill ? <p className="loader-color" onClick={()=>this.handleAddPayment()} >No payments added yet..! Click here to add payment</p> : "Bill id is required..!"}</h5>
-          </center>
-        </CardBody>
-      </Card>
+        <center>
+          <h5 onClick={()=>this.handleAddPayment()} >No payments added yet..!  {<u className="loader-color">Click here</u>}  to add payment</h5>
+        </center>
     </div>
   }
 

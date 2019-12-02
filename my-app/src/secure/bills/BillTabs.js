@@ -53,7 +53,7 @@ class BillTabs extends Component {
   render() {
     const { profile } = this.state;
     const { bill } = this.props.tabData;
-    let featureAttachment = profile && profile.features.length > 0 ? profile.features.includes(profileFeature.ATTACHMENTS) : false
+    let featureAttachment = profile && profile.features.length ? profile.features.includes(profileFeature.ATTACHMENTS) : false
     return (
       <div className="animated fadeIn">
         <Card>
