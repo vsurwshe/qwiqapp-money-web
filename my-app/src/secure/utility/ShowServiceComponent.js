@@ -62,7 +62,7 @@ export const ShowServiceComponent = {
         {item.subLabels && <b>SubLabels: {item.subLabels.length}</b>}</span>
       <span className="float-right" style={{ marginRight: 7, marginTop: -3 }}>
         <Button style={{ backgroundColor: "transparent", borderColor: 'green', color: "green", marginRight: 5, width: 77, padding: 2 }} onClick={() => { updateLabel(item) }}> EDIT </Button> &nbsp;
-      <Button style={{ backgroundColor: "transparent", borderColor: 'red', color: "red", width: 90, padding: 2 }} onClick={() => { stateFun(item); toggleDanger(); }}> REMOVE </Button>
+        <Button style={{ backgroundColor: "transparent", borderColor: 'red', color: "red", width: 90, padding: 2 }} onClick={() => { stateFun(item); toggleDanger(); }}> REMOVE </Button>
       </span></>
   },
 
@@ -81,9 +81,7 @@ export const ShowServiceComponent = {
             </InputGroup>
           </Col>}
         {filter && <>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<UncontrolledDropdown >
-          <DropdownToggle caret>
-            Filter bills by date
-        </DropdownToggle>
+          <DropdownToggle caret>Filter bills by date</DropdownToggle>
           <DropdownMenu>
             <DropdownItem onClick={() => { handleDateFilter('today') }}>Today</DropdownItem>
             <DropdownItem onClick={() => { handleDateFilter(7) }} >Last 7 days</DropdownItem>
@@ -98,7 +96,7 @@ export const ShowServiceComponent = {
       </Row>
     </CardHeader>
   },
-  
+
   customDate: function (dateParam, day) {
     let toStr = "" + dateParam
     let dateString = toStr.substring(0, 4) + "-" + toStr.substring(4, 6) + "-" + toStr.substring(6, 8)
@@ -113,15 +111,15 @@ export const ShowServiceComponent = {
   loadDateFormat: function (date) {
     return new Intl.DateTimeFormat('sv-SE', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(date);
   },
- // this method return formate date like ex: Mon, 03 DeC
+  // this method return formate date like ex: Mon, 03 DeC
   billDateFormat: function (date) {
-    return new Intl.DateTimeFormat('en-gb', { month: 'short', weekday: 'short', day: '2-digit' }).format(date); 
+    return new Intl.DateTimeFormat('en-gb', { month: 'short', weekday: 'short', day: '2-digit' }).format(date);
   },
 
   billTypeAmount: function (currency, amount) {
     return <span>
-        {new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(amount>0 ? amount : -(amount))}
-      </span>
+      {new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(amount > 0 ? amount : -(amount))}
+    </span>
   },
 
   handleTax: function (amount, taxPercent, taxAmount) {
@@ -212,7 +210,7 @@ export const ShowServiceComponent = {
         <Col>
           <Row className="float-right" style={{ paddingTop: 7, paddingRight: 7 }} >
             {subArray[key] && <> <Button style={{ backgroundColor: "transparent", borderColor: 'green', color: "green", marginRight: 5, width: 77, padding: 2 }} onClick={() => { handleUpdate(subItem) }}> Edit</Button> &nbsp;
-              <Button style={{ backgroundColor: "transparent", borderColor: 'red', color: "red", width: 90, padding: 2 }} onClick={() => { setItemId(subItem); toggleDanger() }}> Remove </Button></>}
+            <Button style={{ backgroundColor: "transparent", borderColor: 'red', color: "red", width: 90, padding: 2 }} onClick={() => { setItemId(subItem); toggleDanger() }}> Remove </Button></>}
           </Row>
         </Col>
       </Row>

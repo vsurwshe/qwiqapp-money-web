@@ -11,19 +11,14 @@ class LabelForm extends Component {
     super(props);
     this.state = {
       labels: props.lables,
-      alertColor: "",
-      content: "",
       labelAction: false,
       collapse: props.label ? (props.label.parentId ? true : false) : false,
-      cancelLabel: false,
-      doubleClick: false,
-      chkMakeParent: false,
       index: props.index,
       hideCancel: props.hideButton
     };
   }
 
-  componentDidMount(){
+  componentDidMount() {
     this._isMount = true;
   }
 
@@ -75,10 +70,10 @@ class LabelForm extends Component {
   callAlertTimer = (alertColor, content) => {
     this.setState({ alertColor, content });
     setTimeout(() => {
-      if(this.state.hideCancel){
+      if (this.state.hideCancel) {
         this.setState({ hideCancel: '' })
         this.props.toggleCreateModal('', true)
-      } else{
+      } else {
         if (this._isMount) {
           this.setState({ name: "", content: "", alertColor: "", labelAction: true });
         }
@@ -118,13 +113,10 @@ class LabelForm extends Component {
       hideCancel: hideCancel
     };
     return <Card>
-      {!hideCancel && 
-      <CardHeader>
-        <strong>Label</strong>
-      </CardHeader> }
+      <CardHeader> <strong>LABELS</strong> </CardHeader>
       <CardBody>
-        <Col sm="1" md={{ size: 8, offset: 2 }}>
-          <center><h5> <b>{!this.props.label ? "NEW LABEL" : "EDIT LABEL"}</b> </h5> </center>
+        <br /><center><h5> <b>{!this.props.label ? "New Label Details" : "Label Details"}</b> </h5> </center><br />
+        <Col sm={{ size: 12, offset: 1 }} md={{ size: 12, offset: 1 }} lg={{ size: 8, offset: 3 }} xl={{ size: 6, offset: 3 }}>
           {alertColor && <Alert color={alertColor}>{content}</Alert>}
           <CategoryLabelForm
             data={labelFields}

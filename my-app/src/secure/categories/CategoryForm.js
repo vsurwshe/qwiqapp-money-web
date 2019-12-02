@@ -13,13 +13,9 @@ class CategoryForm extends Component {
       categories: props.categories,
       profileId: props.id,
       code: props.category ? props.category.code : "",
-      alertColor: "",
-      content: "",
       collapse: props.category ? (props.category.parentId ? true : false) : false,
       cancelCategory: false,
       doubleClick: false,
-      categoryAction: false,
-      chkMakeParent: false,
       index: props.index
     };
   }
@@ -36,15 +32,10 @@ class CategoryForm extends Component {
     const { profileId } = this.state
     const { category } = this.props
     this.setState({ doubleClick: true });
-    await this.generateCode();
-    let commnData = {
-      ...data,
-      code: this.state.code
-    };
     // This condition decides its category Creation or Updation
     if (this.props.category) {
       let newData = {
-        ...commnData,
+        ...data,
         version: category.version
       }
       // This condition checks if subCategory is made as Parent Category
@@ -56,7 +47,12 @@ class CategoryForm extends Component {
       }
       new CategoryApi().updateCategory(this.successCall, this.errorCall, newData, profileId, category.id);
     } else {
-      new CategoryApi().createCategory(this.successCall, this.errorCall, profileId, commnData);
+      await this.generateCode();
+      let newData = {
+        ...data,
+        code: this.state.code
+      };
+      new CategoryApi().createCategory(this.successCall, this.errorCall, profileId, newData);
     }
 
   };
@@ -101,7 +97,7 @@ class CategoryForm extends Component {
   };
 
   render() {
-    const { cancelCategory, categoryAction, index} = this.state;
+    const { cancelCategory, categoryAction, index } = this.state;
     if (cancelCategory) {
       return <Categories index={index} />;
     } else {
@@ -123,7 +119,7 @@ class CategoryForm extends Component {
       collapse: collapse,
       doubleClick: doubleClick,
       chkMakeParent: chkMakeParent,
-      type : type,
+      type: type,
       componentType: "Category",
       updateItem: this.props.category
     };
@@ -134,12 +130,12 @@ class CategoryForm extends Component {
     return (
       <Card className="card-width">
         <CardHeader>
-          <strong>Category</strong>
+          <strong>CATEGORIES</strong>
         </CardHeader>
         <CardBody>
-          <Col sm="1" md={{ size: 8, offset: 2 }}>
-            <center><h5> <b>{!this.props.category ? "NEW CATEGORY" : "EDIT CATEGORY"}</b> </h5> </center>
-            {alertColor && <Alert color={alertColor}>{content}</Alert>}
+          <center><h5> <b>{!this.props.category ? "New Category Details" : "Category Details"}</b> </h5> </center>
+          <Col sm={{ size: 12, offset: 1 }} md={{ size: 12, offset: 1 }} lg={{ size: 8, offset: 3 }} xl={{ size: 6, offset: 3 }}>
+            {alertColor && <Alert color={alertColor}>{content}</Alert>} 
             <CategoryLabelForm
               data={categoryFields}
               handleSubmitValue={this.handleSubmitValue}

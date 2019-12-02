@@ -85,33 +85,58 @@ export const BillFormUI = (props) => {
 export const CategoryLabelForm = (props) => {
   const { doubleClick, collapse, parentId, chkMakeParent, type, componentType, items, itemName, itemColor, notes, updateItem, hideCancel } = props.data
   return <AvForm onValidSubmit={props.handleSubmitValue}>
-    <AvField type="text" name="name" label={<>{componentType} Name <b className="text-color"> * </b></>} errorMessage={componentType + " Name Required"} value={itemName} placeholder={"Enter " + componentType + " name"} required />
-    {componentType === "Label" ? <AvField type="textarea" name="notes" value={notes} placeholder="Description / Notes" label="Description / Notes" />
-      : <AvField type="select" name="type" label="Type" value={type ? type : billType.PAYABLE} errorMessage="Select Type of Category" >
-        <option value={billType.PAYABLE}>Payable</option>
-        <option value={billType.RECEIVABLE}>Receivable</option>
-      </AvField>
+    <Row>
+      <Col sm={3} >
+        <Label><>{componentType} name <b className="text-color"> * </b></></Label>
+      </Col>
+      <Col sm={8}>
+        <AvField type="text" name="name" errorMessage={componentType + " name required"} value={itemName} placeholder={"Enter " + componentType.toLowerCase() +  " name"} required />
+      </Col>
+    </Row>
+    {componentType === "Label" ?
+      <Row>
+        <Col sm={3} >
+          <Label>Description / Notes </Label>
+        </Col>
+        <Col sm={8}> <AvField type="textarea" name="notes" value={notes} placeholder="Description / Notes" /> </Col>
+      </Row>
+      : <Row>
+        <Col sm={3} > <Label>Type</Label> </Col>
+        <Col sm={8}><AvField type="select" name="type" value={type ? type : billType.PAYABLE} errorMessage="Select Type of Category" >
+          <option value={billType.PAYABLE}>Payable</option>
+          <option value={billType.RECEIVABLE}>Receivable</option>
+        </AvField></Col>
+      </Row>
     }
-    <AvField type="color" name="color" list="colors" label={componentType + " Color"} value={itemColor} />
+    <Row>
+      <Col sm={3} > <Label>{componentType + " color"} </Label> </Col>
+      <Col sm={8}><AvField type="color" name="color" list="colors" value={itemColor} /> </Col>
+    </Row>
 
     {items && (items.length > 0 && // checking Label / Categories are there, then only showing "Nest option" while creating Label / Categories 
       (updateItem ? // checking the item(Label / Categories) is creating / updating, if creating then showing "Nest option"
-        (updateItem.parentId ? // Checking whether Label / Categories has ParentId. If parentId is there then we are showing "Make it as Parent" or else checking for subLabel/subcategory 
+        (updateItem.parentId ? // Checking whether Label / Categories has parentId. If parentId is there then we are showing "Make it as Parent" or else checking for subLabel/subcategory 
           (!chkMakeParent && <><Label style={{ paddingLeft: 20 }} check>
-            <AvInput type="checkbox" name="makeParent" onChange={props.toggle} /> Make it as Parent </Label> <br /></>) // if selected make it as parent, then assigning "null" to "parentId"
-          : !(updateItem.subLabels || updateItem.subCategories) && (!collapse &&
-            <><Label style={{ paddingLeft: 20 }} check>
-              <AvInput type="checkbox" name="checkbox1" onChange={props.toggle} /> Nest {componentType} under </Label> <br /> </>)) //checking for subItems, if there dont show anything or else showing "Nest option"
-        : !collapse && <><Label style={{ paddingLeft: 20 }} check>
-          <AvInput type="checkbox" name="checkbox1" onChange={props.toggle} /> Nest {componentType} under </Label> <br /> <br /></>)) // If creating Label/ category then showing "Nest option"
+            <AvInput type="checkbox" name="makeParent" onChange={props.toggle} /> Make it as Parent </Label> <br /><br /></>) // if selected make it as parent, then assigning "null" to "parentId"
+          : !(updateItem.subLabels || updateItem.subCategories) && // Checking whether Label / Categories has subLabels/subCategories. If subLabels/subCategories are not there then showing "nest option"
+          <><Label style={{ paddingLeft: 20 }} check>
+            <AvInput type="checkbox" name="checkbox1" onChange={props.toggle} /> Nest {componentType.toLowerCase()} under </Label> <br /><br /> </>) //checking for subItems, if there dont show anything or else showing "Nest option"
+        : <><Label style={{ paddingLeft: 20 }} check>
+          <AvInput type="checkbox" name="checkbox1" onChange={props.toggle} /> Nest {componentType.toLowerCase()} under </Label> <br /> <br /></>) // If creating Label/ category then showing "Nest option"
+      )
     }
 
+    {/* It loads the options of Labels/Categories, when user selects Nest Category/label under */}
     <Collapse isOpen={collapse}>
-      <AvField type="select" name="parentId" label={"Select " + componentType + " name"}
-        value={parentId} required={collapse}>
-        <option value="">Select {componentType}</option>
-        {items && items.map((item, key) => { return <option key={key} value={item.id}>{item.name}</option> })}
-      </AvField>
+      <Row>
+        <Col sm={3}> <Label>{"Select parent " + componentType.toLowerCase()}</Label> </Col>
+        <Col sm={8}>
+          <AvField type="select" name="parentId" value={parentId} required={collapse}>
+            <option value="">Select parent {componentType}</option>
+            {items.map((item, key) => { return <option key={key} value={item.id}>{item.name}</option> })}
+          </AvField>
+        </Col>
+      </Row>
     </Collapse><br />
     <center>
       <FormGroup>
@@ -216,7 +241,6 @@ const getCurrency = (currencies, currencySymbol) => {
 const showProfileUpgrade = (props, profile, profileTypes) => {
   return <><Row>
     <Col sm={3}><Label>Profile type  </Label></Col>
-    {/* <Col sm={2} style={{ textAlign: 'right' }}><Label>Profile type : </Label></Col> */}
     <Col sm={9}>&nbsp;{props.loadProfileType(profile.type)} &nbsp;&nbsp;&nbsp;
       <UpgradeProfileType userProfile={profile} profileTypes={profileTypes} handleUserConfirm={props.handleUserConfirm} />
     </Col>
