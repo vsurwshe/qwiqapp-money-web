@@ -16,22 +16,12 @@ import Config from "../../data/Config";
 import BillPayment from "./billPayment/ BillPayment";
 import ViewPayment from "./billPayment/ViewPayment";
 import PaymentApi from "../../services/PaymentApi";
-import { profileFeature } from "../../data/GlobalKeys";
+import { profileFeature, moreOptions } from "../../data/GlobalKeys";
 import '../../css/style.css';
 import { DataTable } from "../utility/DataTable";
 
 // This importing Jquery in react.
 const $ = require('jquery');
-
-// Loads options for More Options in DataTable
-const moreOptions = {
-  ADDPAYMENT: 'Add a payment',
-  PAYHISTORY: 'Payments History',
-  MARKPAID: 'Mark as Paid',
-  UNMARKPAID: 'Mark as Un-Paid',
-  ATTACHMENTS: 'Attachments',
-  DELETE: 'Delete'
-}
 
 class Bills extends Component {
   _isMounted = false;

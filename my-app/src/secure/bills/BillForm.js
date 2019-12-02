@@ -203,7 +203,7 @@ class BillForm extends Component {
     this.setState({ alertColor, alertMessage, doubleClick: false });
     if (alertColor === "success") {
       setTimeout(() => {
-        this.setState({ name: "", billCreated: true });
+        this.setState({ billCreated: true });
       }, Config.apiTimeoutMillis);
     }
   };
