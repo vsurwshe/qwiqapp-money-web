@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { Card, CardBody, CardHeader, Table, Button, Label } from 'reactstrap';
+import { Card, CardBody, CardHeader, Table, Button, Row, Col } from 'reactstrap';
 import Loader from 'react-loader-spinner';
 import BillingAddressApi from '../../../services/BillingAddressApi';
 import Config from '../../../data/Config';
@@ -12,45 +12,32 @@ class PaymentHistory extends Component {
     super(props);
     this.state = {
       payments: [],
-      toggle: false,
-      accordion: [],
       currencies: [],
-      spinner: false,
-      search: '',
-      alertColor: '',
-      alertMessage: '',
-      total_balance: '',
     };
   }
 
-  componentDidMount = () => {
-    new BillingAddressApi().getPaymentsHistory(this.successCall, this.errorCall)
-  }
+  componentDidMount = () => { new BillingAddressApi().getPaymentsHistory(this.successCall, this.errorCall) }
 
   successCall = async (response) => {
-      const currencies = Store.getCurrencies();
-      await this.setState({
-        currencies, 
-        payments: response.payments,
-        total_balance: response.balance, 
-        spinner: true
-      });
+    const currencies = Store.getCurrencies();
+    await this.setState({
+      currencies,
+      payments: response.payments,
+      totalBalance: response.balance,
+      spinner: true
+    });
   }
 
   // Response API Error 
-  errorCall = error => {
-    this.callAlertTimer('danger', 'Unable to Process Request, Please Try Again')
-  }
+  errorCall = error => { this.callAlertTimer('danger', 'Unable to Process Request, Please Try Again') }
 
   callAlertTimer = (alertColor, alertMessage) => {
     this.setState({ alertColor, alertMessage });
-    setTimeout(() => {
-      this.setState({ alertColor: "", alertMessage: "" });
-    }, Config.apiTimeoutMillis)
+    setTimeout(() => { this.setState({ alertColor: "", alertMessage: "" }); }, Config.apiTimeoutMillis)
   }
 
   render() {
-    const { payments, spinner, currencies } = this.state;
+    const { payments, spinner } = this.state;
     if (!payments.length) {
       if (!spinner) {
         return this.loadSpinner()
@@ -58,64 +45,60 @@ class PaymentHistory extends Component {
         return this.paymentHistoryIsEmpty();
       }
     } else {
-      let paymentsList = payments.map((payment, key) => {
-        var url='/payment/invoice/'+payment.invoiceId
-        return (<tr key={key} className="row-text-align">
-          <td>{this.customeDateFormat(payment.created)}</td>
-          <td > {payment.invoiceId <= 0 ? payment.description : <Link to={url}>{payment.description}</Link> } </td>
-          <td>{this.showCurrenySymbol(payment.currency, currencies)} {payment.amount}</td>
-        </tr>
-        )
-      });
-      return <div>{this.displayPaymentHistory(paymentsList)}</div>
+      return <div>{this.displayPaymentHistory(this.loadPaymentList(payments))}</div>
     }
   }
 
-  loadSpinner = () => {
-    return (
-      <div className="animated fadeIn">
+  // This method returns the list of rows for payments table
+  loadPaymentList = (payments) => {
+    const { currencies } = this.state
+    let paymentsList = payments.map((payment, key) => {
+      var url = '/payment/invoice/' + payment.invoiceId
+      return (<tr key={key} className="row-text-align">
+        <td>{this.customDateFormat(payment.created)}</td>
+        <td > {payment.invoiceId <= 0 ? payment.description : <Link to={url}>{payment.description}</Link>} </td>
+        <td>{this.showCurrenySymbol(payment.currency, currencies)} {payment.amount}</td>
+      </tr>
+      )
+    });
+    return paymentsList;
+  }
+
+  loadSpinner = () => <div className="animated fadeIn">
         <Card>
-          {this.loadHeader()}
+          {this.loadHeader("Billing Payments")}
           <br /><br /><br /><br /><br />
           <center className="padding-top" >
             <CardBody><Loader type="TailSpin" className="loader-color" height={60} width={60} /></CardBody>
           </center>
         </Card>
-      </div>)
-  }
-
-  loadHeader = () => {
-    return (
-      <CardHeader>
-        <strong>Billing Payments</strong>
-        <Link to="/billing/addCredits" ><Button color="success" className="float-right"> + Add Credits </Button></Link>
-      </CardHeader>
-    );
-  }
-
-  paymentHistoryIsEmpty = () => {
-    return (
-      <div>
-        <Card>
-          {this.loadHeader()}
-          <CardBody>
-            <center>
-              <h5>No payments made yet..!</h5>
-            </center>
-          </CardBody>
-        </Card>
       </div>
-    );
-  }
 
-  // TODO: define static current Balance.
+  //  This method loads card header 
+  loadHeader = (headerMessage) => <CardHeader style={{ height: 60 }}>
+    <Row>
+      <Col className="marigin-top"><strong>{headerMessage}</strong></Col>
+      <Col><Link to="/billing/addCredits" ><Button color="success" className="float-right"> + Add Credits </Button></Link></Col>
+    </Row>
+  </CardHeader>
+
+  // If Payments are not there, this method will be called 
+  paymentHistoryIsEmpty = () => <Card>
+    {this.loadHeader("Billing Payments")}
+    <CardBody>
+      <center>
+        <h5>No payments made yet..!</h5>
+      </center>
+    </CardBody>
+  </Card>
+
+
+  // Calls payments table.
   displayPaymentHistory = (paymentsList) => {
+    const { totalBalance } = this.state
     return (
       <Card>
-        <CardHeader>
-          <Label><b>Current Balance: £ </b>{this.state.total_balance} </Label>
-          <Link to="/billing/addCredits"> <Button color="success" className="float-right" > + Add Credits </Button></Link>
-        </CardHeader>
+        {this.loadHeader(`Current Balance: £ ${totalBalance}`)}
         <CardBody className="card-align">
           {this.paymentHistoryTable(paymentsList)}
         </CardBody>
@@ -123,6 +106,7 @@ class PaymentHistory extends Component {
     );
   }
 
+  // Actual implementation of payments table
   paymentHistoryTable = (paymentsList) => {
     return <><b>PAYMENT HISTORY </b> <br /><br />
       <Table striped bordered >
@@ -139,6 +123,7 @@ class PaymentHistory extends Component {
       </Table></>
   }
 
+  // This method shows currency symbol according to currency
   showCurrenySymbol = (paymentCurrency, currencies) => {
     let currency_symbol = '';
     currencies.map(currency => {
@@ -150,7 +135,8 @@ class PaymentHistory extends Component {
     return currency_symbol;
   }
 
-  customeDateFormat = (paymentDate) => {
+  // This method is used to display date in customised format
+  customDateFormat = (paymentDate) => {
     let date = new Date(paymentDate).toDateString();
     let day = date.substring(8, 10);
     let dateSuperTag = '';

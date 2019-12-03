@@ -13,20 +13,18 @@ class EditUser extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            updated: false,
-            user: "",
-            doubleClick: false
+            user: ""
         }
     }
 
     componentDidMount = () => {
         let user = Store.getUser();
         if (user) {
-            this.setState({ user : user });
+            this.setState({ user: user });
         }
     }
 
-    userUpdate = (event, values) => {
+    userUpdate = (values) => {
         this.setState({ doubleClick: true });
         new UserApi().updateUser(this.updateSuccessCall, this.updateErrorCall, values);
     }
@@ -41,8 +39,7 @@ class EditUser extends Component {
     }
 
     render() {
-        const { color, content, user } = this.state;
-        return this.loadEditUser(user, color, content);
+        return this.loadEditUser();
     }
 
     callReload = (color, content) => {
@@ -54,10 +51,12 @@ class EditUser extends Component {
         }
     }
 
-    loadEditUser = (user, color, content) => {
+    // This method loads the edit user from
+    loadEditUser = () => {
+        const { doubleClick, color, content, user } = this.state
         return (
             <Card>
-                <CardHeader><b >EDIT USER</b></CardHeader>
+                {this.loadHeader()}
                 <CardBody>
                     {color && <Alert color={color}>{content}</Alert>}
                     <Col sm={12} md={{ size: 8, offset: 1 }} lg={{ size: 8, offset: 3 }} xl={{ size: 4, offset: 4 }}>
@@ -73,7 +72,7 @@ class EditUser extends Component {
                             <Row>
                                 <Col sm={3}></Col>
                                 <Col sm={6}>
-                                    <Button color="success" disabled={this.state.doubleClick}>Edit</Button>
+                                    <Button color="success" disabled={doubleClick}>Edit</Button>
                                     <Link to="/dashboard" style={{ marginLeft: 10 }} ><Button color="secondary" type="button" >Cancel</Button></Link>
                                 </Col>
                             </Row>
@@ -82,6 +81,13 @@ class EditUser extends Component {
                 </CardBody>
             </Card>)
     }
+
+    // This method loads the header
+    loadHeader = () => <CardHeader style={{ height: 60 }}>
+        <Row form>
+            <Col className="marigin-top"><strong>Edit User</strong></Col>
+        </Row>
+    </CardHeader>
 }
 
 export default EditUser;

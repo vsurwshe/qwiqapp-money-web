@@ -13,16 +13,15 @@ class ChangePassword extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            user:''
+            user: ''
         }
     }
-    componentDidMount=()=>{
+    componentDidMount = () => {
         let user = Store.getUser();
         this.setState({ user: user })
     }
 
-    updatePassword = (event, values) => {
-
+    updatePassword = (values) => {
         this.setState({ doubleClick: true });
         new UserApi().changePassword(this.changePasswordSuccess, this.changePwdError, values);
     }
@@ -31,9 +30,9 @@ class ChangePassword extends Component {
         this.callAlert("success", "Password changed Succesfully!!")
     }
 
-    changePwdError = (err) => {
+    changePwdError = (error) => {
         this.setState({ doubleClick: false })
-        if (err !== 'Wrong password supplied.') {
+        if (error !== 'Wrong password supplied.') {
             this.callAlert("warning", "Unable to process request, Please Try again")
         } else {
             this.callAlert("danger", "You entered wrong password, Please Enter correct password")
@@ -55,59 +54,67 @@ class ChangePassword extends Component {
 
     render() {
         const { color, content, redirectTo, user } = this.state;
-        let navigateUrl = (user.action === userAction.VERIFY_EMAIL) ? "/profiles": "/dashboard"
+        let navigateUrl = (user.action === userAction.VERIFY_EMAIL) ? "/profiles" : "/dashboard"
         return redirectTo ? <Redirect to={navigateUrl} style={{ marginLeft: 10 }} ></Redirect> : this.loadChangePassword(color, content)
     }
 
+    // This method call change password form
     loadChangePassword = (color, content) => {
         let type = this.state.isOpen ? "text" : "password"
         return (
             <Card>
-                <CardHeader><b>CHANGE PASSWORD</b></CardHeader>
+                {this.loadHeader()}
                 <CardBody>
-                     {color && <Alert color={color}>{content}</Alert>}
-                     <Col sm={12} md={{ size: 8, offset: 1}} lg={{size: 8, offset: 3}} xl={{size: 4, offset: 4}}> {this.loadForm(color,type)} </Col>
+                    {color && <Alert color={color}>{content}</Alert>}
+                    <Col sm={12} md={{ size: 8, offset: 1 }} lg={{ size: 8, offset: 3 }} xl={{ size: 4, offset: 4 }}> {this.loadForm(color, type)} </Col>
                 </CardBody>
             </Card>
         );
     }
-    
+
+    // This method loads the header
+    loadHeader = () => <CardHeader style={{ height: 60 }}>
+        <Row form>
+            <Col className="marigin-top"><strong>Change Password</strong></Col>
+        </Row>
+    </CardHeader>
+
     // This is loading change Password Form
-    loadForm=(color,type)=>{
-        return  <AvForm onValidSubmit={this.updatePassword} >
-        <Row>
-            <Col sm={4}> <Label>Old password</Label> </Col>
-            <Col sm={8}>
-                <AvField name="old" type="password" errorMessage="Enter Correct Password" placeholder="Enter Old Password" value={color === "danger" && ""} required />
-            </Col>
-        </Row>
-        <Row>
-            <Col sm={4}> <Label>New password</Label> </Col>
-            <Col sm={8}>
-                <AvGroup>
-                    <InputGroup>
-                        <AvInput name="new" type={type} errorMessage="New Password Required" placeholder="Enter  New Password" required />
-                        <InputGroupAddon addonType="prepend">
-                            <InputGroupText>{this.state.isOpen ? <FaEye onClick={this.setChecked} /> : <FaEyeSlash onClick={this.setChecked} />}</InputGroupText>
-                        </InputGroupAddon>
-                    </InputGroup>
-                </AvGroup>
-            </Col>
-        </Row>
-        <Row>
-            <Col sm={4}><Label>Confirm password</Label></Col>
-            <Col sm={8}><AvField name="renew" type="password" errorMessage="New password and confirm password doesn't match" placeholder="Enter  New Password"
-                validate={{ match: { value: 'new' } }} required />
-            </Col>
-        </Row>
-        <Row>
-            <Col sm={4}></Col>
-            <Col sm={8}>
-                <Button color="success" disabled={this.state.doubleClick}>Edit</Button>
-                <Link to="/dashboard" style={{ marginLeft: 10 }} ><Button color="secondary" type="button" >Cancel</Button></Link>
-            </Col>
-        </Row>
-    </AvForm>
+    loadForm = (color, type) => {
+        return <AvForm onValidSubmit={this.updatePassword} >
+            <Row>
+                <Col sm={4}> <Label>Old password</Label> </Col>
+                <Col sm={8}>
+                    <AvField name="old" type="password" errorMessage="Enter Correct Password" placeholder="Enter Old Password" value={color === "danger" && ""} required />
+                </Col>
+            </Row>
+            <Row>
+                <Col sm={4}> <Label>New password</Label> </Col>
+                <Col sm={8}>
+                    <AvGroup>
+                        <InputGroup>
+                            <AvInput name="new" type={type} errorMessage="New Password Required" placeholder="Enter  New Password" required />
+                            <InputGroupAddon addonType="prepend">
+                                <InputGroupText>{this.state.isOpen ? <FaEye onClick={this.setChecked} /> : <FaEyeSlash onClick={this.setChecked} />}</InputGroupText>
+                            </InputGroupAddon>
+                        </InputGroup>
+                    </AvGroup>
+                </Col>
+            </Row>
+            <Row>
+                <Col sm={4}><Label>Confirm password</Label></Col>
+                <Col sm={8}><AvField name="renew" type="password" errorMessage="New password and confirm password doesn't match" placeholder="Enter  New Password"
+                    validate={{ match: { value: 'new' } }} required />
+                </Col>
+            </Row>
+            <Row>
+                <Col sm={4}></Col>
+                <Col sm={8}>
+                    <Button color="success" disabled={this.state.doubleClick}>Edit</Button>
+                    <Link to="/dashboard" style={{ marginLeft: 10 }} ><Button color="secondary" type="button" >Cancel</Button></Link>
+                </Col>
+            </Row>
+        </AvForm>
     }
 }
 

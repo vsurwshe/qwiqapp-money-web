@@ -208,7 +208,7 @@ export const ContactFormUI = (props) => {
         <Col>
         <AvField name="website" placeholder="Website" value={website} />
         </Col>
-        <Col> {(labels && !labels.length) ?  props.loadAvCollapse(contact) : <center>You don't have Labels</center> } </Col>
+        <Col> {(labels && labels.length) ?  props.loadAvCollapse(contact) : <center>You don't have Labels</center> } </Col>
     </Row> <br />
   </>);
 }
