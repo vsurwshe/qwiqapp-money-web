@@ -46,8 +46,8 @@ let initFirst= function () {
         console.log("This is TEST QA level")
     } else if (process.env.REACT_APP_NODE_ENV ==='PPE') {
         data.bgcolor = '#6DB4E3';
-        data.authBaseURL= "http://ppe-auth-" +mode+ ".124apps.com/v1";
-        data.cloudBaseURL="http://ppe-cloud-" +mode+ ".124apps.com/v1";
+        data.authBaseURL= "https://ppe-cloud.124apps.com/" +mode+ "/auth";
+        data.cloudBaseURL="https://ppe-cloud.124apps.com/" +mode+ "/cloud";
         console.log("This is PPE")
     } else if (process.env.REACT_APP_NODE_ENV === 'LIVE') {
         data.bgcolor = '#F3F2F1';
