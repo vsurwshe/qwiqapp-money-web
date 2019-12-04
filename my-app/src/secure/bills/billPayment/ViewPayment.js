@@ -88,13 +88,11 @@ class ViewPayment extends Component {
       paddingLeft: 30
     }
     return <>
-        <Table frame="box" style={{ borderColor: "#DEE9F2" }}>
+        <Table  frame="box" style={{ borderColor: "#DEE9F2" }}>
           <thead className="table-header-color" >
             <tr>
-              <th>S.No </th>
-              <th>Description/Notes</th>
               <th>Payment Date</th>
-              <th>Payment Type</th>
+              <th>Description / Notes</th>
               <th>Amount</th>
               <th></th>
             </tr>
@@ -105,11 +103,12 @@ class ViewPayment extends Component {
               totalAmount = totalAmount + paymentAmount;
               return this.loadSinglePayment(payment, selectedCurrency, key, paymentAmount)
             })}
-            <tr>
-              <td  colSpan="3"></td> 
-              <td>TOTAL PAID AMOUNT</td>
-              <td><b>{selectedCurrency[0].symbol} { totalAmount <0 ? -(totalAmount) : totalAmount }</b></td>
-              <td ></td>
+          </tbody>
+          <tbody>
+            <tr >
+              <td className="label-align" colSpan="2">TOTAL PAID AMOUNT </td>
+              <td> <b>{selectedCurrency[0].symbol} { totalAmount <0 ? -(totalAmount) : totalAmount }</b></td>
+              <td></td> 
             </tr>
           </tbody>
         </Table>
@@ -125,7 +124,7 @@ class ViewPayment extends Component {
   loadDueMessage = (selectedCurrency, billAmount, totalAmount, paymentStyle) => {
     return <b style={paymentStyle}>
       * {selectedCurrency.symbol}{billAmount - totalAmount < 0 ? -(billAmount - totalAmount) : billAmount - totalAmount} to pay on total due of {selectedCurrency.symbol}{billAmount < 0 ? -(billAmount) : billAmount}.
-      <Button color="info" style={{marginLeft: 20}} onClick={this.handleAddPayment}> Add payment </Button>
+      <Button color="info" style={{marginLeft: 20}} onClick={this.handleAddPayment}> Add a new bill payment </Button>
     </b>
   }
 
@@ -134,12 +133,13 @@ class ViewPayment extends Component {
   }
 
   loadSinglePayment = (payment, selectedCurrency, key, paymentAmount) => {
+    const color = payment.amount < 0 ? 'red' : 'green'
+    const currency  = selectedCurrency[0].code
+    console.log("amount = ", new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(payment.amount));
     return <tr width={50} key={key}>
-      <td>{key + 1}</td>
-      <td>{payment.notes}</td>
       <td>{this.dateFormat(payment.date)}</td>
-      <td>{payment.type}</td>
-      <td> {selectedCurrency[0].symbol} { paymentAmount < 0 ? -(paymentAmount) : paymentAmount} </td>
+      <td>{payment.notes}</td>
+      <td style={{color}}> {payment.type}  {selectedCurrency[0].symbol}{paymentAmount} </td>
       <td>
         <Button style={{ backgroundColor: "transparent", borderColor: '#green', color: "green" }} onClick={() => this.handleUpdateBillPayment(payment, selectedCurrency[0].symbol)}>Edit</Button> &nbsp;
       </td>

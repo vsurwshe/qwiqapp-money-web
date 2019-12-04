@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, Row, Col, Modal, ModalHeader, Alert } from 'reactstrap';
+import { Button, Row, Modal, ModalHeader, Alert, Table } from 'reactstrap';
 import { FaTrashAlt, FaCloudUploadAlt, FaEye } from 'react-icons/fa';
 import BillAttachmentsApi from '../../../services/BillAttachmentsApi';
 import AttachmentUtils from '../../utility/AttachmentUtils';
@@ -22,11 +22,11 @@ class BillAttachments extends Component {
             profileId: props.profileId,
             billId: props.bill && props.bill.id,
             attachments: [],
-            dropdownOpen: [],
             reAttachment: ''
         }
     }
 
+    //Calling BillAttachments api to get attachments
     componentDidMount() {
         this._iMount = true;
         const { profileId, bill } = this.props
@@ -51,31 +51,25 @@ class BillAttachments extends Component {
        we can use one method(componentDidUpdate/ componentWillUpdate) for updated result of add/delete, 
        but in addaing attachment we are using another component(AddBillAttachment). Here only our Success message showing */
     componentDidUpdate = () => {
-        if (this.state.attachementAdded && this.props.profileId) {
-            new BillAttachmentsApi().getBillAttachments(this.successCall, this.errorCall, this.state.profileId, this.state.billId);
-            this.attachementAdded();
+        const { attachmentAdded, profileId, billId } = this.state
+        if (attachmentAdded && profileId) {
+            new BillAttachmentsApi().getBillAttachments(this.successCall, this.errorCall, profileId, billId);
+            this.attachmentAdded();
         }
     }
 
-    attachementAdded = () => {
-        this.setState({ attachementAdded: !this.state.attachementAdded });
+    // This method is called when user clicks on Add Attachment
+    attachmentAdded = () => {
+        this.setState({ attachmentAdded: !this.state.attachmentAdded });
     }
 
     successCall = async (attachments) => {
         if (this._iMount) {
-            await this.setState({ attachments: attachments, spinner: true });
+            await this.setState({ attachments, spinner: true });
         }
     }
 
-    loadDropdown = () => {
-        this.state.attachment.map(attachment => {
-            return this.setState(prevState => ({
-                accordion: [...prevState.accordion, false],
-                dropdownOpen: [...prevState.dropdownOpen, false]
-            }))
-        });
-    }
-
+    // This method is called when user clicks on Delete attachment
     toggleDanger = (id, fileName) => {
         this.setState({ danger: !this.state.danger });
         if (id) {
@@ -83,10 +77,12 @@ class BillAttachments extends Component {
         }
     }
 
+    // This method displays the attachment in view mode
     toggleView = (viewData, reAttachment) => {
         this.setState({ display: !this.state.display, viewData, reAttachment });
     }
 
+    // This method calls the AttachmentUtils api to delete an attachment
     deleteAttachmentRequest = async () => {
         this.setState({ danger: !this.state.danger });
         const { profileId, billId, attachmentId } = this.state;
@@ -109,10 +105,13 @@ class BillAttachments extends Component {
         }
     }
 
+    // This method calls the api to download the attachment
     downloadLink = async (reAttachment) => { AttachmentUtils.downloadAttachment(reAttachment).then(response => console.log(response)) }
 
+    // This method calls the api to view the attachment
     viewLink = (reAttachment) => { AttachmentUtils.viewAttachment(reAttachment).then(response => this.toggleView(response, reAttachment)) }
 
+    // This method is called when user clicks on Upload File
     addBillAttachment = () => {
         this.setState({ addAttachmentRequest: !this.state.addAttachmentRequest });
     }
@@ -121,6 +120,7 @@ class BillAttachments extends Component {
         this.callAlertTimer(color, content)
         this.addBillAttachment();
     }
+
     addAttachmentFail = (err) => {
         this.addBillAttachment();
     }
@@ -132,7 +132,7 @@ class BillAttachments extends Component {
             if (!spinner) {
                 return ShowServiceComponent.loadSpinner('ATTACHMENTS')
             } else if (addAttachmentRequest) {
-                return <div> <AddBillAttachment profileId={profileId} bill={bill} addAttachmentSuccess={this.addAttachmentSuccess} attachementAdded={this.attachementAdded} cancel={this.addBillAttachment} /> </div>
+                return <div> <AddBillAttachment profileId={profileId} bill={bill} addAttachmentSuccess={this.addAttachmentSuccess} attachmentAdded={this.attachmentAdded} cancel={this.addBillAttachment} /> </div>
             } else if (!attachments.length) {
                 return this.showNoAttachments()
             } else if (danger) {
@@ -145,57 +145,60 @@ class BillAttachments extends Component {
         }
     }
 
+    // This loads the header 
+    loadHeader = (bill) => <><Row style={{ float: 'right' }}>
+        <div >{bill && <Button className="rounded" style={{ backgroundColor: "transparent", marginRight: 20 }} onClick={() => this.addBillAttachment()}><FaCloudUploadAlt color="#020b71" size={22} />&nbsp;&nbsp;Upload File </Button>} </div>
+    </Row> <br /><br />
+    </>
+
+    // This will be called when there are no attachments for a bill
     showNoAttachments = () => {
         const { bill } = this.props
-        return <>
-            <Row style={{ float: 'right' }}>
-                <div >{bill && <FaCloudUploadAlt style={{ marginRight: 10, }} onClick={() => this.addBillAttachment()} color="#020b71" size={35} />}</div>
-            </Row> <br /><br />
+        return <> {this.loadHeader(bill)}
             <center className="column-text">
                 <h5><b>{bill && bill.id ? "You haven't added any attachments for this Bill. Please add now..." : "For attchments you need bill id"}</b></h5><br />
             </center>
         </>
     }
 
+    // This will show all the attachments of a bill
     loadAttachments() {
         const { attachments, color, content } = this.state
         const { bill } = this.props
-        return <>
-            <Row style={{ float: 'right' }}>
-                <div >{bill && <FaCloudUploadAlt style={{ marginRight: 10, }} onClick={() => this.addBillAttachment()} color="#020b71" size={35} />}</div>
-            </Row> <br /><br /><br />
+        return <>{this.loadHeader(bill)}
             {content && <Alert color={color}>{content}</Alert>}
-            <Row><Col>
-                {attachments.map((attachment, key) => { return <div key={key}>{this.loadAttachment(attachment, key)}</div> })}</Col>
-            </Row>
+            <Table frame="box" style={{ borderColor: "#DEE9F2", marginTop: 15 }}>
+                <tbody>
+                    {attachments.map((attachment, key) => { return this.loadAttachment(attachment, key) })}
+                </tbody>
+            </Table>
         </>
     }
 
-    loadAttachment = (attachment, key) => {
-        const styles = { marginRight: 10 };
-        return <div className="list">
-            <div className="list-item" key={key}>
-                <Row>
-                    <Col><Button onClick={() => { this.downloadLink(attachment) }} color="link">{attachment.filename}</Button> &nbsp;({this.attachmentFileSize(attachment.sizeBytes)})</Col>
-                    <FaEye color="#1E90FF" size={20} className="float-right" style={{ marginTop: -4, marginRight: 10 }} onClick={e => this.viewLink(attachment)} /><span className="float-right"></span>
-                    <FaTrashAlt color="#ff0000" className="float-right" style={styles} onClick={() => this.toggleDanger(attachment.id, attachment.filename)} /><span className="float-right"></span>
-                </Row>
-            </div>
-        </div>
-    }
+    // This will load attachment one by one in a row
+    loadAttachment = (attachment, key) => <tr key={key}>
+        <td colSpan="1"><Button onClick={() => { this.downloadLink(attachment) }} color="link">{attachment.filename}</Button> &nbsp;({this.attachmentFileSize(attachment.sizeBytes)})</td>
+        <td colSpan="3">
+            <Button className="rounded float-right" style={{ backgroundColor: "transparent", marginRight: 10 }} onClick={() => this.toggleDanger(attachment.id, attachment.filename)}><FaTrashAlt color="#ff0000" />&nbsp;Delete</Button> &nbsp;&nbsp;
+            <Button className="rounded float-right" style={{ backgroundColor: "transparent", marginRight: 20 }} onClick={e => this.viewLink(attachment)}><FaEye color="#1E90FF" size={20} /> &nbsp;View </Button>
+        </td>
+    </tr>
 
+    // This method calculates the file size of an attachment
     attachmentFileSize = (bytes) => {
         if (bytes === 0) { return "0.00 B"; }
         var e = Math.floor(Math.log(bytes) / Math.log(1024));
         return (bytes / Math.pow(1024, e)).toFixed(2) + ' ' + ' KMGTPEZY'.charAt(e) + 'B';
     }
 
+    // This method calls the delete modal when user clicks on delete
     deleteAttachment = () => {
         const { danger } = this.state;
         return <DeleteModel danger={danger} headerMessage="Delete Attachment" bodyMessage={this.state.fileName}
             toggleDanger={this.toggleDanger} delete={this.deleteAttachmentRequest} cancel={this.toggleDanger} >attachment </DeleteModel>
     }
 
+    // Displays the attachment in Modal 
     displayAttachment = () => {
         const { display, viewData, reAttachment } = this.state;
         return <Modal isOpen={display} size="xl" style={{ height: window.screen.height }} className={this.props.className} >
