@@ -58,7 +58,7 @@ class BillTabs extends Component {
       <div className="animated fadeIn">
         <Card>
           <CardHeader>
-                  <Button className="float-right" color="info" onClick={()=>this.props.cancelButton()} >Goto bills</Button> </CardHeader>
+                  <Button className="float-right" color="info" onClick={()=>this.props.cancelButton()} >Back to bills</Button> </CardHeader>
           <CardBody>
             <Row>
               {this.loadTabs(bill, featureAttachment)}
@@ -73,15 +73,15 @@ class BillTabs extends Component {
     const {activeTab} = this.state
     return <Col className="mb-4">
       <Nav tabs>
-        <NavItem> <NavLink active={activeTab[0] === "1"} onClick={() => { this.toggle(0, "1") }} > Bills Form </NavLink> </NavItem>
+        <NavItem> <NavLink active={activeTab[0] === "1"} onClick={() => { this.toggle(0, "1") }}> Bill Details </NavLink> </NavItem>
         {bill && <NavItem>
-          <NavLink active={activeTab[0] === "2"} onClick={() => { this.toggle(0, "2"); }} > Payment History </NavLink>
+          <NavLink active={activeTab[0] === "2"} onClick={() => { this.toggle(0, "2"); }} > Payments  </NavLink>
         </NavItem>}
         {bill && featureAttachment && <NavItem>
           <NavLink active={activeTab[0] === "3"} onClick={() => { this.toggle(0, "3"); }} > Attachments </NavLink>
         </NavItem>}
       </Nav>
-      <TabContent activeTab={this.state.activeTab[0]}>
+      <TabContent activeTab={activeTab[0]}>
         {this.tabPane()}
       </TabContent>
     </Col>
