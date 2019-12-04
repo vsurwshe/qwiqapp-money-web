@@ -154,6 +154,19 @@ dropdown-align {
     color: red; 
     border-color: red;
 }
+
+.hr-main {
+    height: 1px;
+    background-color: grey;
+    text-align: center
+}
+
+.hr-text {
+    background-color: white;
+    position: relative;
+    top: -0.7em;
+}
+
 /* ============ End Bills styles=========*/
 
 /* ============ start Category styles=========*/

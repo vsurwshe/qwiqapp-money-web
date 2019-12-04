@@ -17,55 +17,85 @@ export const BillFormUI = (props) => {
   const { bill, currencies, labels, contacts, categories, type, amount, dueDays, dueDate, billDate, moreOptions, doubleClick } = props.data;
 
   // If bill exists, take currency from bill. If not, takes the default currency from selected Profile
-  const { currency, description } = bill ? bill : Store.getProfile();
+  const { currency, description, reference } = bill ? bill : Store.getProfile(); 
   if (bill) {
     categoryName = Data.categoriesOrLabels(categories).filter(item => { return item.value === bill.categoryId })
   }
   return <AvForm onSubmit={props.handleSubmitValue}>
     <Row>
-      <Col sm={3}>
-        <AvField type="select" id="symbol" name="currency" value={currency} disabled={!featureMultiCurrency} label="Currency" errorMessage="Select Currency" required>
-          <option value="">Select</option>
-          {currencies.map((currency, key) => {
-            return <option key={key} value={currency.code}
-              data={currency.symbol} symbol={currency.symbol} >{currency.code + " - " + currency.name}</option>
-          })}
-        </AvField>
+      <Col sm={4}>
+        <Row>
+          <Col sm={3}> <label>Currency</label> </Col>
+          <Col>
+          <AvField type="select" id="symbol" name="currency" value={currency} disabled={!featureMultiCurrency} errorMessage="Select Currency" required>
+            <option value="">Select</option>
+            {currencies.map((currency, key) => {
+              return <option key={key} value={currency.code}
+                data={currency.symbol} symbol={currency.symbol} >{currency.code + " - "+ currency.name}</option>
+            })}
+          </AvField></Col>
+        </Row>
       </Col>
-      <Col sm={3}>
-        <AvField type="select" name="amountType" label="Type of Bill" value={type} errorMessage="Select Type of Bill" required>
-          <option value={billType.PAYABLE}>Payable</option>
-          <option value={billType.RECEIVABLE}>Receivable</option>
-        </AvField>
+      <Col sm={4}>
+        <Row>
+          <Col sm={3}> <label>Bill type</label> </Col>
+          <Col> <AvField type="select" name="amountType" value={type} errorMessage="Select Type of Bill" required>
+              <option value={billType.PAYABLE}>Payable</option>
+              <option value={billType.RECEIVABLE}>Receivable</option>
+            </AvField> </Col>
+         </Row>
       </Col>
-      <Col sm={6}>
-        <AvField name="amount" id="amount" label={<>Amount <b className="text-color"> *</b></>} value={amount} placeholder="Amount" type="number" errorMessage="Invalid amount"
-          onChange={e => { props.handleSetAmount(e) }} required />
+      <Col>
+        <Row>
+          <Col sm={2}> <label>Amount<b className="text-color">*</b></label> </Col>
+          <Col> <AvField name="amount" id="amount" value={amount} placeholder="Amount" type="number" errorMessage="Invalid amount"
+              onChange={e => { props.handleSetAmount(e) }} required />
+          </Col>
+        </Row>
+      </Col>
+    </Row>
+    <Row>
+      <Col sm={4}>
+        <Row>
+          <Col sm={3}> <label>Category<b className="text-color">*</b> </label></Col>
+          <Col>
+          <Select options={Data.categoriesOrLabels(categories)} styles={Data.singleStyles} defaultValue={categoryName} placeholder="Select Categories " onChange={props.categorySelected} required />
+          </Col>
+        </Row>
+      </Col>
+      <Col sm={4}>
+        <Row>
+          <Col sm={3}> <label>Bill Date</label></Col>
+          <Col> <AvField name="billDate" value={billDate} type="date" onChange={(e) => { props.handleBillDate(e) }} errorMessage="Invalid Date" validate={{
+            date: { format: 'dd/MM/yyyy' },
+            dateRange: { format: 'YYYY/MM/DD', start: { value: '1900/01/01' }, end: { value: '9999/12/31' } },
+            required: { value: true }
+          }} /></Col>
+        </Row>
+      </Col>
+        <Col>
+           <div style={{paddingLeft:18}}>
+          <Row> Due in &nbsp; 
+            <AvField name="dueDays" placeholder="0" onChange={e => { props.handleDate(e) }} value={dueDays} type="number" style={{all: 'unset', borderBottom: '1px solid', width: 50}} errorMessage="Invalid Days" /> &nbsp;  days from Bill date, on {dueDate}
+          </Row>
+        </div>
+        </Col>
+    </Row>
+    <Row>
+      <Col >
+        <Row>
+          <Col sm={1}> <label>Reference</label></Col>
+          <Col><AvField name="reference" type="text" list="colors" value={reference} placeholder="Ex: Recharge" errorMessage="Invalid Notes" /></Col>
+        </Row>
       </Col>
     </Row>
     <Row>
       <Col>
-        <label > Category <b className="text-color">*</b> </label>
-        <Select options={Data.categoriesOrLabels(categories)} styles={Data.singleStyles} defaultValue={categoryName} placeholder="Select Categories " onChange={props.categorySelected} required /></Col>
-      <Col>
-        <AvField name="billDate" label="Bill Date" value={billDate} type="date" onChange={(e) => { props.handleBillDate(e) }} errorMessage="Invalid Date" validate={{
-          date: { format: 'dd/MM/yyyy' },
-          dateRange: { format: 'YYYY/MM/DD', start: { value: '1900/01/01' }, end: { value: '9999/12/31' } },
-          required: { value: true }
-        }} /></Col>
-    </Row>
-    <Row>
-      <Col>
-        <AvField name="dueDays" label="Due Days" placeholder="0" onChange={e => { props.handleDate(e) }} value={dueDays} type="number" errorMessage="Invalid Days" />
-      </Col>
-      <Col>
-        <AvField name="dueDate" label="Due Date" disabled value={dueDate} type="date" errorMessage="Invalid Date" validate={{ date: { format: 'dd/MM/yyyy' } }} />
-      </Col>
-    </Row>
-    <Row>
-      <Col>
-        <label>Description / Notes</label>
-        <AvField name="description" type="textarea" list="colors" value={description} placeholder="Ex: Recharge" errorMessage="Invalid Notes" /></Col>
+        <Row>
+          <Col sm={1}> <label>Description / Notes</label> </Col>
+          <Col> <AvField name="description" type="textarea" list="colors" value={description} placeholder="Ex: Recharge" errorMessage="Invalid Notes" /></Col>
+        </Row>
+       </Col>
     </Row>
     {!props.data.moreOptions &&
       <Button className="m-0 p-0" color="link" onClick={() => props.toggleCustom()} aria-expanded={moreOptions} aria-controls="exampleAccordion1">

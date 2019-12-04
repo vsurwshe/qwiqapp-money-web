@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Card, CardHeader, CardBody, Col, Alert, Row, Input, InputGroup, InputGroupAddon, Button, Collapse, UncontrolledDropdown, DropdownMenu, DropdownItem, DropdownToggle } from 'reactstrap';
+import { Card, CardHeader, CardBody, Col, Alert, Row, Input, InputGroup, InputGroupAddon, Button, Collapse } from 'reactstrap';
 import Loader from 'react-loader-spinner';
 import Avatar from 'react-avatar';
 import { FaAngleDown } from 'react-icons/fa';
@@ -66,7 +66,7 @@ export const ShowServiceComponent = {
       </span></>
   },
 
-  loadHeaderWithSearch: function (headerMessage, items, setSearch, placeHolder, addItem, filter, handleDateFilter) {
+  loadHeaderWithSearch: function (headerMessage, items, setSearch, placeHolder, addItem) {
     return <CardHeader>
       <Row form>
         <Col className="marigin-top" >
@@ -80,28 +80,20 @@ export const ShowServiceComponent = {
               </InputGroupAddon>
             </InputGroup>
           </Col>}
-        {filter && <>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<UncontrolledDropdown >
-          <DropdownToggle caret>Filter bills by date</DropdownToggle>
-          <DropdownMenu>
-            <DropdownItem onClick={() => { handleDateFilter('today') }}>Today</DropdownItem>
-            <DropdownItem onClick={() => { handleDateFilter(7) }} >Last 7 days</DropdownItem>
-            <DropdownItem onClick={() => { handleDateFilter(30) }} >Last 30 days </DropdownItem>
-            <DropdownItem onClick={() => { handleDateFilter("year") }}>This year</DropdownItem>
-            <DropdownItem onClick={() => { handleDateFilter('all') }}>All</DropdownItem>
-          </DropdownMenu>
-        </UncontrolledDropdown></>}
         <Col >
           <Button color="success" className="float-right" onClick={addItem}> + ADD </Button>
         </Col>
       </Row>
     </CardHeader>
   },
-
-  customDate: function (dateParam, day) {
+  
+  customDate: function (dateParam, monWeekDay, monWeekDayYear) {
     let toStr = "" + dateParam
     let dateString = toStr.substring(0, 4) + "-" + toStr.substring(4, 6) + "-" + toStr.substring(6, 8)
-    if (day) {
+    if (monWeekDay) {
       return this.billDateFormat(new Date(dateString));
+    } else if (monWeekDayYear) {
+      return this.billDataTableDateFormat(new Date(dateString));
     } else {
       return this.loadDateFormat(new Date(dateString));
     }
@@ -113,13 +105,15 @@ export const ShowServiceComponent = {
   },
   // this method return formate date like ex: Mon, 03 DeC
   billDateFormat: function (date) {
-    return new Intl.DateTimeFormat('en-gb', { month: 'short', weekday: 'short', day: '2-digit' }).format(date);
+    return new Intl.DateTimeFormat('en-gb', { month: 'short', weekday: 'short', day: '2-digit'}).format(date); 
+  },
+
+  billDataTableDateFormat: function (date) {
+    return new Intl.DateTimeFormat('en-gb', { month: 'short', weekday: 'short', day: '2-digit', year: 'numeric' }).format(date); 
   },
 
   billTypeAmount: function (currency, amount) {
-    return <span>
-      {new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(amount > 0 ? amount : -(amount))}
-    </span>
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(amount>0 ? amount : -(amount))
   },
 
   handleTax: function (amount, taxPercent, taxAmount) {

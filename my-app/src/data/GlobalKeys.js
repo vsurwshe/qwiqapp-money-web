@@ -34,6 +34,7 @@ export const profileFeature = {
    MULTIUSER: 'MultiUser'
 } 
 
+// Specifies the type of bill used when Add/update a Bill
 export const billType = {
    PAYABLE: 'EXPENSE_PAYABLE',
    RECEIVABLE: 'INCOME_RECEIVABLE',
@@ -43,15 +44,26 @@ export const billType = {
    }
 }
 
+// Specifies the default repeatType of recurring bill used when adding or updating
 export const billRepeatType={
    DAY:"DAY"
 }
 
+// Specifies the repeatType of recurring bill used when adding or updating
 export const recurBillType={
   DAY:"DAY",
   WEEK:"Week",
   MONTH:"MONTH",
   DAYOFMONTH:"DAYOFMONTH",
   YEAR:"YEAR"
-
 }
+
+// This more options is used in Bills for displaying in MoreOption Button 
+export const moreOptions = {
+   ADDPAYMENT: 'Add a payment',
+   PAYHISTORY: 'Payments History',
+   MARKPAID: 'Mark as Paid',
+   UNMARKPAID: 'Mark as Un-Paid',
+   ATTACHMENTS: 'Attachments',
+   DELETE: 'Delete'
+ }
