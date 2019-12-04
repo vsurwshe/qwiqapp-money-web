@@ -410,11 +410,11 @@ class BillForm extends Component {
             handleDate={this.handleDate}
             toggleCustom={this.toggleCustom}
             loadMoreOptions={this.loadMoreOptions}
-            cancel={this.cancelCreateBill}
+            cancel={this.props.cancelButton}
             labelSelected={this.labelSelected}
             contactSelected={this.contactSelected}
             categorySelected={this.categorySelected}
-            buttonText={this.props.bill ? "Update Bill " : "New Bill"}
+            buttonText="Save Bill"
           />
         </Col>
       </Card>
@@ -431,7 +431,7 @@ class BillForm extends Component {
       contactName = Data.contacts(contacts).filter(item => { return item.value === bill.contactId })
     }
     return <Collapse isOpen={this.state.moreOptions} data-parent="#exampleAccordion" id="exampleAccordion1">
-      {this.loadHorizantalLine()}
+      {this.loadHorizontalLine()}
       <Row>
         <Col>
           <Row>
@@ -499,7 +499,7 @@ class BillForm extends Component {
     </Modal>
   }
 
-  loadHorizantalLine = () => <><br /> <div className="hr-main">
+  loadHorizontalLine = () => <><br /> <div className="hr-main">
     <span className="hr-text">
       &nbsp; Optional &nbsp;
       </span>

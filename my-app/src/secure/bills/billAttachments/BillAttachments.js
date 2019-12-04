@@ -49,7 +49,7 @@ class BillAttachments extends Component {
 
     /* while add attachment then call the attachment API for updated result.
        we can use one method(componentDidUpdate/ componentWillUpdate) for updated result of add/delete, 
-       but in addaing attachment we are using another component(AddBillAttachment). Here only our Success message showing */
+       but in adding attachment we are using another component(AddBillAttachment). Here only our Success message showing */
     componentDidUpdate = () => {
         const { attachmentAdded, profileId, billId } = this.state
         if (attachmentAdded && profileId) {
@@ -156,7 +156,7 @@ class BillAttachments extends Component {
         const { bill } = this.props
         return <> {this.loadHeader(bill)}
             <center className="column-text">
-                <h5><b>{bill && bill.id ? "You haven't added any attachments for this Bill. Please add now..." : "For attchments you need bill id"}</b></h5><br />
+                <h5><b>{bill && bill.id ? "You haven't added any attachments for this Bill. Please add now..." : "For attachments you need bill id"}</b></h5><br />
             </center>
         </>
     }
@@ -194,8 +194,7 @@ class BillAttachments extends Component {
     // This method calls the delete modal when user clicks on delete
     deleteAttachment = () => {
         const { danger } = this.state;
-        return <DeleteModel danger={danger} headerMessage="Delete Attachment" bodyMessage={this.state.fileName}
-            toggleDanger={this.toggleDanger} delete={this.deleteAttachmentRequest} cancel={this.toggleDanger} >attachment </DeleteModel>
+        return <DeleteModel danger={danger} headerMessage="Delete Attachment" bodyMessage={this.state.fileName} toggleDanger={this.toggleDanger} delete={this.deleteAttachmentRequest} cancel={this.toggleDanger} >attachment </DeleteModel>
     }
 
     // Displays the attachment in Modal 

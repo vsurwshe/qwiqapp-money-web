@@ -42,8 +42,8 @@ class AddBillAttachment extends Component {
     this.setState({ cancelAddAttachment: true });
   }
 
-  successCall = (json) => {
-    this.props.attachementAdded();
+  successCall = () => {
+    this.props.attachmentAdded();
     this.callAlertTimer("success", "Attachment added Successfully !!");
   }
 

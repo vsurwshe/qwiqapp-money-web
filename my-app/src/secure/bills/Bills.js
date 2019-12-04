@@ -1,8 +1,6 @@
 import React, { Component, Suspense } from "react";
 import { withRouter } from "react-router-dom";
-import { Redirect } from 'react-router';
 import { Card, CardBody, Alert, FormGroup, Label, Input } from "reactstrap";
-import BillForm from "./BillForm";
 import BillApi from "../../services/BillApi";
 import Store from "../../data/Store";
 import CategoryApi from "../../services/CategoryApi";
@@ -19,8 +17,6 @@ import '../../css/style.css';
 import { DataTable } from "../utility/DataTable";
 import BillTabs from "./BillTabs";
 import '../../css/style.css';
-
-const BillPayment = lazy(() => import('./billPayment/ BillPayment'));
 
 // This importing Jquery in react.
 const $ = require('jquery');
@@ -66,7 +62,7 @@ class Bills extends Component {
         var row = $(this).closest('tr'); // This fetches the data of the row when we click 'edit' in dataTable
         var editData = $('.display').dataTable().fnGetData(row); //this line separates the required data from the fecthced row data.
         var updateBill = editData && bills.filter(bill => bill.id === editData[0]); // Filter the specific bill from the list of bills using id and assign to updatebill
-        updateBill && _.handleUpdateBillAction(updateBill[0]) // 
+        updateBill && _.updateBillAction(updateBill[0]) // 
       })
       $('.display').on('change', 'select', function () {
         var row = $(this).closest('tr'); // This fetches the data of the row when we click 'edit' in dataTable
@@ -307,7 +303,10 @@ class Bills extends Component {
   handleMarkAsPaid = () => { this.setState({ markPaid: true }); }
   handleViewPayment = () => { this.setState({ viewPayment: !this.state.viewPayment }); }
   handleMarkAsUnpaidPayment = () => { this.setState({ markAsUnPaid: true }) }
-  handleBillAttachments = (billId) => { this.setState({ billId: billId, attachments: true }) }
+  handleBillAttachments = (billId) => { 
+    this.setState({ billId: billId }) 
+    this.handleAttachmentAction()
+  }
   handleSetBillId = (bill) => {
     let data = {
       "deletBillDescription": bill.description,
@@ -315,6 +314,10 @@ class Bills extends Component {
     }
     this.setState({ billId: bill.id, deleteBillName: data });
     this.toggleDanger();
+  }
+
+  handleAttachmentAction = () =>{
+    this.setState({ attachments : !this.state.attachments })
   }
 
   // this method handle remove dependents while deleteing bill
@@ -384,7 +387,7 @@ class Bills extends Component {
       return <DeleteBill billId={billId} profileId={profileId} removeDependents={removeDependents} />
     } else if (addPayment || markPaid) {
       let cancelHandle = addPayment ? this.handleAddPayment : this.handleMarkAsPaid
-      return <Suspense fallback={<div>Loadding...</div>}> <BillTabs form="payments" payform={true} tabData={tabData} paidAmount={paidAmount} cancelButton={cancelHandle} /></Suspense>
+      return <Suspense fallback={<div>Loading...</div>}> <BillTabs form="payments" payform={true} tabData={tabData} paidAmount={paidAmount} cancelButton={cancelHandle} /></Suspense>
     } else if (viewPayment) {
       // This bill tabs called for Payments.
       return <BillTabs form="payments" tabData={tabData} paidAmount={paidAmount} cancelButton={this.handleViewPayment} />
@@ -403,7 +406,7 @@ class Bills extends Component {
   }
 
   loadHeader = (bills) => {
-    return new ShowServiceComponent.loadHeaderWithSearch("BILLS", bills, this.searchSelected, "Search Bills.....", this.handleCreateBillAction, false, null);
+    return new ShowServiceComponent.loadHeaderWithSearch("BILLS", bills, this.searchSelected, "Search Bills.....", this.createBillAction, false, null);
   }
 
   loadLoader = () => <div className="animated fadeIn">
@@ -548,7 +551,7 @@ class Bills extends Component {
     let billDeleteItem = this.state.deleteBillName.deletBillDescription ? this.state.deleteBillName.deletBillDescription
       : this.state.deleteBillName.deletBillCategoryName;
     return <DeleteModel danger={this.state.danger} toggleDanger={this.toggleDanger} headerMessage="Delete Bill" bodyMessage={billDeleteItem}
-      delete={this.handleDeleteBillAction} cancel={this.toggleDanger} loadDeleteOptions={this.loadDeleteOptions}>bill</DeleteModel>
+      delete={this.deleteBillAction} cancel={this.toggleDanger} loadDeleteOptions={this.loadDeleteOptions}>bill</DeleteModel>
   }
 
   // This method shows the options while deleting a bill
