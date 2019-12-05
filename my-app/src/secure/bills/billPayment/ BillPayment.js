@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, Col, Row, Alert} from 'reactstrap';
+import { Button, Col, Row, Alert } from 'reactstrap';
 import PaymentApi from '../../../services/PaymentApi';
 import Store from '../../../data/Store';
 import Config from '../../../data/Config';
@@ -47,7 +47,7 @@ class BillPayment extends Component {
         const { bill, paidAmount } = this.props.data
         const { update } = this.props
         let paidAmountResult = paidAmount === 0 ? bill.amount : paidAmount;
-        let alertMsg= update ? "BillPayment added succesfully !!" : "BillPayment Updated succesfully !!"
+        let alertMsg = update ? "BillPayment added succesfully !!" : "BillPayment Updated succesfully !!"
         // Checking Full payment paid or not.
         if (response.amount - (paidAmountResult) === 0) {
             this.setState({ alertColor: "success", alertMessage: alertMsg, paid: true });
@@ -68,31 +68,31 @@ class BillPayment extends Component {
     cancelPayment = () => { this.setState({ cancelPayment: true }); }
 
     render() {
-        const { cancelPayment } = this.state;
+        const { cancelPayment, paid } = this.state;
         const { bill, profileId } = this.props.data;
-        return cancelPayment ? <ViewPayment bill={bill} profileId={profileId} /> : <div> {this.loadPayment(bill)} </div>
+        return cancelPayment ? <ViewPayment bill={bill} profileId={profileId} billPaid={paid} /> : <div> {this.loadPayment(bill)} </div>
     }
 
     loadPayment = (bill) => {
         const { currencies } = this.state
         let selectedCurrency = currencies && currencies.filter(currency => currency.code === bill.currency);
-        const name = bill.description ? bill.description : bill.categoryName.name
+        const name = bill.description ? bill.description : (bill.categoryName && bill.categoryName.name)
         let billDate = (bill.billDate + "").slice(0, 4) + "-" + (bill.billDate + "").slice(4, 6) + "-" + (bill.billDate + "").slice(6, 8);
         return <div>
             {this.state.alertMessage && <Alert color={this.state.alertColor} >{this.state.alertMessage}</Alert>}
             <div className=" container shadow p-3 mb-1 md-white rounded border border-dark">
-            <Row>
-                <Col sm={3}>Bill Amount:</Col>
-                <Col sm={9}> {selectedCurrency.symbol} &nbsp;{bill.amount > 0 ? bill.amount : -(bill.amount)} </Col>
-            </Row> <br />
-            <Row>
-                <Col sm={3}>Bill Date:</Col>
-                <Col sm={9}>{billDate}</Col>
-            </Row> <br />
-            <Row>
-                <Col sm={3}>Bill Notes / Description: </Col>
-                <Col sm={9}>{name}</Col>
-            </Row>
+                <Row>
+                    <Col sm={3}>Bill Amount:</Col>
+                    <Col sm={9}> {selectedCurrency.symbol} &nbsp;{bill.amount > 0 ? bill.amount : -(bill.amount)} </Col>
+                </Row> <br />
+                <Row>
+                    <Col sm={3}>Bill Date:</Col>
+                    <Col sm={9}>{billDate}</Col>
+                </Row> <br />
+                <Row>
+                    <Col sm={3}>Bill Notes / Description: </Col>
+                    <Col sm={9}>{name}</Col>
+                </Row>
             </div> <br />
             {bill.paid ? this.loadPaidMessage() : this.loadBillPaymentForm(selectedCurrency[0], bill)}
         </div>
@@ -120,11 +120,11 @@ class BillPayment extends Component {
             amountLable: "Payment Amount (" + selectedCurrency.symbol + ")",
             buttonText: update ? 'Edit Payment ' : 'Save Payment'
         }
-        return <BillPaymentForm data={formData} 
-        handleSubmitValue={this.handleSubmitValue} 
-        calculateRemAmt={this.calculateRemAmt} 
-        handlePaidDate={this.handlePaidDate} 
-        cancelPayment={this.cancelPayment} />
+        return <BillPaymentForm data={formData}
+            handleSubmitValue={this.handleSubmitValue}
+            calculateRemAmt={this.calculateRemAmt}
+            handlePaidDate={this.handlePaidDate}
+            cancelPayment={this.cancelPayment} />
     }
 
     calculateRemAmt = (paidAmount) => {

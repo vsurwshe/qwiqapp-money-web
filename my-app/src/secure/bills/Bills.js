@@ -13,7 +13,6 @@ import { ShowServiceComponent } from "../utility/ShowServiceComponent";
 import Config from "../../data/Config";
 import PaymentApi from "../../services/PaymentApi";
 import { profileFeature, moreOptions } from "../../data/GlobalKeys";
-import '../../css/style.css';
 import { DataTable } from "../utility/DataTable";
 import BillTabs from "./BillTabs";
 import '../../css/style.css';
@@ -33,7 +32,7 @@ class Bills extends Component {
       updateBill: [],
       billPayments: [],
       visible: props.visible,
-      profileId: "",
+      profileId: '',
       selectedOption: '',
       paidAmount: 0
     };
@@ -86,7 +85,7 @@ class Bills extends Component {
             requiredBill && _.handleViewPayment();
             break;
           case moreOptions.UNMARKPAID:
-            requiredBill && _.handleMarkAsUnpaidPayment();
+            requiredBill && _.handleMarkAsUnpaidPayment(requiredBill[0]);
             break;
           default:
             break;
@@ -174,7 +173,7 @@ class Bills extends Component {
   successCallBill = async bills => {
     let newBills;
     const { value } = this.props.match.params;
-    if (bills.length === 0) {
+    if (bills && !bills.length) {
       this.setState({ bills: [] })
     } else {
       if (value) {
@@ -228,11 +227,11 @@ class Bills extends Component {
   }
 
   handleMarkAsUnPaid = () => {
-    const { profileId, requiredBill } = this.state
-    new BillApi().markAsUnPaid(this.successUnpaidBill, this.errorCall, profileId, requiredBill.id);
+    const { profileId, updateBill } = this.state
+    new BillApi().markAsUnPaid(this.successUnpaidBill, this.errorCall, profileId, updateBill.id);
   }
 
-  successUnpaidBill = () => { this.callAlertTimer(this.state.visible, true) }
+  successUnpaidBill = () => { this.setMarkasUnpaid(); this.callTimer("success", "Your bill payments clear"); this.getBills() }
 
   // This method handle Error Call of API 
   errorCall = (err) => {
@@ -244,7 +243,7 @@ class Bills extends Component {
     }
   }
 
-  callAlertTimer = (alertColor, alertMessage) => {
+  callTimer = (alertColor, alertMessage) => {
     this.setState({ alertColor, alertMessage });
     setTimeout(() => {
       this.setState({ alertColor: undefined, alertMessage: undefined });
@@ -280,15 +279,6 @@ class Bills extends Component {
     this.toggleDanger();
   }
 
-  callAlertTimer = (visible, reload) => {
-    if (visible) {
-      setTimeout(() => { this.setState({ visible: false }); }, Config.apiTimeoutMillis)
-    }
-    if(reload){
-      window.location.reload()
-    }
-  };
-
   // This seting required bill when click any one options from more options
   handleShowPayment = (bill) => {
     let lastPaid = this.calculateLastPaid(bill);
@@ -299,10 +289,23 @@ class Bills extends Component {
   }
 
   // This is more options handle methods
-  handleAddPayment = () => { this.setState({ addPayment: true }); }
-  handleMarkAsPaid = () => { this.setState({ markPaid: true }); }
+  handleAddPayment = (callBills) => { 
+    if(callBills){
+      this.getBills()
+    } 
+    this.setState({ addPayment: !this.state.addPayment });
+  }
+
+  handleMarkAsPaid = (callBills) => {
+    if(callBills){
+      this.getBills()
+    }  
+    this.setState({ markPaid: !this.state.markPaid }); 
+  }
   handleViewPayment = () => { this.setState({ viewPayment: !this.state.viewPayment }); }
-  handleMarkAsUnpaidPayment = () => { this.setState({ markAsUnPaid: true }) }
+  handleMarkAsUnpaidPayment = (requiredBill) => { this.setState({ markAsUnPaid: !this.state.markAsUnPaid, updateBill:requiredBill }) }
+  setMarkasUnpaid = () => { this.setState({ markAsUnPaid: !this.state.markAsUnPaid}); }
+
   handleBillAttachments = (billId) => { 
     this.setState({ billId: billId }) 
     this.handleAttachmentAction()
@@ -327,7 +330,7 @@ class Bills extends Component {
   calculateLastPaid = (bill) => {
     const { billPayments } = this.state;
     let totalPaid = 0;
-    if (billPayments.length > 0) {
+    if (billPayments.length > 0 && bill) {
       // Filtering billpayments according to billId
       let filteredBillPayment = billPayments.filter(billPayment => billPayment.billId === bill.id);
       let paidAmount = bill.amount;
@@ -399,7 +402,7 @@ class Bills extends Component {
       // displaying all bills
       return <div>
         {danger && this.deleteBillModel()}
-        {this.loadDataTable(bills, featureAttachment, visible)}
+        {this.loadDataTable(bills, featureAttachment)}
         {markAsUnPaid && this.handleMarkAsUnPaid()}
       </div>
     }
@@ -432,8 +435,7 @@ class Bills extends Component {
   </div>
 
   // This Functions Loading Jquery DataTable into bills
-  loadDataTable = (bills, featureAttachment, visible) => {
-    const color = this.props.color;
+  loadDataTable = (bills, featureAttachment) => {
     // This array collection of header in DataTable
     let columns = [
       { title: '', visible: false },
@@ -450,7 +452,7 @@ class Bills extends Component {
     return <div className="animated fadeIn">
       <Card>
         {this.loadHeader("")}
-        <h6>{visible && <Alert isOpen={visible} color={color}>{this.props.content}</Alert>}</h6>
+        <h6>{this.state.alertMessage && <Alert color={this.state.alertColor}>{this.state.alertMessage}</Alert>}</h6>
         <CardBody className="card-align">
           {/* Calling jquery datatable component providing rows and columns */}
           <DataTable billData={this.loadTableRows(bills, featureAttachment)} columns={columns} />

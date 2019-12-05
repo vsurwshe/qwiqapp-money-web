@@ -34,7 +34,7 @@ export const BillPaymentForm = (props) =>{
            </Row>
                     </Col>
                     <Col xs="3"></Col>
-      </Row>
+        </Row>
         <Row>
             <Col>
                 <Row>
@@ -43,9 +43,11 @@ export const BillPaymentForm = (props) =>{
                 </Row>
             </Col>
         </Row>
-        <FormGroup >
-            <Button color="success" disabled={props.data.doubleClick}> {buttonText}  </Button> &nbsp;&nbsp;
-            <Button type="button" onClick={props.cancelPayment}>Go to Payment History</Button>
-        </FormGroup>
+        <center>
+            <FormGroup >
+                <Button color="success" disabled={props.data.doubleClick}> {buttonText}  </Button> &nbsp;&nbsp;
+                <Button type="button" onClick={props.cancelPayment}>Go to Payment History</Button>
+            </FormGroup>
+       </center>
     </AvForm>
 }

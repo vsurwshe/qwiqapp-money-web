@@ -58,7 +58,7 @@ class BillTabs extends Component {
       <div className="animated fadeIn">
         <Card>
           <CardHeader>
-                  <Button className="float-right" color="info" onClick={()=>this.props.cancelButton()} >Back to bills</Button> </CardHeader>
+            <Button className="float-right" color="info" onClick={()=>this.props.cancelButton(true)} >Back to bills</Button> </CardHeader>
           <CardBody>
             <Row>
               {this.loadTabs(bill, featureAttachment)}
