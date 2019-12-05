@@ -75,22 +75,24 @@ class AddBillAttachment extends Component {
 
   loadAddAttachment = () => {
     const { color, content } = this.state
-    return <Card>
-      {ShowServiceComponent.loadHeader("ADD ATTACHMENT")}
-      <CardBody>
-        {color && <Alert color={color} >{content}</Alert>}
-        <Col md={{ size: 12, offset: 5 }}>
-          <AvForm onSubmit={this.handlePostData}>
-            <Label>Select a file to upload</Label><br/><br/>
-            <AvField type="file" name="file" onChange={e => this.handleInput(e)} />
-            <FormGroup>
-              <Button color="info" disabled={this.state.doubleClick} > Upload </Button> &nbsp;&nbsp;
-              <Button active color="light" type="button" onClick={this.props.cancel} >Cancel</Button>
-            </FormGroup>
-          </AvForm>
-        </Col>
-      </CardBody>
-    </Card>
+    return <>
+      {/* <Card> */}
+        {ShowServiceComponent.loadHeader("ADD ATTACHMENT")}
+        <CardBody>
+          {color && <Alert color={color} >{content}</Alert>}
+          <Col md={{ size: 12, offset: 5 }}>
+            <AvForm onSubmit={this.handlePostData}>
+              <Label>Select a file to upload</Label><br/><br/>
+              <AvField type="file" name="file" onChange={e => this.handleInput(e)} />
+              <FormGroup>
+                <Button color="info" disabled={this.state.doubleClick} > Upload </Button> &nbsp;&nbsp;
+                <Button active color="light" type="button" onClick={this.props.cancel} >Cancel</Button>
+              </FormGroup>
+            </AvForm>
+          </Col>
+        </CardBody>
+      {/* </Card> */}
+    </>
   }
 }
 

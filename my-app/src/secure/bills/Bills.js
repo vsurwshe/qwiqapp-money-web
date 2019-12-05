@@ -382,21 +382,21 @@ class Bills extends Component {
     } else if (createBillRequest) {
       var newTabData = { ...tabData, bill: null };
       // This bill tabs called for create a bill.
-      return <BillTabs form="form" tabData={newTabData} cancelButton={this.createBillAction} />
+      return <BillTabs activeTab={1} tabData={newTabData} cancelButton={this.createBillAction} />
     } else if (updateBillRequest) {
       // This bill tabs called for bill update.
-      return <BillTabs form="form" tabData={tabData} cancelButton={this.updateBillAction} />
+      return <BillTabs activeTab={1} tabData={tabData} cancelButton={this.updateBillAction} />
     } else if (deleteBillRequest) {
       return <DeleteBill billId={billId} profileId={profileId} removeDependents={removeDependents} />
     } else if (addPayment || markPaid) {
       let cancelHandle = addPayment ? this.handleAddPayment : this.handleMarkAsPaid
-      return <Suspense fallback={<div>Loading...</div>}> <BillTabs form="payments" payform={true} tabData={tabData} paidAmount={paidAmount} cancelButton={cancelHandle} /></Suspense>
+      return <Suspense fallback={<div>Loading...</div>}> <BillTabs activeTab={2} payform={true} tabData={tabData} paidAmount={paidAmount} cancelButton={cancelHandle} /></Suspense>
     } else if (viewPayment) {
       // This bill tabs called for Payments.
-      return <BillTabs form="payments" tabData={tabData} paidAmount={paidAmount} cancelButton={this.handleViewPayment} />
+      return <BillTabs activeTab={2} tabData={tabData} paidAmount={paidAmount} cancelButton={this.handleViewPayment} />
     } else if (attachments) {
       // This bill tabs called for Attachments.
-      return <BillTabs tabData={tabData} paidAmount={paidAmount} cancelButton={this.handleAttachmentAction} />
+      return <BillTabs activeTab={3} tabData={tabData} paidAmount={paidAmount} cancelButton={this.handleAttachmentAction} />
     }
     else {
       // displaying all bills

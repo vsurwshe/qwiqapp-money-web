@@ -397,9 +397,8 @@ class BillForm extends Component {
   }
 
   loadBillForm = (formData, alertColor, alertMessage, headerMessage) => {
-
     return <div className="animated fadeIn" >
-      <h4 className="padding-top"><b><center>{headerMessage}</center></b></h4>
+      <h4 ><b><center>{headerMessage}</center></b></h4>
       <Col><br />
         {alertColor && <Alert color={alertColor}>{alertMessage}</Alert>}
         <BillFormUI data={formData}

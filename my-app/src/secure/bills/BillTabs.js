@@ -10,27 +10,13 @@ class BillTabs extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      activeTab: new Array(4).fill("1"),
+      activeTab: props.activeTab,
       profile: Store.getProfile()
     };
   }
 
-  componentDidMount() {
-    const {form} =this.props
-    if (form === "form") {
-      this.toggle(0, "1");
-    } else if (form === "payments") {
-      this.toggle(0, "2");
-    } else {
-      this.toggle(0, "3");
-    }
-  }
-  
-  // This is tabs method toggle 
-  toggle(tabPane, tab) {
-    const newArray = this.state.activeTab.slice();
-    newArray[tabPane] = tab;
-    this.setState({ activeTab: newArray });
+  toggleTabs(activeTab) {
+    this.setState({ activeTab });
   }
 
   tabPane() {
@@ -39,14 +25,14 @@ class BillTabs extends Component {
 
     return (
       <>
-        <TabPane tabId="1">
+        <TabPane tabId={1}>
           {bill ? <BillForm cancelButton={cancelButton} bill={bill} profileId={profileId} labels={labels} categories={categories} contacts={contacts} getContacts={getContacts} getLabels={getLabels} />
             : <BillForm cancelButton={cancelButton} profileId={profileId} labels={labels} categories={categories} contacts={contacts} getContacts={getContacts} getLabels={getLabels} />}
         </TabPane>
-        <TabPane tabId="2">
+        <TabPane tabId={2}>
           <ViewPayment payform={payform} bill={bill} paidAmount={paidAmount} profileId={profileId} cancel={cancelButton} />
         </TabPane>
-        {<TabPane tabId="3"><BillAttachments profileId={profileId} bill={bill} cancelButton={cancelButton} /></TabPane>}
+        {<TabPane tabId={3}><BillAttachments profileId={profileId} bill={bill} cancelButton={cancelButton} /></TabPane>}
       </>
     );
   }
@@ -70,20 +56,18 @@ class BillTabs extends Component {
   }
 
   loadTabs = (bill, featureAttachment) => {
-    const {activeTab} = this.state
+    const {activeTab } = this.state
     return <Col className="mb-4">
       <Nav tabs>
-        <NavItem> <NavLink active={activeTab[0] === "1"} onClick={() => { this.toggle(0, "1") }}> Bill Details </NavLink> </NavItem>
+        <NavItem> <NavLink active={activeTab === 1} onClick={() => { this.toggleTabs(1) }}> Bill Details </NavLink> </NavItem>
         {bill && <NavItem>
-          <NavLink active={activeTab[0] === "2"} onClick={() => { this.toggle(0, "2"); }} > Payments  </NavLink>
+          <NavLink active={activeTab === 2} onClick={() => { this.toggleTabs(2); }} > Payments  </NavLink>
         </NavItem>}
         {bill && featureAttachment && <NavItem>
-          <NavLink active={activeTab[0] === "3"} onClick={() => { this.toggle(0, "3"); }} > Attachments </NavLink>
+          <NavLink active={activeTab === 3} onClick={() => { this.toggleTabs(3); }} > Attachments </NavLink>
         </NavItem>}
       </Nav>
-      <TabContent activeTab={activeTab[0]}>
-        {this.tabPane()}
-      </TabContent>
+      <TabContent activeTab={activeTab}> {this.tabPane()} </TabContent>
     </Col>
   }
 }
