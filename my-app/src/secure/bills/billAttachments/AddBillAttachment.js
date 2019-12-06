@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Card, FormGroup, Button, Alert, Col, CardBody, Label } from 'reactstrap';
+import { FormGroup, Button, Alert, Col, CardBody, Label } from 'reactstrap';
 import { AvForm, AvField } from 'availity-reactstrap-validation';
 import BillAttachmentsApi from '../../../services/BillAttachmentsApi';
 import { ShowServiceComponent } from '../../utility/ShowServiceComponent';
@@ -76,7 +76,6 @@ class AddBillAttachment extends Component {
   loadAddAttachment = () => {
     const { color, content } = this.state
     return <>
-      {/* <Card> */}
         {ShowServiceComponent.loadHeader("ADD ATTACHMENT")}
         <CardBody>
           {color && <Alert color={color} >{content}</Alert>}
@@ -91,7 +90,6 @@ class AddBillAttachment extends Component {
             </AvForm>
           </Col>
         </CardBody>
-      {/* </Card> */}
     </>
   }
 }

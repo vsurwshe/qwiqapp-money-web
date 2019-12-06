@@ -34,13 +34,12 @@ class ViewPayment extends Component {
     } else {
       this.getPayments();
     }
-
   }
 
   componentWillReceiveProps = async () => {
     const { profileId, paid } = this.props
     if (paid) {
-      await new BillApi().getBills((bill) => { console.log(bill) }, this.errorCall, profileId, true);
+      await new BillApi().getBills((bill) => { console.log(bill); }, this.errorCall, profileId, true);
     }
   }
 
@@ -54,6 +53,7 @@ class ViewPayment extends Component {
 
   paymentSuccessCall = async (payments) => {
     await this.setState({ payments });
+    this.props.paymentCount(payments.length);
   }
 
   handleUpdateBillPayment = (updatePayment, currency) => {
@@ -80,7 +80,7 @@ class ViewPayment extends Component {
           paidAmount: this.paidAmountCalculation(bill, payments, paidAmount),
           profileId: profileId
         }
-        return <BillPayment data={paymentData} />
+        return <BillPayment data={paymentData} paymentCount={this.props.paymentCount} />
       } else if (updateBillPayment) {
         let updatePayementData = {
           bill: bill,

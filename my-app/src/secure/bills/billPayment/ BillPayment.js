@@ -44,8 +44,8 @@ class BillPayment extends Component {
     }
 
     handleSuccessCall = (response) => {
-        const { bill, paidAmount } = this.props.data
-        const { update } = this.props
+        const { bill, paidAmount } = this.props.data;
+        const { update } = this.props;
         let paidAmountResult = paidAmount === 0 ? bill.amount : paidAmount;
         let alertMsg = update ? "BillPayment added succesfully !!" : "BillPayment Updated succesfully !!"
         // Checking Full payment paid or not.
@@ -70,7 +70,7 @@ class BillPayment extends Component {
     render() {
         const { cancelPayment, paid } = this.state;
         const { bill, profileId } = this.props.data;
-        return cancelPayment ? <ViewPayment bill={bill} profileId={profileId} billPaid={paid} /> : <div> {this.loadPayment(bill)} </div>
+        return cancelPayment ? <ViewPayment bill={bill} profileId={profileId} billPaid={paid} paymentCount={this.props.paymentCount} /> : <div> {this.loadPayment(bill)} </div>
     }
 
     loadPayment = (bill) => {

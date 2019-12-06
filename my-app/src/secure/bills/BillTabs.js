@@ -15,13 +15,13 @@ class BillTabs extends Component {
     };
   }
 
-  toggleTabs(activeTab) {
-    this.setState({ activeTab });
-  }
+  handlePaymentsCount = (paymentsCount) => {this.setState({paymentsCount});}
+  handleAttachmentsCount = (attachmentCount) => {this.setState({attachmentCount});}
+  toggleTabs(activeTab) { this.setState({ activeTab }); }
 
   tabPane() {
-    const { categories, bill, contacts, getContacts, getLabels, labels, profileId } = this.props.tabData
-    const { paidAmount, cancelButton,payform } = this.props
+    const { categories, bill, contacts, getContacts, getLabels, labels, profileId } = this.props.tabData;
+    const { paidAmount, cancelButton,payform } = this.props;
 
     return (
       <>
@@ -30,9 +30,9 @@ class BillTabs extends Component {
             : <BillForm cancelButton={cancelButton} profileId={profileId} labels={labels} categories={categories} contacts={contacts} getContacts={getContacts} getLabels={getLabels} />}
         </TabPane>
         <TabPane tabId={2}>
-          <ViewPayment payform={payform} bill={bill} paidAmount={paidAmount} profileId={profileId} cancel={cancelButton} />
+          <ViewPayment payform={payform} bill={bill} paidAmount={paidAmount} profileId={profileId} cancel={cancelButton} paymentCount={this.handlePaymentsCount} />
         </TabPane>
-        {<TabPane tabId={3}><BillAttachments profileId={profileId} bill={bill} cancelButton={cancelButton} /></TabPane>}
+        {<TabPane tabId={3}><BillAttachments profileId={profileId} bill={bill} cancelButton={cancelButton} attachmentCount={this.handleAttachmentsCount}/></TabPane>}
       </>
     );
   }
@@ -56,15 +56,15 @@ class BillTabs extends Component {
   }
 
   loadTabs = (bill, featureAttachment) => {
-    const {activeTab } = this.state
+    const {activeTab, paymentsCount, attachmentCount } = this.state;
     return <Col className="mb-4">
       <Nav tabs>
         <NavItem> <NavLink active={activeTab === 1} onClick={() => { this.toggleTabs(1) }}> Bill Details </NavLink> </NavItem>
         {bill && <NavItem>
-          <NavLink active={activeTab === 2} onClick={() => { this.toggleTabs(2); }} > Payments  </NavLink>
+          <NavLink active={activeTab === 2} onClick={() => { this.toggleTabs(2); }} > Payments { paymentsCount>0 && `( ${paymentsCount} )` }  </NavLink>
         </NavItem>}
         {bill && featureAttachment && <NavItem>
-          <NavLink active={activeTab === 3} onClick={() => { this.toggleTabs(3); }} > Attachments </NavLink>
+          <NavLink active={activeTab === 3} onClick={() => { this.toggleTabs(3); }} > Attachments {attachmentCount>0 && `( ${attachmentCount } )`} </NavLink>
         </NavItem>}
       </Nav>
       <TabContent activeTab={activeTab}> {this.tabPane()} </TabContent>

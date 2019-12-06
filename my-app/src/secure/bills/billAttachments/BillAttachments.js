@@ -66,6 +66,7 @@ class BillAttachments extends Component {
     successCall = async (attachments) => {
         if (this._iMount) {
             await this.setState({ attachments, spinner: true });
+            this.props.attachmentCount(attachments.length);
         }
     }
 
