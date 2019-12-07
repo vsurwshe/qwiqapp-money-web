@@ -25,40 +25,55 @@ class ProfileApi {
   }
 
   upgradeProfile(success, failure, profileId, type) {
-    process(success, failure, "/profiles/" + profileId + "/upgrade?type=" + type, "PUT", null, null, profileId);
+    process(success, failure, "/profiles/" + profileId + "/upgrade?type=" + type, "PUT", null, null, profileId, type);
   }
 }
 
 export default ProfileApi;
 
-async function process(success, failure, requestUrl, requestMethod, data, deleteId, profileId, reload) {
+async function process(success, failure, requestUrl, requestMethod, data, deleteId, profileId, type, reload) {
   let HTTP = httpCall(requestUrl, requestMethod);
   let promise;
   try {
     data === null ? promise = await HTTP.request() : promise = await HTTP.request({ data });
     if (requestMethod === "GET") {
+      let selectedProfile = Store.getProfile(); 
+      console.log(selectedProfile, profileId, "type: ", type)
       // This condtions decide to store profile when getProfiles Method call only
       if(!profileId){
         Store.saveUserProfiles(promise.data);
+      } else if (profileId && selectedProfile.id === profileId) { // If request for Upgrade then Storing Profile, 
+        
+        // if (selectedProfile && selectedProfile.id === profileId) { // Cheking selected profie upgraded or any other profile 
+          Store.saveProfile(promise.data); // saving profileData when upgraded a selected profile
+        // }
       }
       validResponse(promise, success, requestMethod, deleteId)
     } else {
       requestMethod === "POST" ?
         new LoginApi().refresh(async () => { await new ProfileApi().getProfiles(success, failure, true); }, (err) => errorResponse(err, failure))
-        : await new ProfileApi().getProfiles(success, failure, true);
+        : ( type ? // checking whether request for Upgrade or not
+            new LoginApi().refresh( // If upgrade, then calling Login(with refresh token) 
+              async () => { // Succeescall(calling profiles) execution for Login
+                await new ProfileApi().getProfiles( // calling profile by Id, in success call
+                  async ()=>{ await new ProfileApi().getProfileById(success, failure, profileId) }, 
+                  (err) => errorResponse(err, failure), true); 
+              }, (err) => errorResponse(err, failure)
+            )
+            : await new ProfileApi().getProfiles(success, failure, true));
     }
   } catch (err) {
-    handleAccessTokenError(err, failure, requestUrl, requestMethod, data, deleteId, success, profileId, reload);
+    handleAccessTokenError(err, failure, requestUrl, requestMethod, data, deleteId, success, profileId, type, reload);
   }
 }
 
 //this method solve the Expire Token Problem.
-let handleAccessTokenError = function (err, failure, requestUrl, requestMethod, data, deleteId, success, profileId, reload) {
+let handleAccessTokenError = function (err, failure, requestUrl, requestMethod, data, deleteId, success, profileId, type, reload) {
   if (err.request && err.request.status === 0) {
     errorResponse(err, failure)
   } else if (err.response.status === 403 || err.response.status === 401) {
     if (!reload) {
-      new LoginApi().refresh(() => { process(success, failure, requestUrl, requestMethod, data, deleteId, profileId, "reload") }, errorResponse(err, failure))
+      new LoginApi().refresh(() => { process(success, failure, requestUrl, requestMethod, data, deleteId, profileId, type, "reload") }, errorResponse(err, failure))
     } else {
       errorResponse(err, failure)
     }
