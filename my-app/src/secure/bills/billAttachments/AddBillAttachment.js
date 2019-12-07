@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
-import { FormGroup, Button, Alert, Col, CardBody, Label } from 'reactstrap';
+import { FormGroup, Button, Alert, Col, CardBody, Label, Row } from 'reactstrap';
 import { AvForm, AvField } from 'availity-reactstrap-validation';
 import BillAttachmentsApi from '../../../services/BillAttachmentsApi';
 import { ShowServiceComponent } from '../../utility/ShowServiceComponent';
 import Config from '../../../data/Config';
+import Files from 'react-files';
+import { FaFile } from "react-icons/fa";;
 
 class AddBillAttachment extends Component {
    constructor(props){
@@ -15,14 +17,14 @@ class AddBillAttachment extends Component {
      }
    }
 
-  handleInput = (e) => {
-    if (e.target.files[0].size >= 5242880) {
+  handleInput = (files) => {
+    if (files[0].size >= 5242880) {
       this.setState({ color: 'danger', content: "Uploaded file size must be below 5 MB" });
     } else {
-      this.setState({ file: e.target.files[0], color: '', content: '' });
+      this.setState({ file: files[0], color: '', content: '' });
     }
   }
-
+  
   handlePostData = () => {
     const { profileId, bill } = this.props
     const { file } = this.state;
@@ -79,18 +81,67 @@ class AddBillAttachment extends Component {
         {ShowServiceComponent.loadHeader("ADD ATTACHMENT")}
         <CardBody>
           {color && <Alert color={color} >{content}</Alert>}
-          <Col md={{ size: 12, offset: 5 }}>
+          <Col md={{ size: 12, offset: 3 }} className="files">
             <AvForm onSubmit={this.handlePostData}>
-              <Label>Select a file to upload</Label><br/><br/>
-              <AvField type="file" name="file" onChange={e => this.handleInput(e)} />
+              
+              <Files
+              className='files-dropzone-active'
+              onChange={this.handleInput}
+              accepts={['image/*', 'audio/*', 'video/mp4', 'text/*', '.pdf', '.xlsx', '.docx', '.doc']}
+              multiple={false}
+              clickable ><u>click here</u> to upload </Files><br />
+
               <FormGroup>
                 <Button color="info" disabled={this.state.doubleClick} > Upload </Button> &nbsp;&nbsp;
                 <Button active color="light" type="button" onClick={this.props.cancel} >Cancel</Button>
               </FormGroup>
             </AvForm>
+            {this.state.file && this.displayFile()}
           </Col>
         </CardBody>
     </>
+  }
+
+  displayFile = () => {
+    const {file} = this.state
+    return (<div>
+      {
+          this.state.file 
+          ? <div className='files-list'>
+            {/* <ul>
+              <li className='files-list-item' key={file.id}> */}
+                <div className='files-list-item-preview'>
+                  {/* {  file.type === 'image' ||   file.type === 'png' */}
+                  <Row>
+                  { file.preview && file.preview.type === 'image'
+                  ? <object size="xl" data={file.preview.url} >
+                  <embed src={file.preview.url} />
+              </object>
+                  // ? <img className='files-list-item-preview-image' src={file.preview.url} >I AM IMAGE </img>
+                  : <div className='files-list-item-preview-extension'><FaFile /></div>}
+                  {/* : <div className='files-list-item-preview-extension'>{file.extension}</div>} */}
+                  
+                  &nbsp; &nbsp;<div className='files-list-item-content-item files-list-item-content-item-1'>{file.name}</div> &nbsp; &nbsp;
+                  <div className='files-list-item-content-item files-list-item-content-item-2'>{file.sizeReadable}</div>
+                  </Row>
+                </div>
+                {/* <div className='files-list-item-content'>
+                  <Row>
+                  <div className='files-list-item-content-item files-list-item-content-item-1'>{file.name}</div> &nbsp; &nbsp;
+                  <div className='files-list-item-content-item files-list-item-content-item-2'>{file.sizeReadable}</div>
+                  </Row>
+                </div> */}
+                <div
+                  id={file.id}
+                  className='files-list-item-remove'
+                  // onClick={this.filesRemoveOne.bind(this, file)} // eslint-disable-line
+                />
+              {/* </li>
+            </ul> */}
+          </div>
+          : null
+        }
+    </div>);
   }
 }
 
