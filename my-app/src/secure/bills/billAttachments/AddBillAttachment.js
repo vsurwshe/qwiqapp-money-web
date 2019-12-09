@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
-import { FormGroup, Button, Alert, Col, CardBody, Label, Row } from 'reactstrap';
-import { AvForm, AvField } from 'availity-reactstrap-validation';
+import { FormGroup, Button, Alert, Col, CardBody } from 'reactstrap';
+import { AvForm } from 'availity-reactstrap-validation';
 import BillAttachmentsApi from '../../../services/BillAttachmentsApi';
 import { ShowServiceComponent } from '../../utility/ShowServiceComponent';
 import Config from '../../../data/Config';
-import Files from 'react-files';
-import { FaFile } from "react-icons/fa";;
+import { FileUploadForm, FilePreview } from '../../utility/FileUploadAction';
+;
 
 class AddBillAttachment extends Component {
    constructor(props){
@@ -83,14 +83,8 @@ class AddBillAttachment extends Component {
           {color && <Alert color={color} >{content}</Alert>}
           <Col md={{ size: 12, offset: 3 }} className="files">
             <AvForm onSubmit={this.handlePostData}>
-              
-              <Files
-              className='files-dropzone-active'
-              onChange={this.handleInput}
-              accepts={['image/*', 'audio/*', 'video/mp4', 'text/*', '.pdf', '.xlsx', '.docx', '.doc']}
-              multiple={false}
-              clickable ><u>click here</u> to upload </Files><br />
-
+            <FileUploadForm handleInput={this.handleInput}/>
+             <br />
               <FormGroup>
                 <Button color="info" disabled={this.state.doubleClick} > Upload </Button> &nbsp;&nbsp;
                 <Button active color="light" type="button" onClick={this.props.cancel} >Cancel</Button>
@@ -104,44 +98,45 @@ class AddBillAttachment extends Component {
 
   displayFile = () => {
     const {file} = this.state
-    return (<div>
-      {
-          this.state.file 
-          ? <div className='files-list'>
-            {/* <ul>
-              <li className='files-list-item' key={file.id}> */}
-                <div className='files-list-item-preview'>
-                  {/* {  file.type === 'image' ||   file.type === 'png' */}
-                  <Row>
-                  { file.preview && file.preview.type === 'image'
-                  ? <object size="xl" data={file.preview.url} >
-                  <embed src={file.preview.url} />
-              </object>
-                  // ? <img className='files-list-item-preview-image' src={file.preview.url} >I AM IMAGE </img>
-                  : <div className='files-list-item-preview-extension'><FaFile /></div>}
-                  {/* : <div className='files-list-item-preview-extension'>{file.extension}</div>} */}
+    return <FilePreview file={file} />
+    // return (<div>
+    //   {
+    //       this.state.file 
+    //       ? <div className='files-list'>
+    //         {/* <ul>
+    //           <li className='files-list-item' key={file.id}> */}
+    //             <div className='files-list-item-preview'>
+    //               {/* {  file.type === 'image' ||   file.type === 'png' */}
+    //               <Row>
+    //               { file.preview && file.preview.type === 'image'
+    //               ? <object size="xl" data={file.preview.url} >
+    //               <embed src={file.preview.url} />
+    //           </object>
+    //               // ? <img className='files-list-item-preview-image' src={file.preview.url} >I AM IMAGE </img>
+    //               : <div className='files-list-item-preview-extension'><FaFile /></div>}
+    //               {/* : <div className='files-list-item-preview-extension'>{file.extension}</div>} */}
                   
-                  &nbsp; &nbsp;<div className='files-list-item-content-item files-list-item-content-item-1'>{file.name}</div> &nbsp; &nbsp;
-                  <div className='files-list-item-content-item files-list-item-content-item-2'>{file.sizeReadable}</div>
-                  </Row>
-                </div>
-                {/* <div className='files-list-item-content'>
-                  <Row>
-                  <div className='files-list-item-content-item files-list-item-content-item-1'>{file.name}</div> &nbsp; &nbsp;
-                  <div className='files-list-item-content-item files-list-item-content-item-2'>{file.sizeReadable}</div>
-                  </Row>
-                </div> */}
-                <div
-                  id={file.id}
-                  className='files-list-item-remove'
-                  // onClick={this.filesRemoveOne.bind(this, file)} // eslint-disable-line
-                />
-              {/* </li>
-            </ul> */}
-          </div>
-          : null
-        }
-    </div>);
+    //               &nbsp; &nbsp;<div className='files-list-item-content-item files-list-item-content-item-1'>{file.name}</div> &nbsp; &nbsp;
+    //               <div className='files-list-item-content-item files-list-item-content-item-2'>{file.sizeReadable}</div>
+    //               </Row>
+    //             </div>
+    //             {/* <div className='files-list-item-content'>
+    //               <Row>
+    //               <div className='files-list-item-content-item files-list-item-content-item-1'>{file.name}</div> &nbsp; &nbsp;
+    //               <div className='files-list-item-content-item files-list-item-content-item-2'>{file.sizeReadable}</div>
+    //               </Row>
+    //             </div> */}
+    //             <div
+    //               id={file.id}
+    //               className='files-list-item-remove'
+    //               // onClick={this.filesRemoveOne.bind(this, file)} // eslint-disable-line
+    //             />
+    //           {/* </li>
+    //         </ul> */}
+    //       </div>
+    //       : null
+    //     }
+    // </div>);
   }
 }
 
