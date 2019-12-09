@@ -1,8 +1,6 @@
-import React, { Component } from "react";
+import React, { Component, Suspense } from "react";
 import { withRouter } from "react-router-dom";
-import { Redirect } from 'react-router';
 import { Card, CardBody, Alert, FormGroup, Label, Input } from "reactstrap";
-import BillForm from "./BillForm";
 import BillApi from "../../services/BillApi";
 import Store from "../../data/Store";
 import CategoryApi from "../../services/CategoryApi";
@@ -13,12 +11,11 @@ import { ProfileEmptyMessage } from "../utility/ProfileEmptyMessage";
 import { DeleteModel } from "../utility/DeleteModel";
 import { ShowServiceComponent } from "../utility/ShowServiceComponent";
 import Config from "../../data/Config";
-import BillPayment from "./billPayment/ BillPayment";
-import ViewPayment from "./billPayment/ViewPayment";
 import PaymentApi from "../../services/PaymentApi";
 import { profileFeature, moreOptions } from "../../data/GlobalKeys";
-import '../../css/style.css';
 import { DataTable } from "../utility/DataTable";
+import BillTabs from "./BillTabs";
+import '../../css/style.css';
 
 // This importing Jquery in react.
 const $ = require('jquery');
@@ -35,7 +32,7 @@ class Bills extends Component {
       updateBill: [],
       billPayments: [],
       visible: props.visible,
-      profileId: "",
+      profileId: '',
       selectedOption: '',
       paidAmount: 0
     };
@@ -64,7 +61,7 @@ class Bills extends Component {
         var row = $(this).closest('tr'); // This fetches the data of the row when we click 'edit' in dataTable
         var editData = $('.display').dataTable().fnGetData(row); //this line separates the required data from the fecthced row data.
         var updateBill = editData && bills.filter(bill => bill.id === editData[0]); // Filter the specific bill from the list of bills using id and assign to updatebill
-        updateBill && _.handleUpdateBillAction(updateBill[0]) // 
+        updateBill && _.updateBillAction(updateBill[0]) // 
       })
       $('.display').on('change', 'select', function () {
         var row = $(this).closest('tr'); // This fetches the data of the row when we click 'edit' in dataTable
@@ -88,7 +85,7 @@ class Bills extends Component {
             requiredBill && _.handleViewPayment();
             break;
           case moreOptions.UNMARKPAID:
-            requiredBill && _.handleMarkAsUnpaidPayment();
+            requiredBill && _.handleMarkAsUnpaidPayment(requiredBill[0]);
             break;
           default:
             break;
@@ -176,7 +173,7 @@ class Bills extends Component {
   successCallBill = async bills => {
     let newBills;
     const { value } = this.props.match.params;
-    if (bills.length === 0) {
+    if (bills && !bills.length) {
       this.setState({ bills: [] })
     } else {
       if (value) {
@@ -230,11 +227,11 @@ class Bills extends Component {
   }
 
   handleMarkAsUnPaid = () => {
-    const { profileId, requiredBill } = this.state
-    new BillApi().markAsUnPaid(this.successUnpaidBill, this.errorCall, profileId, requiredBill.id);
+    const { profileId, updateBill } = this.state
+    new BillApi().markAsUnPaid(this.successUnpaidBill, this.errorCall, profileId, updateBill.id);
   }
 
-  successUnpaidBill = () => { this.callAlertTimer(this.state.visible, true) }
+  successUnpaidBill = () => { this.setMarkasUnpaid(); this.callTimer("success", "Your bill payments clear"); this.getBills() }
 
   // This method handle Error Call of API 
   errorCall = (err) => {
@@ -246,38 +243,73 @@ class Bills extends Component {
     }
   }
 
+  callTimer = (alertColor, alertMessage) => {
+    this.setState({ alertColor, alertMessage });
+    setTimeout(() => {
+      this.setState({ alertColor: undefined, alertMessage: undefined });
+    }, Config.apiTimeoutMillis);
+  }
+
   //this toggle for Delete Model
   toggleDanger = () => { this.setState({ danger: !this.state.danger }); }
 
   // This Method Execute the Bill Form Executions.
-  handleCreateBillAction = () => { this.setState({ createBillRequest: true }) }
-  handleUpdateBillAction = updateBill => { this.setState({ updateBillRequest: true, updateBill }) };
-  handleDeleteBillAction = () => { this.setState({ deleteBillRequest: true }) };
-
-  callAlertTimer = (visible, reload) => {
-    if (visible) {
-      setTimeout(() => { this.setState({ visible: false }); }, Config.apiTimeoutMillis)
+  createBillAction = (dummy, createdSuccess) => {
+    this.setState({ createBillRequest: !this.state.createBillRequest });
+    if (createdSuccess) {
+      this.successCallBill(Store.getBills());
     }
-    if(reload){
-      window.location.reload()
+  }
+  // createBillAction = () => { this.setState({ createBillRequest: true }) }
+  updateBillAction = (updateBill, updatedSuccess) => {
+    this.setState({ updateBillRequest: !this.state.updateBillRequest, updateBill });
+    if (updatedSuccess) {
+      this.successCallBill(Store.getBills());
     }
   };
+  // updateBillAction = updateBill => { this.setState({ updateBillRequest: true, updateBill }) };
+  deleteBillAction = () => { this.setState({ deleteBillRequest: true }) };
+
+  setBillId = (bill) => {
+    let data = {
+      "deletBillDescription": bill.description,
+      "deletBillCategoryName": bill.categoryName.name
+    }
+    this.setState({ billId: bill.id, deleteBillName: data });
+    this.toggleDanger();
+  }
 
   // This seting required bill when click any one options from more options
   handleShowPayment = (bill) => {
     let lastPaid = this.calculateLastPaid(bill);
     if (lastPaid) {
-      this.setState({ requiredBill: bill, paidAmount: lastPaid.paidAmount });
+      this.setState({ updateBill: bill, paidAmount: lastPaid.paidAmount });
     }
-    this.setState({ requiredBill: bill });
+    this.setState({ updateBill: bill });
   }
 
   // This is more options handle methods
-  handleAddPayment = () => { this.setState({ addPayment: true }); }
-  handleMarkAsPaid = () => { this.setState({ markPaid: true }); }
+  handleAddPayment = (callBills) => { 
+    if(callBills){
+      this.getBills()
+    } 
+    this.setState({ addPayment: !this.state.addPayment });
+  }
+
+  handleMarkAsPaid = (callBills) => {
+    if(callBills){
+      this.getBills()
+    }  
+    this.setState({ markPaid: !this.state.markPaid }); 
+  }
   handleViewPayment = () => { this.setState({ viewPayment: !this.state.viewPayment }); }
-  handleMarkAsUnpaidPayment = () => { this.setState({ markAsUnPaid: true }) }
-  handleBillAttachments = (billId) => { this.setState({ billId: billId, attachments: true }) }
+  handleMarkAsUnpaidPayment = (requiredBill) => { this.setState({ markAsUnPaid: !this.state.markAsUnPaid, updateBill:requiredBill }) }
+  setMarkasUnpaid = () => { this.setState({ markAsUnPaid: !this.state.markAsUnPaid}); }
+
+  handleBillAttachments = (billId) => { 
+    this.setState({ billId: billId }) 
+    this.handleAttachmentAction()
+  }
   handleSetBillId = (bill) => {
     let data = {
       "deletBillDescription": bill.description,
@@ -287,6 +319,10 @@ class Bills extends Component {
     this.toggleDanger();
   }
 
+  handleAttachmentAction = () =>{
+    this.setState({ attachments : !this.state.attachments })
+  }
+
   // this method handle remove dependents while deleteing bill
   handleRemoveDependents = () => { this.setState({ removeDependents: !this.state.removeDependents }); }
 
@@ -294,7 +330,7 @@ class Bills extends Component {
   calculateLastPaid = (bill) => {
     const { billPayments } = this.state;
     let totalPaid = 0;
-    if (billPayments.length > 0) {
+    if (billPayments.length > 0 && bill) {
       // Filtering billpayments according to billId
       let filteredBillPayment = billPayments.filter(billPayment => billPayment.billId === bill.id);
       let paidAmount = bill.amount;
@@ -318,47 +354,62 @@ class Bills extends Component {
   }
 
   render() {
-    const { bills, createBillRequest, updateBillRequest, billId, deleteBillRequest, visible, profileId,
-      updateBill, spinner, labels, categories, contacts, danger, paidAmount, requiredBill, markPaid, profileFeatures, markAsUnPaid } = this.state;
+    const { bills, createBillRequest, updateBillRequest, billId, deleteBillRequest, visible, profileId, addPayment, viewPayment, attachments, removeDependents, color, content,
+      markAsUnPaid, updateBill, spinner, labels, categories, contacts, danger, paidAmount, markPaid, profileFeatures } = this.state;
     let featureAttachment = profileFeatures && profileFeatures.includes(profileFeature.ATTACHMENTS) // return true/false
+    // Passing required data to Tabs
+    let tabData = {
+      profileId: profileId,
+      labels: labels,
+      categories: categories,
+      contacts: contacts,
+      getContacts: this.getContacts,
+      getLabels: this.getLabels,
+      bill: updateBill
+    }
+
     if (!profileId) {
+      // If no profile then showing message 
       return <ProfileEmptyMessage />
-    } else if (!bills.length && !createBillRequest) {  // Checks for bills not there and no bill create Request, then executes
+    } else if (!bills.length && !createBillRequest) {
+      // Checks for bills not there and no bill create Request, then executes
       return <div>
-        {/*  If spinner is true and bills are there, it shows the loader function, until bills are loaded */
-          (spinner && bills.length) ? <>{visible && <Alert isOpen={visible} color={this.state.color}>{this.state.content}</Alert>} {this.loadLoader()}
-          </> : !bills.length && this.emptyBills() // If bills not there, it will show Empty message 
+        {/*  If spinner is true and bills are there, it shows the loader function, until bills are loaded */}
+        {(spinner && bills.length) ? <>{visible && <Alert isOpen={visible} color={color}>{content}</Alert>} {this.loadLoader()}
+        </> : !bills.length && this.emptyBills() // If bills not there, it will show Empty message 
         }
       </div>
     } else if (createBillRequest) {
-      return <BillForm profileId={profileId} labels={labels} categories={categories} contacts={contacts} getContacts={this.getContacts} getLabels={this.getLabels} />
+      var newTabData = { ...tabData, bill: null };
+      // This bill tabs called for create a bill.
+      return <BillTabs activeTab={1} tabData={newTabData} cancelButton={this.createBillAction} />
     } else if (updateBillRequest) {
-      return <BillForm profileId={profileId} bill={updateBill} labels={labels} categories={categories} contacts={contacts} getContacts={this.getContacts} getLabels={this.getLabels} />
+      // This bill tabs called for bill update.
+      return <BillTabs activeTab={1} tabData={tabData} cancelButton={this.updateBillAction} />
     } else if (deleteBillRequest) {
-      return <DeleteBill billId={billId} profileId={profileId} removeDependents={this.state.removeDependents} />
-    } else if (this.state.addPayment || this.state.markPaid) {
-      return <BillPayment bill={requiredBill} markPaid={markPaid} paidAmount={paidAmount} profileId={profileId} />
-    } else if (this.state.viewPayment) {
-      return <ViewPayment bill={this.state.requiredBill} paidAmount={paidAmount} profileId={profileId} cancel={this.handleViewPayment} />
-    } else if (this.state.attachments) {
-      let data = {
-        profileId: profileId,
-        billId: billId
-      }
-      Store.saveProfileIdAndBillId(data);
-      return <Redirect to="/bills/attachments" />
+      return <DeleteBill billId={billId} profileId={profileId} removeDependents={removeDependents} />
+    } else if (addPayment || markPaid) {
+      let cancelHandle = addPayment ? this.handleAddPayment : this.handleMarkAsPaid
+      return <Suspense fallback={<div>Loading...</div>}> <BillTabs activeTab={2} payform={true} tabData={tabData} paidAmount={paidAmount} cancelButton={cancelHandle} /></Suspense>
+    } else if (viewPayment) {
+      // This bill tabs called for Payments.
+      return <BillTabs activeTab={2} tabData={tabData} paidAmount={paidAmount} cancelButton={this.handleViewPayment} />
+    } else if (attachments) {
+      // This bill tabs called for Attachments.
+      return <BillTabs activeTab={3} tabData={tabData} paidAmount={paidAmount} cancelButton={this.handleAttachmentAction} />
     }
     else {
+      // displaying all bills
       return <div>
         {danger && this.deleteBillModel()}
-        {this.loadDataTable(bills, featureAttachment, visible)}
+        {this.loadDataTable(bills, featureAttachment)}
         {markAsUnPaid && this.handleMarkAsUnPaid()}
       </div>
     }
   }
 
   loadHeader = (bills) => {
-    return new ShowServiceComponent.loadHeaderWithSearch("BILLS", bills, this.searchSelected, "Search Bills.....", this.handleCreateBillAction, false, null);
+    return new ShowServiceComponent.loadHeaderWithSearch("BILLS", bills, this.searchSelected, "Search Bills.....", this.createBillAction, false, null);
   }
 
   loadLoader = () => <div className="animated fadeIn">
@@ -384,8 +435,7 @@ class Bills extends Component {
   </div>
 
   // This Functions Loading Jquery DataTable into bills
-  loadDataTable = (bills, featureAttachment, visible) => {
-    const color = this.props.color;
+  loadDataTable = (bills, featureAttachment) => {
     // This array collection of header in DataTable
     let columns = [
       { title: '', visible: false },
@@ -402,7 +452,7 @@ class Bills extends Component {
     return <div className="animated fadeIn">
       <Card>
         {this.loadHeader("")}
-        <h6>{visible && <Alert isOpen={visible} color={color}>{this.props.content}</Alert>}</h6>
+        <h6>{this.state.alertMessage && <Alert color={this.state.alertColor}>{this.state.alertMessage}</Alert>}</h6>
         <CardBody className="card-align">
           {/* Calling jquery datatable component providing rows and columns */}
           <DataTable billData={this.loadTableRows(bills, featureAttachment)} columns={columns} />
@@ -503,7 +553,7 @@ class Bills extends Component {
     let billDeleteItem = this.state.deleteBillName.deletBillDescription ? this.state.deleteBillName.deletBillDescription
       : this.state.deleteBillName.deletBillCategoryName;
     return <DeleteModel danger={this.state.danger} toggleDanger={this.toggleDanger} headerMessage="Delete Bill" bodyMessage={billDeleteItem}
-      delete={this.handleDeleteBillAction} cancel={this.toggleDanger} loadDeleteOptions={this.loadDeleteOptions}>bill</DeleteModel>
+      delete={this.deleteBillAction} cancel={this.toggleDanger} loadDeleteOptions={this.loadDeleteOptions}>bill</DeleteModel>
   }
 
   // This method shows the options while deleting a bill

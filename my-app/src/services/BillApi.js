@@ -10,12 +10,12 @@ class BillApi {
 
   //This Method Get All Bills
   getBills(success, failure, profileId, value) {
-    Store.getBills() === null || value ? process(success, failure, profileId + "/bills", "GET", profileId) : success(Store.getBills());
+    !Store.getBills() || value ? process(success, failure, profileId + "/bills", "GET", profileId) : success(Store.getBills());
   }
 
   //This Method Get Bill By ID
   getBillById(success, failure, profileId, billId) {
-    process(success, failure, profileId + "/bills/" + billId, "GET", profileId);
+    process(success, failure, profileId + "/bills/" + billId, "GET", profileId, null, null, billId);
   }
 
   //This Method Update Bill 
@@ -35,13 +35,19 @@ class BillApi {
 
 export default BillApi;
 
-async function process(success, failure, requestURL, requestMethod, profileId, data, reload) {
+async function process(success, failure, requestURL, requestMethod, profileId, data, reload, billId) {
   let HTTP = httpCall(requestURL, requestMethod);
   let promise;
   try {
     !data ? promise = await HTTP.request() : promise = await HTTP.request({ data });
     if (requestMethod === "GET") {
-      Store.saveBills(promise.data);
+      if (billId) {
+        let filterData = Store.getBills() && Store.getBills().filter(bill => bill.id !== promise.data.id)
+        filterData.push(promise.data)
+        Store.saveBills(filterData);
+      } else {
+        Store.saveBills(promise.data);
+      }
       validResponse(promise, success)
     } else {
       await new BillApi().getBills(success, failure, profileId, true);
