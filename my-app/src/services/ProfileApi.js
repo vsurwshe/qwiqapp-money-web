@@ -46,7 +46,7 @@ async function process(success, failure, requestUrl, requestMethod, data, delete
       }
       validResponse(promise, success, requestMethod, deleteId)
     } else {
-      requestMethod === "POST" || requestMethod === "PUT" ?
+      if(requestMethod === "POST" || requestMethod === "PUT"){
         new LoginApi().refresh(async () => { // Calls Refresh Token 
           if (profileId) { //If profileId is there, calls getProfileById for updated data 
             await new ProfileApi().getProfileById(async () => {
@@ -56,7 +56,9 @@ async function process(success, failure, requestUrl, requestMethod, data, delete
             await new ProfileApi().getProfiles(success, failure, true);
           }
         }, (err) => errorResponse(err, failure))
-        : await new ProfileApi().getProfiles(success, failure, true);
+      }else{
+        await new ProfileApi().getProfiles(success, failure, true);
+      }
     }
   } catch (err) {
     handleAccessTokenError(err, failure, requestUrl, requestMethod, data, deleteId, success, profileId, reload);
