@@ -99,44 +99,6 @@ class AddBillAttachment extends Component {
   displayFile = () => {
     const {file} = this.state
     return <FilePreview file={file} />
-    // return (<div>
-    //   {
-    //       this.state.file 
-    //       ? <div className='files-list'>
-    //         {/* <ul>
-    //           <li className='files-list-item' key={file.id}> */}
-    //             <div className='files-list-item-preview'>
-    //               {/* {  file.type === 'image' ||   file.type === 'png' */}
-    //               <Row>
-    //               { file.preview && file.preview.type === 'image'
-    //               ? <object size="xl" data={file.preview.url} >
-    //               <embed src={file.preview.url} />
-    //           </object>
-    //               // ? <img className='files-list-item-preview-image' src={file.preview.url} >I AM IMAGE </img>
-    //               : <div className='files-list-item-preview-extension'><FaFile /></div>}
-    //               {/* : <div className='files-list-item-preview-extension'>{file.extension}</div>} */}
-                  
-    //               &nbsp; &nbsp;<div className='files-list-item-content-item files-list-item-content-item-1'>{file.name}</div> &nbsp; &nbsp;
-    //               <div className='files-list-item-content-item files-list-item-content-item-2'>{file.sizeReadable}</div>
-    //               </Row>
-    //             </div>
-    //             {/* <div className='files-list-item-content'>
-    //               <Row>
-    //               <div className='files-list-item-content-item files-list-item-content-item-1'>{file.name}</div> &nbsp; &nbsp;
-    //               <div className='files-list-item-content-item files-list-item-content-item-2'>{file.sizeReadable}</div>
-    //               </Row>
-    //             </div> */}
-    //             <div
-    //               id={file.id}
-    //               className='files-list-item-remove'
-    //               // onClick={this.filesRemoveOne.bind(this, file)} // eslint-disable-line
-    //             />
-    //           {/* </li>
-    //         </ul> */}
-    //       </div>
-    //       : null
-    //     }
-    // </div>);
   }
 }
 
