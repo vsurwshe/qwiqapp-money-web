@@ -10,11 +10,7 @@ import { FileUploadForm, FilePreview } from '../../utility/FileUploadAction';
 class AddBillAttachment extends Component {
    constructor(props){
      super(props);
-     this.state = {
-      file: '',
-      color: '',
-      content: ''
-     }
+     this.state = { }
    }
 
   handleInput = (files) => {

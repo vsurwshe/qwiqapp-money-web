@@ -7,14 +7,8 @@ import { FileUploadForm, FilePreview } from '../../utility/FileUploadAction';
 
 class AddAttachment extends Component {
   state = {
-    file: '',
     profileId: this.props.profileId,
-    contactId: this.props.contactId,
-    addSuccess: false,
-    color: '',
-    content: '',
-    cancelAddAttachment: false,
-    doubleClick: false
+    contactId: this.props.contactId
   }
 
   handleInput = (files) => {
@@ -74,7 +68,7 @@ class AddAttachment extends Component {
             <Col md={{ size: 12, offset: 3 }}>
             {this.state.content && <Col sm={6}><Alert color={this.state.color} >{this.state.content}</Alert></Col>}
             <FileUploadForm handleInput={this.handleInput}/>
-            <br /><br />
+            <br />
             <Button color="info" onClick={e => this.handleSubmit(e)} disabled={this.state.doubleClick} > Add </Button>&nbsp;&nbsp;
             <Button active color="light" aria-pressed="true" onClick={() => window.location.reload()}>Cancel</Button><br /><br />
             {this.state.file && this.displayFile()}
