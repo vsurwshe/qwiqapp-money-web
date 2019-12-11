@@ -16,6 +16,7 @@ import { profileFeature, moreOptions } from "../../data/GlobalKeys";
 import { DataTable } from "../utility/DataTable";
 import BillTabs from "./BillTabs";
 import '../../css/style.css';
+import '../../css/dataTables.fontAwesome.css';
 
 // This importing Jquery in react.
 const $ = require('jquery');
@@ -445,6 +446,7 @@ class Bills extends Component {
       { title: '', orderable: false },
       { title: "Bill Amount" },
       { title: "Status" },
+      { title: "", orderable: false },
       { title: "", orderable: false }, // This column used for edit button
       { title: "", orderable: false } // This column used for more options
     ]
@@ -480,6 +482,7 @@ class Bills extends Component {
       strike ? "<strike>" + this.getBillCurrency(bill.currency, bill.amount) + "</strike>" : this.getBillCurrency(bill.currency, bill.amount),
       strike ? "<strike>" + this.handleSignedBillAmount(bill.amount) + "</strike>" : "<span style='color:green'>" + this.handleSignedBillAmount(bill.amount) + "</span>",
       strike ? "<strike>" + this.loadPaidStatus(bill, lastPaid) + "</strike>" : this.loadPaidStatus(bill, lastPaid),
+      strike ? "<strike>" + (bill.recurId ? "<i class='fa fa-undo bill-icon-color'/>" : '')+ "</strike>" : (bill.recurId ? "<i class='fa fa-undo bill-icon-color'/>" : ''),
       '',
       this.loadDropDown(bill, key, featureAttachment)
     ]

@@ -46,7 +46,7 @@ export class DataTable extends Component {
             },
             columnDefs: [
                 { targets: [3], width: "25%" },
-                { targets: [4], width: "1px" },
+                { targets: [4], width: "8px" },
                 { targets: [1], width: "7%" },
                 { targets: [5], width: "9%" },
                 { targets: [2], width: "10%" },
