@@ -25,8 +25,8 @@ export const BillFormUI = (props) => {
     <Row>
       <Col sm={4}>
         <Row>
-          <Col sm={3}> <label>Currency</label> </Col>
-          <Col>
+          <Col sm={3} md={3}> <label>Currency</label> </Col>
+          <Col sm={9} md={9}>
           <AvField type="select" id="symbol" name="currency" value={currency} disabled={!featureMultiCurrency} errorMessage="Select Currency" required>
             <option value="">Select</option>
             {currencies.map((currency, key) => {
@@ -38,8 +38,8 @@ export const BillFormUI = (props) => {
       </Col>
       <Col sm={4}>
         <Row>
-          <Col sm={3}> <label>Bill type</label> </Col>
-          <Col> <AvField type="select" name="amountType" value={type} errorMessage="Select Type of Bill" required>
+          <Col sm={3} md={3}> <label>Billtype</label> </Col>
+          <Col sm={9} md={9}> <AvField type="select" name="amountType" value={type} errorMessage="Select Type of Bill" required>
               <option value={billType.PAYABLE}>Payable</option>
               <option value={billType.RECEIVABLE}>Receivable</option>
             </AvField> </Col>
@@ -47,8 +47,8 @@ export const BillFormUI = (props) => {
       </Col>
       <Col>
         <Row>
-          <Col sm={2}> <label>Amount<b className="text-color">*</b></label> </Col>
-          <Col> <AvField name="amount" id="amount" value={amount} placeholder="Amount" type="number" errorMessage="Invalid amount"
+          <Col sm={3} md={3}> <label>Amount<b className="text-color">*</b></label> </Col>
+          <Col sm={9} md={9}> <AvField name="amount" id="amount" value={amount} placeholder="Amount" type="number" errorMessage="Invalid amount"
               onChange={e => { props.handleSetAmount(e) }} required />
           </Col>
         </Row>
@@ -57,16 +57,16 @@ export const BillFormUI = (props) => {
     <Row>
       <Col sm={4}>
         <Row>
-          <Col sm={3}> <label>Category<b className="text-color">*</b> </label></Col>
-          <Col>
+          <Col sm={3} md={3}> <label>Category<b className="text-color">*</b> </label></Col>
+          <Col sm={9} md={9}>
           <Select options={Data.categoriesOrLabels(categories)} styles={Data.singleStyles} defaultValue={categoryName} placeholder="Select Categories " onChange={props.categorySelected} required />
           </Col>
         </Row>
       </Col>
       <Col sm={4}>
         <Row>
-          <Col sm={3}> <label>Bill Date</label></Col>
-          <Col> <AvField name="billDate" value={billDate} type="date" onChange={(e) => { props.handleBillDate(e) }} errorMessage="Invalid Date" validate={{
+          <Col sm={3} md={3}> <label>Billdate</label></Col>
+          <Col sm={9} md={9}> <AvField name="billDate" value={billDate} type="date" onChange={(e) => { props.handleBillDate(e) }} errorMessage="Invalid Date" validate={{
             date: { format: 'dd/MM/yyyy' },
             dateRange: { format: 'YYYY/MM/DD', start: { value: '1900/01/01' }, end: { value: '9999/12/31' } },
             required: { value: true }
