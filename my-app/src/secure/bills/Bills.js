@@ -443,10 +443,10 @@ class Bills extends Component {
       { title: "Due Date" },
       { title: "Bill Date" },
       { title: "Description" },
-      { title: '', orderable: false },
+      { title: '', orderable: false },// This column used for showing currency icon
       { title: "Bill Amount" },
       { title: "Status" },
-      { title: "", orderable: false },
+      { title: "", orderable: false }, // This column used for recuring bill icons
       { title: "", orderable: false }, // This column used for edit button
       { title: "", orderable: false } // This column used for more options
     ]
