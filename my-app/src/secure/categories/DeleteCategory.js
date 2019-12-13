@@ -11,7 +11,7 @@ class DeleteCategory extends Component {
       profileId: props.profileId,
       categoryId: props.categoryId,
       categoryDeleted: false,
-      color: 'green',
+      color: '"#00bfff"',
       content: 'Deleting Category ...'
     };
   }

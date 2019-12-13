@@ -9,7 +9,7 @@ class DeleteLabel extends Component {
     super(props);
     this.state = {
       content: "Deleting Label.....",
-      color: "green",
+      color: "#00bfff",
     };
   }
 

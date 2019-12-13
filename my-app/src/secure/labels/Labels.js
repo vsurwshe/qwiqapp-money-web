@@ -138,18 +138,11 @@ class Lables extends Component {
     }
   }
 
-  loadHeader = () => {
-    return <CardHeader>
-      <strong>Labels</strong>
-      <Button color="success" className="float-right" onClick={this.callCreateLabel}> + Create Label </Button>
-    </CardHeader>;
-  }
-
   loadSpinner = () => {
     return (
       <div className="animated fadeIn">
         <Card>
-          {this.loadHeader()}
+          {ShowServiceComponent.loadHeaderWithSearch("Labels", null, null, null, this.callCreateLabel)}
           <center style={{ paddingTop: '20px' }}>
             <CardBody><Loader type="TailSpin" color="#2E86C1" height={60} width={60} /></CardBody>
           </center>
@@ -160,7 +153,7 @@ class Lables extends Component {
   loadNotLabel = () => {
     return <div className="animated fadeIn">
       <Card>
-        {this.loadHeader()}
+        {ShowServiceComponent.loadHeaderWithSearch("Labels", null, null, null, this.callCreateLabel)}
         <center style={{ paddingTop: '20px' }}>
           <CardBody> <h5><b>You haven't created any Lables yet... </b></h5><br /> </CardBody>
         </center>

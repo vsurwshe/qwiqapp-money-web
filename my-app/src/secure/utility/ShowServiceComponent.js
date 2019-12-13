@@ -16,7 +16,7 @@ export const ShowServiceComponent = {
             <center>
               <Loader type="TailSpin" color={color} height={60} width={60} />
               <br /><br />
-              <h5 style={{ color: 'green' }}>{bodyMessage}</h5>
+              <h5 >{bodyMessage}</h5>
             </center>
           </CardBody>
         </Card>
@@ -67,7 +67,7 @@ export const ShowServiceComponent = {
   },
 
   loadHeaderWithSearch: function (headerMessage, items, setSearch, placeHolder, addItem) {
-    return <CardHeader>
+    return <CardHeader style={{height: 60}}>
       <Row form>
         <Col className="marigin-top" >
           <strong>{items ? headerMessage + " : " + items.length : headerMessage}</strong>
