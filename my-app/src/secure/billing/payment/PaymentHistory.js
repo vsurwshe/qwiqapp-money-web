@@ -18,12 +18,12 @@ class PaymentHistory extends Component {
 
   componentDidMount = () => { new BillingAddressApi().getPaymentsHistory(this.successCall, this.errorCall) }
 
-  successCall = async (response) => {
+  successCall = async (payHisory) => {
     const currencies = Store.getCurrencies();
     await this.setState({
       currencies,
-      payments: response.payments,
-      totalBalance: response.balance,
+      payments: payHisory.payments,
+      totalBalance: payHisory.balance,
       spinner: true
     });
   }

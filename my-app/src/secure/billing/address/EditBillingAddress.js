@@ -14,7 +14,7 @@ import '../../../css/style.css';
 
 const firstNameAndlastNameOrcompany = (value, field) => {
   if (!(field.firstName && field.lastName) && !field.company) {
-    return 'You need to provide either FirstName&LastName / Company'
+    return 'You need to provide either FirstName and LastName / Company'
   }
   return true
 }
@@ -115,6 +115,7 @@ class EditBillingAddress extends Component {
     const { billingAddress:updateBill } = this.props.biliing;
     const { color, message, countries  } = this.props.utility;
     const placeholderStyle = { color: '#000000', fontSize: '1.0em', }
+    const labelPaddingTop = {marginTop: 5}
     return <div className="animated fadeIn" >
       <Card>
         <h4 className="padding-top"><b><center> BILLING ADDRESS</center></b></h4> <br />
@@ -124,19 +125,19 @@ class EditBillingAddress extends Component {
             <Row>
               <Col>
                 <Row>
-                  <Col sm={3}><Label>Firstname</Label></Col>
+                  <Col sm={3}><Label style={labelPaddingTop}>Firstname</Label></Col>
                   <Col><AvField name="firstName" placeholder="First Name" style={placeholderStyle} value={updateBill.firstName} validate={{ myValidation: firstNameAndlastNameOrcompany }} onChange={(e) => { this.handleInputValidate(e) }} /></Col>
                 </Row>
               </Col>
               <Col>
                 <Row>
-                  <Col sm={3}><Label>Lastname</Label></Col>
+                  <Col sm={3}><Label style={labelPaddingTop}>Lastname</Label></Col>
                   <Col><AvField name="lastName" placeholder="Last Name" style={placeholderStyle} value={updateBill.lastName} validate={{ myValidation: firstNameAndlastNameOrcompany }} onChange={(e) => { this.handleInputValidate(e) }} /></Col>
                 </Row>
               </Col>
               <Col>
                 <Row>
-                  <Col sm={3}><Label>Organization</Label></Col>
+                  <Col sm={3}><Label style={labelPaddingTop}>Organization</Label></Col>
                   <Col><AvField name="company" placeholder="Organization" style={placeholderStyle} value={updateBill.company} validate={{ myValidation: firstNameAndlastNameOrcompany }} onChange={(e) => { this.handleInputValidate(e) }} /></Col>
                 </Row>
               </Col>
@@ -144,13 +145,13 @@ class EditBillingAddress extends Component {
             <Row>
               <Col>
                 <Row>
-                  <Col sm={3}><Label>Address line 1</Label></Col>
+                  <Col sm={3}><Label style={labelPaddingTop}>Address line 1</Label></Col>
                   <Col><AvField name="addressLine1" placeholder="Address 1" style={placeholderStyle} value={updateBill.addressLine1} errorMessage="Address should not be empty" helpMessage="H.No 1-1-1/1, xyz  street" required /></Col>
                 </Row>
               </Col>
               <Col>
                 <Row>
-                  <Col sm={2}><Label>Address line 2</Label></Col>
+                  <Col sm={3}><Label style={labelPaddingTop}>Address line 2</Label></Col>
                   <Col><AvField name="addressLine2" placeholder="Address 2" style={placeholderStyle} value={updateBill.addressLine2} helpMessage="Jntuh area, hyderabad district" /> </Col>
                 </Row>
               </Col>
@@ -158,14 +159,14 @@ class EditBillingAddress extends Component {
             <Row>
               <Col>
                 <Row>
-                  <Col sm={3}><Label>Postcode/ Zipcode</Label></Col>
+                  <Col sm={3}><Label style={labelPaddingTop}>Postcode/ Zipcode</Label></Col>
                   <Col><AvField name="postCode" placeholder="Postal Code/ Pincode/ Zip code" style={placeholderStyle} value={updateBill.postCode} errorMessage="PostCode/pincode/Zipcode is required" /></Col>
                 </Row>
               </Col>
               <Col>
                 <Row>
-                  <Col sm={2}><Label>City</Label></Col>
-                  <Col><AvField name="city" label="" placeholder="City" style={placeholderStyle} value={updateBill.city} /></Col>
+                  <Col sm={3}><Label style={labelPaddingTop}>City</Label></Col>
+                  <Col><AvField name="city" placeholder="City" style={placeholderStyle} value={updateBill.city} /></Col>
                 </Row>
               </Col>
             </Row>
@@ -178,9 +179,12 @@ class EditBillingAddress extends Component {
               </Col>
               <Col>
                 <Row>
-                  <Col sm={2}><Label>Country</Label></Col>
+                  <Col sm={3}><Label style={labelPaddingTop}>Country</Label></Col>
                   <Col> <AvField style={placeholderStyle} type="select" id="country" name="country" value={updateBill.country} errorMessage="Select Country" onClick={() => this.setState({ alertColor: "", content: "" })} required >
-                    {this.selectCountry(updateBill)} {countries.map((country, key) => { return <option key={key} value={country.code}>{country.name}</option> })} </AvField>
+                    {this.selectCountry(updateBill)} 
+                    {this.loadCountryOptions(countries)} 
+                    {/* {countries.map((country, key) => { return <option key={key} value={country.code}>{country.name}</option> })}  */}
+                    </AvField>
                   </Col>
                 </Row>
               </Col>
@@ -210,6 +214,10 @@ class EditBillingAddress extends Component {
         }))
       }
     </>
+  }
+
+  loadCountryOptions = (countries) => {
+    return countries.map((country, key) => { return <option key={key} value={country.code}>{country.name}</option> })
   }
 }
 
