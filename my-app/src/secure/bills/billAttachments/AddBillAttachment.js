@@ -1,28 +1,26 @@
 import React, { Component } from 'react';
-import { FormGroup, Button, Alert, Col, CardBody, Label } from 'reactstrap';
-import { AvForm, AvField } from 'availity-reactstrap-validation';
+import { FormGroup, Button, Alert, Col, CardBody } from 'reactstrap';
+import { AvForm } from 'availity-reactstrap-validation';
 import BillAttachmentsApi from '../../../services/BillAttachmentsApi';
 import { ShowServiceComponent } from '../../utility/ShowServiceComponent';
 import Config from '../../../data/Config';
+import { FileUploadForm, FilePreview } from '../../utility/FileUploadAction';
+;
 
 class AddBillAttachment extends Component {
    constructor(props){
      super(props);
-     this.state = {
-      file: '',
-      color: '',
-      content: ''
-     }
+     this.state = { }
    }
 
-  handleInput = (e) => {
-    if (e.target.files[0].size >= 5242880) {
+  handleInput = (files) => {
+    if (files[0].size >= 5242880) {
       this.setState({ color: 'danger', content: "Uploaded file size must be below 5 MB" });
     } else {
-      this.setState({ file: e.target.files[0], color: '', content: '' });
+      this.setState({ file: files[0], color: '', content: '' });
     }
   }
-
+  
   handlePostData = () => {
     const { profileId, bill } = this.props
     const { file } = this.state;
@@ -79,18 +77,24 @@ class AddBillAttachment extends Component {
         {ShowServiceComponent.loadHeader("ADD ATTACHMENT")}
         <CardBody>
           {color && <Alert color={color} >{content}</Alert>}
-          <Col md={{ size: 12, offset: 5 }}>
+          <Col md={{ size: 12, offset: 3 }} className="files">
             <AvForm onSubmit={this.handlePostData}>
-              <Label>Select a file to upload</Label><br/><br/>
-              <AvField type="file" name="file" onChange={e => this.handleInput(e)} />
+            <FileUploadForm handleInput={this.handleInput}/>
+             <br />
               <FormGroup>
                 <Button color="info" disabled={this.state.doubleClick} > Upload </Button> &nbsp;&nbsp;
                 <Button active color="light" type="button" onClick={this.props.cancel} >Cancel</Button>
               </FormGroup>
             </AvForm>
+            {this.state.file && this.displayFile()}
           </Col>
         </CardBody>
     </>
+  }
+
+  displayFile = () => {
+    const {file} = this.state
+    return <FilePreview file={file} />
   }
 }
 
