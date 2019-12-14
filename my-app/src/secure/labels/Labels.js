@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Button, Card, CardBody, CardHeader } from "reactstrap";
+import { Card, CardBody } from "reactstrap";
 import Loader from 'react-loader-spinner';
 import DeleteLabel from "./DeleteLabel";
 import LabelApi from "../../services/LabelApi";

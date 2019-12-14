@@ -183,7 +183,6 @@ class EditBillingAddress extends Component {
                   <Col> <AvField style={placeholderStyle} type="select" id="country" name="country" value={updateBill.country} errorMessage="Select Country" onClick={() => this.setState({ alertColor: "", content: "" })} required >
                     {this.selectCountry(updateBill)} 
                     {this.loadCountryOptions(countries)} 
-                    {/* {countries.map((country, key) => { return <option key={key} value={country.code}>{country.name}</option> })}  */}
                     </AvField>
                   </Col>
                 </Row>

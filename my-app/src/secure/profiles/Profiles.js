@@ -12,6 +12,7 @@ import Config from '../../data/Config';
 import Store from '../../data/Store';
 import { userAction } from '../../data/GlobalKeys';
 import { UpgradeProfileType } from "./UpgradeProfileType";
+import { ShowServiceComponent } from "../utility/ShowServiceComponent";
 /**
  * Display list of profiles,Manage profile like (update, delete)
  * Call Add,Update, delete Componets.
@@ -149,20 +150,7 @@ class Profiles extends Component {
   }
 
   loadSpinner = () => {
-    return (
-      <div className="animated fadeIn">
-        <Card>
-          <center style={{ paddingTop: '20px' }}>
-            {this.loadHeader()}
-            <CardBody>
-              {this.state.visible && <Alert color="danger">Unable to Process your Request, please try Again...</Alert>}
-              <div className="text-primary spinner-size" role="status">
-                <span className="sr-only">Loading...</span>
-              </div>
-            </CardBody>
-          </center>
-        </Card>
-      </div>)
+    return ShowServiceComponent.loadSpinnerAction('Profiles', 'Unable to Process your Request, please try Again...', this.callCreateProfile, '+ Create Profile');
   }
 
   //if one or more profile is there then this method Call
