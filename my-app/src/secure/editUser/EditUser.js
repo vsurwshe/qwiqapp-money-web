@@ -59,7 +59,7 @@ class EditUser extends Component {
                 {this.loadHeader()}
                 <CardBody>
                     {color && <Alert color={color}>{content}</Alert>}
-                    <Col sm={12} md={{ size: 8, offset: 1 }} lg={{ size: 8, offset: 3 }} xl={{ size: 4, offset: 4 }}>
+                    <Col sm={12} md={{ size: 8, offset: 1 }} lg={{ size: 20, offset: 3 }} xl={{ size: 20, offset: 3 }}>
                         <AvForm onValidSubmit={this.userUpdate}>
                             <Row>
                                 <Col sm={3} ><Label>Email</Label></Col>

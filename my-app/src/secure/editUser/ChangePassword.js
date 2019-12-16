@@ -66,7 +66,7 @@ class ChangePassword extends Component {
                 {this.loadHeader()}
                 <CardBody>
                     {color && <Alert color={color}>{content}</Alert>}
-                    <Col sm={12} md={{ size: 8, offset: 1 }} lg={{ size: 8, offset: 3 }} xl={{ size: 4, offset: 4 }}> {this.loadForm(color, type)} </Col>
+                    <Col sm={12} md={{ size: 8, offset: 1 }} lg={{ size: 20, offset: 3 }} xl={{ size: 20, offset: 3 }}> {this.loadForm(color, type)} </Col>
                 </CardBody>
             </Card>
         );
@@ -83,14 +83,14 @@ class ChangePassword extends Component {
     loadForm = (color, type) => {
         return <AvForm onValidSubmit={this.updatePassword} >
             <Row>
-                <Col sm={4}> <Label>Old password</Label> </Col>
-                <Col sm={8}>
+                <Col sm={3}> <Label>Old password</Label> </Col>
+                <Col sm={6}>
                     <AvField name="old" type="password" errorMessage="Enter Correct Password" placeholder="Enter Old Password" value={color === "danger" && ""} required />
                 </Col>
             </Row>
             <Row>
-                <Col sm={4}> <Label>New password</Label> </Col>
-                <Col sm={8}>
+                <Col sm={3}> <Label>New password</Label> </Col>
+                <Col sm={6}>
                     <AvGroup>
                         <InputGroup>
                             <AvInput name="new" type={type} errorMessage="New Password Required" placeholder="Enter  New Password" required />
@@ -102,19 +102,21 @@ class ChangePassword extends Component {
                 </Col>
             </Row>
             <Row>
-                <Col sm={4}><Label>Confirm password</Label></Col>
-                <Col sm={8}><AvField name="renew" type="password" errorMessage="New password and confirm password doesn't match" placeholder="Enter  New Password"
+                <Col sm={3}><Label>Confirm password</Label></Col>
+                <Col sm={6}><AvField name="renew" type="password" errorMessage="New password and confirm password doesn't match" placeholder="Enter  New Password"
                     validate={{ match: { value: 'new' } }} required />
                 </Col>
             </Row>
             <Row>
-                <Col sm={4}></Col>
-                <Col sm={8}>
+                <Col sm={3}></Col>
+                <Col sm={6}>
                     <Button color="success" disabled={this.state.doubleClick}>Edit</Button>
                     <Link to="/dashboard" style={{ marginLeft: 10 }} ><Button color="secondary" type="button" >Cancel</Button></Link>
                 </Col>
             </Row>
         </AvForm>
+       
+        
     }
 }
 
