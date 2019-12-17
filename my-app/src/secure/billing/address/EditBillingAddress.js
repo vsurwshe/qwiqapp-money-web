@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Alert, Button, Card, FormGroup, Col, Row } from "reactstrap";
+import { Alert, Button, Card, FormGroup, Col, Row, Label } from "reactstrap";
 import { AvForm, AvField } from 'availity-reactstrap-validation';
 import Config from "../../../data/Config";
 import Store from "../../../data/Store";
@@ -14,7 +14,7 @@ import '../../../css/style.css';
 
 const firstNameAndlastNameOrcompany = (value, field) => {
   if (!(field.firstName && field.lastName) && !field.company) {
-    return 'You need to provide either FirstName&LastName / Company'
+    return 'You need to provide either FirstName and LastName / Company'
   }
   return true
 }
@@ -115,6 +115,7 @@ class EditBillingAddress extends Component {
     const { billingAddress:updateBill } = this.props.biliing;
     const { color, message, countries  } = this.props.utility;
     const placeholderStyle = { color: '#000000', fontSize: '1.0em', }
+    const labelPaddingTop = {marginTop: 5}
     return <div className="animated fadeIn" >
       <Card>
         <h4 className="padding-top"><b><center> BILLING ADDRESS</center></b></h4> <br />
@@ -122,31 +123,75 @@ class EditBillingAddress extends Component {
         {updateBill && <Col >
           <AvForm ref={refId => this.form = refId} onSubmit={this.handleSubmitValue}>
             <Row>
-              <Col><AvField name="firstName" label="Firstname" placeholder="First Name" style={placeholderStyle} value={updateBill.firstName} validate={{ myValidation: firstNameAndlastNameOrcompany }} onChange={(e) => { this.handleInputValidate(e) }} /></Col>
-              <Col><AvField name="lastName" label="Lastname" placeholder="Last Name" style={placeholderStyle} value={updateBill.lastName} validate={{ myValidation: firstNameAndlastNameOrcompany }} onChange={(e) => { this.handleInputValidate(e) }} /></Col>
-              <Col><AvField name="company" label="Organization" placeholder="Organization" style={placeholderStyle} value={updateBill.company} validate={{ myValidation: firstNameAndlastNameOrcompany }} onChange={(e) => { this.handleInputValidate(e) }} /></Col>
-            </Row>
-            <Row>
-              <Col><AvField name="addressLine1" label="Address line 1" placeholder="Address 1" style={placeholderStyle} value={updateBill.addressLine1} errorMessage="Address should not be empty" helpMessage="H.No 1-1-1/1, xyz  street" required /></Col>
-              <Col><AvField name="addressLine2" label="Address line 2" placeholder="Address 2" style={placeholderStyle} value={updateBill.addressLine2} helpMessage="Jntuh area, hyderabad district" /></Col>
-            </Row>
-            <Row>
-              <Col><AvField name="postCode" label="Postcode/ Pincode/ Zipcode" placeholder="Postal Code/ Pincode/ Zip code" style={placeholderStyle} value={updateBill.postCode} errorMessage="PostCode/pincode/Zipcode is required" /></Col>
-              <Col><AvField name="city" label="City" placeholder="City" style={placeholderStyle} value={updateBill.city} /></Col>
-            </Row>
-            <Row>
-              <Col><AvField name="region" label="Region/ State/ Area" placeholder="Region/ State/ Area" style={placeholderStyle} value={updateBill.region} /></Col>
               <Col>
-                <AvField style={placeholderStyle} label="Country" type="select" id="country" name="country" value={updateBill.country} errorMessage="Select Country" onClick={() => this.setState({ alertColor: "", content: "" })} required >
-                  {this.selectCountry(updateBill)}
-                  {countries.map((country, key) => { return <option key={key} value={country.code}>{country.name}</option> })}
-                </AvField>
+                <Row>
+                  <Col sm={3}><Label style={labelPaddingTop}>Firstname</Label></Col>
+                  <Col><AvField name="firstName" placeholder="First Name" style={placeholderStyle} value={updateBill.firstName} validate={{ myValidation: firstNameAndlastNameOrcompany }} onChange={(e) => { this.handleInputValidate(e) }} /></Col>
+                </Row>
+              </Col>
+              <Col>
+                <Row>
+                  <Col sm={3}><Label style={labelPaddingTop}>Lastname</Label></Col>
+                  <Col><AvField name="lastName" placeholder="Last Name" style={placeholderStyle} value={updateBill.lastName} validate={{ myValidation: firstNameAndlastNameOrcompany }} onChange={(e) => { this.handleInputValidate(e) }} /></Col>
+                </Row>
+              </Col>
+              <Col>
+                <Row>
+                  <Col sm={3}><Label style={labelPaddingTop}>Organization</Label></Col>
+                  <Col><AvField name="company" placeholder="Organization" style={placeholderStyle} value={updateBill.company} validate={{ myValidation: firstNameAndlastNameOrcompany }} onChange={(e) => { this.handleInputValidate(e) }} /></Col>
+                </Row>
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <Row>
+                  <Col sm={3}><Label style={labelPaddingTop}>Address line 1</Label></Col>
+                  <Col><AvField name="addressLine1" placeholder="Address 1" style={placeholderStyle} value={updateBill.addressLine1} errorMessage="Address should not be empty" helpMessage="H.No 1-1-1/1, xyz  street" required /></Col>
+                </Row>
+              </Col>
+              <Col>
+                <Row>
+                  <Col sm={3}><Label style={labelPaddingTop}>Address line 2</Label></Col>
+                  <Col><AvField name="addressLine2" placeholder="Address 2" style={placeholderStyle} value={updateBill.addressLine2} helpMessage="Jntuh area, hyderabad district" /> </Col>
+                </Row>
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <Row>
+                  <Col sm={3}><Label style={labelPaddingTop}>Postcode/ Zipcode</Label></Col>
+                  <Col><AvField name="postCode" placeholder="Postal Code/ Pincode/ Zip code" style={placeholderStyle} value={updateBill.postCode} errorMessage="PostCode/pincode/Zipcode is required" /></Col>
+                </Row>
+              </Col>
+              <Col>
+                <Row>
+                  <Col sm={3}><Label style={labelPaddingTop}>City</Label></Col>
+                  <Col><AvField name="city" placeholder="City" style={placeholderStyle} value={updateBill.city} /></Col>
+                </Row>
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <Row>
+                  <Col sm={3}><Label>Region/ State/ Area</Label></Col>
+                  <Col><AvField name="region" placeholder="Region/ State/ Area" style={placeholderStyle} value={updateBill.region} /></Col>
+                </Row>
+              </Col>
+              <Col>
+                <Row>
+                  <Col sm={3}><Label style={labelPaddingTop}>Country</Label></Col>
+                  <Col> <AvField style={placeholderStyle} type="select" id="country" name="country" value={updateBill.country} errorMessage="Select Country" onClick={() => this.setState({ alertColor: "", content: "" })} required >
+                    {this.selectCountry(updateBill)} 
+                    {this.loadCountryOptions(countries)} 
+                    </AvField>
+                  </Col>
+                </Row>
               </Col>
             </Row>
             <center><FormGroup row>
               <Col>
                 <Button color="info" disabled={this.state.doubleClick} > Save </Button> &nbsp; &nbsp;
-                  <Button active color="light" type="button" onClick={() => this.props.handleCancelEditBillingAddress()}>Cancel</Button>
+                <Button active color="light" type="button" onClick={() => this.props.handleCancelEditBillingAddress()}>Cancel</Button>
               </Col>
             </FormGroup>
             </center>
@@ -168,6 +213,10 @@ class EditBillingAddress extends Component {
         }))
       }
     </>
+  }
+
+  loadCountryOptions = (countries) => {
+    return countries.map((country, key) => { return <option key={key} value={country.code}>{country.name}</option> })
   }
 }
 

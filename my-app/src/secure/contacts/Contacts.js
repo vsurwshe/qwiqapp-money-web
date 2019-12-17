@@ -143,11 +143,11 @@ class Contacts extends Component {
 
   loadHeader = () => {
     return <CardHeader>
-      <Row >
-        <Col sm={3}><strong>CONTACTS </strong></Col>
+      <Row>
+        <Col sm={3} className="marigin-top" ><strong >Contacts </strong></Col>
         <Col>
           {this.state.contacts.length !== 0 && <InputGroup >
-            <Input type="search" className="float-right" onChange={() => this.searchHandler} value={this.state.searchContact} placeholder="Search Contacts..." />
+            <Input type="search" className="float-right" onChange={(e) => {this.searchHandler(e)}} value={this.state.searchContact} placeholder="Search Contacts..." />
             <InputGroupAddon addonType="append"><InputGroupText className="dark"><FaSearch /></InputGroupText></InputGroupAddon>
           </InputGroup>
           }

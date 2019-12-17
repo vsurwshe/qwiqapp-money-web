@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Card, CardBody, CardHeader, Button, Alert } from 'reactstrap';
+import { Card, CardBody, CardHeader, Button, Alert, Row, Col } from 'reactstrap';
 import Loader from 'react-loader-spinner';
 import Config from '../../../data/Config';
 import BillingAddressApi from '../../../services/BillingAddressApi';
@@ -9,6 +9,7 @@ import { getBillingAddress, updateStatusValue } from "../../../redux/actions/Bil
 import { handleApiResponseMsg, buttonAction, setSpinnerValue } from "../../../redux/actions/UtilityActions";
 import '../../../css/style.css';
 
+// This is Empty Billing Address Set When There is no Billing Address we seting this Set into Billing Address for API (POST/PUT)
 let emptyBillingAddress = {
   addressLine1: '',
   addressLine2: '',
@@ -28,7 +29,7 @@ class BillingInfo extends Component {
   }
 
   componentWillReceiveProps = async () => {
-    const {updateStatus}=this.props.biliing
+    const { updateStatus } = this.props.biliing
     // This condtions after update billAddress get billingAddress list.
     if (updateStatus) {
       this.props.dispatch(updateStatusValue(false))
@@ -37,12 +38,13 @@ class BillingInfo extends Component {
   }
 
   successcall = async (billing) => {
+    const {dispatch} =this.props
     if (billing) {
-      this.props.dispatch(getBillingAddress(billing))
+      dispatch(getBillingAddress(billing))
     } else {
-      this.props.dispatch(getBillingAddress(emptyBillingAddress))
+      dispatch(getBillingAddress(emptyBillingAddress))
     }
-    this.props.dispatch(setSpinnerValue(true))
+    dispatch(setSpinnerValue(true))
   }
 
   errorcall = (error) => {
@@ -60,7 +62,7 @@ class BillingInfo extends Component {
 
   render() {
     const { addBilling, spinner } = this.props.utility;
-    const { billingAddress }= this.props.biliing;
+    const { billingAddress } = this.props.biliing;
     if (addBilling) {
       return <EditBillingAddress handleCancelEditBillingAddress={this.cancelEditBillingAddress} />
     } else if (!billingAddress.country) {
@@ -74,15 +76,17 @@ class BillingInfo extends Component {
     }
   }
 
-  loadSpinner = () =>  <div className="animated fadeIn">
-      <Card>
-        {this.loadHeader()}
-        <center className="padding-top">
-          <CardBody><Loader type="TailSpin" className="loader-color" height={60} width={60} /></CardBody>
-        </center>
-      </Card>
-    </div>
+  // While API is giving response, meanwhile this method loads the spinner 
+  loadSpinner = () => <div className="animated fadeIn">
+    <Card>
+      {this.loadHeader()}
+      <center className="padding-top">
+        <CardBody><Loader type="TailSpin" className="loader-color" height={60} width={60} /></CardBody>
+      </center>
+    </Card>
+  </div>
 
+  // This method shows Billing Address details
   billingAddress = () => {
     const { showAlert, color, message } = this.props.utility;
     const { billingAddress } = this.props.biliing;
@@ -92,9 +96,7 @@ class BillingInfo extends Component {
     return (
       <div className="animated fadeIn">
         <Card>
-          <CardHeader><strong>Billing Address</strong>
-            <Button color="success" className="float-right" onClick={this.editBillingAddress}> Edit Billing Address</Button>
-          </CardHeader>
+          {this.loadHeader("Edit Billing Address")}
           <CardBody>
             {color && <Alert color={color}>{message} </Alert>}
             {billingAddress &&
@@ -117,24 +119,27 @@ class BillingInfo extends Component {
     )
   }
 
-  loadHeader = () => <CardHeader>
-        <strong>Billing Address</strong>
-        <Button color="success" className="float-right" onClick={this.editBillingAddress}> + Billing Address</Button>
-      </CardHeader>
+  // This method loads the header
+  loadHeader = (buttonMessage) => <CardHeader style={{ height: 60 }}>
+    <Row form>
+      <Col className="marigin-top"><strong>Billing Address</strong></Col>
+      <Col><Button color="success" className="float-right" onClick={this.editBillingAddress}> {buttonMessage}</Button></Col>
+    </Row>
+  </CardHeader>
 
+  // This method is called when there is no billing address
   showingNoBillingMessage = () => <div className="animated fadeIn">
-        <Card>
-          {this.loadHeader()}
-          <center className="padding-top" >
-            <CardBody> <b>No Billing Address added, Please Add Now...</b></CardBody>
-          </center>
-        </Card>
-      </div>
+    <Card>
+      {this.loadHeader("+ Billing Address")}
+      <center className="padding-top" >
+        <CardBody> <b>No Billing Address added, Please Add Now...</b></CardBody>
+      </center>
+    </Card>
+  </div>
 }
 
+// This maps Central Redux Store state to the props of this component  
+const mapsStateToProps = (state) => { return state; }
 
-const mapsStateToProps = (state) => {
-  return state;
-}
-
+// connect used to attach the above props to this component
 export default connect(mapsStateToProps)(BillingInfo);

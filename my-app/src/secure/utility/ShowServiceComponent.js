@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Card, CardHeader, CardBody, Col, Alert, Row, Input, InputGroup, InputGroupAddon, Button, Collapse } from 'reactstrap';
+import { Card, CardHeader, CardBody, Col, Alert, Row, Button, Collapse } from 'reactstrap';
 import Loader from 'react-loader-spinner';
 import Avatar from 'react-avatar';
 import { FaAngleDown } from 'react-icons/fa';
@@ -16,7 +16,7 @@ export const ShowServiceComponent = {
             <center>
               <Loader type="TailSpin" color={color} height={60} width={60} />
               <br /><br />
-              <h5 style={{ color: 'green' }}>{bodyMessage}</h5>
+              <h5 >{bodyMessage}</h5>
             </center>
           </CardBody>
         </Card>
@@ -43,14 +43,39 @@ export const ShowServiceComponent = {
       </div>)
   },
 
+  loadHeaderAction: function (headerMessage, addButton, buttonText)  {
+    return (
+     <CardHeader ><strong> {headerMessage} </strong>
+        {addButton && <Button color="success" className="float-right" onClick={this.callCreateProfile}>{buttonText}</Button>}
+      </CardHeader>)
+  },
+
+  loadSpinnerAction: function (headerMessage, bodyMessage, addButton, buttonText, visible) {
+    return (
+      <div className="animated fadeIn">
+        <Card>
+          <center>
+            {this.loadHeaderAction(headerMessage, addButton, buttonText)}
+            <CardBody>
+              {visible && <Alert color="danger">Unable to Process your Request, please try Again...</Alert>}
+              <div className="text-primary spinner-size" role="status">
+                <span className="sr-only">Loading...</span>
+              </div>
+            </CardBody>
+          </center>
+        </Card>
+      </div>)
+  },
+
   //Searches Items based on user given SearchTerm
   searchingFor: function (searchTerm) {
+    const searchQuery=searchTerm.toLowerCase();
     return function (item) {
       let subItemName = '';
       if (item.childName) {
-        subItemName = subItemName + item.childName.map(item => item)
-      }
-      return (item.name ? item.name.toLowerCase() : '' + subItemName ? subItemName.toLowerCase() : '').includes(searchTerm.toLowerCase()) || !searchTerm
+        subItemName = subItemName + item.childName.map(item => item);
+      } 
+        return item.name ? (item.name.toLowerCase().includes(searchQuery)):'' | subItemName ? (subItemName.toLowerCase().includes(searchQuery)):''    
     }
   },
 
@@ -67,20 +92,20 @@ export const ShowServiceComponent = {
   },
 
   loadHeaderWithSearch: function (headerMessage, items, setSearch, placeHolder, addItem) {
-    return <CardHeader>
+    return <CardHeader style={{height: 60}}>
       <Row form>
         <Col className="marigin-top" >
           <strong>{items ? headerMessage + " : " + items.length : headerMessage}</strong>
         </Col>
-        {(items && items.length) &&
+        {/* {(items && items.length) &&
           <Col md={7} className="shadow p-0 mb-3 bg-white rounded">
             <InputGroup>
               <Input type="search" className="float-right" style={{ width: '20%' }} onChange={e => setSearch(e)} placeholder={placeHolder} />
               <InputGroupAddon addonType="append">
               </InputGroupAddon>
             </InputGroup>
-          </Col>}
-        <Col >
+          </Col>} */}
+        <Col>
           <Button color="success" className="float-right" onClick={addItem}> + ADD </Button>
         </Col>
       </Row>
@@ -103,7 +128,8 @@ export const ShowServiceComponent = {
   loadDateFormat: function (date) {
     return new Intl.DateTimeFormat('sv-SE', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(date);
   },
-  // this method return formate date like ex: Mon, 03 DeC
+
+ // this method return formate date like ex: Mon, 03 DeC
   billDateFormat: function (date) {
     return new Intl.DateTimeFormat('en-gb', { month: 'short', weekday: 'short', day: '2-digit'}).format(date); 
   },

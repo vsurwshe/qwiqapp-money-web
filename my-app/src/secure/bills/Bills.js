@@ -7,14 +7,14 @@ import CategoryApi from "../../services/CategoryApi";
 import LabelApi from "../../services/LabelApi";
 import DeleteBill from "./DeleteBill";
 import ContactApi from '../../services/ContactApi';
-import { ProfileEmptyMessage } from "../utility/ProfileEmptyMessage";
-import { DeleteModel } from "../utility/DeleteModel";
-import { ShowServiceComponent } from "../utility/ShowServiceComponent";
 import Config from "../../data/Config";
 import PaymentApi from "../../services/PaymentApi";
 import { profileFeature, moreOptions } from "../../data/GlobalKeys";
 import { DataTable } from "../utility/DataTable";
 import BillTabs from "./BillTabs";
+import { ProfileEmptyMessage } from "../utility/ProfileEmptyMessage";
+import { ShowServiceComponent } from "../utility/ShowServiceComponent";
+import { DeleteModel } from "../utility/DeleteModel";
 import '../../css/style.css';
 import '../../css/dataTables.fontAwesome.css';
 
@@ -42,6 +42,15 @@ class Bills extends Component {
   componentDidMount = () => {
     this._isMounted = true;
     this.setProfileId();
+  }
+  componentWillUnmount = () => {
+    this._isMount = false;
+  }
+
+  componentDidUpdate() {
+    if (this.state.alertColor) {
+      this.getBills();
+    }
   }
 
   componentWillReceiveProps = () => {
@@ -232,7 +241,7 @@ class Bills extends Component {
     new BillApi().markAsUnPaid(this.successUnpaidBill, this.errorCall, profileId, updateBill.id);
   }
 
-  successUnpaidBill = () => { this.setMarkasUnpaid(); this.callTimer("success", "Your bill payments clear"); this.getBills() }
+  successUnpaidBill = () => { this.setMarkasUnpaid(); this.callTimer("success", "Your bill payments cleared"); this.getBills() }
 
   // This method handle Error Call of API 
   errorCall = (err) => {

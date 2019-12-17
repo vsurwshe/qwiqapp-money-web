@@ -10,7 +10,7 @@ class DeleteProfile extends Component {
     this.state = {
       profileId: this.props.profileId,
       profileDeleted: false,
-      color: "blue",
+      color: "#00bfff",
       content: "Deleting profile ......"
     };
   }

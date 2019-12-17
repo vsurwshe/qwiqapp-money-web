@@ -26,8 +26,8 @@ async function process(success, failure, apiPath, requestMethod, data, reload, p
     let HTTP = httpCall(apiPath, requestMethod);
     let promise;
     try {
-        data ?  promise = await HTTP.request({ data }) :promise = await HTTP.request()
-        requestMethod === "GET" ?  validResponse(promise.data, success,payments) : validResponse(data, success,payments)
+        data ?  promise = await HTTP.request({ data }) : promise = await HTTP.request();
+        requestMethod === "GET" ?  validResponse(promise.data, success, payments) : validResponse(data, success, payments)
     } catch (err) {
         handleAccessTokenError(err, failure, apiPath, requestMethod, data, success, reload);
     }
@@ -39,14 +39,14 @@ let handleAccessTokenError = function (err, failure, apiPath, requestMethod, dat
     } else if (err.response.status === 403 || err.response.status === 401) {
         // This condtions restrict calling of api after geting 403 or 401 Error
         if (!reload) {
-            new LoginApi().refresh(() => { process(success, failure, apiPath, requestMethod, data, "restrict") }, errorResponse(err, failure));
+            new LoginApi().refresh(() => { process(success, failure, apiPath, requestMethod, data, "restrict") }, ()=>{errorResponse(err, failure)});
         } 
     } else {
         errorResponse(err, failure)
     }
 }
 
-let validResponse =  function (response, successMethod,payments) {
+let validResponse =  function (response, successMethod, payments) {
     if (successMethod != null) {
         // This condtion checking whether calling address api or payment api.   
         if(payments!=="payments") {

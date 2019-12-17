@@ -145,7 +145,7 @@ class Categories extends Component {
     if (!profileId) {
       return <ProfileEmptyMessage />
     } else if (spinner) {
-      return ShowServiceComponent.loadSpinner("Categories : " + categories.length)
+      return ShowServiceComponent.loadSpinner(categories.length ? "Categories : " + categories.length : "Categories")
     } else if (createCategory) {
       return <CategoryForm categories={categories} id={profileId} />
     } else if (updateCategory) {
@@ -154,7 +154,7 @@ class Categories extends Component {
       return <DeleteCategory categoryId={categoryId} profileId={profileId} />
     }
     else {
-      return <div>{danger && this.loadDeleteCategory()} {this.loadCategories(categories, visible, search)}</div>
+      return <>{danger && this.loadDeleteCategory()} {this.loadCategories(categories, visible, search)}</>
     }
   }
 

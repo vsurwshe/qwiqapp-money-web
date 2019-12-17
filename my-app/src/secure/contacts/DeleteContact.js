@@ -10,7 +10,7 @@ class DeleteContact extends Component {
     this.state = {
       contactId: props.contactId,
       contactDeleted: false,
-      color: "green",
+      color: "#00bfff",
       content: "Deleting Contact.....",
       profileId: props.profileId
     };

@@ -7,6 +7,16 @@ export default {
       icon : "cui-speedometer"
     },
     {
+      name: "Bills",
+      url: "/listBills",
+      icon: "cui-notes"
+    },
+    {
+      name: "Contacts",
+      url:"/contact/viewContacts",
+      icon: "cui-phone"
+    },
+    {
       name: "Labels",
       url: "/label/labels",
       icon: "cui-align-center"
@@ -15,15 +25,6 @@ export default {
       name: "Categories",
       url: "/listCategories",
       icon: "cui-layers"
-    },
-    {
-      name: "Contacts",
-      url:"/contact/viewContacts",
-      icon: "cui-phone"},
-    {
-      name: "Bills  ",
-      url: "/listBills",
-      icon: "cui-notes"
     }
   ]
 };
