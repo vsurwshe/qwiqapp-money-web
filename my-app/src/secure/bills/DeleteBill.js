@@ -23,8 +23,12 @@ class DeleteBill extends Component {
     this.callAlertTimer("success", "Bill Deleted Successfully....");
   };
 
-  errorCall = () => {
-    this.callAlertTimer("danger", "Something went wrong, Please Try Again...  ");
+  errorCall = (error) => {
+    if (error.response && (error.response.status === 500 && error.response.data && error.response.data.error)) {
+      this.callAlertTimer("danger", "You are not able to delete, beacuse this bills has attachments or payments");
+    } else {
+      this.callAlertTimer("danger", "Something went wrong, Please Try Again...  ");
+    }
   };
 
   callAlertTimer = (color, content) => {
@@ -45,7 +49,7 @@ class DeleteBill extends Component {
         <Card>
           <CardHeader><strong>Delete Bill</strong></CardHeader>
           <CardBody>
-            <Col sm="12" md={{ size: 5, offset: 4 }}><Alert color={color}>{content}</Alert></Col>
+            <Col><Alert color={color}>{content}</Alert></Col>
           </CardBody>
         </Card>
       </div>)

@@ -21,12 +21,12 @@ class BillTabs extends Component {
 
   tabPane() {
     const { categories, bill, contacts, getContacts, getLabels, labels, profileId } = this.props.tabData;
-    const { paidAmount, cancelButton,payform } = this.props;
+    const { paidAmount, cancelButton,payform, updateBill } = this.props;
 
     return (
       <>
         <TabPane tabId={1}>
-          {bill ? <BillForm cancelButton={cancelButton} bill={bill} profileId={profileId} labels={labels} categories={categories} contacts={contacts} getContacts={getContacts} getLabels={getLabels} />
+          {bill ? <BillForm cancelButton={cancelButton} activeTab={this.props.activeTab} updateBill={updateBill} bill={bill} profileId={profileId} labels={labels} categories={categories} contacts={contacts} getContacts={getContacts} getLabels={getLabels} />
             : <BillForm cancelButton={cancelButton} profileId={profileId} labels={labels} categories={categories} contacts={contacts} getContacts={getContacts} getLabels={getLabels} />}
         </TabPane>
         <TabPane tabId={2}>

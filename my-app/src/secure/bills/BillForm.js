@@ -183,13 +183,17 @@ class BillForm extends Component {
   }
 
   timerForBillsList = () => {
-    setTimeout(() => { // Solved Bills component load issue in Tabs
-      this.props.cancelButton(null, true); // Parameters for update values showing in bills list view
+    setTimeout(() => { // Solved Bills component load issue in 
+      if (this.props.activeTab && this.props.activeTab !==1 && this.props.updateBill) {
+        this.props.updateBill(null, true, true);
+      } 
+      this.props.cancelButton(null, true);
     }, Config.apiTimeoutMillis);
   }
 
   // updated bill
   successUpdateBill = () => {
+    // activeTab={this.props.activeTab} updateBill={updateBill}
     this.callAlertTimer("success", "Bill Updated Successfully !! ");
     this.timerForBillsList()
   };
@@ -362,6 +366,7 @@ class BillForm extends Component {
   render() {
     const { alertColor, alertMessage, cancelCreateBill, billCreated } = this.state;
     const { labels, contacts, categories } = this.props;
+    // console.log(this.props.activeTab, "cancelCreateBill", cancelCreateBill, "billCreated", billCreated)
     if (cancelCreateBill) {
       return <Bills />
     } else {
@@ -507,6 +512,7 @@ class BillForm extends Component {
     const { repeatEvery, repeatType, nextBillDate, endDate, recurBillForever } = this.state;
     const { DAY, WEEK, MONTH, DAYOFMONTH, YEAR } = recurBillType;
     let smValue = recurBillForever ? 3 : 5
+    // activeTab={this.props.activeTab} updateBill={updateBill}
     return (
       <>
         <Row>
