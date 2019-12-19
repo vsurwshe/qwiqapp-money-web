@@ -366,7 +366,6 @@ class BillForm extends Component {
   render() {
     const { alertColor, alertMessage, cancelCreateBill, billCreated } = this.state;
     const { labels, contacts, categories } = this.props;
-    // console.log(this.props.activeTab, "cancelCreateBill", cancelCreateBill, "billCreated", billCreated)
     if (cancelCreateBill) {
       return <Bills />
     } else {
@@ -512,7 +511,6 @@ class BillForm extends Component {
     const { repeatEvery, repeatType, nextBillDate, endDate, recurBillForever } = this.state;
     const { DAY, WEEK, MONTH, DAYOFMONTH, YEAR } = recurBillType;
     let smValue = recurBillForever ? 3 : 5
-    // activeTab={this.props.activeTab} updateBill={updateBill}
     return (
       <>
         <Row>

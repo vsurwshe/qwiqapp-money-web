@@ -65,9 +65,9 @@ class Bills extends Component {
   componentDidUpdate = () => {
     var _ = this; //assigns the class's this keyword to _.
     if (this._isMounted) {
-      let storeBills = Store.getBills() ? Store.getBills() : [];
+      let storeBills = Store.getBills() ? Store.getBills() : []; //(issue solved) this method is executing before state updated, so we used store to get updated data
       // .display is css class name of datatable so we are using class name to identify which action is called.
-      $('.display').on('click', '.editButton', function () {
+      $('.display').on('click', '.editButton', function () { 
         var row = $(this).closest('tr'); // This fetches the data of the row when we click 'edit' in dataTable
         var editData = $('.display').dataTable().fnGetData(row); //this line separates the required data from the fecthced row data.
         var updateBill = editData && storeBills.filter(bill => bill.id === editData[0]); // Filter the specific bill from the list of bills using id and assign to updatebill
@@ -296,7 +296,7 @@ class Bills extends Component {
     if (lastPaid) {
       this.setState({ updateBill: bill, paidAmount: lastPaid.paidAmount });
     }
-    let data = this.state.bills.filter(singleBill=>singleBill.id===bill.id)
+    let data = this.state.bills.filter(singleBill=>singleBill.id===bill.id) // props bill does not have categoryName field, we are getting it from filtering of state bills.
     this.setState({ updateBill: data[0] });
   }
 
@@ -323,7 +323,7 @@ class Bills extends Component {
     this.handleAttachmentAction()
   }
   handleSetBillId = (bill) => {
-    let billWithCategory = this.state.bills.filter(singleBill=>singleBill.id===bill.id)
+    let billWithCategory = this.state.bills.filter(singleBill=>singleBill.id===bill.id) // props bill does not have categoryName field, we are getting it from filtering of state bills.
     let data = {
       "deletBillDescription": billWithCategory[0].description,
       "deletBillCategoryName": billWithCategory[0].categoryName.name
