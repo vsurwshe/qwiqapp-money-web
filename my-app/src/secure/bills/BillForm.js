@@ -183,7 +183,7 @@ class BillForm extends Component {
   }
 
   timerForBillsList = () => {
-    setTimeout(() => { // Solved Bills component load issue in 
+    setTimeout(() => { // Solved Bills component load issue, when user came to other tabs and edited bill form
       if (this.props.activeTab && this.props.activeTab !==1 && this.props.updateBill) {
         this.props.updateBill(null, true, true);
       } 
@@ -193,7 +193,6 @@ class BillForm extends Component {
 
   // updated bill
   successUpdateBill = () => {
-    // activeTab={this.props.activeTab} updateBill={updateBill}
     this.callAlertTimer("success", "Bill Updated Successfully !! ");
     this.timerForBillsList()
   };
