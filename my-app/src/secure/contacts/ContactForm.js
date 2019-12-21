@@ -114,7 +114,7 @@ class ContactForm extends Component {
   }
 
   loadAddContact = (alertColor, alertMessage) => {
-    const {countries, labels, selectedCountry, contact, labelUpdate, hideCancel} = this.state;
+    const {countries, labels, selectedCountry, contact, labelUpdate} = this.state;
     let contactData = {
       countries: countries,
       labels: labels,
@@ -139,7 +139,7 @@ class ContactForm extends Component {
           <center><FormGroup row>
             <Col>
               <Button color="info" disabled={this.state.disableDoubleClick} > Save </Button> &nbsp; &nbsp;
-              {!hideCancel && <Button active color="light" type="button" onClick={this.cancelAddContact}>Cancel</Button>}
+              {!this.props.hideButton && <Button active color="light" type="button" onClick={this.cancelAddContact}>Cancel</Button>}
             </Col>
           </FormGroup></center>
         </AvForm>

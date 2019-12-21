@@ -114,7 +114,7 @@ export const BillFormUI = (props) => {
 // =============== Categories Form =============
 export const CategoryLabelForm = (props) => {
   const { doubleClick, collapse, parentId, chkMakeParent, type, componentType, items, itemName, itemColor, notes, updateItem, hideCancel } = props.data
-  return <AvForm onValidSubmit={props.handleSubmitValue}>
+    return <AvForm onValidSubmit={props.handleSubmitValue}>
     <Row>
       <Col sm={3} >
         <Label><>{componentType} name <b className="text-color"> * </b></></Label>
@@ -157,7 +157,7 @@ export const CategoryLabelForm = (props) => {
     }
 
     {/* It loads the options of Labels/Categories, when user selects Nest Category/label under */}
-    <Collapse isOpen={collapse}>
+    { collapse && <Collapse isOpen={collapse}>
       <Row>
         <Col sm={3}> <Label>{"Select parent " + componentType.toLowerCase()}</Label> </Col>
         <Col sm={8}>
@@ -167,7 +167,7 @@ export const CategoryLabelForm = (props) => {
           </AvField>
         </Col>
       </Row>
-    </Collapse><br />
+    </Collapse>}<br />
     <center>
       <FormGroup>
         <Button color="info" disabled={doubleClick} > {props.buttonText} </Button> &nbsp;&nbsp;
