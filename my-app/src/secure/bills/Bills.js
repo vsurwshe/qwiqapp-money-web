@@ -294,8 +294,11 @@ class Bills extends Component {
   handleShowPayment = (bill) => {
     let lastPaid = this.calculateLastPaid(bill);
     if (lastPaid) {
-      this.setState({ updateBill: bill, paidAmount: lastPaid.paidAmount });
+      this.setState({ paidAmount: lastPaid.paidAmount });
+    } else { 
+      this.setState({ paidAmount: 0 });
     }
+    
     let data = this.state.bills.filter(singleBill=>singleBill.id===bill.id) // props bill does not have categoryName field, we are getting it from filtering of state bills.
     this.setState({ updateBill: data[0] });
   }
@@ -314,7 +317,10 @@ class Bills extends Component {
     }  
     this.setState({ markPaid: !this.state.markPaid }); 
   }
-  handleViewPayment = () => { this.setState({ viewPayment: !this.state.viewPayment }); }
+  handleViewPayment = () => { 
+    this.state.viewPayment && window.location.reload()
+    this.setState({ viewPayment: !this.state.viewPayment }); 
+  }
   handleMarkAsUnpaidPayment = (requiredBill) => { this.setState({ markAsUnPaid: !this.state.markAsUnPaid, updateBill:requiredBill }) }
   setMarkasUnpaid = () => { this.setState({ markAsUnPaid: !this.state.markAsUnPaid}); }
 
@@ -466,7 +472,7 @@ class Bills extends Component {
     return <div className="animated fadeIn">
       <Card>
         {this.loadHeader("")}
-        <h6>{this.state.alertMessage && <Alert color={this.state.alertColor}>{this.state.alertMessage}</Alert>}</h6>
+        <h6>{this.state.alertMessage && <><br /><Alert color={this.state.alertColor}>{this.state.alertMessage}</Alert></>}</h6>
         <CardBody className="card-align">
           {/* Calling jquery datatable component providing rows and columns */}
           <DataTable billData={this.loadTableRows(bills, featureAttachment)} columns={columns} />

@@ -172,11 +172,18 @@ class ViewPayment extends Component {
   }
 
   loadSinglePayment = (payment, selectedCurrency, key, paymentAmount) => {
-    const color = payment.amount < 0 ? 'red' : 'green'
+    const color = payment.amount < 0 ? 'red' : 'green';
+    let paidAmount = '';    
+    if (paymentAmount<0) {
+      let nagativeAmount=paymentAmount.toString();
+      paidAmount  = "-"+selectedCurrency[0].symbol +nagativeAmount.split("-")[1];
+    } else {
+      paidAmount= selectedCurrency[0].symbol+ paymentAmount;
+    }
     return <tr width={50} key={key}>
       <td>{this.dateFormat(payment.date)}</td>
       <td>{payment.notes}</td>
-      <td style={{ color }}> {payment.type}  {selectedCurrency[0].symbol}{paymentAmount} </td>
+      <td style={{ color }}> {payment.type} {paidAmount} </td>
       <td>
         <Button style={{ backgroundColor: "transparent", borderColor: '#green', color: "green" }} onClick={() => this.handleUpdateBillPayment(payment, selectedCurrency[0].symbol)}>Edit</Button> &nbsp;
       </td>

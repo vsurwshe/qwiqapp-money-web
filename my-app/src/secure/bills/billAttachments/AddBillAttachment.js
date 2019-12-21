@@ -77,7 +77,7 @@ class AddBillAttachment extends Component {
         {ShowServiceComponent.loadHeader("ADD ATTACHMENT")}
         <CardBody>
           {color && <Alert color={color} >{content}</Alert>}
-          <Col md={{ size: 12, offset: 3 }} className="files">
+          <Col md={{ size: 12, offset: 2 }} className="files">
             <AvForm onSubmit={this.handlePostData}>
             <FileUploadForm handleInput={this.handleInput}/>
              <br />
