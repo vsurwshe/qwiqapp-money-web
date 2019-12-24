@@ -20,6 +20,7 @@ class Signup extends React.Component {
     color: '',
     content: '',
     emailAlert: false,
+    emailExist: false,
     validate: {
       emailState: '',
       passwordState: ''
@@ -58,9 +59,9 @@ class Signup extends React.Component {
   };
 
   //When Email Already Exists
-  successCallCheck = () => {
+  successCallCheck = (emailExist) => {
     const { validate } = this.state;
-    validate.emailState = 'danger'; this.setState({ emailAlert: true });
+    validate.emailState = 'danger'; this.setState({ emailAlert: true, emailExist });
   };
 
   // when any internal Error occur
@@ -153,6 +154,7 @@ class Signup extends React.Component {
   }
 
   loadSignupComponent = ( emailState, passwordState, name, email, password, content, color, emailAlert) => {
+    let buttonDissabled = !this.state.emailExist || !password || (emailAlert && emailState === 'danger');
     return (<div style={{ paddingTop: 50 }} className="animated fadeIn">
       <center>
         <Card style={{ width: 400, border: 0 }}>
@@ -179,7 +181,7 @@ class Signup extends React.Component {
               <FormFeedback > Password length must be more then 5 characters </FormFeedback>
             </FormGroup>
             <center>
-              <Button color="info" disabled={!password || (emailAlert && emailState === 'danger')} onClick={e => this.handleSubmit(e)}> Signup </Button>
+              <Button color="info" disabled={buttonDissabled} onClick={e => this.handleSubmit(e)}> Signup </Button>
               <CardBody>
                 <span> I already have an Account. </span>
                 <Link to="/login"> Login Now </Link>
