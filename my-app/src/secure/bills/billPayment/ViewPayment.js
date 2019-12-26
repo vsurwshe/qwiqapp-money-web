@@ -51,10 +51,13 @@ class ViewPayment extends Component {
     console.log("Error: ", err);
   }
 
-  paymentSuccessCall = async (payments) => {
-    await this.setState({ payments });
-    this.props.paymentCount(payments.length);
+  paymentSuccessCall =  (payments) => {
+    const count=payments.length;
+    if(payments){
+    this.setState({ payments });    
+    this.props.paymentCount && this.props.paymentCount(count);
   }
+}
 
   handleUpdateBillPayment = (updatePayment, currency) => {
     this.setState({ updateBillPayment: true, updatePayment, currency });
@@ -90,7 +93,7 @@ class ViewPayment extends Component {
           currency: this.state.currency,
           paymentDate: this.dateFormat
         }
-        return <BillPayment update={updateBillPayment} data={updatePayementData} />
+        return <BillPayment update={updateBillPayment} data={updatePayementData} paymentCount={this.props.paymentCount} />
       } else if (this.state.deleteBillPayment) {
         return <DeleteBillPayment profileId={this.props.profileId} cancelViewPay={this.props.cancel} bill={this.state.bill} taxId={this.state.deleteTxId} />
       } else {

@@ -21,16 +21,18 @@ class BillTabs extends Component {
 
   tabPane() {
     const { categories, bill, contacts, getContacts, getLabels, labels, profileId } = this.props.tabData;
-    const { paidAmount, cancelButton,payform } = this.props;
-
+    const { paidAmount, cancelButton, payform, updateBill, activeTab } = this.props;
+    // updateBill, activeTab are used to solve loading a proper comonents, because user can come to any tab by clicking on bills UI(edit, more..)
+    // He can came to diffreant tabs(payment, attachments) and able to edit the bill form, so updated changes we need to show in datatable
     return (
       <>
         <TabPane tabId={1}>
-          {bill ? <BillForm cancelButton={cancelButton} bill={bill} profileId={profileId} labels={labels} categories={categories} contacts={contacts} getContacts={getContacts} getLabels={getLabels} />
+          {bill ? <BillForm cancelButton={cancelButton} activeTab={activeTab} updateBill={updateBill} bill={bill} profileId={profileId} labels={labels} categories={categories} contacts={contacts} getContacts={getContacts} getLabels={getLabels} />
             : <BillForm cancelButton={cancelButton} profileId={profileId} labels={labels} categories={categories} contacts={contacts} getContacts={getContacts} getLabels={getLabels} />}
         </TabPane>
         <TabPane tabId={2}>
-          <ViewPayment payform={payform} bill={bill} paidAmount={paidAmount} profileId={profileId} cancel={cancelButton} paymentCount={this.handlePaymentsCount} />
+          <ViewPayment payform={payform} bill={bill} paidAmount={paidAmount} profileId={profileId} cancel={cancelButton} 
+          paymentCount={this.handlePaymentsCount} />
         </TabPane>
         {<TabPane tabId={3}><BillAttachments profileId={profileId} bill={bill} cancelButton={cancelButton} attachmentCount={this.handleAttachmentsCount}/></TabPane>}
       </>

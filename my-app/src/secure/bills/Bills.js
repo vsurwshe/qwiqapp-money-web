@@ -63,20 +63,20 @@ class Bills extends Component {
   }
 
   componentDidUpdate = () => {
-    const { bills } = this.state
     var _ = this; //assigns the class's this keyword to _.
     if (this._isMounted) {
+      let storeBills = Store.getBills() ? Store.getBills() : []; //(issue solved) this method is executing before state updated, so we used store to get updated data
       // .display is css class name of datatable so we are using class name to identify which action is called.
-      $('.display').on('click', '.editButton', function () {
+      $('.display').on('click', '.editButton', function () { 
         var row = $(this).closest('tr'); // This fetches the data of the row when we click 'edit' in dataTable
         var editData = $('.display').dataTable().fnGetData(row); //this line separates the required data from the fecthced row data.
-        var updateBill = editData && bills.filter(bill => bill.id === editData[0]); // Filter the specific bill from the list of bills using id and assign to updatebill
+        var updateBill = editData && storeBills.filter(bill => bill.id === editData[0]); // Filter the specific bill from the list of bills using id and assign to updatebill
         updateBill && _.updateBillAction(updateBill[0]) // 
       })
       $('.display').on('change', 'select', function () {
         var row = $(this).closest('tr'); // This fetches the data of the row when we click 'edit' in dataTable
         var editData = $('.display').dataTable().fnGetData(row); //this line separates the required data from the fecthced row data.
-        var requiredBill = editData && bills.filter(bill => bill.id === editData[0]); // Filter the specific bill from the list of bills using id and assign to updatebill
+        var requiredBill = editData && storeBills.filter(bill => bill.id === editData[0]); // Filter the specific bill from the list of bills using id and assign to updatebill
         requiredBill && _.handleShowPayment(requiredBill[0])
         switch ($(this).val()) {
           case moreOptions.ADDPAYMENT:
@@ -270,14 +270,15 @@ class Bills extends Component {
       this.successCallBill(Store.getBills());
     }
   }
-  // createBillAction = () => { this.setState({ createBillRequest: true }) }
-  updateBillAction = (updateBill, updatedSuccess) => {
-    this.setState({ updateBillRequest: !this.state.updateBillRequest, updateBill });
+  updateBillAction = (updateBill, updatedSuccess, fromOtherTabCalling) => {
+    this.setState({ updateBill });
+    if (!fromOtherTabCalling) { // resolved issues (gone to other tabs, and edited bill)
+      this.setState({ updateBillRequest: !this.state.updateBillRequest });
+    }
     if (updatedSuccess) {
       this.successCallBill(Store.getBills());
     }
   };
-  // updateBillAction = updateBill => { this.setState({ updateBillRequest: true, updateBill }) };
   deleteBillAction = () => { this.setState({ deleteBillRequest: true }) };
 
   setBillId = (bill) => {
@@ -295,7 +296,8 @@ class Bills extends Component {
     if (lastPaid) {
       this.setState({ updateBill: bill, paidAmount: lastPaid.paidAmount });
     }
-    this.setState({ updateBill: bill });
+    let data = this.state.bills.filter(singleBill=>singleBill.id===bill.id) // props bill does not have categoryName field, we are getting it from filtering of state bills.
+    this.setState({ updateBill: data[0] });
   }
 
   // This is more options handle methods
@@ -321,9 +323,10 @@ class Bills extends Component {
     this.handleAttachmentAction()
   }
   handleSetBillId = (bill) => {
+    let billWithCategory = this.state.bills.filter(singleBill=>singleBill.id===bill.id) // props bill does not have categoryName field, we are getting it from filtering of state bills.
     let data = {
-      "deletBillDescription": bill.description,
-      "deletBillCategoryName": bill.categoryName.name
+      "deletBillDescription": billWithCategory[0].description,
+      "deletBillCategoryName": billWithCategory[0].categoryName.name
     }
     this.setState({ billId: bill.id, deleteBillName: data });
     this.toggleDanger();
@@ -400,13 +403,13 @@ class Bills extends Component {
       return <DeleteBill billId={billId} profileId={profileId} removeDependents={removeDependents} />
     } else if (addPayment || markPaid) {
       let cancelHandle = addPayment ? this.handleAddPayment : this.handleMarkAsPaid
-      return <Suspense fallback={<div>Loading...</div>}> <BillTabs activeTab={2} payform={true} tabData={tabData} paidAmount={paidAmount} cancelButton={cancelHandle} /></Suspense>
+      return <Suspense fallback={<div>Loading...</div>}> <BillTabs activeTab={2} payform={true} tabData={tabData} paidAmount={paidAmount} cancelButton={cancelHandle} updateBill={this.updateBillAction}/></Suspense>
     } else if (viewPayment) {
       // This bill tabs called for Payments.
-      return <BillTabs activeTab={2} tabData={tabData} paidAmount={paidAmount} cancelButton={this.handleViewPayment} />
+      return <BillTabs activeTab={2} tabData={tabData} paidAmount={paidAmount} cancelButton={this.handleViewPayment} updateBill={this.updateBillAction} />
     } else if (attachments) {
       // This bill tabs called for Attachments.
-      return <BillTabs activeTab={3} tabData={tabData} paidAmount={paidAmount} cancelButton={this.handleAttachmentAction} />
+      return <BillTabs activeTab={3} tabData={tabData} paidAmount={paidAmount} cancelButton={this.handleAttachmentAction} updateBill={this.updateBillAction} />
     }
     else {
       // displaying all bills
@@ -489,7 +492,7 @@ class Bills extends Component {
       strike ? "<strike>" + ShowServiceComponent.customDate(bill.billDate, false, true) + "</strike>" : ShowServiceComponent.customDate(bill.billDate, false, true),
       strike ? "<strike>" + billDescription + "</strike>" : billDescription,
       strike ? "<strike>" + this.getBillCurrency(bill.currency, bill.amount) + "</strike>" : this.getBillCurrency(bill.currency, bill.amount),
-      strike ? "<strike>" + this.handleSignedBillAmount(bill.amount) + "</strike>" : "<span style='color:green'>" + this.handleSignedBillAmount(bill.amount) + "</span>",
+      strike ? "<strike>" + this.handleSignedBillAmount(bill.amount) + "</strike>" : "<span>" + this.handleSignedBillAmount(bill.amount) + "</span>",
       strike ? "<strike>" + this.loadPaidStatus(bill, lastPaid) + "</strike>" : this.loadPaidStatus(bill, lastPaid),
       strike ? "<strike>" + (bill.recurId ? "<i class='fa fa-undo bill-icon-color'/>" : '')+ "</strike>" : (bill.recurId ? "<i class='fa fa-undo bill-icon-color'/>" : ''),
       '',

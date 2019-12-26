@@ -183,8 +183,11 @@ class BillForm extends Component {
   }
 
   timerForBillsList = () => {
-    setTimeout(() => { // Solved Bills component load issue in Tabs
-      this.props.cancelButton(null, true); // Parameters for update values showing in bills list view
+    setTimeout(() => { // Solved Bills component load issue, when user came to other tabs and edited bill form
+      if (this.props.activeTab && this.props.activeTab !==1 && this.props.updateBill) {
+        this.props.updateBill(null, true, true);
+      } 
+      this.props.cancelButton(null, true);
     }, Config.apiTimeoutMillis);
   }
 
