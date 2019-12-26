@@ -64,8 +64,8 @@ class Dashboard extends Component {
   calcOverDueUpcomingBills = (bills) => {
     let overdueBills = 0, upcomingBills = 0;
     bills.map(bill =>
-       !bill.paid && (this.loadDateFormat(bill.dueDate_) >= new Date() ? upcomingBills++ : overdueBills++)
-       )
+      !bill.paid && (this.loadDateFormat(bill.dueDate_) >= new Date() ? upcomingBills++ : overdueBills++)
+    )
     this.setState({ overdueBills: this.state.overdueBills + overdueBills, upcomingBills: this.state.upcomingBills + upcomingBills });
   }
 
@@ -79,15 +79,15 @@ class Dashboard extends Component {
   }
 
   callTimer = () => {
-    setTimeout(()=>{
-      this.setState({emailNotVerified: true});
+    setTimeout(() => {
+      this.setState({ emailNotVerified: true });
     }, Config.apiTimeoutMillis);
   }
   //Shows spinner  
   loadSpinner = () => {
     this.callTimer();
     return <center style={{ paddingTop: '20px' }}>
-      {this.state.emailNotVerified ?<p> Your email is not verified </p> : <div className="spinner-border text-info" style= {{height: 60, width:60}}></div> }
+      {this.state.emailNotVerified ? <p> Your email is not verified </p> : <div className="spinner-border text-info" style={{ height: 60, width: 60 }}></div>}
     </center>
   }
 

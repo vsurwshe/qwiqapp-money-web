@@ -47,7 +47,7 @@ class BillPayment extends Component {
         const { bill, paidAmount } = this.props.data;
         const { update } = this.props;
         let paidAmountResult = paidAmount === 0 ? bill.amount : paidAmount;
-        let alertMsg = update ? "BillPayment update succesfully !!" : "BillPayment dadded  succesfully !!"
+        let alertMsg = update ? "BillPayment update succesfully !!" : "BillPayment added  succesfully !!"
         // Checking Full payment paid or not.
         if (response.amount - (paidAmountResult) === 0) {
             this.setState({ alertColor: "success", alertMessage: alertMsg, paid: true });

@@ -17,7 +17,7 @@ export const BillFormUI = (props) => {
   const { bill, currencies, labels, contacts, categories, type, amount, dueDays, dueDate, billDate, moreOptions, doubleClick } = props.data;
 
   // If bill exists, take currency from bill. If not, takes the default currency from selected Profile
-  const { currency, description, reference } = bill ? bill : Store.getProfile(); 
+  const { currency, description, reference } = bill ? bill : Store.getProfile();
   if (bill) {
     categoryName = Data.categoriesOrLabels(categories).filter(item => { return item.value === bill.categoryId })
   }
@@ -27,29 +27,29 @@ export const BillFormUI = (props) => {
         <Row>
           <Col sm={3} md={3}> <label>Currency</label> </Col>
           <Col sm={9} md={9}>
-          <AvField type="select" id="symbol" name="currency" value={currency} disabled={!featureMultiCurrency} errorMessage="Select Currency" required>
-            <option value="">Select</option>
-            {currencies.map((currency, key) => {
-              return <option key={key} value={currency.code}
-                data={currency.symbol} symbol={currency.symbol} >{currency.code + " - "+ currency.name}</option>
-            })}
-          </AvField></Col>
+            <AvField type="select" id="symbol" name="currency" value={currency} disabled={!featureMultiCurrency} errorMessage="Select Currency" required>
+              <option value="">Select</option>
+              {currencies.map((currency, key) => {
+                return <option key={key} value={currency.code}
+                  data={currency.symbol} symbol={currency.symbol} >{currency.code + " - " + currency.name}</option>
+              })}
+            </AvField></Col>
         </Row>
       </Col>
       <Col sm={4}>
         <Row>
           <Col sm={3} md={3}> <label>Billtype</label> </Col>
           <Col sm={9} md={9}> <AvField type="select" name="amountType" value={type} errorMessage="Select Type of Bill" required>
-              <option value={billType.PAYABLE}>Payable</option>
-              <option value={billType.RECEIVABLE}>Receivable</option>
-            </AvField> </Col>
-         </Row>
+            <option value={billType.PAYABLE}>Payable</option>
+            <option value={billType.RECEIVABLE}>Receivable</option>
+          </AvField> </Col>
+        </Row>
       </Col>
       <Col>
         <Row>
           <Col sm={3} md={3}> <label>Amount<b className="text-color">*</b></label> </Col>
           <Col sm={9} md={9}> <AvField name="amount" id="amount" value={amount} placeholder="Amount" type="number" errorMessage="Invalid amount"
-              onChange={e => { props.handleSetAmount(e) }} required />
+            onChange={e => { props.handleSetAmount(e) }} required />
           </Col>
         </Row>
       </Col>
@@ -59,7 +59,7 @@ export const BillFormUI = (props) => {
         <Row>
           <Col sm={3} md={3}> <label>Category<b className="text-color">*</b> </label></Col>
           <Col sm={9} md={9}>
-          <Select options={Data.categoriesOrLabels(categories)} styles={Data.singleStyles} defaultValue={categoryName} placeholder="Select Categories " onChange={props.categorySelected} required />
+            <Select options={Data.categoriesOrLabels(categories)} styles={Data.singleStyles} defaultValue={categoryName} placeholder="Select Categories " onChange={props.categorySelected} required />
           </Col>
         </Row>
       </Col>
@@ -73,13 +73,13 @@ export const BillFormUI = (props) => {
           }} /></Col>
         </Row>
       </Col>
-        <Col>
-           <div style={{paddingLeft:18}}>
-          <Row> Due in &nbsp; 
-            <AvField name="dueDays" placeholder="0" onChange={e => { props.handleDate(e) }} value={dueDays} type="number" style={{all: 'unset', borderBottom: '1px solid', width: 50}} errorMessage="Invalid Days" /> &nbsp;  days from Bill date, on {dueDate}
+      <Col>
+        <div style={{ paddingLeft: 18 }}>
+          <Row> Due in &nbsp;
+            <AvField name="dueDays" placeholder="0" onChange={e => { props.handleDate(e) }} value={dueDays} type="number" style={{ all: 'unset', borderBottom: '1px solid', width: 50 }} errorMessage="Invalid Days" /> &nbsp;  days from Bill date, on {dueDate}
           </Row>
         </div>
-        </Col>
+      </Col>
     </Row>
     <Row>
       <Col >
@@ -95,7 +95,7 @@ export const BillFormUI = (props) => {
           <Col sm={1}> <label>Description / Notes</label> </Col>
           <Col> <AvField name="description" type="textarea" list="colors" value={description} placeholder="Ex: Recharge" errorMessage="Invalid Notes" /></Col>
         </Row>
-       </Col>
+      </Col>
     </Row>
     {!props.data.moreOptions &&
       <Button className="m-0 p-0" color="link" onClick={() => props.toggleCustom()} aria-expanded={moreOptions} aria-controls="exampleAccordion1">
@@ -114,13 +114,13 @@ export const BillFormUI = (props) => {
 // =============== Categories Form =============
 export const CategoryLabelForm = (props) => {
   const { doubleClick, collapse, parentId, chkMakeParent, type, componentType, items, itemName, itemColor, notes, updateItem, hideCancel } = props.data
-    return <AvForm onValidSubmit={props.handleSubmitValue}>
+  return <AvForm onValidSubmit={props.handleSubmitValue}>
     <Row>
       <Col sm={3} >
         <Label><>{componentType} name <b className="text-color"> * </b></></Label>
       </Col>
       <Col sm={8}>
-        <AvField type="text" name="name" errorMessage={componentType + " name required"} value={itemName} placeholder={"Enter " + componentType.toLowerCase() +  " name"} required />
+        <AvField type="text" name="name" errorMessage={componentType + " name required"} value={itemName} placeholder={"Enter " + componentType.toLowerCase() + " name"} required />
       </Col>
     </Row>
     {componentType === "Label" ?
@@ -153,11 +153,11 @@ export const CategoryLabelForm = (props) => {
             <AvInput type="checkbox" name="checkbox1" onChange={props.toggle} /> Nest {componentType.toLowerCase()} under </Label> <br /><br /> </>) //checking for subItems, if there dont show anything or else showing "Nest option"
         : <><Label style={{ paddingLeft: 20 }} check>
           <AvInput type="checkbox" name="checkbox1" onChange={props.toggle} /> Nest {componentType.toLowerCase()} under </Label> <br /> <br /></>) // If creating Label/ category then showing "Nest option"
-      )
+    )
     }
 
     {/* It loads the options of Labels/Categories, when user selects Nest Category/label under */}
-    { collapse && <Collapse isOpen={collapse}>
+    {collapse && <Collapse isOpen={collapse}>
       <Row>
         <Col sm={3}> <Label>{"Select parent " + componentType.toLowerCase()}</Label> </Col>
         <Col sm={8}>
@@ -203,12 +203,12 @@ export const ContactFormUI = (props) => {
           })}
         </Input>
       </Col>
-      </Row>
-      <Row>
-        <Col>
+    </Row>
+    <Row>
+      <Col>
         <AvField name="website" placeholder="Website" value={website} />
-        </Col>
-        <Col> {(labels && labels.length) ?  props.loadAvCollapse(contact) : <center>You don't have Labels</center> } </Col>
+      </Col>
+      <Col> {(labels && labels.length) ? props.loadAvCollapse(contact) : <center>You don't have Labels</center>} </Col>
     </Row> <br />
   </>);
 }
@@ -222,34 +222,34 @@ export const ProfileFormUI = (props) => {
   // Default value set while creating profile in AvForm
   const defaultValues = { type: 0 }
   return <AvForm onValidSubmit={props.handleSubmit} model={defaultValues}>
-    <Col sm={12} md={{ size: 8, offset: 1}} lg={{size: 5, offset: 3}}>
+    <Col sm={12} md={{ size: 8, offset: 1 }} lg={{ size: 5, offset: 3 }}>
       {!profileName && showProfileType(props, profileType, profileTypes)}  {/* This method is called when user clicks on create profile (no profile name) */}
       {!action || (profileType === 0) ?
-          // This Block execute only when user action is null or user selects to create a Free Profile
+        // This Block execute only when user action is null or user selects to create a Free Profile
         showProfileForm(props, profile, profileName, profileTypes, currencies, currencySymbol, user, buttonMessage, userConfirmUpgrade)
-          // This Block execute when user actions are "ADD_BILLING" , "ADD_CREDITS_LOW" & "VERIFY_EMAIL"
+        // This Block execute when user actions are "ADD_BILLING" , "ADD_CREDITS_LOW" & "VERIFY_EMAIL"
         : <>
+          <Row>
+            {(user.action === userAction.ADD_CREDITS || user.action === userAction.ADD_CREDITS_LOW) ? <Col sm={{ size: 12, offset: 1 }} md={{ size: 12, offset: 1 }}><p>! No sufficient credits available to create new profile, please click on add credits to make a payment. </p><br /></Col>
+              : <Col sm={{ size: 8, offset: 1 }} md={{ size: 12, offset: 1 }} ><p>! No billing address added, please click on add billing to continue. </p><br /></Col>}
+          </Row>
+          <center>
             <Row>
-              {(user.action === userAction.ADD_CREDITS || user.action === userAction.ADD_CREDITS_LOW) ? <Col sm={{size: 12, offset: 1}} md={{size: 12, offset:1}}><p>! No sufficient credits available to create new profile, please click on add credits to make a payment. </p><br /></Col>
-                : <Col sm={{size: 8, offset: 1}} md={{size: 12, offset: 1}} ><p>! No billing address added, please click on add billing to continue. </p><br /></Col>}
-            </Row>
-            <center>
-            <Row>
-              <Col sm={{size: 8, offset: 1}} md={{size: 8, offset: 2}}>
+              <Col sm={{ size: 8, offset: 1 }} md={{ size: 8, offset: 2 }}>
                 <Button type="button" color="info"><Link to={url} style={{ color: "black" }}> {action === userAction.ADD_BILLING ? "Add Billing" : "Add Credits"}</Link></Button> &nbsp;
                 <Button active color="light" type="button" onClick={props.handleEditProfileCancel}>Cancel</Button> &nbsp;
               </Col>
             </Row>
-            </center>
-          </>
-        }
+          </center>
+        </>
+      }
     </Col>
   </AvForm>
 }
 
 const showProfileType = (props, profileType, profileTypes) => {
   return <Row>
-    <Col sm={3}><Label style={{marginTop: 7}}>Profile Type</Label> </Col>
+    <Col sm={3}><Label style={{ marginTop: 7 }}>Profile Type</Label> </Col>
     <Col sm={8}>
       <AvField type="select" id="symbol" name="type" onChange={props.setButtonText} value={profileType}>
         {profileTypes.map((profile, key) => { return <option key={key} value={profile.type} data={profile.symbol} symbol={profile.symbol} >{`${profile.name} - ${profile.cost} per month - ${profile.description}`}</option> })}
@@ -281,7 +281,7 @@ const showProfileUpgrade = (props, profile, profileTypes) => {
   </Row><br /></>
 }
 
-const showProfileForm = (props, profile, profileName, profileTypes, currencies, currencySymbol, user, buttonMessage, userConfirmUpgrade) =>{
+const showProfileForm = (props, profile, profileName, profileTypes, currencies, currencySymbol, user, buttonMessage, userConfirmUpgrade) => {
   return <>
     <Row>
       <Col sm={3}><Label>Profile Name</Label> </Col>
@@ -291,15 +291,15 @@ const showProfileForm = (props, profile, profileName, profileTypes, currencies, 
     {((user && !user.action) && (profile && profile.upgradeTypes)) && showProfileUpgrade(props, profile, profileTypes)}
     {userConfirmUpgrade && confirmDeleteModel(props, userConfirmUpgrade)}
     <center>
-      <Row> <Col sm={{size: 8, offset: 3}} md={{size: 8, offset: 3}}  lg={{size: 8, offset: 2}} > 
+      <Row> <Col sm={{ size: 8, offset: 3 }} md={{ size: 8, offset: 3 }} lg={{ size: 8, offset: 2 }} >
         <Button color="success"> {buttonMessage} </Button>&nbsp;&nbsp;
         <Button active color="light" type="button" onClick={props.handleEditProfileCancel}>Cancel</Button>
       </Col> </Row>
-    </center> 
+    </center>
   </>
 }
 
 const confirmDeleteModel = (props, userConfirmUpgrade) => {
-  return <DeleteModel danger={userConfirmUpgrade} headerMessage="Upgrade Profile" toggleDanger={props.handleUserConfirm} delete={props.handleUpgradeProfile} 
-    bodyMessage="Upgrading a profile may incur some charges. Are you sure you want to upgrade " buttonText="Upgrade Profile" cancel={props.handleConfirmUpgrade}/>
+  return <DeleteModel danger={userConfirmUpgrade} headerMessage="Upgrade Profile" toggleDanger={props.handleUserConfirm} delete={props.handleUpgradeProfile}
+    bodyMessage="Upgrading a profile may incur some charges. Are you sure you want to upgrade " buttonText="Upgrade Profile" cancel={props.handleConfirmUpgrade} />
 }

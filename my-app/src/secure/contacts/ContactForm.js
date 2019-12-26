@@ -56,11 +56,11 @@ class ContactForm extends Component {
     event.persist();
     let { selectedCountry, selectedOption, profileId, contact, labelUpdate } = this.state;
     if (errors.length === 0) {
-      values = {...values, "country": selectedCountry}
-      var newData = { ...values, "labelIds": labelUpdate ? selectedOption.map(opt => { return opt.value }): (contact && contact.labelIds ? contact.labelIds : [] ) }
+      values = { ...values, "country": selectedCountry }
+      var newData = { ...values, "labelIds": labelUpdate ? selectedOption.map(opt => { return opt.value }) : (contact && contact.labelIds ? contact.labelIds : []) }
       if (contact) {
-        newData = {...newData, "version": contact.version }
-        new ContactApi().updateContact(this.successCall, this.errorCall, newData, this.state.profileId, contact.id );
+        newData = { ...newData, "version": contact.version }
+        new ContactApi().updateContact(this.successCall, this.errorCall, newData, this.state.profileId, contact.id);
       } else {
         await new ContactApi().createContact(this.successCall, this.errorCall, profileId, newData);
       }
@@ -88,10 +88,10 @@ class ContactForm extends Component {
     this.setState({ alertColor, alertMessage });
     if (alertMessage !== "Country is Required") {
       setTimeout(() => {
-        if(this.state.hideCancel){
+        if (this.state.hideCancel) {
           this.setState({ hideCancel: '' })
           this.props.toggleCreateModal('', true)
-        } else{
+        } else {
           if (this._isMount) {
             this.setState({ contactCreated: true });
           }
@@ -114,12 +114,12 @@ class ContactForm extends Component {
   }
 
   loadAddContact = (alertColor, alertMessage) => {
-    const {countries, labels, selectedCountry, contact, labelUpdate} = this.state;
+    const { countries, labels, selectedCountry, contact, labelUpdate } = this.state;
     let contactData = {
       countries: countries,
       labels: labels,
       selectedCountry: selectedCountry,
-      contact: contact, 
+      contact: contact,
       labelUpdate: labelUpdate
     }
     return <Card>
@@ -128,13 +128,13 @@ class ContactForm extends Component {
         {alertColor && <Alert color={alertColor}>{alertMessage}</Alert>}
         <center><h5>{!this.props.contact ? "New Contact Details" : "Contact Details"}</h5></center><br />
         <AvForm ref={refId => this.form = refId} onSubmit={this.handleSubmit}>
-          <ContactFormUI 
-            data = {contactData}
-            validateOrganization = {this.validateOrganization}
-            validateName = {this.validateName}
-            nameOrOrganization = {nameOrOrganization}
-            handleCountrySelect = {this.handleCountrySelect}
-            loadAvCollapse = {this.loadAvCollapse}
+          <ContactFormUI
+            data={contactData}
+            validateOrganization={this.validateOrganization}
+            validateName={this.validateName}
+            nameOrOrganization={nameOrOrganization}
+            handleCountrySelect={this.handleCountrySelect}
+            loadAvCollapse={this.loadAvCollapse}
           />
           <center><FormGroup row>
             <Col>
