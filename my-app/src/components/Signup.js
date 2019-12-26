@@ -20,7 +20,6 @@ class Signup extends React.Component {
     color: '',
     content: '',
     emailAlert: false,
-    emailExist: false,
     validate: {
       emailState: '',
       passwordState: ''
@@ -48,7 +47,7 @@ class Signup extends React.Component {
     const data = { name: this.state.name, email: this.state.email, password: this.state.password };
     if (!this.state.name) {
       this.callAlertTimer("danger", "Name should not be empty")
-    } else if (this.state.password.length > 5) {
+    } else if (this.state.password.length > 5) {     
       new SignupApi().registerUser(this.successCall, this.errorCall, data);
     }
   };
@@ -61,12 +60,21 @@ class Signup extends React.Component {
   //When Email Already Exists
   successCallCheck = (emailExist) => {
     const { validate } = this.state;
-    validate.emailState = 'danger'; this.setState({ emailAlert: true, emailExist });
+    validate.emailState = 'danger'; this.setState({ emailAlert: true});
+    if(emailExist){
+      this.emptyPwd();
+    }
   };
-
+  emptyPwd=()=>{
+    this.setState({password: '',validate: {passwordState: "danger", emailState:"danger"}});
+  }
   // when any internal Error occur
   errorCall = err => {
-    this.callAlertTimer("danger", "Unable to Process Request, Please try Again...");
+    if (!err.response.data && err.response.status === 400) {
+      this.callAlertTimer("danger", "Your email is alredy register with us, please login or use another email for register");
+    } else {
+      this.callAlertTimer("danger", "Unable to Process Request, Please try Again...");
+    }    
   };
 
   //if Email not exists
@@ -154,7 +162,7 @@ class Signup extends React.Component {
   }
 
   loadSignupComponent = ( emailState, passwordState, name, email, password, content, color, emailAlert) => {
-    let buttonDissabled = !this.state.emailExist || !password || (emailAlert && emailState === 'danger');
+    let buttonDissabled = !password || (emailAlert && emailState === 'danger');
     return (<div style={{ paddingTop: 50 }} className="animated fadeIn">
       <center>
         <Card style={{ width: 400, border: 0 }}>
