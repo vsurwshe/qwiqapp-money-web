@@ -51,13 +51,13 @@ class ViewPayment extends Component {
     console.log("Error: ", err);
   }
 
-  paymentSuccessCall =  (payments) => {
-    const count=payments.length;
-    if(payments){
-    this.setState({ payments });    
-    this.props.paymentCount && this.props.paymentCount(count);
+  paymentSuccessCall = (payments) => {
+    const count = payments.length;
+    if (payments) {
+      this.setState({ payments });
+      this.props.paymentCount && this.props.paymentCount(count);
+    }
   }
-}
 
   handleUpdateBillPayment = (updatePayment, currency) => {
     this.setState({ updateBillPayment: true, updatePayment, currency });
@@ -154,15 +154,15 @@ class ViewPayment extends Component {
   }
 
   // Calculate the paid amount and passing the value to add payments.
-  paidAmountCalculation = (bill, payments, paidAmount ) => {
-    let paidValue=0;
+  paidAmountCalculation = (bill, payments, paidAmount) => {
+    let paidValue = 0;
     if (payments.length && !paidAmount) {
-      payments.map((payment, index)=>{
+      payments.map((payment, index) => {
         paidValue = paidValue + payment.amount;
         return 0;
       })
       return (bill.amount - paidValue);
-    } else { 
+    } else {
       return paidAmount;
     }
   }
@@ -172,11 +172,18 @@ class ViewPayment extends Component {
   }
 
   loadSinglePayment = (payment, selectedCurrency, key, paymentAmount) => {
-    const color = payment.amount < 0 ? 'red' : 'green'
+    const color = payment.amount < 0 ? 'red' : 'green';
+    let paidAmount = '';
+    if (paymentAmount < 0) {
+      let nagativeAmount = paymentAmount.toString();
+      paidAmount = "-" + selectedCurrency[0].symbol + nagativeAmount.split("-")[1];
+    } else {
+      paidAmount = selectedCurrency[0].symbol + paymentAmount;
+    }
     return <tr width={50} key={key}>
       <td>{this.dateFormat(payment.date)}</td>
       <td>{payment.notes}</td>
-      <td style={{ color }}> {payment.type}  {selectedCurrency[0].symbol}{paymentAmount} </td>
+      <td style={{ color }}> {payment.type} {paidAmount} </td>
       <td>
         <Button style={{ backgroundColor: "transparent", borderColor: '#green', color: "green" }} onClick={() => this.handleUpdateBillPayment(payment, selectedCurrency[0].symbol)}>Edit</Button> &nbsp;
       </td>

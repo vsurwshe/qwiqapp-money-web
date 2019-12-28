@@ -50,7 +50,7 @@ class ProfileForm extends Component {
     const { value } = event.target; // value type is String, like "1", "0"
     let buttonText = "";
     const { profileTypes } = this.state
-    if (profileTypes.length) { 
+    if (profileTypes.length) {
       buttonText = await profileTypes.filter(profile => profile.type === parseInt(value));
       this.setState({ buttonText: "Create " + buttonText[0].name + " Profile", profileType: parseInt(value) })
     }
@@ -130,9 +130,8 @@ class ProfileForm extends Component {
   render() {
     const { color, content, profileCreated, cancelEditProfile, profileInfoTable, profileId } = this.state
     if (profileCreated || cancelEditProfile) {
-      if (!Store.getProfile()) { // to solve loading Sidebar. Side bar not loading while after created first profile.
-        window.location.reload();
-      }
+      // to solve loading Sidebar. Side bar not loading while after created first profile.
+      !cancelEditProfile && window.location.reload();
       return <Profiles />
     } else if (profileId) {
       return this.loadProfile(color, content, "UPDATE PROFILE")

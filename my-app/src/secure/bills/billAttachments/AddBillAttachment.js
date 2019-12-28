@@ -8,10 +8,10 @@ import { FileUploadForm, FilePreview } from '../../utility/FileUploadAction';
 ;
 
 class AddBillAttachment extends Component {
-   constructor(props){
-     super(props);
-     this.state = { }
-   }
+  constructor(props) {
+    super(props);
+    this.state = {}
+  }
 
   handleInput = (files) => {
     if (files[0].size >= 5242880) {
@@ -20,7 +20,7 @@ class AddBillAttachment extends Component {
       this.setState({ file: files[0], color: '', content: '' });
     }
   }
-  
+
   handlePostData = () => {
     const { profileId, bill } = this.props
     const { file } = this.state;
@@ -30,7 +30,7 @@ class AddBillAttachment extends Component {
       if (profileId && bill && bill.id) {
         this.setState({ doubleClick: false });
         new BillAttachmentsApi().createBillAttachment(this.successCall, this.errorCall, profileId, bill.id, reader);
-      } 
+      }
     } else {
       this.callAlertTimer('danger', "Please select a file to upload");
     }
@@ -46,7 +46,7 @@ class AddBillAttachment extends Component {
   }
 
   errorCall = (err) => {
-    if ( err.response && err.response.status === 500) {
+    if (err.response && err.response.status === 500) {
       if (err.response.data && err.response.data.error.debugMessage) {
         this.callAlertTimer('danger', "You can not add this file, please try another file");
       } else {
@@ -61,39 +61,39 @@ class AddBillAttachment extends Component {
     this.setState({ color, content })
     if (color === 'success') {
       setTimeout(() => {
-        this.setState({ color: '', content: ''});
+        this.setState({ color: '', content: '' });
         this.props.cancel()
       }, Config.apiTimeoutMillis)
     }
   }
 
   render() {
-      return this.loadAddAttachment();
+    return this.loadAddAttachment();
   }
 
   loadAddAttachment = () => {
     const { color, content } = this.state
     return <>
-        {ShowServiceComponent.loadHeader("ADD ATTACHMENT")}
-        <CardBody>
-          {color && <Alert color={color} >{content}</Alert>}
-          <Col md={{ size: 12, offset: 3 }} className="files">
-            <AvForm onSubmit={this.handlePostData}>
-            <FileUploadForm handleInput={this.handleInput}/>
-             <br />
-              <FormGroup>
-                <Button color="info" disabled={this.state.doubleClick} > Upload </Button> &nbsp;&nbsp;
+      {ShowServiceComponent.loadHeader("ADD ATTACHMENT")}
+      <CardBody>
+        {color && <Alert color={color} >{content}</Alert>}
+        <Col md={{ size: 12, offset: 2 }} className="files">
+          <AvForm onSubmit={this.handlePostData}>
+            <FileUploadForm handleInput={this.handleInput} />
+            <br />
+            <FormGroup>
+              <Button color="info" disabled={this.state.doubleClick} > Upload </Button> &nbsp;&nbsp;
                 <Button active color="light" type="button" onClick={this.props.cancel} >Cancel</Button>
-              </FormGroup>
-            </AvForm>
-            {this.state.file && this.displayFile()}
-          </Col>
-        </CardBody>
+            </FormGroup>
+          </AvForm>
+          {this.state.file && this.displayFile()}
+        </Col>
+      </CardBody>
     </>
   }
 
   displayFile = () => {
-    const {file} = this.state
+    const { file } = this.state
     return <FilePreview file={file} />
   }
 }

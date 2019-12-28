@@ -28,9 +28,9 @@ class Signup extends React.Component {
 
   //This method sets the input fields value into state variable
   handleInput = e => {
-    if(e.target.name==="email"){
+    if (e.target.name === "email") {
       this.validateEmail(e);
-    } else if(e.target.name==="password"){
+    } else if (e.target.name === "password") {
       this.validatePassword(e);
     }
     this.setState({ [e.target.name]: e.target.value });
@@ -58,14 +58,23 @@ class Signup extends React.Component {
   };
 
   //When Email Already Exists
-  successCallCheck = () => {
+  successCallCheck = (emailExist) => {
     const { validate } = this.state;
     validate.emailState = 'danger'; this.setState({ emailAlert: true });
+    if (emailExist) {
+      this.emptyPwd();
+    }
   };
-
+  emptyPwd = () => {
+    this.setState({ password: '', validate: { passwordState: "danger", emailState: "danger" } });
+  }
   // when any internal Error occur
   errorCall = err => {
-    this.callAlertTimer("danger", "Unable to Process Request, Please try Again...");
+    if (err && err.response && !err.response.data && err.response.status === 400) {
+      this.callAlertTimer("danger", "Your email is alredy register with us, please login or use another email to register");
+    } else {
+      this.callAlertTimer("danger", "Unable to Process Request, Please try Again...");
+    }
   };
 
   //if Email not exists
@@ -119,7 +128,7 @@ class Signup extends React.Component {
   }
 
   handleFocusOutEvent = () => {
-    new SignupApi().existsUser(this.successCallCheck, this.errorCallCheck, {email: this.state.email});
+    new SignupApi().existsUser(this.successCallCheck, this.errorCallCheck, { email: this.state.email });
   }
   render() {
     const { emailState, passwordState } = this.state.validate
@@ -138,7 +147,7 @@ class Signup extends React.Component {
       );
     }
     else if (flag) {
-      return <div>{this.loadSignupComponent( emailState, passwordState, name, email, password, content, color, emailAlert)}</div>
+      return <div>{this.loadSignupComponent(emailState, passwordState, name, email, password, content, color, emailAlert)}</div>
     } else {
       return (
         <Container style={{ paddingTop: "20%" }} className="App" >
@@ -152,7 +161,8 @@ class Signup extends React.Component {
     }
   }
 
-  loadSignupComponent = ( emailState, passwordState, name, email, password, content, color, emailAlert) => {
+  loadSignupComponent = (emailState, passwordState, name, email, password, content, color, emailAlert) => {
+    let buttonDissabled = !password || (emailAlert && emailState === 'danger');
     return (<div style={{ paddingTop: 50 }} className="animated fadeIn">
       <center>
         <Card style={{ width: 400, border: 0 }}>
@@ -168,7 +178,7 @@ class Signup extends React.Component {
             <FormGroup className="row-text-align">
               <Label for="Email">Email <span className="text-color">*</span></Label>
               <Input name="email" type="email" placeholder="Your Email" value={email} valid={emailState === 'success'}
-                invalid={emailState === 'danger'} onChange={e => { this.handleInput(e)}} onBlur={this.handleFocusOutEvent} />
+                invalid={emailState === 'danger'} onChange={e => { this.handleInput(e) }} onBlur={this.handleFocusOutEvent} />
               <FormFeedback > {emailAlert ? "Email already Exists, try another Email..." : "Uh oh! Incorrect email"}
               </FormFeedback>
             </FormGroup>
@@ -179,7 +189,7 @@ class Signup extends React.Component {
               <FormFeedback > Password length must be more then 5 characters </FormFeedback>
             </FormGroup>
             <center>
-              <Button color="info" disabled={!password || (emailAlert && emailState === 'danger')} onClick={e => this.handleSubmit(e)}> Signup </Button>
+              <Button color="info" disabled={buttonDissabled} onClick={e => this.handleSubmit(e)}> Signup </Button>
               <CardBody>
                 <span> I already have an Account. </span>
                 <Link to="/login"> Login Now </Link>
