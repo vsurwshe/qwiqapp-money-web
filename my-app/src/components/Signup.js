@@ -70,8 +70,8 @@ class Signup extends React.Component {
   }
   // when any internal Error occur
   errorCall = err => {
-    if (!err.response.data && err.response.status === 400) {
-      this.callAlertTimer("danger", "Your email is alredy register with us, please login or use another email for register");
+    if (err && err.response && !err.response.data && err.response.status === 400) {
+      this.callAlertTimer("danger", "Your email is alredy register with us, please login or use another email to register");
     } else {
       this.callAlertTimer("danger", "Unable to Process Request, Please try Again...");
     }
