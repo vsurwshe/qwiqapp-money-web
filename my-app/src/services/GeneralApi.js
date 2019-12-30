@@ -30,17 +30,18 @@ async function process(successCall, failureCall, requestUrl, requestMethod, relo
   }
 }
 
-function handleAccessTokenError(err, success, failure, Uurl, Umethod, reload) {
-  if (err.request.status === 0) {
-    errorResponse(err, failure)
-  } else if (err.response.status === 401 || err.response.status === 403) {
+function handleAccessTokenError(error, success, failure, Uurl, Umethod, reload) {
+  const {request, response} = error ? error : ''
+  if (request && request.status === 0) {
+    errorResponse(error, failure)
+  } else if (response && (response.status === 401 || response.status === 403)) {
     if (!reload) {
-      new LoginApi().refresh(() => process(success, failure, Uurl, Umethod, "reload"), errorResponse(err, failure))
+      new LoginApi().refresh(() => process(success, failure, Uurl, Umethod, "reload"), errorResponse(error, failure))
     } else {
-      errorResponse(err, failure);
+      errorResponse(error, failure);
     }
   } else {
-    errorResponse(err, failure)
+    errorResponse(error, failure)
   }
 }
 
