@@ -25,17 +25,18 @@ async function process(success, failure, requestUrl, requestMethod, data, reload
     data === null ? promise = await HTTP.request() : promise = await HTTP.request({ data });
     Store.saveUser(promise.data)
     validResponse(promise, success)
-  } catch (err) {
-    handleAccessTokenError(err, failure, requestUrl, requestMethod, data, success, reload);
+  } catch (error) {
+    handleAccessTokenError(error, failure, requestUrl, requestMethod, data, success, reload);
   }
 }
 
 //this method solve the Expire Token Problem.
 let handleAccessTokenError = function (err, failure, requestUrl, requestMethod, data, success, reload) {
-  if (err.request.status === 0) {
+  const {request, response} = err ? err : '';
+  if (request && request.status === 0) {
     errorResponse(err, failure)
-  } else if (err.response.status === 403 || err.response.status === 401) {
-    if (err.response["data"].error.debugMessage) {
+  } else if (response && (response.status === 403 || response.status === 401)) {
+    if (response.data && response.data.error && response.data.error.debugMessage) {
       errorResponse("Wrong password supplied.", failure)
     } else {
       if (!reload) {

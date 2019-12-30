@@ -15,24 +15,26 @@ function process(success, failure, requestUrl, requestMethod, reload) {
   try {
     promise = HTTP.request();
     validResponse(promise, success)
-  } catch (err) {
-    handleAccessTokenError(err, failure, requestUrl, requestMethod, success, reload);
+  } catch (error) {
+    handleAccessTokenError(error, failure, requestUrl, requestMethod, success, reload);
   }
 }
 
-let handleAccessTokenError = function (err, failure, requestUrl, requestMethod, success, reload) {
-  if (err.response.status === 403 || err.response.status === 401) {
-    if (err.response["data"].error.debugMessage) {
-      errorResponse(err, failure)
+let handleAccessTokenError = function (error, failure, requestUrl, requestMethod, success, reload) {
+  const {response} = error && error.response;
+  const {status, data} = response ? response : ''
+  if (status === 403 || status === 401) {
+    if (data && data.error && data.error.debugMessage) {
+      errorResponse(error, failure)
     } else {
       if (!reload) {
-        new LoginApi().refresh(() => { process(success, failure, requestUrl, requestMethod, "ristrict") }, errorResponse(err, failure))
+        new LoginApi().refresh(() => { process(success, failure, requestUrl, requestMethod, "ristrict") }, errorResponse(error, failure))
       } else {
-        errorResponse(err, failure);
+        errorResponse(error, failure);
       }
     }
   } else {
-    errorResponse(err, failure);
+    errorResponse(error, failure);
   }
 }
 
