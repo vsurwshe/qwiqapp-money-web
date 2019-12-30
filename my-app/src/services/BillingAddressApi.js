@@ -1,42 +1,47 @@
-import Axios from "axios";
 import Store from "../data/Store";
 import LoginApi from "./LoginApi";
 import Config from "../data/Config";
+import AbstractApi from "./AbstractApi";
 
-class BillingAddressApi {
+class BillingAddressApi extends AbstractApi {
+
+    loginApi = null;
+    init() {
+        this.loginApi = new LoginApi();
+    }
+
     createBillingAddress(success, failure, data) {
-        process(success, failure, "/billing/address", "POST", data)
+        this.process(success, failure, "/billing/address", "POST", data)
     }
 
     getBillings(success, failure) {
-        process(success, failure, "/billing/address", "GET")
+        this.process(success, failure, "/billing/address", "GET")
     }
 
     getBillingItems(success, failure) {
-        process(success, failure, "/billing/items", "GET")
+        this.process(success, failure, "/billing/items", "GET")
     }
 
     getPaymentsHistory(success, failure) {
-        process(success, failure, "/billing/payments", "GET",null,null,"payments")
+        this.process(success, failure, "/billing/payments", "GET", null, null, "payments")
     }
-}
-export default BillingAddressApi;
 
-async function process(success, failure, apiPath, requestMethod, data, reload, payments) {
-    let HTTP = httpCall(apiPath, requestMethod);
+async process(success, failure, apiPath, requestMethod, data, reload, payments) {
+    const baseUrl = Config.settings().cloudBaseURL;
+    let HTTP = this.httpCall(apiPath, requestMethod, baseUrl);
     let promise;
     if (HTTP) {
         try {
             data ?  promise = await HTTP.request({ data }) : promise = await HTTP.request();
             requestMethod === "GET" ?  validResponse(promise.data, success, payments) : validResponse(data, success, payments)
         } catch (error) {
-            handleAccessTokenError(error, failure, apiPath, requestMethod, data, success, reload);
+            this.handleAccessTokenError(error, failure, apiPath, requestMethod, data, success, reload);
         }
     }
 }
 
 //this method slove the Exprie Token Problem.
-let handleAccessTokenError = function (error, failure, apiPath, requestMethod, data, success, reload) {
+ handleAccessTokenError (error, failure, apiPath, requestMethod, data, success, reload) {
     const request = error && error.request ? error.request : '';
     const response = error && error.response ? error.response : '';
     if (request && request.status === 0 && !response) {
@@ -44,20 +49,22 @@ let handleAccessTokenError = function (error, failure, apiPath, requestMethod, d
     } else if (response && (response.status === 403 || response.status === 401)) {
         // This condtions restrict calling of api after geting 403 or 401 Error
         if (!reload) {
-            new LoginApi().refresh(() => { process(success, failure, apiPath, requestMethod, data, "restrict") }, ()=>{errorResponse(error, failure)});
+            this.loginApi.refresh(() => { this.process(success, failure, apiPath, requestMethod, data, true) }, ()=>{errorResponse(error, failure)});
         } 
     } else {
         errorResponse(error, failure)
     }
 }
+}
+export default BillingAddressApi;
 
-let validResponse =  function (response, successMethod, payments) {
+let validResponse = function (response, successMethod, payments) {
     if (successMethod != null) {
         // This condtion checking whether calling address api or payment api.   
-        if(payments!=="payments") {
+        if (payments !== "payments") {
             Store.saveBillingAddress(response);
             successMethod(response);
-        }else{
+        } else {
             successMethod(response);
         }
     }
@@ -76,20 +83,3 @@ let errorResponse = async function (error, failure) {
         failure(error);
     }
 };
-
-function httpCall(apiPath, requestMethod) {
-    let url = Config.settings();
-    let instance = null;
-    if (url) {
-        instance = Axios.create({
-            baseURL: url.cloudBaseURL,
-            method: requestMethod,
-            url: apiPath,
-            headers: {
-                "content-type": "application/json",
-                Authorization: "Bearer " + Store.getAppUserAccessToken()
-            }
-        });
-    }
-    return instance;
-}
