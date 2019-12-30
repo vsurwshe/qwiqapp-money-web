@@ -55,27 +55,29 @@ async function process(success, failure, requestUrl, requestMethod, data, delete
           } else { // Calling getprofiles for updated changes to show
             await new ProfileApi().getProfiles(success, failure, true);
           }
-        }, (err) => errorResponse(err, failure))
+        }, (error) => errorResponse(error, failure))
       }else{
         await new ProfileApi().getProfiles(success, failure, true);
       }
     }
-  } catch (err) {
-    handleAccessTokenError(err, failure, requestUrl, requestMethod, data, deleteId, success, profileId, reload);
+  } catch (error) {
+    handleAccessTokenError(error, failure, requestUrl, requestMethod, data, deleteId, success, profileId, reload);
   }
 }
 
 //this method solve the Expire Token Problem.
-let handleAccessTokenError = function (err, failure, requestUrl, requestMethod, data, deleteId, success, profileId, reload) {
-  if (err.request && err.request.status === 0) {
-    errorResponse(err, failure)
-  } else if (err.response.status === 403 || err.response.status === 401) {
+let handleAccessTokenError = function (error, failure, requestUrl, requestMethod, data, deleteId, success, profileId, reload) {
+  const {request, response} = error ? error : ''
+  const {status} = response ? response.status : '';
+  if (request && request.status === 0) {
+    errorResponse(error, failure)
+  } else if (status === 403 || status === 401) {
     if (!reload) {
-      new LoginApi().refresh(() => { process(success, failure, requestUrl, requestMethod, data, deleteId, profileId, "reload") }, errorResponse(err, failure))
+      new LoginApi().refresh(() => { process(success, failure, requestUrl, requestMethod, data, deleteId, profileId, "reload") }, errorResponse(error, failure))
     } else {
-      errorResponse(err, failure)
+      errorResponse(error, failure)
     }
-  } else { errorResponse(err, failure) }
+  } else { errorResponse(error, failure) }
 }
 
 let validResponse = async function (resp, successMethod, requestMethod, deleteId) {

@@ -189,7 +189,8 @@ class ProfileForm extends Component {
   }
 
   upgradeErrorCall = (error) => {
-    if (error.response.status === 400 && !error.response.data) {
+    const {response} = error && error.response
+    if (response && response.status === 400 && !response.data) {
       this.callAlertTimer("danger", "Your credits are low, please add more credits", true);
     } else {
       this.callAlertTimer("danger", "Unable to process your request", true);
