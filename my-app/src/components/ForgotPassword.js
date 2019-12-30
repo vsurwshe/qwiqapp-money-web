@@ -66,7 +66,7 @@ class ForgotPassword extends Component {
 
   resetErrorCall = (error) => {
     this.setState({ disableDoubleClick: false });
-    const response = error && error.response ? error.response : '';
+    const response = error && error.response;
     if(response){
       const status = response ? response.status : '';
       if (status === 400) {

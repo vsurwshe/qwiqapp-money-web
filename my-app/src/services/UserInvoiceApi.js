@@ -21,8 +21,8 @@ function process(success, failure, requestUrl, requestMethod, reload) {
 }
 
 let handleAccessTokenError = function (error, failure, requestUrl, requestMethod, success, reload) {
-  const {response} = error && error.response;
-  const {status, data} = response ? response : ''
+  const response = error && error.response;
+  const {data, status} = response && response;
   if (status === 403 || status === 401) {
     if (data && data.error && data.error.debugMessage) {
       errorResponse(error, failure)
