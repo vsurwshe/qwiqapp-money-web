@@ -85,8 +85,13 @@ class EditBillingAddress extends Component {
   }
 
   //this handle the error response the when api calling
-  errorCall = err => {
-    this.props.dispatch(handleApiResponseMsg('Unable to process, Please try Again....', 'danger', true))
+  errorCall = error => {
+    let response = error && error.response;
+    if (response) {
+      this.props.dispatch(handleApiResponseMsg('Unable to process, please try again....', 'danger', true))
+    } else {
+      this.props.dispatch(handleApiResponseMsg('please check with your network', 'danger', true))
+    }
   };
 
   //this method Notifies the user after every request
@@ -113,13 +118,13 @@ class EditBillingAddress extends Component {
   loadCreatingBill = () => {
     // This line get billing address from redux store
     const { billingAddress:updateBill } = this.props.biliing;
-    const { color, message, countries  } = this.props.utility;
+    const { alertMessage, alertColor, countries  } = this.props.utility;
     const placeholderStyle = { color: '#000000', fontSize: '1.0em', }
     const labelPaddingTop = {marginTop: 5}
     return <div className="animated fadeIn" >
       <Card>
         <h4 className="padding-top"><b><center> BILLING ADDRESS</center></b></h4> <br />
-        {color && <Alert color={color}>{message}</Alert>}
+        {alertMessage && <Alert color={alertColor}>{alertMessage}</Alert>}
         {updateBill && <Col >
           <AvForm ref={refId => this.form = refId} onSubmit={this.handleSubmitValue}>
             <Row>
