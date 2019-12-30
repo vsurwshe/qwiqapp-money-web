@@ -37,7 +37,7 @@ let handleAccessTokenError = function (err, failure, requestUrl, requestMethod, 
     errorResponse(err, failure)
   } else if (response && (response.status === 403 || response.status === 401)) {
     if (response.data && response.data.error && response.data.error.debugMessage) {
-      errorResponse("Wrong password supplied.", failure)
+      errorResponse(err, failure)
     } else {
       if (!reload) {
         new LoginApi().refresh(() => { process(success, failure, requestUrl, requestMethod, data, "reload") }, errorResponse(err, failure))

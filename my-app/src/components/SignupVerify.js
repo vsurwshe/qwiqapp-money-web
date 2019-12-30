@@ -33,8 +33,16 @@ class SignupVerify extends Component {
     this.callAlertTimer("info", 'Code resent, please check your email now ...')
   }
 
-  errorCall = err => {
-    this.callAlertTimer("danger", "Unable to process, Please Re-Enter your Verification code Again....")
+  errorCall = error => {
+    const response = error && error.response;
+    console.log(response);
+    // const response = error && error.response ? error.response : '';
+    if (response) {
+      this.callAlertTimer("danger", "Unable to process, please re-enter your verification code Again....")
+    } else {
+      this.callAlertTimer("danger", "please check with your network")
+    }
+    
   }
 
   callAlertTimer = (color, content) => {

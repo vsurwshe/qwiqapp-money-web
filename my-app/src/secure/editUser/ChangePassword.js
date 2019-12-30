@@ -32,10 +32,11 @@ class ChangePassword extends Component {
 
     changePwdError = (error) => {
         this.setState({ doubleClick: false })
-        if (error !== 'Wrong password supplied.') {
-            this.callAlert("warning", "Unable to process request, Please Try again")
+        const data = error && error.response && error.response.data;
+        if ( data && data.error && data.error.debugMessage) {
+            this.callAlert("danger", "You entered wrong password, please enter correct password");
         } else {
-            this.callAlert("danger", "You entered wrong password, Please Enter correct password")
+            this.callAlert("warning", "Unable to process request, please try again")
         }
     }
 

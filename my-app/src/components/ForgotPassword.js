@@ -39,11 +39,17 @@ class ForgotPassword extends Component {
   // when any internal Error occur
   errorCall = error => {
     this.setState({ disableDoubleClick: false });
-    if(error && error.response && error.response.status === 500) {
-      this.callAlertTimer("success", "Thank You! You should receive an email with the reset code, if its valid .... ")
+    const response = error && error.response;
+    if (response) {
+      if(response.status === 500) {
+        this.callAlertTimer("success", "Thank You! You should receive an email with the reset code, if its valid .... ")
+      } else {
+        this.setState({forgotPassword : false})
+        this.callAlertTimer("danger", "Unable to process request, please try again...");
+      } 
     } else {
       this.setState({forgotPassword : false})
-      this.callAlertTimer("danger", "Unable to process request, Please try again...");
+      this.callAlertTimer("danger", "Please check with your network")
     }
   };
 
@@ -60,16 +66,18 @@ class ForgotPassword extends Component {
 
   resetErrorCall = (error) => {
     this.setState({ disableDoubleClick: false });
-    const {response} = error ? error.response : '';
+    const response = error && error.response ? error.response : '';
     if(response){
-      const {status} = response ? response.status : '';
+      const status = response ? response.status : '';
       if (status === 400) {
       this.callAlertTimer("danger", "Expired activation code, already verified or not existing !")
-    } else if (status === 500) {
-      this.callAlertTimer("danger", "Incorrect email, please check your email and try Again ....")
-    }
-   } else {
-      this.callAlertTimer("danger", "Unable to process request at the moment, please try again ...")
+      } else if (status === 500) {
+        this.callAlertTimer("danger", "Incorrect email, please check your email and try Again ....")
+      } else {
+        this.callAlertTimer("danger", "Unable to process request at the moment, please try again ...")
+      }
+    } else {
+      this.callAlertTimer("danger", "Please check with your network")
     }
   }
 
