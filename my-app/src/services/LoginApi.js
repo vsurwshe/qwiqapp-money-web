@@ -1,8 +1,10 @@
 import axios from "axios";
 import Config from "../data/Config";
 import Store from "../data/Store";
+import AbstractApi from "./AbstractApi";
 
-class LoginApi {
+class LoginApi extends AbstractApi{
+
   login(username, password, success, failure) {
     let params = {
       grant_type: "password",
@@ -29,7 +31,7 @@ export default LoginApi;
 let process = function (params, success, failure) {
   let promise = HTTP.request({ params: params })
     .then(resp => validResponse(resp, success, params))
-    .catch(error => { errorResponse(error, failure); });
+    .catch(error => { this.errorResponse(error, failure); });
   console.log(promise)
 };
 
@@ -37,12 +39,6 @@ let validResponse = function (resp, successMethod, params) {
   if (params.username === "dummy@email.com") { Store.saveDummyUserAccessToken(resp.data.access_token, resp.data.refresh_token); }
   else { Store.saveAppUserAccessToken(resp.data.access_token, resp.data.refresh_token, resp.data.expires_in); }
   if (successMethod != null) { successMethod(); }
-};
-
-let errorResponse = function (error, failure) {
-  if (failure != null) {
-    failure();
-  }
 };
 
 let HTTP = axios.create({
