@@ -54,7 +54,14 @@ class Profiles extends Component {
     }
   };
 
-  errorCall = err => { this.setState({ visible: true }); console.log("Internal Server Error", err) }
+  errorCall = error => { 
+    this.setState({ visible: true }); 
+    if (error && error.response) {
+      this.callAlertTimer("danger", "Unable to process your request", true);
+    } else {
+      this.callAlertTimer("danger", "please check with your network");
+    }
+  }
 
   updateProfile = (profileId, profileName) => {
     this.setState({ profileId, profileName, updateProfile: true, })
@@ -144,7 +151,7 @@ class Profiles extends Component {
   }
 
   loadSpinner = () => {
-    return ShowServiceComponent.loadSpinnerAction('Profiles', 'Unable to Process your Request, please try Again...', this.callCreateProfile, '+ Create Profile');
+    return ShowServiceComponent.loadSpinnerAction('Profiles', this.state.alertMessage, this.callCreateProfile, '+ Create Profile', this.state.visible);
   }
 
   //if one or more profile is there then this method Call

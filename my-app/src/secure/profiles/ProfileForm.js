@@ -42,7 +42,11 @@ class ProfileForm extends Component {
   }
 
   errorCallById = (error) => {
-    console.log(error);
+    if (error && error.response) {
+      this.callAlertTimer("danger", "Unable to process request, please try again ...");
+    } else {
+      this.callAlertTimer("danger", "Please check with your network");
+    }
   }
 
   // Set button text according to user (selected profile type)
@@ -72,30 +76,35 @@ class ProfileForm extends Component {
       if (action !== userAction.VERIFY_EMAIL) {
         new ProfileApi().createProfile(this.successCall, (err) => { this.errorCall(err, data.type) }, { ...data, type: profileType });
       } else {
-        this.callAlertTimer("danger", "First Please verify with the code sent to your Email.....")
+        this.callAlertTimer("danger", "First please verify with the code sent to your Email..")
       }
     }
   };
 
   successCall = () => {
     if (this.state.profileId) {
-      this.callAlertTimer("success", "Profile Updated Successfully!!");
+      this.callAlertTimer("success", "Profile updated successfully!!");
     } else {
-      this.callAlertTimer("success", "New Profile Created!!");
+      this.callAlertTimer("success", "New profile created!!");
     }
   }
 
   errorCall = (error, profileType) => {
-    if (profileType) {
-      this.callAlertTimer("danger", "You need to purchase credits to create these Profiles, For more info View Feature Comparision.....");
-    } else if (Store.getProfile() !== null) {
-      if (this.state.profileId) {
-        this.callAlertTimer("danger", "Unable to process request, Please Try Again ...");
+    let response = error && error.response;
+    if (response) {
+      if (profileType) {
+        this.callAlertTimer("danger", "You need to purchase credits to create these Profiles, For more info View Feature Comparision.....");
+      } else if (Store.getProfile() !== null) {
+        if (this.state.profileId) {
+          this.callAlertTimer("danger", "Unable to process request, please try again ...");
+        } else {
+          this.callAlertTimer("danger", "Sorry, You can't create another profile.....");
+        }
       } else {
-        this.callAlertTimer("danger", "Sorry, You can't create another Profile.....");
+        this.callAlertTimer("danger", "Unable to process request, please try again ...");
       }
     } else {
-      this.callAlertTimer("danger", "Unable to process request, Please Try Again ...");
+      this.callAlertTimer("danger", "Please check with your network");
     }
   };
 
