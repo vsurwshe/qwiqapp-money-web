@@ -36,7 +36,6 @@ class AbstractApi {
       successMethod(resp.data);
     }
   };
-
   errorResponse(error, failure) {
     if (failure != null) {
       failure(error);
