@@ -3,7 +3,7 @@ import Axios from "axios";
 
 class AbstractApi {
 
-  profileHttpCall(requestURL, requestMethod, baseUrl) {
+  httpCall(requestURL, requestMethod, baseUrl) {
     let instance = null;
     if (baseUrl !== null) {
       instance = Axios.create({

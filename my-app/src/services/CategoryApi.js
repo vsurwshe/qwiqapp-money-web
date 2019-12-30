@@ -34,7 +34,7 @@ class CategoryApi extends AbstractApi {
   async process(success, failure, Uurl, Umethod, profileId, data, reload) {
     const profile = Store.getProfile();
     const baseUrl = profile.url + "/profile/";
-    let HTTP = this.profileHttpCall(Uurl, Umethod, baseUrl);
+    let HTTP = this.httpCall(Uurl, Umethod, baseUrl);
     let promise;
     try {
       !data ? promise = await HTTP.request() : promise = await HTTP.request({ data })

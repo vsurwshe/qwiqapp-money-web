@@ -40,7 +40,7 @@ class BillApi extends AbstractApi {
   async process(success, failure, requestURL, requestMethod, profileId, data, reload, billId) {
     const profile = Store.getProfile();
     const baseUrl = profile.url + "/profile/";
-    let HTTP = this.profileHttpCall(requestURL, requestMethod, baseUrl);
+    let HTTP = this.httpCall(requestURL, requestMethod, baseUrl);
     let promise;
     try {
       !data ? promise = await HTTP.request() : promise = await HTTP.request({ data });
