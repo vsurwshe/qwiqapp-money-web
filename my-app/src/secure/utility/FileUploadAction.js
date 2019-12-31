@@ -1,14 +1,12 @@
 import React, { Fragment } from 'react';
-import { Row, Button } from 'reactstrap';
+import { Row } from 'reactstrap';
 import { FaFile } from "react-icons/fa";
 import Files from 'react-files';
 
 export const FileUploadForm = (props) => < Fragment>
-  <span> supported files (<b>Ex: </b> image/*, audio/*, video/mp4, text, .pdf, .xlsx, .docx, .doc) </span>
-  <Files accepts={['image/*', 'audio/*', 'video/mp4', 'text/*', '.pdf', '.xlsx', '.docx', '.doc']}
-    onChange={props.handleInput} multiple={false} clickable >
-    <Button color="link"><u>click here</u></Button> to upload a file
-  </Files>
+  <p> supported files (<b>Ex: </b> image/*, audio/*, video/mp4, text, .pdf, .xlsx, .docx, .doc) </p>
+  <Files onChange={props.handleInput} accepts={['image/*', 'audio/*', 'video/mp4', 'text/*', '.pdf', '.xlsx', '.docx', '.doc']} 
+    multiple={false} clickable > <u>click here</u> to upload a file </Files>
 </Fragment>
 
 export const FilePreview = (props) => {
