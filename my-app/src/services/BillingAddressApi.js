@@ -35,7 +35,8 @@ async function process(success, failure, apiPath, requestMethod, data, reload, p
 
 //this method slove the Exprie Token Problem.
 let handleAccessTokenError = function (error, failure, apiPath, requestMethod, data, success, reload) {
-    const {request, response} = error ? error : ''
+    const request = error && error.request;
+    const response = error && error.response;
     if (request && request.status === 0 && !response) {
         errorResponse(error, failure);
     } else if (response && (response.status === 403 || response.status === 401)) {

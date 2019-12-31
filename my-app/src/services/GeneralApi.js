@@ -31,7 +31,8 @@ async function process(successCall, failureCall, requestUrl, requestMethod, relo
 }
 
 function handleAccessTokenError(error, success, failure, Uurl, Umethod, reload) {
-  const {request, response} = error ? error : ''
+  const request = error && error.request;
+  const response = error && error.response;
   if (request && request.status === 0) {
     errorResponse(error, failure)
   } else if (response && (response.status === 401 || response.status === 403)) {
