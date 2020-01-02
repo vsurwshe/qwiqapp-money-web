@@ -102,7 +102,7 @@ class Profiles extends Component {
   }
 
   upgradeErrorCall = (error) => {
-    const response = error && error.response;
+    const response = error && error.response ? error.response : '';
     if (response && response.status === 400 && !response.data) {
       this.callAlertTimer("danger", "Your credits are low, please add more credits", true);
     } else {

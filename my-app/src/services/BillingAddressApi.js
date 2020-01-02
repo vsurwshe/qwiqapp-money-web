@@ -25,18 +25,20 @@ export default BillingAddressApi;
 async function process(success, failure, apiPath, requestMethod, data, reload, payments) {
     let HTTP = httpCall(apiPath, requestMethod);
     let promise;
-    try {
-        data ?  promise = await HTTP.request({ data }) : promise = await HTTP.request();
-        requestMethod === "GET" ?  validResponse(promise.data, success, payments) : validResponse(data, success, payments)
-    } catch (error) {
-        handleAccessTokenError(error, failure, apiPath, requestMethod, data, success, reload);
+    if (HTTP) {
+        try {
+            data ?  promise = await HTTP.request({ data }) : promise = await HTTP.request();
+            requestMethod === "GET" ?  validResponse(promise.data, success, payments) : validResponse(data, success, payments)
+        } catch (error) {
+            handleAccessTokenError(error, failure, apiPath, requestMethod, data, success, reload);
+        }
     }
 }
 
 //this method slove the Exprie Token Problem.
 let handleAccessTokenError = function (error, failure, apiPath, requestMethod, data, success, reload) {
-    const request = error && error.request;
-    const response = error && error.response;
+    const request = error && error.request ? error.request : '';
+    const response = error && error.response ? error.response : '';
     if (request && request.status === 0 && !response) {
         errorResponse(error, failure);
     } else if (response && (response.status === 403 || response.status === 401)) {
@@ -62,7 +64,7 @@ let validResponse =  function (response, successMethod, payments) {
 };
 
 let errorResponse = async function (error, failure) {
-    let response = error && error.response;
+    let response = error && error.response ? error.response : '';
     if (response && response.status === 500) {
         const {status, data} = response;
         let errorData = {
@@ -76,14 +78,18 @@ let errorResponse = async function (error, failure) {
 };
 
 function httpCall(apiPath, requestMethod) {
-    let instance = Axios.create({
-        baseURL: Config.settings().cloudBaseURL,
-        method: requestMethod,
-        url: apiPath,
-        headers: {
-            "content-type": "application/json",
-            Authorization: "Bearer " + Store.getAppUserAccessToken()
-        }
-    });
+    let url = Config.settings();
+    let instance = null;
+    if (url) {
+        instance = Axios.create({
+            baseURL: url.cloudBaseURL,
+            method: requestMethod,
+            url: apiPath,
+            headers: {
+                "content-type": "application/json",
+                Authorization: "Bearer " + Store.getAppUserAccessToken()
+            }
+        });
+    }
     return instance;
 }

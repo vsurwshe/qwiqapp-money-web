@@ -47,7 +47,7 @@ class BillingInfo extends Component {
   }
 
   errorcall = (error) => {
-    let response = error && error.response;
+    let response = error && error.response ? error.response : '';
     if (response) {
       this.props.dispatch(handleApiResponseMsg('Unable to process, please try again....', 'danger', true))
     } else {

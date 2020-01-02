@@ -12,17 +12,19 @@ export class UserInvoiceApi {
 function process(success, failure, requestUrl, requestMethod, reload) {
   let HTTP = httpCall(requestUrl, requestMethod);
   let promise;
-  try {
-    promise = HTTP.request();
-    validResponse(promise, success)
-  } catch (error) {
-    handleAccessTokenError(error, failure, requestUrl, requestMethod, success, reload);
+  if (HTTP) {
+    try {
+      promise = HTTP.request();
+      validResponse(promise, success)
+    } catch (error) {
+      handleAccessTokenError(error, failure, requestUrl, requestMethod, success, reload);
+    }
   }
 }
 
 let handleAccessTokenError = function (error, failure, requestUrl, requestMethod, success, reload) {
-  const response = error && error.response;
-  const {data, status} = response && response;
+  const response = error && error.response ? error.response : '';
+  const {data, status} = response ? response : '';
   if (status === 403 || status === 401) {
     if (data && data.error && data.error.debugMessage) {
       errorResponse(error, failure)
@@ -46,14 +48,18 @@ let errorResponse = function (error, failure) {
 }
 
 function httpCall(requestUrl, requestMethod) {
-  let instance = Axios.create({
-    baseURL: Config.settings().cloudBaseURL,
-    method: requestMethod,
-    url: requestUrl,
-    headers: {
-      "content-type": "application/json",
-      Authorization: "Bearer " + Store.getAppUserAccessToken()
-    }
-  });
+  let configUrl = Config.settings();
+  let instance = null;
+  if (configUrl) {
+    instance = Axios.create({
+      baseURL: configUrl.cloudBaseURL,
+      method: requestMethod,
+      url: requestUrl,
+      headers: {
+        "content-type": "application/json",
+        Authorization: "Bearer " + Store.getAppUserAccessToken()
+      }
+    });
+  }
   return instance;
 }

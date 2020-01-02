@@ -21,19 +21,21 @@ export default UserApi;
 async function process(success, failure, requestUrl, requestMethod, data, reload) {
   let HTTP = httpCall(requestUrl, requestMethod);
   let promise;
-  try {
-    data === null ? promise = await HTTP.request() : promise = await HTTP.request({ data });
-    Store.saveUser(promise.data)
-    validResponse(promise, success)
-  } catch (error) {
-    handleAccessTokenError(error, failure, requestUrl, requestMethod, data, success, reload);
+  if (HTTP) {
+    try {
+      data === null ? promise = await HTTP.request() : promise = await HTTP.request({ data });
+      Store.saveUser(promise.data)
+      validResponse(promise, success)
+    } catch (error) {
+      handleAccessTokenError(error, failure, requestUrl, requestMethod, data, success, reload);
+    }
   }
 }
 
 //this method solve the Expire Token Problem.
 let handleAccessTokenError = function (err, failure, requestUrl, requestMethod, data, success, reload) {
-  const request = err && err.request;
-  const response = err && err.response;
+  const request = err && err.request ? err.request : '';
+  const response = err && err.response ? err.response : '';
   if (request && request.status === 0) {
     errorResponse(err, failure)
   } else if (response && (response.status === 403 || response.status === 401)) {
@@ -62,14 +64,18 @@ let errorResponse = function (error, failure) {
 };
 
 function httpCall(requestUrl, requestMethod) {
-  let instance = Axios.create({
-    baseURL: Config.settings().cloudBaseURL,
-    method: requestMethod,
-    url: requestUrl,
-    headers: {
-      "content-type": "application/json",
-      Authorization: "Bearer " + Store.getAppUserAccessToken()
-    }
-  });
+  let configUrl = Config.settings();
+  let instance = null;
+  if (configUrl) {
+    instance = Axios.create({
+      baseURL: configUrl.cloudBaseURL,
+      method: requestMethod,
+      url: requestUrl,
+      headers: {
+        "content-type": "application/json",
+        Authorization: "Bearer " + Store.getAppUserAccessToken()
+      }
+    });
+  }
   return instance;
 }

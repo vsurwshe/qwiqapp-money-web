@@ -39,7 +39,7 @@ class ForgotPassword extends Component {
   // when any internal Error occur
   errorCall = error => {
     this.setState({ disableDoubleClick: false });
-    const response = error && error.response;
+    const response = error && error.response ? error.response : '';
     if (response) {
       if(response.status === 500) {
         this.callAlertTimer("success", "Thank You! You should receive an email with the reset code, if its valid .... ")
@@ -66,7 +66,7 @@ class ForgotPassword extends Component {
 
   resetErrorCall = (error) => {
     this.setState({ disableDoubleClick: false });
-    const response = error && error.response;
+    const response = error && error.response ? error.response : '';
     if(response){
       const status = response ? response.status : '';
       if (status === 400) {

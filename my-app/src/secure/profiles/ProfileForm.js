@@ -76,7 +76,7 @@ class ProfileForm extends Component {
       if (action !== userAction.VERIFY_EMAIL) {
         new ProfileApi().createProfile(this.successCall, (err) => { this.errorCall(err, data.type) }, { ...data, type: profileType });
       } else {
-        this.callAlertTimer("danger", "First please verify with the code sent to your Email..")
+        this.callAlertTimer("danger", "First please verify with the code sent to your email..")
       }
     }
   };
@@ -90,7 +90,7 @@ class ProfileForm extends Component {
   }
 
   errorCall = (error, profileType) => {
-    let response = error && error.response;
+    let response = error && error.response ? error.response : '';
     if (response) {
       if (profileType) {
         this.callAlertTimer("danger", "You need to purchase credits to create these Profiles, For more info View Feature Comparision.....");
@@ -140,7 +140,7 @@ class ProfileForm extends Component {
     const { color, content, profileCreated, cancelEditProfile, profileInfoTable, profileId } = this.state
     if (profileCreated || cancelEditProfile) {
       // to solve loading Sidebar. Side bar not loading while after created first profile.
-      !cancelEditProfile && window.location.reload();
+      !cancelEditProfile && (window.location.href = "/profiles");
       return <Profiles />
     } else if (profileId) {
       return this.loadProfile(color, content, "UPDATE PROFILE")
@@ -198,7 +198,7 @@ class ProfileForm extends Component {
   }
 
   upgradeErrorCall = (error) => {
-    const response = error && error.response
+    const response = error && error.response ? error.response : ''
     if (response && response.status === 400 && !response.data) {
       this.callAlertTimer("danger", "Your credits are low, please add more credits", true);
     } else {

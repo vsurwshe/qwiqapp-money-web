@@ -19,18 +19,20 @@ export default ProfileTypesApi;
 async function process(success, failure, requestUrl, requestMethod, data, reload) {
   let HTTP = httpCall(requestUrl, requestMethod);
   let promise;
-  try {
-    promise = await HTTP.request();
-    validResponse(promise, success, requestMethod)
-  } catch (error) {
-    handleAccessTokenError(error, failure, requestUrl, requestMethod, data, success, reload);
+  if (HTTP) {
+    try {
+      promise = await HTTP.request();
+      validResponse(promise, success, requestMethod)
+    } catch (error) {
+      handleAccessTokenError(error, failure, requestUrl, requestMethod, data, success, reload);
+    }
   }
 }
 
 //this method solve the Expire Token Problem.
 let handleAccessTokenError = function (error, failure, requestUrl, requestMethod, data, success, reload) {
-  const request = error && error.request;
-  const response = error && error.response;
+  const request = error && error.request ? error.request : '';
+  const response = error && error.response ? error.response : '';
   const {status} = response ? response.status : '';
   if (request && request.status === 0) {
     errorResponse(error, failure)
@@ -54,14 +56,18 @@ let errorResponse = function (error, failure) {
 };
 
 function httpCall(requestUrl, requestMethod) {
-  let instance = Axios.create({
-    baseURL: Config.settings().cloudBaseURL,
-    method: requestMethod,
-    url: requestUrl,
-    headers: {
-      "content-type": "application/json",
-      Authorization: "Bearer " + Store.getAppUserAccessToken()
-    }
-  });
+  let configUrl = Config.settings();
+  let instance = null;
+  if (configUrl) {
+    instance = Axios.create({
+      baseURL: configUrl.cloudBaseURL,
+      method: requestMethod,
+      url: requestUrl,
+      headers: {
+        "content-type": "application/json",
+        Authorization: "Bearer " + Store.getAppUserAccessToken()
+      }
+    });
+  }
   return instance;
 }
