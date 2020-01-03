@@ -34,7 +34,7 @@ class ChangePassword extends Component {
         this.setState({ doubleClick: false })
         const data = (error && error.response) && error.response.data; //error and error.response are there then we are asigning data(error.response.data) to data(field/variable/obj)
         if ( data && data.error && data.error.debugMessage) { // If "data (OR) data.error (OR) data.error.debugMessage" are Falsy values(undefined) else block will executes
-            this.callAlert("danger", "You entered wrong password, please enter correct password");
+        this.callAlert("danger", "You entered wrong password, please enter correct password");
         } else {
             this.callAlert("warning", "Unable to process request, please try again")
         }
@@ -86,7 +86,7 @@ class ChangePassword extends Component {
             <Row>
                 <Col sm={3}> <Label>Old password</Label> </Col>
                 <Col sm={6}>
-                    <AvField name="old" type="password" errorMessage="Enter Correct Password" placeholder="Enter Old Password" value={color === "danger" && ""} required />
+                    <AvField name="old" type="password" errorMessage="Enter correct password" placeholder="Enter old password" required />
                 </Col>
             </Row>
             <Row>
@@ -94,7 +94,7 @@ class ChangePassword extends Component {
                 <Col sm={6}>
                     <AvGroup>
                         <InputGroup>
-                            <AvInput name="new" type={type} errorMessage="New Password Required" placeholder="Enter  New Password" required />
+                            <AvInput name="new" type={type} errorMessage="Enter new password" placeholder="Enter new password" required />
                             <InputGroupAddon addonType="prepend">
                                 <InputGroupText>{this.state.isOpen ? <FaEye onClick={this.setChecked} /> : <FaEyeSlash onClick={this.setChecked} />}</InputGroupText>
                             </InputGroupAddon>
@@ -104,7 +104,7 @@ class ChangePassword extends Component {
             </Row>
             <Row>
                 <Col sm={3}><Label>Confirm password</Label></Col>
-                <Col sm={6}><AvField name="renew" type="password" errorMessage="New password and confirm password doesn't match" placeholder="Enter  New Password"
+                <Col sm={6}><AvField name="renew" type="password" errorMessage="New password and confirm password doesn't match" placeholder="Enter new password again"
                     validate={{ match: { value: 'new' } }} required />
                 </Col>
             </Row>
