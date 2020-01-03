@@ -57,9 +57,9 @@ class Profiles extends Component {
   errorCall = error => { 
     this.setState({ visible: true }); 
     if (error && error.response) {
-      this.callAlertTimer("danger", "Unable to process your request", true);
+      this.callAlertTimer("danger", "Unable to process your request, please try again.", true);
     } else {
-      this.callAlertTimer("danger", "please check with your network");
+      this.callAlertTimer("danger", "Please check with your network and try again.");
     }
   }
 

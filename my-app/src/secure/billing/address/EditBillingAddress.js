@@ -90,7 +90,7 @@ class EditBillingAddress extends Component {
     if (response) {
       this.props.dispatch(handleApiResponseMsg('Unable to process, please try again....', 'danger', true))
     } else {
-      this.props.dispatch(handleApiResponseMsg('please check with your network', 'danger', true))
+      this.props.dispatch(handleApiResponseMsg('Please check with your network', 'danger', true))
     }
   };
 

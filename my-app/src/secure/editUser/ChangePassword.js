@@ -32,8 +32,8 @@ class ChangePassword extends Component {
 
     changePwdError = (error) => {
         this.setState({ doubleClick: false })
-        const data = error && error.response && error.response.data;
-        if ( data && data.error && data.error.debugMessage) {
+        const data = (error && error.response) && error.response.data; //error and error.response are there then we are asigning data(error.response.data) to data(field/variable/obj)
+        if ( data && data.error && data.error.debugMessage) { // If "data (OR) data.error (OR) data.error.debugMessage" are Falsy values(undefined) else block will executes
             this.callAlert("danger", "You entered wrong password, please enter correct password");
         } else {
             this.callAlert("warning", "Unable to process request, please try again")

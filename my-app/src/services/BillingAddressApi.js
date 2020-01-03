@@ -64,12 +64,12 @@ let validResponse =  function (response, successMethod, payments) {
 };
 
 let errorResponse = async function (error, failure) {
-    let response = error && error.response ? error.response : '';
+    let response = (error && error.response) ? error.response : ''; // If error && error.response are there, then we are assigning error.response or else ''
     if (response && response.status === 500) {
         const {status, data} = response;
         let errorData = {
             status: status,
-            message: data && data.error && data.error.debugMessage
+            message: (data && data.error) && data.error.debugMessage // If data && data.error are there then assigning data.error.debugMessage or else falsy value(null/undefined...)
         }
         failure(errorData);
     } else { // apart form 500, any response code else block will execute..

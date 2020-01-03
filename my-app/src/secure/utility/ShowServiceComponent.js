@@ -61,7 +61,7 @@ export const ShowServiceComponent = {
     return data;
   }, 
 
-  loadSpinnerAction: function (headerMessage, bodyMessage, addButton, buttonText, visible) {
+  loadSpinnerAction: function (headerMessage, alertMessage, addButton, buttonText, visible) {
     let spinnerOff = this.handleSpinner(visible);
     return (
       <div className="animated fadeIn">
@@ -69,7 +69,7 @@ export const ShowServiceComponent = {
         {this.loadHeaderAction(headerMessage, addButton, buttonText)}
           <center>
             <CardBody>
-              {visible && <Alert color="danger">{bodyMessage}</Alert>}
+              {visible && <Alert color="danger">{alertMessage}</Alert>}
               {spinnerOff && <div className="text-primary spinner-size" role="status">
                 <span className="sr-only">Loading...</span>
               </div>}
