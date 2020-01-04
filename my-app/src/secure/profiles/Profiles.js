@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { Link } from 'react-router-dom';
 import Avatar from 'react-avatar';
-import DeleteProfile from "./DeleteProfile";
 import { Redirect } from 'react-router';
 import ProfileApi from "../../services/ProfileApi";
 import { DeleteModel } from "../utility/DeleteModel";
@@ -112,10 +111,6 @@ class Profiles extends Component {
     }
   }
 
-  deleteProfile = () => {
-    this.setState({ deleteProfile: true })
-  };
-
   callCreateProfile = () => {
     this.setState({ createProfile: true })
   }
@@ -125,7 +120,7 @@ class Profiles extends Component {
   }
 
   render() {
-    const { profiles, profileId, profileName, createProfile, updateProfile, deleteProfile, selectProfile, spinner, danger } = this.state;
+    const { profiles, profileId, profileName, createProfile, updateProfile, selectProfile, spinner, danger } = this.state;
     if (profiles.length === 0 && !createProfile) {
       return <div>{!spinner ? this.loadSpinner() : <ProfileEmptyMessage />}</div>
     } else if (selectProfile) {
@@ -135,8 +130,6 @@ class Profiles extends Component {
       return <ProfileForm />
     } else if (updateProfile) {
       return <ProfileForm profileId={profileId} profileName={profileName} loadProfileType={this.loadProfileType} />
-    } else if (deleteProfile) {
-      return <DeleteProfile profileId={profileId} />
     } else {
       return <div> {danger && this.loadDeleteProfile()} {this.showProfile(profiles)}</div>
     }

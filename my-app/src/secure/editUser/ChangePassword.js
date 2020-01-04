@@ -21,7 +21,7 @@ class ChangePassword extends Component {
         this.setState({ user: user })
     }
 
-    updatePassword = (values) => {
+    updatePassword = (event, values) => { //onValidSubmit passing two paramentes(events, values)
         this.setState({ doubleClick: true });
         new UserApi().changePassword(this.changePasswordSuccess, this.changePwdError, values);
     }

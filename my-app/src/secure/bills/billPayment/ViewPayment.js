@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { CardHeader, Button, Table } from 'reactstrap';
 import Store from '../../../data/Store';
-import DeleteBillPayment from './DeleteBillPayment';
 import BillApi from '../../../services/BillApi';
 import PaymentApi from '../../../services/PaymentApi';
 import BillPayment from './ BillPayment';
@@ -63,10 +62,6 @@ class ViewPayment extends Component {
     this.setState({ updateBillPayment: true, updatePayment, currency });
   }
 
-  handleDeleteBillPayment = (deleteTxId) => {
-    this.setState({ deleteBillPayment: true, deleteTxId });
-  }
-
   handleAddPayment = () => { this.setState({ addBillPayment: !this.state.addBillPayment }); }
 
   render() {
@@ -94,8 +89,6 @@ class ViewPayment extends Component {
           paymentDate: this.dateFormat
         }
         return <BillPayment update={updateBillPayment} data={updatePayementData} paymentCount={this.props.paymentCount} />
-      } else if (this.state.deleteBillPayment) {
-        return <DeleteBillPayment profileId={this.props.profileId} cancelViewPay={this.props.cancel} bill={this.state.bill} taxId={this.state.deleteTxId} />
       } else {
         selectedCurrency = currencies.filter((currency, index) => { return currency.code === bill.currency })
         return this.loadBillPayments(payments, selectedCurrency);

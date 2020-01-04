@@ -24,7 +24,7 @@ class EditUser extends Component {
         }
     }
 
-    userUpdate = (values) => {
+    userUpdate = (event, values) => { //onValidSubmit passing two paramentes(events, values)
         this.setState({ doubleClick: true });
         new UserApi().updateUser(this.updateSuccessCall, this.updateErrorCall, values);
     }
