@@ -1,14 +1,14 @@
 import Store from "../data/Store";
-import LoginApi from "./LoginApi";
 import AbstractApi from "./AbstractApi";
 
-class LabelApi extends AbstractApi{
+class LabelApi extends AbstractApi {
 
-  loginApi=null;
-  init(){
-    this.loginApi=new LoginApi();
+  loginApi = null;
+  constructor() {
+    super();
+    this.loginApi = this.loginInstance();
   }
-  
+
   //This Method Create label 
   createLabel(success, failure, profileId, data) {
     this.process(success, failure, profileId + "/labels", "POST", profileId, data);
@@ -39,45 +39,47 @@ class LabelApi extends AbstractApi{
     this.process(success, failure, profileId + "/labels/" + lid, "DELETE", profileId);
   }
 
-async process(success, failure, Uurl, Umethod, profileId, data, reload) {
-  const profile =Store.getProfile();
-  const baseUrl= profile.url + "/profile/";
-  let HTTP = this.httpCall(Uurl, Umethod, baseUrl);
-  let promise;
-  if (HTTP) {
-    try {
-      data === null ? promise = await HTTP.request() : promise = await HTTP.request({ data });
-      if (Umethod === "GET") {
-        Store.storeLabels(promise.data);
-      } else {
-        this.getSublabels(success, failure, profileId, true);
+  async process(success, failure, Uurl, Umethod, profileId, data, reload) {
+    const profile = Store.getProfile();
+    const baseUrl = (profile && profile.url) ? profile.url + "/profile/" : '';
+    let HTTP = this.httpCall(Uurl, Umethod, baseUrl);
+    let promise;
+    if (HTTP !== null) {
+      try {
+        data === null ? promise = await HTTP.request() : promise = await HTTP.request({ data });
+        if (Umethod === "GET") {
+          Store.storeLabels(promise.data);
+        } else {
+          this.getSublabels(success, failure, profileId, true);
+        }
+        this.validResponse(promise, success)
+      } catch (err) {
+        this.handleAccessTokenError(profileId, err, failure, Uurl, Umethod, data, success, reload);
       }
-      this.validResponse(promise, success)
-    } catch (err) {
-      this.handleAccessTokenError(profileId, err, failure, Uurl, Umethod, data, success, reload);
     }
   }
-}
-//this method slove the Exprie Token Problem.
- handleAccessTokenError = function (profileId, error, failure, Uurl, Umethod, data, success, reload) {
-  const response = error && error.response ? error.response : '';
-  const request = error && error.request ? error.request : '';
-  if (response) { // Handleing network error
-    const {status} = response; // directly assigning value, because we already checked that response is not a falsy(null, '', undefined, 0) value, then only come here.
-    if (request && request.status === 0) {
-      this.getSublabels(success, failure, profileId, true);
-    } else if (status === 403 || status === 401) { // if response is falsy(null, undefined, ''...) value, then status is ''
-      if (!reload) {
-        this.loginApi.refresh(() => { this.process(success, failure, Uurl, Umethod, profileId, data, true) }, this.errorResponse(error, failure))
+
+  //this method slove the Exprie Token Problem.
+  handleAccessTokenError(profileId, error, failure, Uurl, Umethod, data, success, reload) {
+    const response = error && error.response ? error.response : '';
+    const request = error && error.request ? error.request : '';
+    if (response) { // Handleing network error
+      const { status } = response; // directly assigning value, because we already checked that response is not a falsy(null, '', undefined, 0) value, then only come here.
+      if (request && request.status === 0) {
+        this.getSublabels(success, failure, profileId, true);
+      } else if (status === 403 || status === 401) { // if response is falsy(null, undefined, ''...) value, then status is ''
+        if (!reload) {
+          this.loginApi.refresh(() => { this.process(success, failure, Uurl, Umethod, profileId, data, true) }, this.errorResponse(error, failure))
+        } else {
+          this.errorResponse(error, failure);
+        }
       } else {
         this.errorResponse(error, failure);
       }
-    } else { 
+    } else {
       this.errorResponse(error, failure);
     }
-  } else {
-    this.errorResponse(error, failure);
   }
 }
-}
+
 export default LabelApi;

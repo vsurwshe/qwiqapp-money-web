@@ -1,12 +1,14 @@
 import Store from "../data/Store";
-import LoginApi from "./LoginApi";
 import AbstractApi from "./AbstractApi";
 
 class PaymentApi extends AbstractApi {
 
   loginApi = null;
-  init() {
-    this.loginApi = new LoginApi();
+  constructor(){
+    super();
+    if(!this.loginApi) {
+      this.loginApi = this.loginInstance();
+    }
   }
 
   //This Method Create Bill
@@ -31,7 +33,7 @@ class PaymentApi extends AbstractApi {
 
   async process(success, failure, Uurl, Umethod, profileId, data, reload, billId) {
     const profile = Store.getProfile();
-    const baseUrl = profile.url + "/profile/";
+    const baseUrl = (profile && profile.url) ? profile.url + "/profile/" : '';
     let HTTP = this.httpCall(Uurl, Umethod, baseUrl);
     let promise;
     try {
@@ -50,8 +52,8 @@ class PaymentApi extends AbstractApi {
       this.getBillPayments(success, failure, profileId, billId);
     } else if (err.response.status === 403 || err.response.status === 401) {
       if (!reload) {
-        this.loginApi.refresh(() => {
-          this.process(success, failure, Uurl, Umethod, profileId, data, "restrict")
+        this.loginApi && this.loginApi.refresh(() => {
+          this.process(success, failure, Uurl, Umethod, profileId, data, true)
         }, this.errorResponse(err, failure))
       } else {
         this.errorResponse(err, failure)

@@ -1,12 +1,14 @@
-import LoginApi from './LoginApi';
 import AbstractApi from "./AbstractApi";
 import Store from '../data/Store';
 
 class BillAttachmentsApi extends AbstractApi{
 
-  loginApi=null;
-  init(){
-    this.loginApi=new LoginApi();
+  loginApi= null;
+  constructor() {
+    super()
+    if (!this.loginApi) {
+      this.loginApi = this.loginInstance();
+    }
   }
   createBillAttachment(success, failure, profileId, billId, data) {
     this.process(success, failure, profileId + "/bills/" + billId + "/attachments", "POST", data);
@@ -26,7 +28,7 @@ class BillAttachmentsApi extends AbstractApi{
 
 async process(success, failure, apiUrl, requestMethod, data, reload) {
   const profile =Store.getProfile();
-  const baseUrl= profile.url + "/profile/";
+  const baseUrl= (profile && profile.url) ? profile.url + "/profile/" : '';
   let HTTP = this.httpCall(apiUrl, requestMethod, baseUrl);
   let promise;
   try {
@@ -41,7 +43,7 @@ handleAccessTokenError (err, failure, apiUrl, requestMethod, data, success, relo
     this.errorResponse(err, failure)
   } else if (err.response && (err.response.status === 401 || err.response.status === 403)) {
     if (!reload) {
-      this.loginApi.refresh(() => this.process(success, failure, apiUrl, requestMethod, data, "ristrict"), this.errorResponse(err, failure))  
+      this.loginApi && this.loginApi.refresh(() => this.process(success, failure, apiUrl, requestMethod, data, true), this.errorResponse(err, failure))  
     } else {
       this.errorResponse(err, failure)
     }

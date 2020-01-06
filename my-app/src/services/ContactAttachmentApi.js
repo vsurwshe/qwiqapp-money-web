@@ -1,4 +1,3 @@
-import LoginApi from './LoginApi';
 import AbstractApi from "./AbstractApi";
 import Store from '../data/Store';
 
@@ -6,7 +5,7 @@ class ContactAttachmentApi extends AbstractApi{
   
   loginApi=null;
   init(){
-    this.loginApi=new LoginApi();
+    this.loginApi= this.loginInstance();
   }
 
   createAttachment(success, failure, profileId, contactId, data) {
@@ -26,7 +25,7 @@ class ContactAttachmentApi extends AbstractApi{
 
 async  process(success, failure, Uurl, Umethod, data, reload) {
   const profile =Store.getProfile();
-  const baseUrl= profile.url + "/profile/";
+  const baseUrl= (profile && profile.url) ? profile.url + "/profile/" : '';
   let HTTP = this.httpCall(Uurl, Umethod, baseUrl);
   let promise;
   try {
@@ -45,7 +44,7 @@ handleAccessTokenError (err, failure, Uurl, Umethod, data, success, reload){
     this.errorResponse(err, failure)
   } else if (err.response.status === 401 || err.response.status === 403) {
     if (!reload) {
-      this.loginApi.refresh(() => this.process(success, failure, Uurl, Umethod, data, "ristrict"), this.errorResponse(err, failure))  
+      this.loginApi && this.loginApi.refresh(() => this.process(success, failure, Uurl, Umethod, data, true), this.errorResponse(err, failure))  
     } else {
      this.errorResponse(err, failure)
     }

@@ -1,14 +1,12 @@
 import Store from "../data/Store";
-import LoginApi from "./LoginApi";
-import BillApi from "./BillApi";
 import AbstractApi from "./AbstractApi";
 
 class RecurringBillsApi extends AbstractApi {
   loginApi = null;
   billApi = null;
   init() {
-    this.loginApi = new LoginApi();
-    this.billApi = new BillApi();
+    this.loginApi = this.loginInstance();
+    this.billApi = this.billApiInstance();
   }
   //This Method Create Bill
   createRecurringBill(success, failure, profileId, data, updateBill, billId) {
@@ -37,7 +35,7 @@ class RecurringBillsApi extends AbstractApi {
 
   async process(success, failure, Uurl, Umethod, profileId, data, updateBill, createNewBill, billId, reload) {
     const profile = Store.getProfile();
-    const baseUrl = profile.url + "/profile/";
+    const baseUrl = (profile && profile.url) ? profile.url + "/profile/" : '';
     let HTTP = this.httpCall(Uurl, Umethod, baseUrl);
     let promise;
     try {
@@ -45,7 +43,7 @@ class RecurringBillsApi extends AbstractApi {
       if (Umethod === "GET") {
         this.validResponse(promise, success)
       } else if (Umethod === "POST") {
-        const newPostData = { ...data, "recurId": promise.data.id }
+        const newPostData = { ...data, "recurId": promise.data && promise.data.id }
         if (updateBill) { // normal Bill updated with recurring configuration
           await this.billApi.updateBill(this.billSuccessData(success, failure, profileId), failure, profileId, billId, newPostData);
         } else { // create new Recurring config and new Bills
@@ -76,7 +74,7 @@ class RecurringBillsApi extends AbstractApi {
       this.getRecurringBills(success, failure, profileId, "True");
     } else if (err.response && (err.response.status === 403 || err.response.status === 401)) {
       if (!reload) {
-        this.loginApi.refresh(() => { this.process(success, failure, Uurl, Umethod, profileId, data, updateBill, createNewBill, billId, "ristrict") }, this.errorResponse(err, failure));
+      this.loginApi && this.loginApi.refresh(() => { this.process(success, failure, Uurl, Umethod, profileId, data, updateBill, createNewBill, billId, "ristrict") }, this.errorResponse(err, failure));
       } else {
         this.errorResponse(err, failure)
       }

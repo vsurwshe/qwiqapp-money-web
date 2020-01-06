@@ -1,12 +1,14 @@
 import Store from "../data/Store";
-import LoginApi from './LoginApi';
 import AbstractApi from "./AbstractApi";
 
 class CategoryApi extends AbstractApi {
 
   loginApi = null;
-  init() {
-    this.loginApi = new LoginApi();
+  constructor() {
+    super()
+    if (!this.loginApi) {
+      this.loginApi = this.loginInstance();
+    }
   }
 
   createCategory(success, failure, profileId, data) {
@@ -14,7 +16,7 @@ class CategoryApi extends AbstractApi {
   }
 
   getCategories(success, failure, profileId, value) {
-    !Store.getCategories() || value === 'true'
+    !Store.getCategories() || value 
       ? this.process(success, failure, profileId + "/categories?subcategories=true", 'GET', profileId)
       : success(Store.getCategories())
   }
@@ -33,7 +35,7 @@ class CategoryApi extends AbstractApi {
 
   async process(success, failure, Uurl, Umethod, profileId, data, reload) {
     const profile = Store.getProfile();
-    const baseUrl = profile.url + "/profile/";
+    const baseUrl = (profile && profile.url) ? profile.url + "/profile/": '';
     let HTTP = this.httpCall(Uurl, Umethod, baseUrl);
     let promise;
     try {
@@ -41,7 +43,7 @@ class CategoryApi extends AbstractApi {
       if (Umethod === 'GET') {
         Store.saveCategories(promise.data)
       } else {
-        this.getCategories(success, failure, profileId, 'true')
+        this.getCategories(success, failure, profileId, true)
       }
       this.validResponse(promise, success);
     } catch (error) {
@@ -53,7 +55,7 @@ class CategoryApi extends AbstractApi {
       this.errorResponse(err, failure)
     } else if (err.response.status === 401 || err.response.status === 403) {
       if (!reload) {
-        this.loginApi.refresh(() => { this.process(success, failure, Uurl, Umethod, profileId, data, "restrict") }, this.errorResponse(err, failure))
+        this.loginApi && this.loginApi.refresh(() => { this.process(success, failure, Uurl, Umethod, profileId, data, true) }, this.errorResponse(err, failure))
       } else {
         this.errorResponse(err, failure);
       }

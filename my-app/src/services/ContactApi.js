@@ -1,18 +1,20 @@
 import Store from "../data/Store";
-import LoginApi from "./LoginApi";
 import AbstractApi from "./AbstractApi";
-class ContactApi extends AbstractApi{
+class ContactApi extends AbstractApi {
 
   loginApi=null;
-  init(){
-    this.loginApi=new LoginApi();
+  constructor() {
+    super()
+    if (!this.loginApi) {
+      this.loginApi = this.loginInstance();
+    }
   }
   createContact(success, failure, profileId, data) {
     this.process(success, failure, profileId + "/contacts", "POST", profileId, data);
   }
 
   getContacts(success, failure, profileId, value) {
-    Store.getContacts() === null || value === "true" ? this.process(success, failure, profileId + "/contacts?withlabels=true", "GET") : success(Store.getContacts());
+    Store.getContacts() === null || value ? this.process(success, failure, profileId + "/contacts?withlabels=true", "GET") : success(Store.getContacts());
   }
 
   getContactById(success, failure, profileId, contactId) {
@@ -30,7 +32,7 @@ class ContactApi extends AbstractApi{
 
 async process(success, failure, Uurl, Umethod, profileId, data, reload) {
   const profile =Store.getProfile();
-  const baseUrl= profile.url + "/profile/";
+  const baseUrl= (profile && profile.url) ? profile.url + "/profile/" : '';
   let HTTP = this.httpCall(Uurl, Umethod, baseUrl);
   let promise;
   try {
@@ -42,7 +44,7 @@ async process(success, failure, Uurl, Umethod, profileId, data, reload) {
       } else if (Umethod === "GET" && data === true) {
         this.validResponse(promise, success)
       } else {
-        this.getContacts(success, failure, profileId, "true");
+        this.getContacts(success, failure, profileId, true);
         this.validResponse(promise, success)
       }
     }
@@ -53,10 +55,10 @@ async process(success, failure, Uurl, Umethod, profileId, data, reload) {
 //this method slove the Exprie Token Problem.
  handleAccessTokenError (profileId, err, failure, Uurl, Umethod, data, success, reload) {
   if (err.request.status === 0) {
-    this.getContacts(success, failure, profileId, "True");
+    this.getContacts(success, failure, profileId, true);
   } else if (err.response.status === 403 || err.response.status === 401) {
     if (!reload) {
-      this.loginApi.refresh(() => { this.process(success, failure, Uurl, Umethod, data, "reload") }, this.errorResponse(err, failure));
+      this.loginApi && this.loginApi.refresh(() => { this.process(success, failure, Uurl, Umethod, data, true) }, this.errorResponse(err, failure));
     } else {
       this.errorResponse(err, failure);
     }
