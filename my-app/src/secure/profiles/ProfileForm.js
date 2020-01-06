@@ -45,7 +45,7 @@ class ProfileForm extends Component {
     if (error && error.response) {
       this.callAlertTimer("danger", "Unable to process request, please try again ...");
     } else {
-      this.callAlertTimer("danger", "Please check with your network");
+      this.callAlertTimer("danger", "Please check your internet connection and re-try again.");
     }
   }
 
@@ -104,7 +104,7 @@ class ProfileForm extends Component {
         this.callAlertTimer("danger", "Unable to process request, please try again ...");
       }
     } else {
-      this.callAlertTimer("danger", "Please check with your network");
+      this.callAlertTimer("danger", "Please check your internet connection and re-try again.");
     }
   };
 

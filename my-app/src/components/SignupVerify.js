@@ -38,7 +38,7 @@ class SignupVerify extends Component {
     if (response) {
       this.callAlertTimer("danger", "Unable to process, please re-enter your verification code Again....")
     } else {
-      this.callAlertTimer("danger", "Please check with your network")
+      this.callAlertTimer("danger", "Please check your internet connection and re-try again.")
     }
     
   }

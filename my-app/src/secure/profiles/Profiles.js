@@ -59,7 +59,7 @@ class Profiles extends Component {
     if (error && error.response) {
       this.callAlertTimer("danger", "Unable to process your request, please try again.", true);
     } else {
-      this.callAlertTimer("danger", "Please check with your network and try again.");
+      this.callAlertTimer("danger", "Please check your internet connection and re-try again.");
     }
   }
 

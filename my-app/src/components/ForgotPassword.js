@@ -42,14 +42,14 @@ class ForgotPassword extends Component {
     const response = error && error.response ? error.response : '';
     if (response) {
       if(response.status === 500) {
-        this.callAlertTimer("success", "Thank You! You should receive an email with the reset code, if its valid .... ")
+        this.callAlertTimer("success", "You should receive an reset code via email, if the email provided is valid. Thank You.")
       } else {
         this.setState({forgotPassword : false})
         this.callAlertTimer("danger", "Unable to process request, please try again...");
       } 
     } else {
       this.setState({forgotPassword : false})
-      this.callAlertTimer("danger", "Please check with your network")
+      this.callAlertTimer("danger", "Please check your internet connection and re-try again.")
     }
   };
 
@@ -72,12 +72,12 @@ class ForgotPassword extends Component {
       if (status === 400) {
       this.callAlertTimer("danger", "Expired activation code, already verified or not existing !")
       } else if (status === 500) {
-        this.callAlertTimer("danger", "Incorrect email, please check your email and try Again ....")
+        this.callAlertTimer("danger", "Incorrect email, please check your email and re-try again.")
       } else {
-        this.callAlertTimer("danger", "Unable to process request at the moment, please try again ...")
+        this.callAlertTimer("danger", "Unable to process request at the moment, please re-try again.")
       }
     } else {
-      this.callAlertTimer("danger", "Please check with your network")
+      this.callAlertTimer("danger", "Please check your internet connection and re-try again.")
     }
   }
 
