@@ -5,13 +5,21 @@ import AbstractApi from "./AbstractApi";
 
 class LoginApi extends AbstractApi{
 
+  loginApi= null;
+  constructor() {
+    super()
+    if (!this.loginApi) {
+      this.loginApi = this.loginInstance();
+    }
+  }
+
   login(username, password, success, failure) {
     let params = {
       grant_type: "password",
       username: username,
       password: password
     };
-    process(params, success, failure);
+    this.process(params, success, failure);
   }
 
   refresh(success, failure) {
@@ -22,18 +30,17 @@ class LoginApi extends AbstractApi{
       grant_type: "refresh_token",
       refresh_token: Store.getAppUserRefreshToken()
     };
-    process(params, success, failure);
+    this.process(params, success, failure);
   }
-}
 
-export default LoginApi;
-
-let process = function (params, success, failure) {
+ process (params, success, failure) {
   let promise = HTTP.request({ params: params })
     .then(resp => validResponse(resp, success, params))
     .catch(error => { this.errorResponse(error, failure); });
   console.log(promise)
 };
+}
+export default LoginApi;
 
 let validResponse = function (resp, successMethod, params) {
   if (params.username === "dummy@email.com") { Store.saveDummyUserAccessToken(resp.data.access_token, resp.data.refresh_token); }

@@ -1,29 +1,37 @@
 import Axios from "axios";
 import Config from "../data/Config";
 import Store from "../data/Store";
-import LoginApi from "./LoginApi";
+import AbstractApi from "./AbstractApi";
 
-class SignupApi {
+class SignupApi extends AbstractApi{
+
+  loginApi= null;
+  constructor() {
+    super();
+    if (!this.loginApi) {
+      this.loginApi = this.loginInstance();
+    }
+  }
 
   //This is Step to Register The User
   getToken = () => {
-    new LoginApi().login("dummy@email.com", "dummyPwd", () => {
+    this.loginApi.login("dummy@email.com", "dummyPwd", () => {
     }, () => { console.log("Cantnot Fetch the Admin Token"); });
   };
 
   //Registers User
   registerUser(success, failure, data) {
-    process(success, failure, "/user/register", "POST", data);
+    this.process(success, failure, "/user/register", "POST", data);
   }
 
   //user forgot password 
   forgotPassword(success, failure, email) {
-    process(success, failure, "/user/passwd/forgot?email=" + email, "GET")
+    this.process(success, failure, "/user/passwd/forgot?email=" + email, "GET")
   }
 
   // User Reset Password
   resetPassword(success, failure, email, otp, newpwd) {
-    process(success, failure, "/user/passwd/reset?email=" + email + "&otp=" + otp + "&newpwd=" + newpwd, "PUT");
+    this.process(success, failure, "/user/passwd/reset?email=" + email + "&otp=" + otp + "&newpwd=" + newpwd, "PUT");
   }
 
   //Checks Whether user already exists or not
@@ -33,14 +41,14 @@ class SignupApi {
       let HTTP = httpCall( "/user/exists?email=" + userData.email, "GET", Store.getDummyUserAccessToken());
       HTTP.request().then(response => {
         if (response && response.data) {
-          validResponse(response, success)
+          this.validResponse(response, success)
         }
       })
       .catch(error => {
         if (error && error.response && error.response.status === "404"){  
           console.log("Internal Error")
         } else {
-          errorResponse(error, failure);
+          this.errorResponse(error, failure);
         }
       }) 
     }, Config.apiTimeoutMillis);
@@ -50,18 +58,15 @@ class SignupApi {
   async verifySignup(success, failure, code) {
     await this.getToken()
     setTimeout(() => {
-      process(success, failure, "/user/verify?code=" + code + "&type=EMAIL", "GET", "verify");
+      this.process(success, failure, "/user/verify?code=" + code + "&type=EMAIL", "GET", "verify");
     }, Config.apiTimeoutMillis);
   }
 
   resendVerifyCode(success,failure) {
-    process(success, failure, "/user/verify/resend?type=EMAIL", "GET","verify");
+    this.process(success, failure, "/user/verify/resend?type=EMAIL", "GET","verify");
   }
-}
 
-export default SignupApi;
-
-let process = function (success, failure, Uurl, Umethod, data) {
+ process (success, failure, Uurl, Umethod, data) {
   let HTTP;
   if (data === "verify") {
     HTTP = httpCall(Uurl, Umethod, Store.getAppUserAccessToken());
@@ -70,26 +75,18 @@ let process = function (success, failure, Uurl, Umethod, data) {
   }
   if (data) {
     HTTP.request({ data })
-      .then(resp => validResponse(resp, success))
-      .catch(error => errorResponse(error, failure));
+      .then(resp => this.validResponse(resp, success))
+      .catch(error => this.errorResponse(error, failure));
   } else {
     HTTP.request()
-      .then(resp => validResponse(resp, success))
-      .catch(error => errorResponse(error, failure));
+      .then(resp => this.validResponse(resp, success))
+      .catch(error => this.errorResponse(error, failure));
   }
 };
 
-let validResponse = function (resp, successMethod) {
-  if (successMethod != null) {
-    successMethod(resp.data);
-  }
-};
+}
+export default SignupApi;
 
-let errorResponse = function (error, failure) {
-  if (failure != null) {
-    failure(error)
-  }
-};
 
 function httpCall(customUrl, Umethod, value) {
   let HTTP = Axios.create({

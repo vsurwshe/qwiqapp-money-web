@@ -1,12 +1,14 @@
-import LoginApi from "./LoginApi";
 import Config from "../data/Config";
 import AbstractApi from "./AbstractApi";
 
 class GeneralApi extends AbstractApi{
   
-  loginApi=null;
-  init(){
-    this.loginApi=new LoginApi();
+  loginApi= null;
+  constructor() {
+    super();
+    if (!this.loginApi) {
+      this.loginApi = this.loginInstance();
+    }
   }
 
   getCountrylist(success, failure) {

@@ -1,81 +1,61 @@
-import Axios from "axios";
 import Config from "../data/Config";
 import Store from "../data/Store";
-import LoginApi from "./LoginApi";
+import AbstractApi from "./AbstractApi";
 
-class UserApi {
+class UserApi extends AbstractApi{
+  
+  loginApi= null;
+  constructor() {
+    super()
+    if (!this.loginApi) {
+      this.loginApi = this.loginInstance();
+    }
+  }
+
   getUser(success, failure) {
-    process(success, failure, "/user", "GET")
+    this.process(success, failure, "/user", "GET")
   }
 
   updateUser(success, failure, data) {
-    process(success, failure, "/user", "PUT", data)
+    this.process(success, failure, "/user", "PUT", data)
   }
 
   changePassword(success, failure, data) {
-    process(success, failure, "/user/passwd?new=" + data.new + "&old=" + data.old, "PUT")
+    this.process(success, failure, "/user/passwd?new=" + data.new + "&old=" + data.old, "PUT")
+  }
+
+async process(success, failure, requestUrl, requestMethod, data, reload) {
+  const baseURL=Config.settings().cloudBaseURL;
+  let HTTP = this.httpCall(requestUrl, requestMethod, baseURL);
+  let promise;
+  if(HTTP){
+  try {
+    data === null ? promise = await HTTP.request() : promise = await HTTP.request({ data });
+    Store.saveUser(promise.data)
+    this.validResponse(promise, success)
+  } catch (err) {
+    this.handleAccessTokenError(err, failure, requestUrl, requestMethod, data, success, reload);
   }
 }
-export default UserApi;
-
-async function process(success, failure, requestUrl, requestMethod, data, reload) {
-  let HTTP = httpCall(requestUrl, requestMethod);
-  let promise;
-  if (HTTP) {
-    try {
-      data === null ? promise = await HTTP.request() : promise = await HTTP.request({ data });
-      Store.saveUser(promise.data)
-      validResponse(promise, success)
-    } catch (error) {
-      handleAccessTokenError(error, failure, requestUrl, requestMethod, data, success, reload);
-    }
-  }
 }
 
 //this method solve the Expire Token Problem.
-let handleAccessTokenError = function (err, failure, requestUrl, requestMethod, data, success, reload) {
+ handleAccessTokenError (err, failure, requestUrl, requestMethod, data, success, reload) {
   const request = err && err.request ? err.request : '';
   const response = err && err.response ? err.response : '';
   if (request && request.status === 0) {
-    errorResponse(err, failure)
+    this.errorResponse(err, failure)
   } else if (response && (response.status === 403 || response.status === 401)) {
     if (response.data && response.data.error && response.data.error.debugMessage) {
-      errorResponse(err, failure)
+      this.errorResponse(err, failure)
     } else {
       if (!reload) {
-        new LoginApi().refresh(() => { process(success, failure, requestUrl, requestMethod, data, "reload") }, errorResponse(err, failure))
+        this.loginApi.refresh(() => { this.process(success, failure, requestUrl, requestMethod, data, true) }, this.errorResponse(err, failure))
       } else {
-        errorResponse(err, failure)
+        this.errorResponse(err, failure)
       }
     }
-  } else { errorResponse(err, failure) }
+  } else { this.errorResponse(err, failure) }
 }
-
-let validResponse = function (resp, successMethod) {
-  if (successMethod != null) {
-    successMethod(resp.data);
-  }
-};
-
-let errorResponse = function (error, failure) {
-  if (failure != null) {
-    failure(error);
-  }
-};
-
-function httpCall(requestUrl, requestMethod) {
-  let configUrl = Config.settings();
-  let instance = null;
-  if (configUrl) {
-    instance = Axios.create({
-      baseURL: configUrl.cloudBaseURL,
-      method: requestMethod,
-      url: requestUrl,
-      headers: {
-        "content-type": "application/json",
-        Authorization: "Bearer " + Store.getAppUserAccessToken()
-      }
-    });
-  }
-  return instance;
 }
+export default UserApi;

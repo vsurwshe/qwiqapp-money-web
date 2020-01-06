@@ -1,65 +1,49 @@
-import Axios from "axios";
-import Store from "../data/Store";
-import LoginApi from "./LoginApi";
 import Config from "../data/Config";
+import AbstractApi from "./AbstractApi";
 
-export class UserInvoiceApi {
-  showInvoice(success, failure, invoceId) {
-    process(success, failure, "/invoices/" + invoceId, "GET")
+class UserInvoiceApi extends AbstractApi{
+
+  loginApi= null;
+  constructor() {
+    super()
+    if (!this.loginApi) {
+      this.loginApi = this.loginInstance();
+    }
   }
-}
 
-function process(success, failure, requestUrl, requestMethod, reload) {
-  let HTTP = httpCall(requestUrl, requestMethod);
+  showInvoice(success, failure, invoceId) {
+    this.process(success, failure, "/invoices/" + invoceId, "GET")
+  }
+
+ process(success, failure, requestUrl, requestMethod, reload) {
+  const baseURL=Config.settings().cloudBaseURL;
+  let HTTP = this.httpCall(requestUrl, requestMethod, baseURL);
   let promise;
   if (HTTP) {
     try {
       promise = HTTP.request();
-      validResponse(promise, success)
+      this.validResponse(promise, success)
     } catch (error) {
-      handleAccessTokenError(error, failure, requestUrl, requestMethod, success, reload);
+      this.handleAccessTokenError(error, failure, requestUrl, requestMethod, success, reload);
     }
   }
 }
-
-let handleAccessTokenError = function (error, failure, requestUrl, requestMethod, success, reload) {
+ handleAccessTokenError (error, failure, requestUrl, requestMethod, success, reload) {
   const response = error && error.response ? error.response : '';
   const {data, status} = response ? response : '';
   if (status === 403 || status === 401) {
     if (data && data.error && data.error.debugMessage) {
-      errorResponse(error, failure)
+      this.errorResponse(error, failure)
     } else {
       if (!reload) {
-        new LoginApi().refresh(() => { process(success, failure, requestUrl, requestMethod, "ristrict") }, errorResponse(error, failure))
+        this.loginApi.refresh(() => { this.process(success, failure, requestUrl, requestMethod, true) }, this.errorResponse(error, failure))
       } else {
-        errorResponse(error, failure);
+        this.errorResponse(error, failure);
       }
     }
   } else {
-    errorResponse(error, failure);
+    this.errorResponse(error, failure);
   }
 }
-
-let validResponse = function (responseData, success) {
-  success(responseData);
 }
-let errorResponse = function (error, failure) {
-  failure(error);
-}
-
-function httpCall(requestUrl, requestMethod) {
-  let configUrl = Config.settings();
-  let instance = null;
-  if (configUrl) {
-    instance = Axios.create({
-      baseURL: configUrl.cloudBaseURL,
-      method: requestMethod,
-      url: requestUrl,
-      headers: {
-        "content-type": "application/json",
-        Authorization: "Bearer " + Store.getAppUserAccessToken()
-      }
-    });
-  }
-  return instance;
-}
+export default UserInvoiceApi;

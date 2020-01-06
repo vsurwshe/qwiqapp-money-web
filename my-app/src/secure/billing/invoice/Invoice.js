@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Button } from 'reactstrap';
 import { Link } from 'react-router-dom';
-import { UserInvoiceApi } from '../../../services/UserInvoiceApi';
+import  UserInvoiceApi from '../../../services/UserInvoiceApi';
 import GeneralApi from '../../../services/GeneralApi';
 import BillingAddressApi from '../../../services/BillingAddressApi';
 import ReactToPrint from 'react-to-print';
