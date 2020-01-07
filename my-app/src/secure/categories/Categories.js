@@ -86,7 +86,11 @@ class Categories extends Component {
 
   //Method that shows API's Error Call
   errorCall = error => {
-    this.callAlertTimer('danger', 'Unable to Process Request, Please Try Again')
+    if (error && error.response) {
+      this.callAlertTimer('danger', 'Unable to process request, please try again.')
+    } else {
+      this.setState({alertColor: 'danger', alertMessage: 'Please check your internet connection and re-try again.'});
+    }
   }
 
   //Method calls the create category
@@ -141,11 +145,17 @@ class Categories extends Component {
   }
 
   render() {
-    const { requiredCategory, createCategory, updateCategory, deleteCategory, profileId, categoryId, visible, spinner, search, categories, index, danger } = this.state;
+    const { requiredCategory, createCategory, updateCategory, deleteCategory, profileId, categoryId, visible, spinner, search, categories, index, danger, alertColor, alertMessage } = this.state;
     if (!profileId) {
       return <ProfileEmptyMessage />
     } else if (spinner) {
-      return ShowServiceComponent.loadSpinner(categories.length ? "Categories : " + categories.length : "Categories")
+      if (alertMessage) {
+        setTimeout(()=>{
+          this.setState({spinnerOff: true});
+        },Config.apiTimeoutMillis)
+      }
+      let headerMessage = (categories && categories.length) ? "Categories : " + categories.length : "Categories";
+      return ShowServiceComponent.loadSpinner(headerMessage, alertColor, alertMessage, this.state.spinnerOff);
     } else if (createCategory) {
       return <CategoryForm categories={categories} id={profileId} />
     } else if (updateCategory) {

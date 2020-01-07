@@ -28,10 +28,11 @@ class CategoryForm extends Component {
     this.handlePostData(event, values);
   };
 
+  handleDoubleClick = () => {this.setState({ doubleClick: !this.state.doubleClick });}
   handlePostData = async (e, data) => {
     const { profileId } = this.state
     const { category } = this.props
-    this.setState({ doubleClick: true });
+    this.handleDoubleClick();
     // This condition decides its category Creation or Updation
     if (this.props.category) {
       let newData = {
@@ -70,22 +71,29 @@ class CategoryForm extends Component {
 
   successCall = () => {
     if (this.props.category) {
-      this.callAlertTimer("success", "Category Updated Successfully !");
+      this.callAlertTimer("success", "Category updated successfully !");
     } else {
-      this.callAlertTimer("success", "Category Added Successfully!");
+      this.callAlertTimer("success", "Category added successfully!");
     }
 
   };
 
-  errorCall = err => {
-    this.callAlertTimer("danger", "Unable to Process Request, Please Try Again");
+  errorCall = error => {
+    if (error && error.response) {
+      this.callAlertTimer("danger", "Unable to Process Request, Please Try Again");
+    } else {
+      this.handleDoubleClick(); // enable button to submit the values  
+      this.callAlertTimer("danger", "Please check your internet connection and re-try again.", true);
+    }
   };
 
-  callAlertTimer = (alertColor, content) => {
+  callAlertTimer = (alertColor, content, noTimer) => {
     this.setState({ alertColor, content });
-    setTimeout(() => {
-      this.setState({ categoryAction: true });
-    }, Config.notificationMillis);
+    if (!noTimer) { // Stopping to navigation(Categories list) if user gets network error
+      setTimeout(() => {
+        this.setState({ categoryAction: true });
+      }, Config.notificationMillis);
+    }
   };
 
   toggle = () => {

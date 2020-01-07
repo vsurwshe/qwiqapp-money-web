@@ -12,7 +12,7 @@ class DeleteCategory extends Component {
       categoryId: props.categoryId,
       categoryDeleted: false,
       color: '"#00bfff"',
-      content: 'Deleting Category ...'
+      content: 'Deleting category ...'
     };
   }
 
@@ -25,12 +25,17 @@ class DeleteCategory extends Component {
   };
 
   errorCall = (error) => {
-    if (error.response && error.response.status ===500 && error.response.data.error.debugMessage) {
-      this.callAlertTimer('danger', error.response.data.error.debugMessage)
+    const response = (error && error.response) ? error.response : '';
+    if (response) {
+      const {status, data} = response // directly assigning value, because we already checked that response is not a falsy(null, '', undefined, 0) value, then only come here.
+      if (status === 500 && data && (data.error && data.error.debugMessage)) {
+        this.callAlertTimer('danger', "This category is associated with bills.")
+      } else {
+        this.callAlertTimer('danger', 'Unable to process request, please try again')
+      }
     } else {
-      this.callAlertTimer('danger', 'Unable to Process Request, Please Try Again')
+      this.callAlertTimer('danger', 'Please check your internet connection and re-try again.')
     }
-    
   };
 
   callAlertTimer = (color, content) => {
