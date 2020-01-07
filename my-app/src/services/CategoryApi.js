@@ -1,5 +1,7 @@
 import Store from "../data/Store";
 import AbstractApi from "./AbstractApi";
+import LoginApi from "./LoginApi";
+import Axios from "axios";
 
 class CategoryApi extends AbstractApi {
 
@@ -16,8 +18,8 @@ class CategoryApi extends AbstractApi {
   }
 
   getCategories(success, failure, profileId, value) {
-    !Store.getCategories() || value
-      ? this.process(success, failure, profileId + "/categories?subcategories=true", this.apiMethod.GET, profileId)
+    !Store.getCategories() || value 
+      ? process(success, failure, profileId + "/categories?subcategories=true", 'GET', profileId)
       : success(Store.getCategories())
   }
 
@@ -67,3 +69,66 @@ class CategoryApi extends AbstractApi {
   }
 }
 export default CategoryApi;
+
+async function process(success, failure, Uurl, Umethod, profileId, data, reload) {
+  let HTTP = httpCall(Uurl, Umethod);
+  let promise;
+  if (HTTP) {
+    try {
+      !data ? promise = await HTTP.request() : promise = await HTTP.request({ data })
+      if (Umethod === 'GET') {
+        Store.saveCategories(promise.data)
+      } else {
+        new CategoryApi().getCategories(success, failure, profileId, true)
+      }
+      validResponse(promise, success);
+    } catch (error) {
+      handleAccessTokenError(error, failure, Uurl, Umethod, profileId, data, success, reload)
+    }
+  }
+}
+
+let handleAccessTokenError = (error, failure, Uurl, Umethod, profileId, data, success, reload) => {
+  const response = error && error.response ? error.response : '';
+  const request = error && error.request ? error.request : '';
+  if (response && (request && request.status === 0)) { // Handling infinite api calls(if user dont have network) -> response parameter
+    errorResponse(error, failure)
+  } else if (response && (response.status === 401 || response.status === 403)) {
+    if (!reload) {
+      new LoginApi().refresh(() => process(success, failure, Uurl, Umethod, profileId, data, true), errorResponse(error, failure));
+    } else {
+      errorResponse(error, failure);
+    }
+  } else {
+    errorResponse(error, failure)
+  }
+}
+
+let validResponse = function (resp, successMethod) {
+  if (successMethod != null) {
+    successMethod(resp.data);
+  }
+};
+
+let errorResponse = function (error, failure) {
+  if (failure != null) {
+    failure(error);
+  }
+};
+
+function httpCall(Uurl, Umethod) {
+  let profile = Store.getProfile()
+  let instance = null;
+  if (profile) {
+    instance = Axios.create({
+      baseURL: profile.url + "/profile/",
+      method: Umethod,
+      url: Uurl,
+      headers: {
+        "content-type": "application/json",
+        Authorization: "Bearer " + Store.getAppUserAccessToken()
+      }
+    });
+  }
+  return instance;
+}
