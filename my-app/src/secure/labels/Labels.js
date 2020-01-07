@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Card, CardBody } from "reactstrap";
+import { Card, CardBody, Alert } from "reactstrap";
 import Loader from 'react-loader-spinner';
 import DeleteLabel from "./DeleteLabel";
 import LabelApi from "../../services/LabelApi";
@@ -30,8 +30,9 @@ class Lables extends Component {
   }
 
   setProfileId = async () => {
-    if (Store.getProfile()) {
-      await this.setState({ profileId: Store.getProfile().id });
+    let profile = Store.getProfile();
+    if (profile) {
+      await this.setState({ profileId: profile.id });
       this.getLabels();
     }
   }
@@ -67,7 +68,13 @@ class Lables extends Component {
     }
   }
 
-  errorCall = err => this.setState({ visible: true })
+  errorCall = error => {
+    const response = error && error.response ? error.response : '';
+    if (!response) {
+      this.setState({ alertColor: 'danger', alertMessage: 'Please check with your network, and try again' });
+    }
+    this.setState({ visible: true });
+  }
 
   loadCollapse = () => {
     this.state.labels.map(lable => {
@@ -139,12 +146,22 @@ class Lables extends Component {
   }
 
   loadSpinner = () => {
+    let spinnerOff = false;
+    const {alertMessage, alertColor} = this.state;
+    if (alertMessage) {
+      setTimeout(()=>{
+        spinnerOff = true
+      }, Config.apiTimeoutMillis);
+    }
     return (
       <div className="animated fadeIn">
         <Card>
           {ShowServiceComponent.loadHeaderWithSearch("Labels", null, null, null, this.callCreateLabel)}
           <center style={{ paddingTop: '20px' }}>
-            <CardBody><Loader type="TailSpin" color="#2E86C1" height={60} width={60} /></CardBody>
+            <CardBody>
+              {/* <Loader type="TailSpin" color="#2E86C1" height={60} width={60} /> */}
+              {spinnerOff ? <Loader type="TailSpin" color="#2E86C1" height={60} width={60} /> : <Alert color={alertColor}>{alertMessage}</Alert>}  
+            </CardBody>
           </center>
         </Card>
       </div>)
