@@ -68,8 +68,7 @@ class LabelForm extends Component {
   }
   // handle the error response from api 
   errorCall = error => { 
-    const response = error && error.response ? error.response : '';
-    if (response) {
+    if (error && error.response) {
       this.callAlertTimer("danger", "Unable to Process Request, Please try again!"); 
     } else {
       this.handleDoubleClick(); // enable button to submit the values  

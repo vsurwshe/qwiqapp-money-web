@@ -159,7 +159,6 @@ class Lables extends Component {
           {ShowServiceComponent.loadHeaderWithSearch("Labels", null, null, null, this.callCreateLabel)}
           <center style={{ paddingTop: '20px' }}>
             <CardBody>
-              {/* <Loader type="TailSpin" color="#2E86C1" height={60} width={60} /> */}
               {spinnerOff ? <Loader type="TailSpin" color="#2E86C1" height={60} width={60} /> : <Alert color={alertColor}>{alertMessage}</Alert>}  
             </CardBody>
           </center>
