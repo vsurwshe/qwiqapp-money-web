@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Card, CardBody, CardHeader, Button, Alert, Row, Col } from 'reactstrap';
-import Loader from 'react-loader-spinner';
 import Config from '../../../data/Config';
 import BillingAddressApi from '../../../services/BillingAddressApi';
 import EditBillingAddress from './EditBillingAddress';
@@ -48,7 +47,12 @@ class BillingInfo extends Component {
   }
 
   errorcall = (error) => {
-    this.props.dispatch(handleApiResponseMsg('Unable to process, Please try Again....', 'danger', true))
+    let response = error && error.response ? error.response : '';
+    if (response) {
+      this.props.dispatch(handleApiResponseMsg('Unable to process, please try again....', 'danger', true))
+    } else {
+      this.props.dispatch(handleApiResponseMsg('Please check your internet connection and re-try again.', 'danger', true))
+    }
   }
 
   // handele edit billing address button actions  
@@ -77,18 +81,23 @@ class BillingInfo extends Component {
   }
 
   // While API is giving response, meanwhile this method loads the spinner 
-  loadSpinner = () => <div className="animated fadeIn">
+  loadSpinner = () => {
+    const { alertMessage, alertColor } = this.props.utility;
+    return <div className="animated fadeIn">
     <Card>
-      {this.loadHeader()}
+      {this.loadHeader("Edit Billing Address")}
       <center className="padding-top">
-        <CardBody><Loader type="TailSpin" className="loader-color" height={60} width={60} /></CardBody>
+        <CardBody>
+          {!alertColor ? <div className="spinner-border text-info" style={{ height: 60, width: 60 }}></div> : <Alert color={alertColor}>{alertMessage} </Alert> }
+        </CardBody>
       </center>
     </Card>
   </div>
+  }
 
   // This method shows Billing Address details
   billingAddress = () => {
-    const { showAlert, color, message } = this.props.utility;
+    const { showAlert, alertMessage, alertColor } = this.props.utility;
     const { billingAddress } = this.props.biliing;
     showAlert && setTimeout(() => {
       this.props.dispatch(handleApiResponseMsg('', '', false))
@@ -98,7 +107,7 @@ class BillingInfo extends Component {
         <Card>
           {this.loadHeader("Edit Billing Address")}
           <CardBody>
-            {color && <Alert color={color}>{message} </Alert>}
+            {alertColor && <Alert color={alertColor}>{alertMessage} </Alert>}
             {billingAddress &&
               <CardBody>
                 <center className="text-sm-left">

@@ -25,24 +25,29 @@ export default BillingAddressApi;
 async function process(success, failure, apiPath, requestMethod, data, reload, payments) {
     let HTTP = httpCall(apiPath, requestMethod);
     let promise;
-    try {
-        data ?  promise = await HTTP.request({ data }) : promise = await HTTP.request();
-        requestMethod === "GET" ?  validResponse(promise.data, success, payments) : validResponse(data, success, payments)
-    } catch (err) {
-        handleAccessTokenError(err, failure, apiPath, requestMethod, data, success, reload);
+    if (HTTP) {
+        try {
+            data ?  promise = await HTTP.request({ data }) : promise = await HTTP.request();
+            requestMethod === "GET" ?  validResponse(promise.data, success, payments) : validResponse(data, success, payments)
+        } catch (error) {
+            handleAccessTokenError(error, failure, apiPath, requestMethod, data, success, reload);
+        }
     }
 }
 
 //this method slove the Exprie Token Problem.
-let handleAccessTokenError = function (err, failure, apiPath, requestMethod, data, success, reload) {
-    if (err.request.status === 0) {
-    } else if (err.response.status === 403 || err.response.status === 401) {
+let handleAccessTokenError = function (error, failure, apiPath, requestMethod, data, success, reload) {
+    const request = error && error.request ? error.request : '';
+    const response = error && error.response ? error.response : '';
+    if (request && request.status === 0 && !response) {
+        errorResponse(error, failure);
+    } else if (response && (response.status === 403 || response.status === 401)) {
         // This condtions restrict calling of api after geting 403 or 401 Error
         if (!reload) {
-            new LoginApi().refresh(() => { process(success, failure, apiPath, requestMethod, data, "restrict") }, ()=>{errorResponse(err, failure)});
+            new LoginApi().refresh(() => { process(success, failure, apiPath, requestMethod, data, "restrict") }, ()=>{errorResponse(error, failure)});
         } 
     } else {
-        errorResponse(err, failure)
+        errorResponse(error, failure)
     }
 }
 
@@ -59,27 +64,32 @@ let validResponse =  function (response, successMethod, payments) {
 };
 
 let errorResponse = async function (error, failure) {
-    let err = error.response;
-    if (err.status === 500) {
-        let data = {
-            status: err.status,
-            message: err.data.error.debugMessage
+    let response = (error && error.response) ? error.response : ''; // If error && error.response are there, then we are assigning error.response or else ''
+    if (response && response.status === 500) {
+        const {status, data} = response;
+        let errorData = {
+            status: status,
+            message: (data && data.error) && data.error.debugMessage // If data && data.error are there then assigning data.error.debugMessage or else falsy value(null/undefined...)
         }
-        failure(data);
+        failure(errorData);
     } else { // apart form 500, any response code else block will execute..
         failure(error);
     }
 };
 
 function httpCall(apiPath, requestMethod) {
-    let instance = Axios.create({
-        baseURL: Config.settings().cloudBaseURL,
-        method: requestMethod,
-        url: apiPath,
-        headers: {
-            "content-type": "application/json",
-            Authorization: "Bearer " + Store.getAppUserAccessToken()
-        }
-    });
+    let url = Config.settings();
+    let instance = null;
+    if (url) {
+        instance = Axios.create({
+            baseURL: url.cloudBaseURL,
+            method: requestMethod,
+            url: apiPath,
+            headers: {
+                "content-type": "application/json",
+                Authorization: "Bearer " + Store.getAppUserAccessToken()
+            }
+        });
+    }
     return instance;
 }

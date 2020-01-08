@@ -69,11 +69,13 @@ class Signup extends React.Component {
     this.setState({ password: '', validate: { passwordState: "danger", emailState: "danger" } });
   }
   // when any internal Error occur
-  errorCall = err => {
-    if (err && err.response && !err.response.data && err.response.status === 400) {
+  errorCall = error => {
+    const response = error && error.response ? error.response : ''
+    const {data, status} = response ? response : '';
+    if (!data && status === 400) {
       this.callAlertTimer("danger", "Your email is alredy register with us, please login or use another email to register");
     } else {
-      this.callAlertTimer("danger", "Unable to Process Request, Please try Again...");
+      this.callAlertTimer("danger", "Unable to process request, please try again...");
     }
   };
 

@@ -4,6 +4,7 @@ import { Card, CardHeader, CardBody, Col, Alert, Row, Button, Collapse } from 'r
 import Loader from 'react-loader-spinner';
 import Avatar from 'react-avatar';
 import { FaAngleDown } from 'react-icons/fa';
+import Config from '../../data/Config';
 import '../../css/style.css';
 
 export const ShowServiceComponent = {
@@ -50,17 +51,28 @@ export const ShowServiceComponent = {
       </CardHeader>)
   },
 
-  loadSpinnerAction: function (headerMessage, bodyMessage, addButton, buttonText, visible) {
+  handleSpinner: function (visible) {
+    let data = false;
+    if (visible) {
+      setTimeout(()=>{
+        data = true;
+      }, Config.apiTimeoutMillis);
+    } 
+    return data;
+  }, 
+
+  loadSpinnerAction: function (headerMessage, alertMessage, addButton, buttonText, visible) {
+    let spinnerOff = this.handleSpinner(visible);
     return (
       <div className="animated fadeIn">
         <Card>
+        {this.loadHeaderAction(headerMessage, addButton, buttonText)}
           <center>
-            {this.loadHeaderAction(headerMessage, addButton, buttonText)}
             <CardBody>
-              {visible && <Alert color="danger">Unable to Process your Request, please try Again...</Alert>}
-              <div className="text-primary spinner-size" role="status">
+              {visible && <Alert color="danger">{alertMessage}</Alert>}
+              {spinnerOff && <div className="text-primary spinner-size" role="status">
                 <span className="sr-only">Loading...</span>
-              </div>
+              </div>}
             </CardBody>
           </center>
         </Card>

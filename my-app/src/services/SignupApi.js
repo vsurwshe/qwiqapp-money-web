@@ -31,15 +31,16 @@ class SignupApi {
     this.getToken();
     setTimeout(() => {
       let HTTP = httpCall( "/user/exists?email=" + userData.email, "GET", Store.getDummyUserAccessToken());
-      HTTP.request().then(resp => {
-        if (resp.data) {
-          validResponse(resp, success)
+      HTTP.request().then(response => {
+        if (response && response.data) {
+          validResponse(response, success)
         }
       })
-        .catch(err => { if (err.response){  
-          if(err.response.status === "404"){
-            console.log("Internal Error") 
-          };
+      .catch(error => {
+        if (error && error.response && error.response.status === "404"){  
+          console.log("Internal Error")
+        } else {
+          errorResponse(error, failure);
         }
       }) 
     }, Config.apiTimeoutMillis);
@@ -67,14 +68,14 @@ let process = function (success, failure, Uurl, Umethod, data) {
   } else {
     HTTP = httpCall(Uurl, Umethod, Store.getDummyUserAccessToken());
   }
-  if ([data].length > 0) {
+  if (data) {
     HTTP.request({ data })
       .then(resp => validResponse(resp, success))
-      .catch(err => errorResponse(err, failure));
+      .catch(error => errorResponse(error, failure));
   } else {
     HTTP.request()
       .then(resp => validResponse(resp, success))
-      .catch(err => errorResponse(err, failure));
+      .catch(error => errorResponse(error, failure));
   }
 };
 

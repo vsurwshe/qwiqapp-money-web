@@ -22,25 +22,29 @@ export default GeneralApi;
 async function process(successCall, failureCall, requestUrl, requestMethod, reload) {
   let HTTP = httpCall(requestUrl, requestMethod);
   let promise
-  try {
-    promise = await HTTP.request();
-    successResponse(promise, successCall)
-  } catch (error) {
-    handleAccessTokenError(error, successCall, failureCall, requestUrl, requestMethod, reload);
+  if (HTTP) {
+    try {
+      promise = await HTTP.request();
+      successResponse(promise, successCall)
+    } catch (error) {
+      handleAccessTokenError(error, successCall, failureCall, requestUrl, requestMethod, reload);
+    }
   }
 }
 
-function handleAccessTokenError(err, success, failure, Uurl, Umethod, reload) {
-  if (err.request.status === 0) {
-    errorResponse(err, failure)
-  } else if (err.response.status === 401 || err.response.status === 403) {
+function handleAccessTokenError(error, success, failure, Uurl, Umethod, reload) {
+  const request = error && error.request ? error.request : '';
+  const response = error && error.response ? error.response : '';
+  if (request && request.status === 0) {
+    errorResponse(error, failure)
+  } else if (response && (response.status === 401 || response.status === 403)) {
     if (!reload) {
-      new LoginApi().refresh(() => process(success, failure, Uurl, Umethod, "reload"), errorResponse(err, failure))
+      new LoginApi().refresh(() => process(success, failure, Uurl, Umethod, "reload"), errorResponse(error, failure))
     } else {
-      errorResponse(err, failure);
+      errorResponse(error, failure);
     }
   } else {
-    errorResponse(err, failure)
+    errorResponse(error, failure)
   }
 }
 
@@ -57,14 +61,18 @@ let successResponse = function (response, successCall) {
 };
 
 function httpCall(url, method) {
-  let instance = Axios.create({
-    baseURL: Config.settings().cloudBaseURL,
-    method: method,
-    url: url,
-    headers: {
-      "content-type": "application/json",
-      Authorization: "Bearer " + Store.getAppUserAccessToken()
-    }
-  });
+  let configUrl = Config.settings();
+  let instance = null;
+  if (configUrl) {
+    instance = Axios.create({
+      baseURL: configUrl.cloudBaseURL,
+      method: method,
+      url: url,
+      headers: {
+        "content-type": "application/json",
+        Authorization: "Bearer " + Store.getAppUserAccessToken()
+      }
+    });
+  }
   return instance;
 }

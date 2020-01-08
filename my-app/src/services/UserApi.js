@@ -21,22 +21,26 @@ export default UserApi;
 async function process(success, failure, requestUrl, requestMethod, data, reload) {
   let HTTP = httpCall(requestUrl, requestMethod);
   let promise;
-  try {
-    data === null ? promise = await HTTP.request() : promise = await HTTP.request({ data });
-    Store.saveUser(promise.data)
-    validResponse(promise, success)
-  } catch (err) {
-    handleAccessTokenError(err, failure, requestUrl, requestMethod, data, success, reload);
+  if (HTTP) {
+    try {
+      data === null ? promise = await HTTP.request() : promise = await HTTP.request({ data });
+      Store.saveUser(promise.data)
+      validResponse(promise, success)
+    } catch (error) {
+      handleAccessTokenError(error, failure, requestUrl, requestMethod, data, success, reload);
+    }
   }
 }
 
 //this method solve the Expire Token Problem.
 let handleAccessTokenError = function (err, failure, requestUrl, requestMethod, data, success, reload) {
-  if (err.request.status === 0) {
+  const request = err && err.request ? err.request : '';
+  const response = err && err.response ? err.response : '';
+  if (request && request.status === 0) {
     errorResponse(err, failure)
-  } else if (err.response.status === 403 || err.response.status === 401) {
-    if (err.response["data"].error.debugMessage) {
-      errorResponse("Wrong password supplied.", failure)
+  } else if (response && (response.status === 403 || response.status === 401)) {
+    if (response.data && response.data.error && response.data.error.debugMessage) {
+      errorResponse(err, failure)
     } else {
       if (!reload) {
         new LoginApi().refresh(() => { process(success, failure, requestUrl, requestMethod, data, "reload") }, errorResponse(err, failure))
@@ -60,14 +64,18 @@ let errorResponse = function (error, failure) {
 };
 
 function httpCall(requestUrl, requestMethod) {
-  let instance = Axios.create({
-    baseURL: Config.settings().cloudBaseURL,
-    method: requestMethod,
-    url: requestUrl,
-    headers: {
-      "content-type": "application/json",
-      Authorization: "Bearer " + Store.getAppUserAccessToken()
-    }
-  });
+  let configUrl = Config.settings();
+  let instance = null;
+  if (configUrl) {
+    instance = Axios.create({
+      baseURL: configUrl.cloudBaseURL,
+      method: requestMethod,
+      url: requestUrl,
+      headers: {
+        "content-type": "application/json",
+        Authorization: "Bearer " + Store.getAppUserAccessToken()
+      }
+    });
+  }
   return instance;
 }
