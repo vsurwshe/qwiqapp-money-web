@@ -149,13 +149,12 @@ class Categories extends Component {
     if (!profileId) {
       return <ProfileEmptyMessage />
     } else if (spinner) {
-      if (alertMessage) {
+      if (alertMessage) { // Network error while fetching the categories, then Stop the spinner and display message 
         setTimeout(()=>{
           this.setState({spinnerOff: true});
         },Config.apiTimeoutMillis)
       }
-      let headerMessage = (categories && categories.length) ? "Categories : " + categories.length : "Categories";
-      return ShowServiceComponent.loadSpinner(headerMessage, alertColor, alertMessage, this.state.spinnerOff);
+      return ShowServiceComponent.loadSpinner("Categories", alertColor, alertMessage, this.state.spinnerOff);
     } else if (createCategory) {
       return <CategoryForm categories={categories} id={profileId} />
     } else if (updateCategory) {

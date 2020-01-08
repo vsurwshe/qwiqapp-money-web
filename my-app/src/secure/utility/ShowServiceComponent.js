@@ -58,7 +58,7 @@ export const ShowServiceComponent = {
   loadHeaderAction: function (headerMessage, addButton, buttonText)  { // Block is for code reduce purpose (Header with button )
     return (
      <CardHeader ><strong> {headerMessage} </strong>
-        {addButton && <Button color="success" className="float-right" onClick={this.callCreateProfile}>{buttonText}</Button>}
+        {addButton && <Button color="success" className="float-right" onClick={addButton}>{buttonText}</Button>}
       </CardHeader>)
   },
 

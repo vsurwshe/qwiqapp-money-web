@@ -90,13 +90,11 @@ async function process(success, failure, Uurl, Umethod, profileId, data, reload)
 
 let handleAccessTokenError = (error, failure, Uurl, Umethod, profileId, data, success, reload) => {
   const response = error && error.response ? error.response : '';
-  const request = error && error.request ? error.request : '';
-  if (response && (request && request.status === 0)) { // Handling infinite api calls(if user dont have network) -> response parameter
-    errorResponse(error, failure)
-  } else if (response && (response.status === 401 || response.status === 403)) {
-    if (!reload) {
+  // Here we are handling refresh token error.
+  if (response && (response.status === 401 || response.status === 403)) {
+    if (!reload) { // Solving the unlimited refresh API calls(calling once because of reload parameter) 
       new LoginApi().refresh(() => process(success, failure, Uurl, Umethod, profileId, data, true), errorResponse(error, failure));
-    } else {
+    } else { // other then any error with status 401/403 for more then 1, Else block will executes
       errorResponse(error, failure);
     }
   } else {
