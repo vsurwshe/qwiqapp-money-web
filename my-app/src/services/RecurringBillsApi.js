@@ -15,7 +15,7 @@ class RecurringBillsApi extends AbstractApi {
 
   //This Method Get All Bills
   getRecurringBills(success, failure, profileId, value) {
-    Store.getRecurringBills() === null || value === "True" ? this.process(success, failure, profileId + "/recurbills", "GET") : success(Store.getRecurringBills());
+    Store.getRecurringBills() === null || value ? this.process(success, failure, profileId + "/recurbills", "GET") : success(Store.getRecurringBills());
   }
 
   //This Method Get Bill By ID
@@ -57,7 +57,7 @@ class RecurringBillsApi extends AbstractApi {
           this.billApi.updateBill(this.billSuccessData(success, failure, profileId), failure, profileId, billId, newPostData);
         }
       } else {
-        this.getRecurringBills(success, failure, profileId, "True");
+        this.getRecurringBills(success, failure, profileId, true);
       }
     }
     //TODO: handle user error   
@@ -67,14 +67,14 @@ class RecurringBillsApi extends AbstractApi {
   }
 
   billSuccessData(success, failure, profileId) {
-    this.billApi.getBills(success, failure, profileId, "True")
+    this.billApi.getBills(success, failure, profileId, true)
   }
   handleAccessTokenError(profileId, err, failure, Uurl, Umethod, data, success, updateBill, createNewBill, billId, reload) {
     if (err.request && err.request.status === 0) {
-      this.getRecurringBills(success, failure, profileId, "True");
+      this.getRecurringBills(success, failure, profileId, true);
     } else if (err.response && (err.response.status === 403 || err.response.status === 401)) {
       if (!reload) {
-      this.loginApi && this.loginApi.refresh(() => { this.process(success, failure, Uurl, Umethod, profileId, data, updateBill, createNewBill, billId, "ristrict") }, this.errorResponse(err, failure));
+      this.loginApi && this.loginApi.refresh(() => { this.process(success, failure, Uurl, Umethod, profileId, data, updateBill, createNewBill, billId, true) }, this.errorResponse(err, failure));
       } else {
         this.errorResponse(err, failure)
       }

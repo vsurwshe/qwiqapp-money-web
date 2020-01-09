@@ -59,7 +59,7 @@ class BillApi extends AbstractApi {
         this.getBills(success, failure, profileId, true);
       }
     }
-    //TODO: handle user error   
+    // handle user error   
     catch (err) {
       this.handleAccessTokenError(profileId, err, failure, requestURL, requestMethod, data, success, reload);
     }

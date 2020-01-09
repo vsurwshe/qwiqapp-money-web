@@ -28,8 +28,8 @@ class BillAttachmentsApi extends AbstractApi{
 
 async process(success, failure, apiUrl, requestMethod, data, reload) {
   const profile =Store.getProfile();
-  const baseUrl= (profile && profile.url) ? profile.url + "/profile/" : '';
-  let HTTP = this.httpCall(apiUrl, requestMethod, baseUrl);
+  const profileUrl= (profile && profile.url) ? profile.url + "/profile/" : '';
+  let HTTP = this.httpCall(apiUrl, requestMethod, profileUrl);
   let promise;
   try {
     data === null ? promise = await HTTP.request() : promise = await HTTP.request({ data })
