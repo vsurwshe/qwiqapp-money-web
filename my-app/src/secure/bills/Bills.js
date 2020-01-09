@@ -241,15 +241,17 @@ class Bills extends Component {
     new BillApi().markAsUnPaid(this.successUnpaidBill, this.errorCall, profileId, updateBill.id);
   }
 
-  successUnpaidBill = () => { this.setMarkasUnpaid(); this.callTimer("success", "Your bill payments cleared"); this.getBills() }
+  successUnpaidBill = () => { this.setMarkasUnpaid(); this.callTimer("success", "Your bill payments removed"); this.getBills() }
 
   // This method handle Error Call of API 
-  errorCall = (err) => {
-    if (err.response && (err.response.status === 500 && err.response.data.error.debugMessage)) {
+  errorCall = (error) => {
+    const response = error && error.response ? error.response : '';
+    const {data, status} = response && response;
+    if (response && (status === 500 && data && data.error && data.error.debugMessage)) {
       this.setState({ visible: true, color: 'danger', content: 'Something went wrong, unable to fetch bills...' });
       setTimeout(() => { this.setState({ visible: false, spinner: true }); }, Config.apiTimeoutMillis);
     } else {
-      this.setState({ color: 'danger', content: 'Unable to Process Request, Please try Again....' });
+      this.setState({ color: 'danger', content: 'Unable to process request, please try again.' });
     }
   }
 
