@@ -12,27 +12,27 @@ class BillApi extends AbstractApi {
   }
   //This Method Create Bill
   createBill(success, failure, profileId, data) {
-    this.process(success, failure, profileId + "/bills", "POST", profileId, data);
+    this.process(success, failure, profileId + "/bills", this.apiMethod.POST, profileId, data);
   }
 
   //This Method Get All Bills
   getBills(success, failure, profileId, value) {
-    !Store.getBills() || value ? this.process(success, failure, profileId + "/bills", "GET", profileId) : success(Store.getBills());
+    !Store.getBills() || value ? this.process(success, failure, profileId + "/bills", this.apiMethod.GET, profileId) : success(Store.getBills());
   }
 
   //This Method Get Bill By ID
   getBillById(success, failure, profileId, billId) {
-    this.process(success, failure, profileId + "/bills/" + billId, "GET", profileId, null, null, billId);
+    this.process(success, failure, profileId + "/bills/" + billId, this.apiMethod.GET, profileId, null, null, billId);
   }
 
   //This Method Update Bill 
   updateBill(success, failure, profileId, billId, data) {
-    this.process(success, failure, profileId + "/bills/" + billId, "PUT", profileId, data);
+    this.process(success, failure, profileId + "/bills/" + billId, this.apiMethod.PUT, profileId, data);
   }
 
   //This Method Delete Bill
   deleteBill(success, failure, profileId, billId) {
-    this.process(success, failure, profileId + "/bills/" + billId + "?removeDependency=true", "DELETE", profileId);
+    this.process(success, failure, profileId + "/bills/" + billId + "?removeDependency=true", this.apiMethod.DELETE, profileId);
   }
 
   markAsUnPaid(success, failure, profileId, billId) {
@@ -42,26 +42,28 @@ class BillApi extends AbstractApi {
   async process(success, failure, requestURL, requestMethod, profileId, data, reload, billId) {
     const profile = Store.getProfile();
     const baseUrl = (profile && profile.url) ? profile.url + "/profile/" : '';
-    let HTTP = this.httpCall(requestURL, requestMethod, baseUrl);
+    let http = this.httpCall(requestURL, requestMethod, baseUrl);
     let promise;
-    try {
-      !data ? promise = await HTTP.request() : promise = await HTTP.request({ data });
-      if (requestMethod === "GET") {
-        if (billId) {
-          let filterData = Store.getBills() && Store.getBills().filter(bill => bill.id !== promise.data.id)
-          filterData.push(promise.data)
-          Store.saveBills(filterData);
+    if (http) {
+      try {
+        !data ? promise = await http.request() : promise = await http.request({ data });
+        if (requestMethod === this.apiMethod.GET) {
+          if (billId) {
+            let filterData = Store.getBills() && Store.getBills().filter(bill => bill.id !== promise.data.id)
+            filterData.push(promise.data)
+            Store.saveBills(filterData);
+          } else {
+            Store.saveBills(promise.data);
+          }
+          this.validResponse(promise, success)
         } else {
-          Store.saveBills(promise.data);
+          this.getBills(success, failure, profileId, true);
         }
-        this.validResponse(promise, success)
-      } else {
-        this.getBills(success, failure, profileId, true);
       }
-    }
-    // handle user error   
-    catch (err) {
-      this.handleAccessTokenError(profileId, err, failure, requestURL, requestMethod, data, success, reload);
+      // handle user error   
+      catch (err) {
+        this.handleAccessTokenError(profileId, err, failure, requestURL, requestMethod, data, success, reload);
+      }
     }
   }
   //this method slove the Exprie Token Problem.
