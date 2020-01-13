@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { AvField } from 'availity-reactstrap-validation';
-import { Alert, Col, Row, Input, Collapse, Modal, ModalBody, ModalHeader } from "reactstrap";
+import { Col, Row, Input, Collapse, Modal, ModalBody, ModalHeader } from "reactstrap";
 import Select from 'react-select';
 import BillApi from "../../services/BillApi";
 import Bills from "./Bills";
@@ -65,7 +65,11 @@ class BillForm extends Component {
   }
 
   errorCallRecurById = (error) => {
-    console.log(error);
+    if (error && error.response) { // updata a recur-bill, getting error while fetching that recur configuration
+      console.log(error); // other then network error, we are not displaying any error to user.
+    } else {
+      this.callAlertTimer("danger", "Please check your internet connection and re-try again.");
+    }
   }
 
   handleMoreOptions = (bill) => {
@@ -97,7 +101,7 @@ class BillForm extends Component {
   handleSubmitValue = async (event, errors, values) => {
     const { labelOption, categoryOption, contactOption, labelOptionUpdate, contactOptionUpdate } = this.state
     if (categoryOption === null) {
-      this.callAlertTimer("warning", "Please Select Category...");
+      this.callAlertTimer("warning", "Please select category");
     } else if (errors.length === 0) {
       let custData = {
         ...values,
@@ -154,7 +158,7 @@ class BillForm extends Component {
   handleUpdateRecurBill = async (event, data) => {
     event.persist();
     this.setState({ doubleClick: true });
-    await new RecurringBillsApi().updateRecurringBill(this.successUpdateBill, this.errorCall, data, this.state.profileId, this.props.bill.recurId, null, this.props.bill.id)
+    await new RecurringBillsApi().updateRecurringBill(this.successCall, this.errorCall, data, this.state.profileId, this.props.bill.recurId, null, this.props.bill.id)
   }
 
   handleCreateRecurBill = async (event, data, billAction, billId) => {
@@ -167,19 +171,22 @@ class BillForm extends Component {
   handleCreateBillPost = async (e, data) => {
     e.persist();
     this.setState({ doubleClick: true });
-    await new BillApi().createBill(this.successCreateBill, this.errorCall, this.state.profileId, data);
+    await new BillApi().createBill(this.successCall, this.errorCall, this.state.profileId, data);
   };
 
   handleUpdateBill = (e, data) => {
     e.persist();
     this.setState({ doubleClick: true });
-    new BillApi().updateBill(this.successUpdateBill, this.errorCall, this.state.profileId, this.props.bill.id, data)
+    new BillApi().updateBill(this.successCall, this.errorCall, this.state.profileId, this.props.bill.id, data)
   };
 
-  //this method call when labels created successfully
-  successCreateBill = () => {
-    this.callAlertTimer("success", "New Bill Created....");
-    this.timerForBillsList()
+  successCall = (singleBill) => {
+    if (this.props.bill) {
+      this.callAlertTimer("success", "Bill updated successfully !! ");
+    } else {
+        this.callAlertTimer("success", "New bill created.");
+    }
+    this.timerForBillsList();
   }
 
   timerForBillsList = () => {
@@ -191,34 +198,39 @@ class BillForm extends Component {
     }, Config.apiTimeoutMillis);
   }
 
-  // updated bill
-  successUpdateBill = () => {
-    this.callAlertTimer("success", "Bill Updated Successfully !! ");
-    this.timerForBillsList()
-  };
-
   //this method call when labels created successfully
-  successCreate = () => { this.callAlertTimer("success", "New recuring bill created....!!"); this.timerForBillsList() }
+  successCreate = () => { this.callAlertTimer("success", "New recuring bill created !!"); this.timerForBillsList() }
 
   //this handle the error response the when api calling
-  errorCall = err => {
-    this.callAlertTimer("danger", "Unable to Process Request, Please try Again....");
+  errorCall = error => {
+    if (error && error.response) {
+      this.callAlertTimer("danger", "Unable to process request, please try again.");
+    } else {
+      this.callAlertTimer("danger", "Please check your internet connection and re-try again.");
+    }
+    
     this.timerForBillsList()
   };
 
   cancelCreateBill = () => {
-    this.setState({ cancelCreateBill: true })
+    this.handleCallBills();
   }
 
+  handleCallBills = () => {
+    this.setState({gotoBills: !this.state.gotoBills});
+  }
   //this method Notifies the user after every request
   callAlertTimer = (alertColor, alertMessage) => {
-    this.setState({ alertColor, alertMessage, doubleClick: false });
+    this.setAlertMessageColor(alertColor, alertMessage);
+    this.setState({ doubleClick: false });
     if (alertColor === "success") {
       setTimeout(() => {
-        this.setState({ billCreated: true });
+        this.handleCallBills();
       }, Config.apiTimeoutMillis);
     }
   };
+
+  setAlertMessageColor = (alertColor, alertMessage) =>{ this.setState({alertColor, alertMessage});}
 
   handleSetAmount = e => {
     e.preventDefault()
@@ -256,21 +268,21 @@ class BillForm extends Component {
 
   setDueOrNotifyDate = (billDate, value, type) => {
     if (billDate && value) {
-      if (this.state.alertColor) { this.setState({ alertColor: '', alertMessage: '' }) }
+      if (this.state.alertColor) { this.setAlertMessageColor('', '') }
       let newDate = new Date(billDate);
       parseInt(value) === 0 ? newDate.setDate(newDate.getDate()) : newDate.setDate(newDate.getDate() + parseInt(value - 1))
       let date = ShowServiceComponent.loadDateFormat(newDate)
       type === 'dueDays' ? this.setState({ dueDate: date }) : this.setState({ notifyDate: date })
     } else {
       if (!billDate) {
-        this.callAlertTimer("danger", "Please enter Bill Date... ")
+        this.callAlertTimer("danger", "Please enter bill date... ")
       } else {
         if (type === 'dueDays') {
           this.setState({ dueDate: '' });
-          this.callAlertTimer("danger", "Please enter Due days... ")
+          this.callAlertTimer("danger", "Please enter due days... ")
         } else {
           this.setState({ notifyDate: '' });
-          this.callAlertTimer("danger", "Please enter Notify days... ")
+          this.callAlertTimer("danger", "Please enter notify days... ")
         }
       }
     }
@@ -296,12 +308,14 @@ class BillForm extends Component {
   handlRecurBillForever = () => { this.setState({ recurBillForever: !this.state.recurBillForever }) }
 
   handleEveryRecurBill = (e) => {
-    this.setState({ repeatEvery: e.target.value, alertColor: "", alertMessage: "" });
+    this.setAlertMessageColor('', '')
+    this.setState({ repeatEvery: e.target.value });
     this.setNextBillDate(e.target.value, this.state.repeatType);
   }
 
   recurBillOption = (e) => {
-    this.setState({ repeatType: e.target.value, alertColor: "", alertMessage: "" });
+    this.setAlertMessageColor('', '')
+    this.setState({ repeatType: e.target.value });
     this.setNextBillDate(this.state.repeatEvery, e.target.value)
   }
 
@@ -363,13 +377,9 @@ class BillForm extends Component {
   }
 
   render() {
-    const { alertColor, alertMessage, cancelCreateBill, billCreated } = this.state;
+    const { alertColor, alertMessage, gotoBills} = this.state;
     const { labels, contacts, categories } = this.props;
-    if (cancelCreateBill) {
-      return <Bills />
-    } else {
-      return <div>{billCreated ? <Bills /> : this.billFormField(alertColor, alertMessage, labels, categories, contacts)}</div>
-    }
+    return <div>{gotoBills ? <Bills /> : this.billFormField(alertColor, alertMessage, labels, categories, contacts)}</div>
   }
 
   billFormField = (alertColor, alertMessage, labels, categories, contacts) => {
@@ -392,7 +402,7 @@ class BillForm extends Component {
       checked: checked,
       type: type
     }
-    let headerMessage = this.props.bill ? " " : " New Bill Details "
+    let headerMessage = this.props.bill ? " " : " New bill details "
     return <>
       {this.loadBillForm(FormData, alertColor, alertMessage, headerMessage)}
       {this.state.createModal && this.loadCreateModal()}
@@ -403,7 +413,7 @@ class BillForm extends Component {
     return <div className="animated fadeIn" >
       <h4 ><b><center>{headerMessage}</center></b></h4>
       <Col><br />
-        {alertColor && <Alert color={alertColor}>{alertMessage}</Alert>}
+        {alertColor && ShowServiceComponent.loadAlert(alertColor, alertMessage)}
         <BillFormUI data={formData}
           handleSubmitValue={this.handleSubmitValue}
           handleSetAmount={this.handleSetAmount}
@@ -437,7 +447,7 @@ class BillForm extends Component {
           <Row>
             <Col sm={3}> <label>Tax (in %)</label></Col>
             <Col><AvField name="taxPercent" id="taxPercent" value={this.state.taxPercent} placeholder={0}
-              label="" type="number" onChange={(e) => { this.handleTaxAmount(e) }} /></Col>
+              type="number" onChange={(e) => { this.handleTaxAmount(e) }} /></Col>
           </Row>
         </Col>
         <Col>
