@@ -39,7 +39,7 @@ class LabelForm extends Component {
   handleApiCalls = async (event, data) => {
     const { profileId } = this.props;
     const { label } = this.props
-    this.setState({ doubleClick: true });
+    this.handleDoubleClick()
     event.persist();
     // This condition decides its label Creation or Updation
     if (label) {
@@ -63,22 +63,35 @@ class LabelForm extends Component {
     }
   }
 
+  handleDoubleClick = () => {
+    this.setState({ doubleClick: !this.state.doubleClick });
+  }
   // handle the error response from api 
-  errorCall = err => { this.callAlertTimer("danger", "Unable to Process Request, Please try again! "); };
+  errorCall = error => { 
+    if (error && error.response) {
+      this.callAlertTimer("danger", "Unable to Process Request, Please try again!"); 
+    } else {
+      this.handleDoubleClick(); // enable button to submit the values  
+      this.callAlertTimer("danger", "Please check your internet connection and re-try again.", true); 
+    }
+    
+  };
 
   //this method show the success/error message and after 2 sec clear it off
-  callAlertTimer = (alertColor, content) => {
+  callAlertTimer = (alertColor, content, noTimer) => {
     this.setState({ alertColor, content });
-    setTimeout(() => {
-      if (this.state.hideCancel) {
-        this.setState({ hideCancel: '' })
-        this.props.toggleCreateModal('', true)
-      } else {
-        if (this._isMount) {
-          this.setState({ name: "", content: "", alertColor: "", labelAction: true });
+    if (!noTimer) { // Stopping to navigation(labels list) if user gets network error
+      setTimeout(() => {
+        if (this.state.hideCancel) {
+          this.setState({ hideCancel: '' })
+          this.props.toggleCreateModal('', true)
+        } else {
+          if (this._isMount) {
+            this.setState({ name: "", content: "", alertColor: "", labelAction: true });
+          }
         }
-      }
-    }, Config.notificationMillis);
+      }, Config.notificationMillis);
+    }
   };
 
   //this method makes true or false for the collapse
@@ -115,7 +128,7 @@ class LabelForm extends Component {
     return <Card>
       <CardHeader> <strong>LABELS</strong> </CardHeader>
       <CardBody>
-        <br /><center><h5> <b>{!this.props.label ? "New Label Details" : "Label Details"}</b> </h5> </center><br />
+        <br /><center><h5> <b>{!this.props.label ? "New label details" : "Label details"}</b> </h5> </center><br />
         <Col sm={{ size: 12, offset: 1 }} md={{ size: 12, offset: 1 }} lg={{ size: 8, offset: 3 }} xl={{ size: 6, offset: 3 }}>
           {alertColor && <Alert color={alertColor}>{content}</Alert>}
           <CategoryLabelForm

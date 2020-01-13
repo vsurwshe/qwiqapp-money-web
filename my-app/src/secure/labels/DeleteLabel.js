@@ -8,7 +8,7 @@ class DeleteLabel extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      content: "Deleting Label.....",
+      content: "Deleting label.....",
       color: "#00bfff",
     };
   }
@@ -18,14 +18,20 @@ class DeleteLabel extends Component {
   };
 
   successCall = () => {
-    this.callAlertTimer("success", "Label Deleted Successfully....");
+    this.callAlertTimer("success", "Label deleted successfully....");
   };
 
   errorCall = (error) => {
-    if (error.response.status === 500 && (error.response.data && error.response.data.error.debugMessage) ) {
-      this.callAlertTimer("danger", "It is associated with Contacts or Bills");
+    const response = error && error.response ? error.response : '';
+    if (response) {
+      const {status, data} = response; // directly assigning value, because we already checked that response is not a falsy(null, '', undefined, 0) value, then only come here.
+      if (status === 500 && (data && data.error && data.error.debugMessage) ) {
+        this.callAlertTimer("danger", "This label is associated with contacts or bills.");
+      } else {
+        this.callAlertTimer("danger", "Unable to process request, please try again.");
+      }
     } else {
-      this.callAlertTimer("danger", "Unable to Process Request, Please Try Again...  ");
+      this.callAlertTimer("danger", "Please check your internet connection and re-try again.");
     }
   };
 
