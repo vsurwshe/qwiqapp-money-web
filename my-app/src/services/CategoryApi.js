@@ -19,7 +19,7 @@ class CategoryApi extends AbstractApi {
 
   getCategories(success, failure, profileId, value) {
     !Store.getCategories() || value 
-      ? process(success, failure, profileId + "/categories?subcategories=true", 'GET', profileId)
+      ? process(success, failure, profileId + "/categories?subcategories=true", apiMethod.GET, profileId)
       : success(Store.getCategories())
   }
 
@@ -70,30 +70,30 @@ class CategoryApi extends AbstractApi {
 }
 export default CategoryApi;
 
-async function process(success, failure, Uurl, Umethod, profileId, data, reload) {
-  let HTTP = httpCall(Uurl, Umethod);
+async function process(success, failure, requestUrl, requestMethod, profileId, data, reload) {
+  let http = httpCall(requestUrl, requestMethod);
   let promise;
-  if (HTTP) {
+  if (http) {
     try {
-      !data ? promise = await HTTP.request() : promise = await HTTP.request({ data })
-      if (Umethod === 'GET') {
+      !data ? promise = await http.request() : promise = await http.request({ data })
+      if (requestMethod === apiMethod.GET) {
         Store.saveCategories(promise.data)
       } else {
         new CategoryApi().getCategories(success, failure, profileId, true)
       }
       validResponse(promise, success);
     } catch (error) {
-      handleAccessTokenError(error, failure, Uurl, Umethod, profileId, data, success, reload)
+      handleAccessTokenError(error, failure, requestUrl, requestMethod, profileId, data, success, reload)
     }
   }
 }
 
-let handleAccessTokenError = (error, failure, Uurl, Umethod, profileId, data, success, reload) => {
+let handleAccessTokenError = (error, failure, requestUrl, requestMethod, profileId, data, success, reload) => {
   const response = error && error.response ? error.response : '';
   // Here we are handling refresh token error.
   if (response && (response.status === 401 || response.status === 403)) {
     if (!reload) { // Solving the unlimited refresh API calls(calling once because of reload parameter) 
-      new LoginApi().refresh(() => process(success, failure, Uurl, Umethod, profileId, data, true), errorResponse(error, failure));
+      new LoginApi().refresh(() => process(success, failure, requestUrl, requestMethod, profileId, data, true), errorResponse(error, failure));
     } else { // other then any error with status 401/403 for more then 1, Else block will executes
       errorResponse(error, failure);
     }
@@ -114,14 +114,14 @@ let errorResponse = function (error, failure) {
   }
 };
 
-function httpCall(Uurl, Umethod) {
+function httpCall(requestUrl, requestMethod) {
   let profile = Store.getProfile()
   let instance = null;
   if (profile) {
     instance = Axios.create({
       baseURL: profile.url + "/profile/",
-      method: Umethod,
-      url: Uurl,
+      method: requestMethod,
+      url: requestUrl,
       headers: {
         "content-type": "application/json",
         Authorization: "Bearer " + Store.getAppUserAccessToken()
