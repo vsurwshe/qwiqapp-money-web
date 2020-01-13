@@ -5,23 +5,23 @@ class UserInvoiceApi extends AbstractApi{
 
   loginApi= null;
   constructor() {
-    super()
+    super();
     if (!this.loginApi) {
       this.loginApi = this.loginInstance();
     }
   }
 
   showInvoice(success, failure, invoceId) {
-    this.process(success, failure, "/invoices/" + invoceId, "GET")
+    this.process(success, failure, "/invoices/" + invoceId, this.apiMethod.GET)
   }
 
  process(success, failure, requestUrl, requestMethod, reload) {
   const baseURL=Config.settings().cloudBaseURL;
-  let HTTP = this.httpCall(requestUrl, requestMethod, baseURL);
+  let http = this.httpCall(requestUrl, requestMethod, baseURL);
   let promise;
-  if (HTTP) {
+  if (http) {
     try {
-      promise = HTTP.request();
+      promise = http.request();
       this.validResponse(promise, success)
     } catch (error) {
       this.handleAccessTokenError(error, failure, requestUrl, requestMethod, success, reload);

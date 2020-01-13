@@ -21,24 +21,24 @@ class SignupApi extends AbstractApi{
 
   //Registers User
   registerUser(success, failure, data) {
-    this.process(success, failure, "/user/register", "POST", data);
+    this.process(success, failure, "/user/register", this.apiMethod.POST, data);
   }
 
   //user forgot password 
   forgotPassword(success, failure, email) {
-    this.process(success, failure, "/user/passwd/forgot?email=" + email, "GET")
+    this.process(success, failure, "/user/passwd/forgot?email=" + email, this.apiMethod.GET)
   }
 
   // User Reset Password
   resetPassword(success, failure, email, otp, newpwd) {
-    this.process(success, failure, "/user/passwd/reset?email=" + email + "&otp=" + otp + "&newpwd=" + newpwd, "PUT");
+    this.process(success, failure, "/user/passwd/reset?email=" + email + "&otp=" + otp + "&newpwd=" + newpwd, this.apiMethod.PUT);
   }
 
   //Checks Whether user already exists or not
   async existsUser(success, failure, userData) {
     this.getToken();
     setTimeout(() => {
-      let HTTP = httpCall( "/user/exists?email=" + userData.email, "GET", Store.getDummyUserAccessToken());
+      let HTTP = httpCall( "/user/exists?email=" + userData.email, this.apiMethod.GET, Store.getDummyUserAccessToken());
       HTTP.request().then(response => {
         if (response && response.data) {
           this.validResponse(response, success)
@@ -58,27 +58,27 @@ class SignupApi extends AbstractApi{
   async verifySignup(success, failure, code) {
     await this.getToken()
     setTimeout(() => {
-      this.process(success, failure, "/user/verify?code=" + code + "&type=EMAIL", "GET", "verify");
+      this.process(success, failure, "/user/verify?code=" + code + "&type=EMAIL", this.apiMethod.GET, "verify");
     }, Config.apiTimeoutMillis);
   }
 
   resendVerifyCode(success,failure) {
-    this.process(success, failure, "/user/verify/resend?type=EMAIL", "GET","verify");
+    this.process(success, failure, "/user/verify/resend?type=EMAIL", this.apiMethod.GET,"verify");
   }
 
  process (success, failure, Uurl, Umethod, data) {
-  let HTTP;
+  let http;
   if (data === "verify") {
-    HTTP = httpCall(Uurl, Umethod, Store.getAppUserAccessToken());
+    http = httpCall(Uurl, Umethod, Store.getAppUserAccessToken());
   } else {
-    HTTP = httpCall(Uurl, Umethod, Store.getDummyUserAccessToken());
+    http = httpCall(Uurl, Umethod, Store.getDummyUserAccessToken());
   }
   if (data) {
-    HTTP.request({ data })
+    http.request({ data })
       .then(resp => this.validResponse(resp, success))
       .catch(error => this.errorResponse(error, failure));
   } else {
-    HTTP.request()
+    http.request()
       .then(resp => this.validResponse(resp, success))
       .catch(error => this.errorResponse(error, failure));
   }
@@ -89,7 +89,7 @@ export default SignupApi;
 
 
 function httpCall(customUrl, Umethod, value) {
-  let HTTP = Axios.create({
+  let http = Axios.create({
     method: Umethod,
     url: Config.settings().cloudBaseURL + customUrl,
     headers: {
@@ -97,5 +97,5 @@ function httpCall(customUrl, Umethod, value) {
       Authorization: "Bearer " + value
     }
   });
-  return HTTP;
+  return http;
 }

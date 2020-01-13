@@ -13,24 +13,24 @@ class UserApi extends AbstractApi{
   }
 
   getUser(success, failure) {
-    this.process(success, failure, "/user", "GET")
+    this.process(success, failure, "/user", this.apiMethod.GET)
   }
 
   updateUser(success, failure, data) {
-    this.process(success, failure, "/user", "PUT", data)
+    this.process(success, failure, "/user", this.apiMethod.PUT, data)
   }
 
   changePassword(success, failure, data) {
-    this.process(success, failure, "/user/passwd?new=" + data.new + "&old=" + data.old, "PUT")
+    this.process(success, failure, "/user/passwd?new=" + data.new + "&old=" + data.old, this.apiMethod.PUT)
   }
 
 async process(success, failure, requestUrl, requestMethod, data, reload) {
   const baseURL=Config.settings().cloudBaseURL;
-  let HTTP = this.httpCall(requestUrl, requestMethod, baseURL);
+  let http = this.httpCall(requestUrl, requestMethod, baseURL);
   let promise;
-  if(HTTP){
+  if(http){
   try {
-    data === null ? promise = await HTTP.request() : promise = await HTTP.request({ data });
+    data === null ? promise = await http.request() : promise = await http.request({ data });
     Store.saveUser(promise.data)
     this.validResponse(promise, success)
   } catch (err) {

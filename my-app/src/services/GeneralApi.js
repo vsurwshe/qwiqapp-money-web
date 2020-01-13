@@ -12,24 +12,24 @@ class GeneralApi extends AbstractApi{
   }
 
   getCountrylist(success, failure) {
-    this.process(success, failure, "/general/countries", "GET");
+    this.process(success, failure, "/general/countries", this.apiMethod.GET);
   };
 
   getCurrencyList(success, failure) {
-    this.process(success, failure, "/general/currencies", "GET");
+    this.process(success, failure, "/general/currencies", this.apiMethod.GET);
   }
 
   settings(success, failure) {
-    this.process(success, failure, "/general/settings", "GET");
+    this.process(success, failure, "/general/settings", this.apiMethod.GET);
   }
 
 async process(successCall, failureCall, requestUrl, requestMethod, reload) {
   const baseUrl=Config.settings().cloudBaseURL;
-  let HTTP = this.httpCall(requestUrl, requestMethod, baseUrl);
+  let http = this.httpCall(requestUrl, requestMethod, baseUrl);
   let promise
-  if (HTTP) {
+  if (http) {
     try {
-      promise = await HTTP.request();
+      promise = await http.request();
       this.validResponse(promise, successCall)
     } catch (error) {
       this.handleAccessTokenError(error, successCall, failureCall, requestUrl, requestMethod, reload);

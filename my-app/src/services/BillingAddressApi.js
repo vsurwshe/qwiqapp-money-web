@@ -11,37 +11,37 @@ class BillingAddressApi extends AbstractApi {
     }
 
     createBillingAddress(success, failure, data) {
-        this.process(success, failure, "/billing/address", "POST", data)
+        this.process(success, failure, "/billing/address", this.apiMethod.POST, data)
     }
 
     getBillings(success, failure) {
-        this.process(success, failure, "/billing/address", "GET")
+        this.process(success, failure, "/billing/address", this.apiMethod.GET)
     }
 
     getBillingItems(success, failure) {
-        this.process(success, failure, "/billing/items", "GET")
+        this.process(success, failure, "/billing/items", this.apiMethod.GET)
     }
 
     getPaymentsHistory(success, failure) {
-        this.process(success, failure, "/billing/payments", "GET", null, null, "payments")
+        this.process(success, failure, "/billing/payments", this.apiMethod.GET, null, null, "payments")
     }
 
-async process(success, failure, apiPath, requestMethod, data, reload, payments) {
+async process(success, failure, requestUrl, requestMethod, data, reload, payments) {
     const baseUrl = Config.settings().cloudBaseURL;
-    let HTTP = this.httpCall(apiPath, requestMethod, baseUrl);
+    let http = this.httpCall(requestUrl, requestMethod, baseUrl);
     let promise;
-    if (HTTP) {
+    if (http) {
         try {
-            data ?  promise = await HTTP.request({ data }) : promise = await HTTP.request();
-            requestMethod === "GET" ?  validResponse(promise.data, success, payments) : validResponse(data, success, payments)
+            data ?  promise = await http.request({ data }) : promise = await http.request();
+            requestMethod === this.apiMethod.GET ?  validResponse(promise.data, success, payments) : validResponse(data, success, payments)
         } catch (error) {
-            this.handleAccessTokenError(error, failure, apiPath, requestMethod, data, success, reload);
+            this.handleAccessTokenError(error, failure, requestUrl, requestMethod, data, success, reload);
         }
     }
 }
 
 //this method slove the Exprie Token Problem.
- handleAccessTokenError (error, failure, apiPath, requestMethod, data, success, reload) {
+ handleAccessTokenError (error, failure, requestUrl, requestMethod, data, success, reload) {
     const request = error && error.request ? error.request : '';
     const response = error && error.response ? error.response : '';
     if (request && request.status === 0 && !response) {
@@ -49,7 +49,7 @@ async process(success, failure, apiPath, requestMethod, data, reload, payments) 
     } else if (response && (response.status === 403 || response.status === 401)) {
         // This condtions restrict calling of api after geting 403 or 401 Error
         if (!reload) {
-            this.loginApi.refresh(() => { this.process(success, failure, apiPath, requestMethod, data, true) }, ()=>{errorResponse(error, failure)});
+            this.loginApi.refresh(() => { this.process(success, failure, requestUrl, requestMethod, data, true) }, ()=>{errorResponse(error, failure)});
         } 
     } else {
         errorResponse(error, failure)

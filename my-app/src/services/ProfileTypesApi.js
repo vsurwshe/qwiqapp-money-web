@@ -16,16 +16,16 @@ class ProfileTypesApi extends AbstractApi {
     if (profileTypes) {
       success(profileTypes)
     } else {
-      this.process(success, failure, "/profile/types", "GET")
+      this.process(success, failure, "/profile/types", this.apiMethod.GET)
     }
   }
   async process(success, failure, requestUrl, requestMethod, data, reload) {
     const baseUrl = Config.settings().cloudBaseURL;
-    let HTTP = this.httpCall(requestUrl, requestMethod, baseUrl);
+    let http = this.httpCall(requestUrl, requestMethod, baseUrl);
     let promise;
-    if(HTTP){
+    if(http){
     try {
-      promise = await HTTP.request();
+      promise = await http.request();
       this.validResponse(promise, success, requestMethod)
     } catch (err) {
       this.handleAccessTokenError(err, failure, requestUrl, requestMethod, data, success, reload);
