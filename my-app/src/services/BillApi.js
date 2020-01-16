@@ -1,101 +1,84 @@
-import Axios from "axios";
 import Store from "../data/Store";
-import LoginApi from "./LoginApi";
+import AbstractApi from "./AbstractApi";
 
-class BillApi {
+class BillApi extends AbstractApi {
+
+  loginApi = null;
+  constructor() {
+    super()
+    if (!this.loginApi) {
+      this.loginApi = this.loginInstance();
+    }
+  }
   //This Method Create Bill
   createBill(success, failure, profileId, data) {
-    process(success, failure, profileId + "/bills", "POST", profileId, data);
+    this.process(success, failure, profileId + "/bills", this.apiMethod.POST, profileId, data);
   }
 
   //This Method Get All Bills
   getBills(success, failure, profileId, value) {
-    !Store.getBills() || value ? process(success, failure, profileId + "/bills", "GET", profileId) : success(Store.getBills());
+    !Store.getBills() || value ? this.process(success, failure, profileId + "/bills", this.apiMethod.GET, profileId) : success(Store.getBills());
   }
 
   //This Method Get Bill By ID
   getBillById(success, failure, profileId, billId) {
-    process(success, failure, profileId + "/bills/" + billId, "GET", profileId, null, null, billId);
+    this.process(success, failure, profileId + "/bills/" + billId, this.apiMethod.GET, profileId, null, null, billId);
   }
 
   //This Method Update Bill 
   updateBill(success, failure, profileId, billId, data) {
-    process(success, failure, profileId + "/bills/" + billId, "PUT", profileId, data);
+    this.process(success, failure, profileId + "/bills/" + billId, this.apiMethod.PUT, profileId, data);
   }
 
   //This Method Delete Bill
   deleteBill(success, failure, profileId, billId) {
-    process(success, failure, profileId + "/bills/" + billId + "?removeDependency=true", "DELETE", profileId);
+    this.process(success, failure, profileId + "/bills/" + billId + "?removeDependency=true", this.apiMethod.DELETE, profileId);
   }
 
   markAsUnPaid(success, failure, profileId, billId) {
-    process(success, failure, profileId + "/bills/" + billId + "/unpaid", "PUT", profileId);
+    this.process(success, failure, profileId + "/bills/" + billId + "/unpaid", "PUT", profileId);
   }
-}
 
-export default BillApi;
-
-async function process(success, failure, requestURL, requestMethod, profileId, data, reload, billId) {
-  let HTTP = httpCall(requestURL, requestMethod);
-  let promise;
-  try {
-    !data ? promise = await HTTP.request() : promise = await HTTP.request({ data });
-    if (requestMethod === "GET") {
-      if (billId) {
-        let filterData = Store.getBills() && Store.getBills().filter(bill => bill.id !== promise.data.id)
-        filterData.push(promise.data)
-        Store.saveBills(filterData);
-      } else {
-        Store.saveBills(promise.data);
+  async process(success, failure, requestURL, requestMethod, profileId, data, reload, billId) {
+    const profile = Store.getProfile();
+    const baseUrl = (profile && profile.url) ? profile.url + "/profile/" : '';
+    let http = this.httpCall(requestURL, requestMethod, baseUrl);
+    let promise;
+    if (http) {
+      try {
+        !data ? promise = await http.request() : promise = await http.request({ data });
+        if (requestMethod === this.apiMethod.GET) {
+          if (billId) {
+            let filterData = Store.getBills() && Store.getBills().filter(bill => bill.id !== promise.data.id)
+            filterData.push(promise.data)
+            Store.saveBills(filterData);
+          } else {
+            Store.saveBills(promise.data);
+          }
+          this.validResponse(promise, success)
+        } else {
+          this.getBills(success, failure, profileId, true);
+        }
       }
-      validResponse(promise, success)
+      // handle user error   
+      catch (err) {
+        this.handleAccessTokenError(profileId, err, failure, requestURL, requestMethod, data, success, reload);
+      }
+    }
+  }
+  //this method slove the Exprie Token Problem.
+  handleAccessTokenError(profileId, err, failure, requestURL, requestMethod, data, success, reload) {
+    if (err.request && err.request.status === 0) {
+      this.getBills(success, failure, profileId, true);
+    } else if (err.response && (err.response.status === 403 || err.response.status === 401)) {
+      if (!reload) {
+        this.loginApi && this.loginApi.refresh(() => { this.process(success, failure, requestURL, requestMethod, profileId, data, true) }, this.errorResponse(err, failure))
+      } else {
+        this.errorResponse(err, failure)
+      }
     } else {
-      await new BillApi().getBills(success, failure, profileId, true);
+      this.errorResponse(err, failure)
     }
   }
-  //TODO: handle user error   
-  catch (err) {
-    handleAccessTokenError(profileId, err, failure, requestURL, requestMethod, data, success, reload);
-  }
 }
-
-//this method slove the Exprie Token Problem.
-let handleAccessTokenError = function (profileId, err, failure, requestURL, requestMethod, data, success, reload) {
-  if (err.request && err.request.status === 0) {
-    new BillApi().getBills(success, failure, profileId, true);
-  } else if (err.response && (err.response.status === 403 || err.response.status === 401)) {
-    if (!reload) {
-      new LoginApi().refresh(() => { process(success, failure, requestURL, requestMethod, profileId, data, "restrict") }, errorResponse(err, failure))
-    } else {
-      errorResponse(err, failure)
-    }
-  } else {
-    errorResponse(err, failure)
-  }
-}
-
-let validResponse = function (resp, successMethod) {
-  if (successMethod != null) {
-    successMethod(resp.data);
-  }
-};
-
-let errorResponse = function (error, failure) {
-  if (failure != null) {
-    failure(error);
-  }
-};
-
-function httpCall(requestURL, requestMethod) {
-  let baseURL = Store.getProfile();
-  let instance = Axios.create({
-    baseURL: baseURL.url + "/profile/",
-    method: requestMethod,
-    url: requestURL,
-    headers: {
-      "content-type": "application/json",
-      Authorization: "Bearer " + Store.getAppUserAccessToken()
-    }
-  });
-  return instance;
-}
+export default BillApi;

@@ -1,74 +1,58 @@
-import Axios from "axios";
-import Store from "../data/Store";
-import LoginApi from './LoginApi';
+import AbstractApi from "./AbstractApi";
+import Store from '../data/Store';
 
-class BillAttachmentsApi {
+class BillAttachmentsApi extends AbstractApi {
 
+  loginApi = null;
+  constructor() {
+    super()
+    if (!this.loginApi) {
+      this.loginApi = this.loginInstance();
+    }
+  }
   createBillAttachment(success, failure, profileId, billId, data) {
-    process(success, failure, profileId + "/bills/" + billId + "/attachments", "POST", data);
+    this.process(success, failure, profileId + "/bills/" + billId + "/attachments", this.apiMethod.POST, data);
   }
 
   getBillAttachments(success, failure, profileId, billId) {
-    process(success, failure, profileId + "/bills/" + billId + "/attachments", 'GET', profileId)
+    this.process(success, failure, profileId + "/bills/" + billId + "/attachments", this.apiMethod.GET, profileId);
   }
 
   getBillAttachmentsById(success, failure, profileId, billId, attachmentId) {
-    process(success, failure, profileId + "/bills/" + billId + "/attachments/" + attachmentId, "GET");
+    this.process(success, failure, profileId + "/bills/" + billId + "/attachments/" + attachmentId, this.apiMethod.GET);
   }
 
   deleteBillAttachment(success, failure, profileId, billId, attachmentId) {
-    process(success, failure, profileId + "/bills/" + billId + "/attachments/" + attachmentId, "DELETE", profileId);
+    this.process(success, failure, profileId + "/bills/" + billId + "/attachments/" + attachmentId, this.apiMethod.DELETE, profileId);
   }
-}
 
-export default BillAttachmentsApi;
-
-async function process(success, failure, apiUrl, requestMethod, data, reload) {
-  let HTTP = httpCall(apiUrl, requestMethod);
-  let promise;
-  try {
-    data === null ? promise = await HTTP.request() : promise = await HTTP.request({ data })
-    validResponse(promise, success);
-  } catch (error) {
-      handleAccessTokenError(error, failure, apiUrl, requestMethod, data, success,reload)
+  async process(success, failure, requestUrl, requestMethod, data, reload) {
+    const profile = Store.getProfile();
+    const profileUrl = (profile && profile.url) ? profile.url + "/profile/" : '';
+    let http = this.httpCall(requestUrl, requestMethod, profileUrl);
+    let promise;
+    if (http) {
+      try {
+        data === null ? promise = await http.request() : promise = await http.request({ data })
+        this.validResponse(promise, success);
+      } catch (error) {
+        this.handleAccessTokenError(error, failure, requestUrl, requestMethod, data, success, reload)
+      }
+    }
   }
-}
-
-let handleAccessTokenError = (err, failure, apiUrl, requestMethod, data, success, reload) => {
-  if (err.request && err.request.status === 0) {
-    errorResponse(err, failure)
-  } else if (err.response && (err.response.status === 401 || err.response.status === 403)) {
-    if (!reload) {
-      new LoginApi().refresh(() => process(success, failure, apiUrl, requestMethod, data, "ristrict"), errorResponse(err, failure))  
+  handleAccessTokenError(err, failure, requestUrl, requestMethod, data, success, reload) {
+    if (err.request && err.request.status === 0) {
+      this.errorResponse(err, failure)
+    } else if (err.response && (err.response.status === 401 || err.response.status === 403)) {
+      if (!reload) {
+        this.loginApi && this.loginApi.refresh(() => this.process(success, failure, requestUrl, requestMethod, data, true), this.errorResponse(err, failure))
+      } else {
+        this.errorResponse(err, failure)
+      }
     } else {
-      errorResponse(err, failure)
+      this.errorResponse(err, failure)
     }
-  } else {
-    errorResponse(err, failure)
   }
-}
-let validResponse = function (resp, successMethod) {
-  if (successMethod != null) {
-    successMethod(resp.data);
-  }
-};
 
-let errorResponse = function (error, failure) {
-  if (failure != null) {
-    failure(error);
-  }
-};
-
-function httpCall(apiUrl, requestMethod) {
-  let baseURL = Store.getProfile();
-  let instance = Axios.create({
-    baseURL: baseURL.url + "/profile",
-    method: requestMethod,
-    url: apiUrl,
-    headers: {
-      "Content-Type": "form-data",
-      Authorization: "Bearer " + Store.getAppUserAccessToken()
-    }
-  });
-  return instance;
 }
+export default BillAttachmentsApi;

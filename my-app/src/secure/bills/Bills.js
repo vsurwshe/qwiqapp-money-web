@@ -44,7 +44,7 @@ class Bills extends Component {
     this.setProfileId();
   }
   componentWillUnmount = () => {
-    this._isMount = false;
+    this._isMounted = false;
   }
 
   componentDidUpdate() {
@@ -103,8 +103,6 @@ class Bills extends Component {
       })
     }
   }
-
-  componentWillUnmount() { this._isMounted = false; }
 
   // This Method seting your profile id.
   setProfileId = async () => {
@@ -232,8 +230,10 @@ class Bills extends Component {
   }
 
   successCallPayments = async (payments, previousPayments) => {
-    previousPayments.push(payments)
-    return await this.setState({ billPayments: previousPayments })
+    if (this._isMounted) { // solved memory leak issue
+      previousPayments.push(payments)
+      return await this.setState({ billPayments: previousPayments })
+    }
   }
 
   handleMarkAsUnPaid = () => {
