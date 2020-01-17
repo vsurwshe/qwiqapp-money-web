@@ -1,7 +1,5 @@
 import Store from "../data/Store";
 import AbstractApi from "./AbstractApi";
-import LoginApi from "./LoginApi";
-import Axios from "axios";
 
 class CategoryApi extends AbstractApi {
 
@@ -19,7 +17,7 @@ class CategoryApi extends AbstractApi {
 
   getCategories(success, failure, profileId, value) {
     !Store.getCategories() || value 
-      ? process(success, failure, profileId + "/categories?subcategories=true", apiMethod.GET, profileId)
+      ? this.process(success, failure, profileId + "/categories?subcategories=true", this.apiMethod.GET, profileId)
       : success(Store.getCategories())
   }
 
@@ -54,79 +52,18 @@ class CategoryApi extends AbstractApi {
       }
     }
   }
-  handleAccessTokenError(err, failure, requestUrl, requestMethod, profileId, data, success, reload) {
-    if (err.request.status === 0) {
-      this.errorResponse(err, failure)
-    } else if (err.response.status === 401 || err.response.status === 403) {
-      if (!reload) {
-        this.loginApi && this.loginApi.refresh(() => { this.process(success, failure, requestUrl, requestMethod, profileId, data, true) }, this.errorResponse(err, failure))
-      } else {
-        this.errorResponse(err, failure);
+  handleAccessTokenError(error, failure, requestUrl, requestMethod, profileId, data, success, reload) {
+    const response = error && error.response ? error.response : '';
+    // Here we are handling refresh token error.
+    if (response && (response.status === 401 || response.status === 403)) {
+      if (!reload) { // Solving the unlimited refresh API calls(calling once because of reload parameter) 
+        this.loginApi && this.loginApi.refresh(() => { this.process(success, failure, requestUrl, requestMethod, profileId, data, true) }, this.errorResponse(error, failure))
+      } else { // other then any error with status 401/403 for more then 1, Else block will executes
+        this.errorResponse(error, failure);
       }
     } else {
-      this.errorResponse(err, failure)
+      this.errorResponse(error, failure)
     }
   }
 }
 export default CategoryApi;
-
-async function process(success, failure, requestUrl, requestMethod, profileId, data, reload) {
-  let http = httpCall(requestUrl, requestMethod);
-  let promise;
-  if (http) {
-    try {
-      !data ? promise = await http.request() : promise = await http.request({ data })
-      if (requestMethod === apiMethod.GET) {
-        Store.saveCategories(promise.data)
-      } else {
-        new CategoryApi().getCategories(success, failure, profileId, true)
-      }
-      validResponse(promise, success);
-    } catch (error) {
-      handleAccessTokenError(error, failure, requestUrl, requestMethod, profileId, data, success, reload)
-    }
-  }
-}
-
-let handleAccessTokenError = (error, failure, requestUrl, requestMethod, profileId, data, success, reload) => {
-  const response = error && error.response ? error.response : '';
-  // Here we are handling refresh token error.
-  if (response && (response.status === 401 || response.status === 403)) {
-    if (!reload) { // Solving the unlimited refresh API calls(calling once because of reload parameter) 
-      new LoginApi().refresh(() => process(success, failure, requestUrl, requestMethod, profileId, data, true), errorResponse(error, failure));
-    } else { // other then any error with status 401/403 for more then 1, Else block will executes
-      errorResponse(error, failure);
-    }
-  } else {
-    errorResponse(error, failure)
-  }
-}
-
-let validResponse = function (resp, successMethod) {
-  if (successMethod != null) {
-    successMethod(resp.data);
-  }
-};
-
-let errorResponse = function (error, failure) {
-  if (failure != null) {
-    failure(error);
-  }
-};
-
-function httpCall(requestUrl, requestMethod) {
-  let profile = Store.getProfile()
-  let instance = null;
-  if (profile) {
-    instance = Axios.create({
-      baseURL: profile.url + "/profile/",
-      method: requestMethod,
-      url: requestUrl,
-      headers: {
-        "content-type": "application/json",
-        Authorization: "Bearer " + Store.getAppUserAccessToken()
-      }
-    });
-  }
-  return instance;
-}
