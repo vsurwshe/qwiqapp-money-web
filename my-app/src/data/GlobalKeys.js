@@ -73,10 +73,3 @@ export const moreOptions = {
    ATTACHMENTS: 'Attachments',
    DELETE: 'Delete'
  }
-
- export const apiMethod = {
-    GET: "GET",
-    POST: "POST",
-    PUT: "PUT",
-    DELETE: "DELETE"
- }
