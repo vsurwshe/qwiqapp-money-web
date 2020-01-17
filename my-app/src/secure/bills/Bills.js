@@ -458,7 +458,7 @@ class Bills extends Component {
   emptyBills = () => { // if bills.length is zero, then this code will executes, any error(contact, labels,...), that message will display, 
     // if no error, then no bills, displey no bills message 
     const {color, content, displayAlert} = this.state
-    if (content && !displayAlert) {
+    if (content && !displayAlert) { // showing error message while fetching bills
       setTimeout(()=>{
         this.setState({displayAlert: true});
       }, Config.apiTimeoutMillis);
@@ -468,8 +468,10 @@ class Bills extends Component {
         {this.loadHeader("")}
         <center className="padding-top" >
           <CardBody><h5>
-            {displayAlert ? ShowServiceComponent.loadAlert(color, content) :<b>You don't have any {this.props.match.params.value ? this.props.match.params.value : ''} bills ... </b>}
-            </h5><br /></CardBody>
+            {displayAlert ? ShowServiceComponent.loadAlert(color, content) 
+              :<b>You don't have any {this.props.match.params.value ? this.props.match.params.value : ''} bills ... </b>}
+            </h5><br />
+          </CardBody>
         </center>
       </Card>
     </div>
@@ -491,10 +493,11 @@ class Bills extends Component {
       { title: "", orderable: false } // This column used for more options
     ]
     // This is Returning DataTable Component
+    const {alertColor, alertMessage} = this.state;
     return <div className="animated fadeIn">
       <Card>
         {this.loadHeader("")}
-        <h6>{this.state.alertMessage && <><br />{ShowServiceComponent.loadAlert(this.state.alertColor, this.state.alertMessage)}</>}</h6>
+        <h6>{alertMessage && <center><br />{ShowServiceComponent.loadAlert(alertColor, alertMessage)}</center>}</h6>
         <CardBody className="card-align">
           {/* Calling jquery datatable component providing rows and columns */}
           <DataTable billData={this.loadTableRows(bills, featureAttachment)} columns={columns} />
