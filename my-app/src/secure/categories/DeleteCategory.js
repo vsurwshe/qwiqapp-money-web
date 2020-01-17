@@ -21,7 +21,7 @@ class DeleteCategory extends Component {
   };
 
   successCall = () => {
-    this.callAlertTimer('success', 'Category deleted Successfully !!');
+    this.callAlertTimer('success', 'Category deleted successfully !!');
   };
 
   errorCall = (error) => {
@@ -47,7 +47,7 @@ class DeleteCategory extends Component {
   render() {
     const { categoryDeleted, color, content } = this.state;
     return <div>{categoryDeleted ? <Categories color={color} content={content} visible={true} />
-      : ShowServiceComponent.loadDeleting("CATEGORIES", content, color)}</div>
+      : ShowServiceComponent.loadDeleting("Categories", content, color)}</div>
   }
 }
 

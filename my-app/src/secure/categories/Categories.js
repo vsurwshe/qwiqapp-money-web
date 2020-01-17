@@ -14,17 +14,10 @@ class Categories extends Component {
     super(props);
     this.state = {
       categories: [],
-      profileId: 0,
-      categoryId: 0,
       requiredCategory: [],
-      createCategory: false,
-      updateCategory: false,
-      deleteCategory: false,
       accordion: [],
       dropDownAccord: [],
-      danger: false,
       visible: props.visible,
-      spinner: false,
       search: '',
       index: '',
       subCategoryHover: []
@@ -36,8 +29,9 @@ class Categories extends Component {
   }
 
   setProfileId = async () => {
-    if (Store.getProfile()) {
-      await this.setState({ profileId: Store.getProfile().id, spinner: true });
+    let profile = Store.getProfile();
+    if (profile) {
+      await this.setState({ profileId: profile.id, spinner: true });
       this.getCategories();
     }
   }

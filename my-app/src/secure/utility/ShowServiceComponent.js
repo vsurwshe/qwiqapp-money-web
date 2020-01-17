@@ -7,11 +7,11 @@ import Config from '../../data/Config';
 import '../../css/style.css';
 
 export const ShowServiceComponent = {
-  loadDeleting: function (headerMsg, bodyMessage, color) {
+  loadDeleting: function (headerMsg, bodyMessage) {
     return (
       <div className="animated fadeIn">
         <Card>
-          {headerMsg && this.loadHeader(headerMsg)}
+          {headerMsg && this.loadHeaderAction(headerMsg)}
           <CardBody>
             <center>
               {this.loadBootstrapSpinner()}
@@ -55,10 +55,10 @@ export const ShowServiceComponent = {
     return <Alert color={color}>{message}</Alert>
   },
 
-  loadHeaderAction: function (headerMessage, addButton, buttonText)  { // Block is for code reduce purpose (Header with button )
+  loadHeaderAction: function (headerMessage, addButtonHandler, buttonText)  { // Block is for code reduce purpose (Header with button )
     return (
      <CardHeader ><strong> {headerMessage} </strong>
-        {addButton && <Button color="success" className="float-right" onClick={addButton}>{buttonText}</Button>}
+        {addButtonHandler && <Button color="success" className="float-right" onClick={addButtonHandler}>{buttonText}</Button>}
       </CardHeader>)
   },
 
@@ -72,12 +72,12 @@ export const ShowServiceComponent = {
     return data;
   }, 
 
-  loadSpinnerAction: function (headerMessage, alertMessage, addButton, buttonText, visible) {
+  loadSpinnerAction: function (headerMessage, alertMessage, addButtonHandler, buttonText, visible) {
     let spinnerOff = this.handleSpinner(visible);
     return (
       <div className="animated fadeIn">
         <Card>
-        {this.loadHeaderAction(headerMessage, addButton, buttonText)}
+        {this.loadHeaderAction(headerMessage, addButtonHandler, buttonText)}
           <center>
             <CardBody>
               {visible && <Alert color="danger">{alertMessage}</Alert>}
