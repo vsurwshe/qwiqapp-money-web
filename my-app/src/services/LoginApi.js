@@ -1,21 +1,13 @@
 import axios from "axios";
 import Config from "../data/Config";
 import Store from "../data/Store";
-import AbstractApi from "./AbstractApi";
+import { DUMMY_USER_EMAIL, CREATE_USER_GRANTTYPE } from "../data/GlobalKeys";
 
-class LoginApi extends AbstractApi{
-
-  loginApi= null;
-  constructor() {
-    super()
-    if (!this.loginApi) {
-      this.loginApi = this.loginInstance();
-    }
-  }
+class LoginApi {
 
   login(username, password, success, failure) {
     let params = {
-      grant_type: "password",
+      grant_type: CREATE_USER_GRANTTYPE,
       username: username,
       password: password
     };
@@ -33,26 +25,35 @@ class LoginApi extends AbstractApi{
     this.process(params, success, failure);
   }
 
- process (params, success, failure) {
-  let promise = HTTP.request({ params: params })
-    .then(resp => validResponse(resp, success, params))
-    .catch(error => { this.errorResponse(error, failure); });
-  console.log(promise)
+  process(params, success, failure) {
+    let promise = this.http.request({ params: params })
+      .then(resp => this.successesponse(resp, success, params))
+      .catch(error => { this.errorResponse(error, failure); });
+    console.log(promise)
+  };
+  http = axios.create({
+    baseURL: Config.settings().authBaseURL,
+    method: "post",
+    url: "/oauth/token",
+    headers: { accept: "application/json", "content-type": "application/json" },
+    auth: {
+      username: Config.settings().clientId,
+      password: Config.settings().clientSecret
+    },
+    withCredentials: true
+  });
+
+ successesponse (resp, successMethod, params) {
+  if (params.username === DUMMY_USER_EMAIL) {
+    Store.saveDummyUserAccessToken(resp.data.access_token, resp.data.refresh_token);
+  }
+  else {
+    Store.saveAppUserAccessToken(resp.data.access_token, resp.data.refresh_token, resp.data.expires_in);
+  }
+  if (successMethod != null) {
+    successMethod();
+  }
 };
 }
 export default LoginApi;
 
-let validResponse = function (resp, successMethod, params) {
-  if (params.username === "dummy@email.com") { Store.saveDummyUserAccessToken(resp.data.access_token, resp.data.refresh_token); }
-  else { Store.saveAppUserAccessToken(resp.data.access_token, resp.data.refresh_token, resp.data.expires_in); }
-  if (successMethod != null) { successMethod(); }
-};
-
-let HTTP = axios.create({
-  baseURL: Config.settings().authBaseURL,
-  method: "post",
-  url: "/oauth/token",
-  headers: { accept: "application/json", "content-type": "application/json" },
-  auth: { username: Config.settings().clientId, password: Config.settings().clientSecret },
-  withCredentials: true
-});

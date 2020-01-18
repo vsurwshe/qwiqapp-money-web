@@ -12,19 +12,20 @@ class GeneralApi extends AbstractApi{
   }
 
   getCountrylist(success, failure) {
-    this.process(success, failure, "/general/countries", this.apiMethod.GET);
+    this.process(success, failure, "/countries", this.apiMethod.GET);
   };
 
   getCurrencyList(success, failure) {
-    this.process(success, failure, "/general/currencies", this.apiMethod.GET);
+    this.process(success, failure, "/currencies", this.apiMethod.GET);
   }
 
   settings(success, failure) {
-    this.process(success, failure, "/general/settings", this.apiMethod.GET);
+    this.process(success, failure, "/settings", this.apiMethod.GET);
   }
 
-async process(successCall, failureCall, requestUrl, requestMethod, reload) {
-  const baseUrl=Config.settings().cloudBaseURL;
+async process(successCall, failureCall, url, requestMethod, reload) {
+  const requestUrl=`/general${url}`;
+  const baseUrl= Config.settings().cloudBaseURL;
   let http = this.httpCall(requestUrl, requestMethod, baseUrl);
   let promise
   if (http) {
@@ -37,14 +38,14 @@ async process(successCall, failureCall, requestUrl, requestMethod, reload) {
   }
 }
 
- handleAccessTokenError(error, success, failure, Uurl, Umethod, reload) {
+ handleAccessTokenError(error, success, failure, requestUrl, requestMethod, reload) {
   const request = error && error.request ? error.request : '';
   const response = error && error.response ? error.response : '';
   if (request && request.status === 0) {
     this.errorResponse(error, failure)
   } else if (response && (response.status === 401 || response.status === 403)) {
     if (!reload) {
-      this.loginApi.refresh(() => this.process(success, failure, Uurl, Umethod, true), this.errorResponse(error, failure))
+      this.loginApi.refresh(() => this.process(success, failure, requestUrl, requestMethod, true), this.errorResponse(error, failure))
     } else {
       this.errorResponse(error, failure);
     }

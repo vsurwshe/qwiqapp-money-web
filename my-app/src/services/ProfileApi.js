@@ -1,13 +1,16 @@
 import Config from "../data/Config";
 import Store from "../data/Store";
-import LoginApi from "./LoginApi";
 import AbstractApi from "./AbstractApi";
 
 class ProfileApi extends AbstractApi {
 
-  loginApi = null;
-  init() {
-    this.loginApi = new LoginApi();
+  constructor() {
+    super();
+    this.loginApi = null;
+    
+    if (!this.loginApi) {
+      this.loginApi = this.loginInstance();
+    }
   }
 
   createProfile(success, failure, data) {
@@ -50,7 +53,7 @@ class ProfileApi extends AbstractApi {
         } else if (selectedProfile && selectedProfile.id === profileId) { // Checks if the ProfileId in Store and passing profileId is the same, then saves API response to Store 
           Store.saveProfile(promise.data);
         }
-        validResponse(promise, success, requestMethod, deleteId)
+        this.successResponse(promise, success, requestMethod, deleteId)
       } else {
         if (requestMethod === this.apiMethod.POST || requestMethod === this.apiMethod.PUT) {
           this.loginApi.refresh(async () => { // Calls Refresh Token 
@@ -83,11 +86,8 @@ class ProfileApi extends AbstractApi {
       }
     } else { this.errorResponse(error, failure) }
   }
-}
+  async successResponse (resp, successMethod, requestMethod, deleteId) {
 
-export default ProfileApi;
-
-let validResponse = async function (resp, successMethod, requestMethod, deleteId) {
   if (successMethod != null) {
     if (requestMethod === this.apiMethod.DELETE) {
       if (Store.getProfile().id === deleteId) {
@@ -103,3 +103,6 @@ let validResponse = async function (resp, successMethod, requestMethod, deleteId
     successMethod(resp.data);
   }
 }
+}
+
+export default ProfileApi;

@@ -1,32 +1,38 @@
 import Store from "../data/Store";
-import LoginApi from "./LoginApi";
 import Config from "../data/Config";
 import AbstractApi from "./AbstractApi";
 
 class BillingAddressApi extends AbstractApi {
 
-    loginApi = null;
-    init() {
-        this.loginApi = new LoginApi();
+   
+    constructor() {
+        super();
+        this.loginApi = null;        
+    if (!this.loginApi) {
+        this.loginApi = this.loginInstance();
+      }
     }
-
+    
     createBillingAddress(success, failure, data) {
-        this.process(success, failure, "/billing/address", this.apiMethod.POST, data)
+        this.process(success, failure, "/address", this.apiMethod.POST, data)
     }
 
     getBillings(success, failure) {
-        this.process(success, failure, "/billing/address", this.apiMethod.GET)
+        this.process(success, failure, "/address", this.apiMethod.GET)
     }
 
     getBillingItems(success, failure) {
-        this.process(success, failure, "/billing/items", this.apiMethod.GET)
+        this.process(success, failure, "/items", this.apiMethod.GET)
     }
 
     getPaymentsHistory(success, failure) {
-        this.process(success, failure, "/billing/payments", this.apiMethod.GET, null, null, "payments")
+        this.process(success, failure, "/payments", this.apiMethod.GET, null, null, true)
     }
 
-async process(success, failure, requestUrl, requestMethod, data, reload, payments) {
+async process(success, failure, url, requestMethod, data, reload, payments) {
+
+    const requestUrl=`/billing${url}`;
+
     const baseUrl = Config.settings().cloudBaseURL;
     let http = this.httpCall(requestUrl, requestMethod, baseUrl);
     let promise;
@@ -61,12 +67,10 @@ export default BillingAddressApi;
 let validResponse = function (response, successMethod, payments) {
     if (successMethod != null) {
         // This condtion checking whether calling address api or payment api.   
-        if (payments !== "payments") {
-            Store.saveBillingAddress(response);
-            successMethod(response);
-        } else {
-            successMethod(response);
+        if(!payments){
+            Store.saveBillingAddress(response); 
         }
+        successMethod(response);
     }
 };
 

@@ -40,22 +40,22 @@ async process(success, failure, requestUrl, requestMethod, data, reload) {
 }
 
 //this method solve the Expire Token Problem.
- handleAccessTokenError (err, failure, requestUrl, requestMethod, data, success, reload) {
-  const request = err && err.request ? err.request : '';
-  const response = err && err.response ? err.response : '';
+ handleAccessTokenError (error, failure, requestUrl, requestMethod, data, success, reload) {
+  const request = error && error.request ? error.request : '';
+  const response = error && error.response ? error.response : '';
   if (request && request.status === 0) {
-    this.errorResponse(err, failure)
+    this.errorResponse(error, failure)
   } else if (response && (response.status === 403 || response.status === 401)) {
     if (response.data && response.data.error && response.data.error.debugMessage) {
-      this.errorResponse(err, failure)
+      this.errorResponse(error, failure)
     } else {
       if (!reload) {
-        this.loginApi.refresh(() => { this.process(success, failure, requestUrl, requestMethod, data, true) }, this.errorResponse(err, failure))
+        this.loginApi.refresh(() => { this.process(success, failure, requestUrl, requestMethod, data, true) }, this.errorResponse(error, failure))
       } else {
-        this.errorResponse(err, failure)
+        this.errorResponse(error, failure)
       }
     }
-  } else { this.errorResponse(err, failure) }
+  } else { this.errorResponse(error, failure) }
 }
 }
 export default UserApi;
