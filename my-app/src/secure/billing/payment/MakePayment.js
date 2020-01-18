@@ -55,7 +55,30 @@ class MakePayment extends Component {
   };
 
   errorCall = (error) => {
-    this.setState({ loader: false, error_message: error}); 
+    const response = error && error.response ?  error.response : ""
+    let errorData = null;
+    if (response) {
+      if (response.status === 500) { // Handling error call for no billing address 
+        errorData = {
+          status: response.status,
+          message: "You are not added your billing address."
+        }
+      } else if (response.status === 400) { // Handling error call for email not verified
+        errorData = {
+          status: response.status,
+          message: "You are not added your billing address."
+        }
+      } else { // Handling any other api error calls
+        errorData = {
+          message: "You are not added your billing address."
+        }
+      }
+    } else {
+      errorData = { 
+        message: "You are not added your billing address."
+      }
+    }
+    this.setState({ loader: false, error_message: errorData}); 
   }
 
   callAlertTimer = (message) => {
@@ -97,7 +120,7 @@ class MakePayment extends Component {
     if (status && status === 500) {
       link = "/billing/address"
       buttonText = "Add Billing Address"
-    } else {
+    } else if (status && status === 400) {
       link = "/verify"
       buttonText = "Verify Email"
     } 
@@ -106,7 +129,7 @@ class MakePayment extends Component {
         <CardHeader><strong>Make Payment</strong></CardHeader>
         <center >
           <CardBody><h4><b className="text-color">{message} <br /><br />
-          <Link to={{pathname: link, state: {updateBill: billingAddressFields }}} className="text-link" > <Button color="info"> {buttonText} </Button> </Link>
+          {status && (status === 500 || status === 400) && <Link to={{pathname: link, state: {updateBill: billingAddressFields }}} className="text-link" > <Button color="info"> {buttonText} </Button> </Link>}
           </b></h4></CardBody>
         </center>
       </Card>
