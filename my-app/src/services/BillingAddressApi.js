@@ -45,11 +45,8 @@ async process(success, failure, requestUrl, requestMethod, data, reload, payment
 
 //this method slove the Exprie Token Problem.
  handleAccessTokenError (error, failure, requestUrl, requestMethod, data, success, reload) {
-    const request = error && error.request ? error.request : '';
     const response = error && error.response ? error.response : '';
-    if (request && request.status === 0 && !response) {
-        errorResponse(error, failure);
-    } else if (response && (response.status === 403 || response.status === 401)) {
+    if (response && (response.status === 403 || response.status === 401)) {
         // This condtions restrict calling of api after geting 403 or 401 Error
         if (!reload) {
             this.loginApi.refresh(() => { this.process(success, failure, requestUrl, requestMethod, data, true) }, ()=>{errorResponse(error, failure)});
@@ -72,15 +69,7 @@ let validResponse = function (response, successMethod, payments) {
 };
 
 let errorResponse = async function (error, failure) {
-    let response = (error && error.response) ? error.response : ''; // If error && error.response are there, then we are assigning error.response or else ''
-    if (response && response.status === 500) {
-        const {status, data} = response;
-        let errorData = {
-            status: status,
-            message: (data && data.error) && data.error.debugMessage // If data && data.error are there then assigning data.error.debugMessage or else falsy value(null/undefined...)
-        }
-        failure(errorData);
-    } else { // apart form 500, any response code else block will execute..
+    if (failure) {
         failure(error);
     }
 };

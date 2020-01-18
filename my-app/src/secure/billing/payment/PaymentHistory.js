@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { Card, CardBody, CardHeader, Table, Button, Row, Col } from 'reactstrap';
-import Loader from 'react-loader-spinner';
+import { Card, CardBody, CardHeader, Table, Button, Row, Col, Alert } from 'reactstrap';
 import BillingAddressApi from '../../../services/BillingAddressApi';
 import Config from '../../../data/Config';
 import '../../../css/style.css';
@@ -29,11 +28,19 @@ class PaymentHistory extends Component {
   }
 
   // Response API Error 
-  errorCall = error => { this.callAlertTimer('danger', 'Unable to Process Request, Please Try Again') }
+  errorCall = error => { 
+    if (error && error.response) {
+      this.callAlertTimer('danger', 'Unable to Process Request, Please Try Again');
+    } else {
+      this.callAlertTimer('danger', 'Please check with your network and try again.', true)
+    }
+  }
 
-  callAlertTimer = (alertColor, alertMessage) => {
+  callAlertTimer = (alertColor, alertMessage, timer) => {
     this.setState({ alertColor, alertMessage });
-    setTimeout(() => { this.setState({ alertColor: "", alertMessage: "" }); }, Config.apiTimeoutMillis)
+    if (!timer) {
+      setTimeout(() => { this.setState({ alertColor: "", alertMessage: "" }); }, Config.apiTimeoutMillis);
+    }
   }
 
   render() {
@@ -64,15 +71,26 @@ class PaymentHistory extends Component {
     return paymentsList;
   }
 
-  loadSpinner = () => <div className="animated fadeIn">
-        <Card>
-          {this.loadHeader("Billing Payments")}
-          <br /><br /><br /><br /><br />
-          <center className="padding-top" >
-            <CardBody><Loader type="TailSpin" className="loader-color" height={60} width={60} /></CardBody>
-          </center>
-        </Card>
-      </div>
+  loadSpinner = () => {
+    const {alertColor, alertMessage, spinnerOff} = this.state;
+    if (alertMessage) {
+      setTimeout(()=>{this.setState({spinnerOff: true});}, Config.apiTimeoutMillis);
+    }
+    return <div className="animated fadeIn">
+      <Card>
+        {this.loadHeader("Billing Payments")}
+        <center className="padding-top" >
+          <CardBody>
+            {spinnerOff ? <Alert color={alertColor}>{alertMessage}</Alert> :
+              <div className="text-primary spinner-size" role="status">
+                <span className="sr-only">Loading...</span>
+              </div>}
+            {/* <Loader type="TailSpin" className="loader-color" height={60} width={60} />} */}
+          </CardBody>
+        </center>
+      </Card>
+    </div>
+  }
 
   //  This method loads card header 
   loadHeader = (headerMessage) => <CardHeader style={{ height: 60 }}>
