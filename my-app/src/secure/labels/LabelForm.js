@@ -129,7 +129,7 @@ class LabelForm extends Component {
       <CardHeader> <strong>LABELS</strong> </CardHeader>
       <CardBody>
         <br /><center><h5> <b>{!this.props.label ? "New label details" : "Label details"}</b> </h5> </center><br />
-        <Col sm={{ size: 12, offset: 1 }} md={{ size: 12, offset: 1 }} lg={{ size: 8, offset: 3 }} xl={{ size: 6, offset: 3 }}>
+        <Col sm={{ offset: 1 }} md={{ offset: 1 }} >
           {alertColor && <Alert color={alertColor}>{content}</Alert>}
           <CategoryLabelForm
             data={labelFields}
