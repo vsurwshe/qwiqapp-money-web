@@ -1,21 +1,20 @@
 
 import React from 'react';
 import { Card, CardHeader, CardBody, Col, Alert, Row, Button, Collapse } from 'reactstrap';
-import Loader from 'react-loader-spinner';
 import Avatar from 'react-avatar';
 import { FaAngleDown } from 'react-icons/fa';
 import Config from '../../data/Config';
 import '../../css/style.css';
 
 export const ShowServiceComponent = {
-  loadDeleting: function (headerMsg, bodyMessage, color) {
+  loadDeleting: function (headerMsg, bodyMessage) {
     return (
       <div className="animated fadeIn">
         <Card>
-          {headerMsg && this.loadHeader(headerMsg)}
+          {headerMsg && this.loadHeaderAction(headerMsg)}
           <CardBody>
             <center>
-              <Loader type="TailSpin" color={color} height={60} width={60} />
+              {this.loadBootstrapSpinner()}
               <br /><br />
               <h5 >{bodyMessage}</h5>
             </center>
@@ -32,22 +31,34 @@ export const ShowServiceComponent = {
   },
 
   //Shows Spinner 
-  loadSpinner: function (headerMessage) {
+  loadSpinner: function (headerMessage, color, message, spinnerOff) {
     return (
       <div className="animated fadeIn">
         <Card>
-          {this.loadHeader(headerMessage)}
+          {this.loadHeaderAction(headerMessage)}
           <center className="padding-top">
-            <CardBody><Loader type="TailSpin" className="loader-color" height={60} width={60} /></CardBody>
+            <CardBody>
+              {!spinnerOff ? this.loadBootstrapSpinner() : this.loadAlert(color, message)}
+            </CardBody>
           </center>
         </Card>
       </div>)
   },
 
-  loadHeaderAction: function (headerMessage, addButton, buttonText)  {
+  loadBootstrapSpinner: function () { // Block is for code reduce purpose (Spinner)
+    return <div className="text-primary spinner-size" role="status">
+      <span className="sr-only">Loading...</span>
+    </div>
+  },
+  
+  loadAlert: function (color, message) { // Block is for code reduce purpose (Alert)
+    return <Alert color={color}>{message}</Alert>
+  },
+
+  loadHeaderAction: function (headerMessage, addButtonHandler, buttonText)  { // Block is for code reduce purpose (Header with button )
     return (
      <CardHeader ><strong> {headerMessage} </strong>
-        {addButton && <Button color="success" className="float-right" onClick={this.callCreateProfile}>{buttonText}</Button>}
+        {addButtonHandler && <Button color="success" className="float-right" onClick={addButtonHandler}>{buttonText}</Button>}
       </CardHeader>)
   },
 
@@ -61,12 +72,12 @@ export const ShowServiceComponent = {
     return data;
   }, 
 
-  loadSpinnerAction: function (headerMessage, alertMessage, addButton, buttonText, visible) {
+  loadSpinnerAction: function (headerMessage, alertMessage, addButtonHandler, buttonText, visible) {
     let spinnerOff = this.handleSpinner(visible);
     return (
       <div className="animated fadeIn">
         <Card>
-        {this.loadHeaderAction(headerMessage, addButton, buttonText)}
+        {this.loadHeaderAction(headerMessage, addButtonHandler, buttonText)}
           <center>
             <CardBody>
               {visible && <Alert color="danger">{alertMessage}</Alert>}

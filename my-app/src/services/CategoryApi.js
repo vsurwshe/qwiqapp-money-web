@@ -16,7 +16,7 @@ class CategoryApi extends AbstractApi {
   }
 
   getCategories(success, failure, profileId, value) {
-    !Store.getCategories() || value
+    !Store.getCategories() || value 
       ? this.process(success, failure, profileId + "/categories?subcategories=true", this.apiMethod.GET, profileId)
       : success(Store.getCategories())
   }
@@ -52,17 +52,17 @@ class CategoryApi extends AbstractApi {
       }
     }
   }
-  handleAccessTokenError(err, failure, requestUrl, requestMethod, profileId, data, success, reload) {
-    if (err.request.status === 0) {
-      this.errorResponse(err, failure)
-    } else if (err.response.status === 401 || err.response.status === 403) {
-      if (!reload) {
-        this.loginApi && this.loginApi.refresh(() => { this.process(success, failure, requestUrl, requestMethod, profileId, data, true) }, this.errorResponse(err, failure))
-      } else {
-        this.errorResponse(err, failure);
+  handleAccessTokenError(error, failure, requestUrl, requestMethod, profileId, data, success, reload) {
+    const response = error && error.response ? error.response : '';
+    // Here we are handling refresh token error.
+    if (response && (response.status === 401 || response.status === 403)) {
+      if (!reload) { // Solving the unlimited refresh API calls(calling once because of reload parameter) 
+        this.loginApi && this.loginApi.refresh(() => { this.process(success, failure, requestUrl, requestMethod, profileId, data, true) }, this.errorResponse(error, failure))
+      } else { // other then any error with status 401/403 for more then 1, Else block will executes
+        this.errorResponse(error, failure);
       }
     } else {
-      this.errorResponse(err, failure)
+      this.errorResponse(error, failure)
     }
   }
 }
