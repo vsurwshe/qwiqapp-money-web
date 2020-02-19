@@ -12,25 +12,25 @@ class CategoryApi extends AbstractApi {
   }
 
   createCategory(success, failure, profileId, data) {
-    this.process(success, failure, profileId + "/categories", this.apiMethod.POST, profileId, data);
+    this.process(success, failure, profileId + "/categories", this.methodType.POST, profileId, data);
   }
 
   getCategories(success, failure, profileId, value) {
     !Store.getCategories() || value 
-      ? this.process(success, failure, profileId + "/categories?subcategories=true", this.apiMethod.GET, profileId)
+      ? this.process(success, failure, profileId + "/categories?subcategories=true", this.methodType.GET, profileId)
       : success(Store.getCategories())
   }
 
   getCategoriesById(success, failure, profileId, categoryId) {
-    this.process(success, failure, profileId + "/categories/" + categoryId, this.apiMethod.GET, profileId);
+    this.process(success, failure, profileId + "/categories/" + categoryId, this.methodType.GET, profileId);
   }
 
   updateCategory(success, failure, data, profileId, categoryId) {
-    this.process(success, failure, profileId + "/categories/" + categoryId, this.apiMethod.PUT, profileId, data);
+    this.process(success, failure, profileId + "/categories/" + categoryId, this.methodType.PUT, profileId, data);
   }
 
   deleteCategory(success, failure, profileId, categoryId) {
-    this.process(success, failure, profileId + "/categories/" + categoryId, this.apiMethod.DELETE, profileId);
+    this.process(success, failure, profileId + "/categories/" + categoryId, this.methodType.DELETE, profileId);
   }
 
   async process(success, failure, requestUrl, requestMethod, profileId, data, reload) {
@@ -41,7 +41,7 @@ class CategoryApi extends AbstractApi {
     if (http) {
       try {
         !data ? promise = await http.request() : promise = await http.request({ data })
-        if (requestMethod === this.apiMethod.GET) {
+        if (requestMethod === this.methodType.GET) {
           Store.saveCategories(promise.data)
         } else {
           this.getCategories(success, failure, profileId, true)

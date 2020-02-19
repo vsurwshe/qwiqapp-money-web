@@ -10,24 +10,24 @@ class ContactApi extends AbstractApi {
     }
   }
   createContact(success, failure, profileId, data) {
-    this.process(success, failure, profileId + "/contacts", this.apiMethod.POST, profileId, data);
+    this.process(success, failure, profileId + "/contacts", this.methodType.POST, profileId, data);
   }
 
   getContacts(success, failure, profileId, value) {
-    Store.getContacts() === null || value ? this.process(success, failure, profileId + "/contacts?withlabels=true", this.apiMethod.GET) : success(Store.getContacts());
+    Store.getContacts() === null || value ? this.process(success, failure, profileId + "/contacts?withlabels=true", this.methodType.GET) : success(Store.getContacts());
   }
 
   getContactById(success, failure, profileId, contactId) {
     const store = true;
-    this.process(success, failure, profileId + "/contacts/" + contactId, this.apiMethod.GET, profileId, store);
+    this.process(success, failure, profileId + "/contacts/" + contactId, this.methodType.GET, profileId, store);
   }
 
   updateContact(success, failure, data, profileId, contactId) {
-    this.process(success, failure, profileId + "/contacts/" + contactId, this.apiMethod.PUT, profileId, data);
+    this.process(success, failure, profileId + "/contacts/" + contactId, this.methodType.PUT, profileId, data);
   }
 
   deleteContact(success, failure, profileId, contactId) {
-    this.process(success, failure, profileId + "/contacts/" + contactId, this.apiMethod.DELETE, profileId);
+    this.process(success, failure, profileId + "/contacts/" + contactId, this.methodType.DELETE, profileId);
   }
 
   async process(success, failure, requestUrl, requestMethod, profileId, data, reload) {
@@ -38,10 +38,10 @@ class ContactApi extends AbstractApi {
     if(http){
       try {
           !data ? promise = await http.request() : promise = await http.request({ data });
-          if (requestMethod === this.apiMethod.GET && !data) {
+          if (requestMethod === this.methodType.GET && !data) {
             Store.saveContacts(promise.data);
             this.validResponse(promise, success)
-          } else if (requestMethod === this.apiMethod.GET && data === true) {
+          } else if (requestMethod === this.methodType.GET && data === true) {
             this.validResponse(promise, success)
           } else {
             this.getContacts(success, failure, profileId, true);

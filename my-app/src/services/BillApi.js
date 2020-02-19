@@ -12,27 +12,27 @@ class BillApi extends AbstractApi {
   }
   //This Method Create Bill
   createBill(success, failure, profileId, data) {
-    this.process(success, failure, profileId + "/bills", this.apiMethod.POST, profileId, data);
+    this.process(success, failure, profileId + "/bills", this.methodType.POST, profileId, data);
   }
 
   //This Method Get All Bills
   getBills(success, failure, profileId, value) {
-    !Store.getBills() || value ? this.process(success, failure, profileId + "/bills", this.apiMethod.GET, profileId) : success(Store.getBills());
+    !Store.getBills() || value ? this.process(success, failure, profileId + "/bills", this.methodType.GET, profileId) : success(Store.getBills());
   }
 
   //This Method Get Bill By ID
   getBillById(success, failure, profileId, billId) {
-    this.process(success, failure, profileId + "/bills/" + billId, this.apiMethod.GET, profileId, null, null, billId);
+    this.process(success, failure, profileId + "/bills/" + billId, this.methodType.GET, profileId, null, null, billId);
   }
 
   //This Method Update Bill 
   updateBill(success, failure, profileId, billId, data) {
-    this.process(success, failure, profileId + "/bills/" + billId, this.apiMethod.PUT, profileId, data);
+    this.process(success, failure, profileId + "/bills/" + billId, this.methodType.PUT, profileId, data);
   }
 
   //This Method Delete Bill
   deleteBill(success, failure, profileId, billId) {
-    this.process(success, failure, profileId + "/bills/" + billId + "?removeDependency=true", this.apiMethod.DELETE, profileId);
+    this.process(success, failure, profileId + "/bills/" + billId + "?removeDependency=true", this.methodType.DELETE, profileId);
   }
 
   markAsUnPaid(success, failure, profileId, billId) {
@@ -47,7 +47,7 @@ class BillApi extends AbstractApi {
     if (http) {
       try {
         !data ? promise = await http.request() : promise = await http.request({ data });
-        if (requestMethod === this.apiMethod.GET) {
+        if (requestMethod === this.methodType.GET) {
           if (billId) {
             let filterData = Store.getBills() && Store.getBills().filter(bill => bill.id !== promise.data.id)
             filterData.push(promise.data)
