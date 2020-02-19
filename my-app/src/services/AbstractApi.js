@@ -4,11 +4,12 @@ import LoginApi from "./LoginApi";
 import BillApi from "./BillApi";
 
 class AbstractApi {
-constructor(){
-  this.loginApi = null;
-  this.billApi= null;
-}
-  apiMethod = {
+  constructor(){
+    this.loginApi = null;
+    this.billApi= null;
+  }
+
+  methodType = {
     GET: "GET",
     POST: "POST",
     PUT: "PUT",
