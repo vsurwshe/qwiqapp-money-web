@@ -18,6 +18,12 @@ export const PROFILEID_BILLID = 'profielIdAndBillId';
 //===== default profile currency
 export const DEFAULT_CURRENCY = 'GBP';
 
+// dummy token creating for email
+export const DUMMY_EMAIL= "dummy@email.com";
+export const grantType= {
+   PASSWORD: "password",
+   REFRESH_TOKEN: "refresh_token"
+};
 //===== user actions
 export const userAction = {
    VERIFY_EMAIL: 'VERIFY_EMAIL',

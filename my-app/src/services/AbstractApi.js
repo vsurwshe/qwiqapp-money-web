@@ -3,11 +3,11 @@ import Axios from "axios";
 import LoginApi from "./LoginApi";
 import BillApi from "./BillApi";
 
-let logniApi = null;
-let billApi = null;
-
 class AbstractApi {
-
+constructor(){
+  this.loginApi = null;
+  this.billApi= null;
+}
   apiMethod = {
     GET: "GET",
     POST: "POST",
@@ -45,20 +45,20 @@ class AbstractApi {
 
   // only once creating instance of login service call
   loginInstance() {
-    if (logniApi) {
-      return logniApi;
+    if (this.logniApi) {
+      return this.logniApi;
     } else {
-      logniApi = new LoginApi();
-      return logniApi;
+      this.logniApi = new LoginApi();
+      return this.logniApi;
     }
   }
 
   billApiInstance() {
-    if (billApi) {
-      return billApi;
+    if (this.billApi) {
+      return this.billApi;
     } else {
-      billApi = new BillApi();
-      return billApi;
+      this.billApi = new BillApi();
+      return this.billApi;
     }
   }
 }

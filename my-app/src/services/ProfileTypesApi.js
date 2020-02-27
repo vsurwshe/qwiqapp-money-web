@@ -1,73 +1,49 @@
-import Axios from "axios";
 import Config from "../data/Config";
 import Store from "../data/Store";
-import LoginApi from "./LoginApi";
+import AbstractApi from "./AbstractApi";
 
-class ProfileTypesApi {
+class ProfileTypesApi extends AbstractApi {
+
+  loginApi= null;
+  constructor() {
+    super();
+    if (!this.loginApi) {
+      this.loginApi = this.loginInstance();
+    }
+  }
   getProfileTypes(success, failure) {
     const profileTypes = Store.getProfileTypes();
     if (profileTypes) {
       success(profileTypes)
     } else {
-      process(success, failure, "/profile/types", "GET")
+      this.process(success, failure, "/profile/types", this.apiMethod.GET)
     }
   }
-}
-
-export default ProfileTypesApi;
-
-async function process(success, failure, requestUrl, requestMethod, data, reload) {
-  let HTTP = httpCall(requestUrl, requestMethod);
-  let promise;
-  if (HTTP) {
+  async process(success, failure, requestUrl, requestMethod, data, reload) {
+    const baseUrl = Config.settings().cloudBaseURL;
+    let http = this.httpCall(requestUrl, requestMethod, baseUrl);
+    let promise;
+    if(http){
     try {
-      promise = await HTTP.request();
-      validResponse(promise, success, requestMethod)
-    } catch (error) {
-      handleAccessTokenError(error, failure, requestUrl, requestMethod, data, success, reload);
+      promise = await http.request();
+      this.validResponse(promise, success, requestMethod)
+    } catch (err) {
+      this.handleAccessTokenError(err, failure, requestUrl, requestMethod, data, success, reload);
     }
   }
-}
-
-//this method solve the Expire Token Problem.
-let handleAccessTokenError = function (error, failure, requestUrl, requestMethod, data, success, reload) {
-  const request = error && error.request ? error.request : '';
-  const response = error && error.response ? error.response : '';
-  const {status} = response ? response.status : '';
-  if (request && request.status === 0) {
-    errorResponse(error, failure)
-  } else if (status === 403 || status === 401) {
-    if (!reload) {
-      new LoginApi().refresh(() => { process(success, failure, requestUrl, requestMethod, data, "reload") }, errorResponse(error, failure))
-    } else {
-      errorResponse(error, failure)
-    }
-  } else { errorResponse(error, failure) }
-}
-
-let validResponse = async function (resp, successMethod) {
-  successMethod(resp.data);
-};
-
-let errorResponse = function (error, failure) {
-  if (failure != null) {
-    failure(error);
   }
-};
 
-function httpCall(requestUrl, requestMethod) {
-  let configUrl = Config.settings();
-  let instance = null;
-  if (configUrl) {
-    instance = Axios.create({
-      baseURL: configUrl.cloudBaseURL,
-      method: requestMethod,
-      url: requestUrl,
-      headers: {
-        "content-type": "application/json",
-        Authorization: "Bearer " + Store.getAppUserAccessToken()
+  //this method solve the Expire Token Problem.
+  handleAccessTokenError(err, failure, requestUrl, requestMethod, data, success, reload) {
+    if (err.request.status === 0) {
+      this.errorResponse(err, failure)
+    } else if (err.response.status === 403 || err.response.status === 401) {
+      if (!reload) {
+        this.loginApi.refresh(() => { this.process(success, failure, requestUrl, requestMethod, data, true) }, this.errorResponse(err, failure))
+      } else {
+        this.errorResponse(err, failure)
       }
-    });
+    } else { this.errorResponse(err, failure) }
   }
-  return instance;
 }
+export default ProfileTypesApi;

@@ -1,15 +1,17 @@
 import axios from "axios";
 import Config from "../data/Config";
 import Store from "../data/Store";
+import { DUMMY_EMAIL, grantType } from "../data/GlobalKeys";
 
 class LoginApi {
+
   login(username, password, success, failure) {
     let params = {
-      grant_type: "password",
+      grant_type: grantType.PASSWORD,
       username: username,
       password: password
     };
-    process(params, success, failure);
+    this.process(params, success, failure);
   }
 
   refresh(success, failure) {
@@ -17,39 +19,47 @@ class LoginApi {
       failure(); return;
     }
     let params = {
-      grant_type: "refresh_token",
+      grant_type: grantType.REFRESH_TOKEN,
       refresh_token: Store.getAppUserRefreshToken()
     };
-    process(params, success, failure);
+    this.process(params, success, failure);
   }
-}
 
+  process(params, success, failure) {
+    let promise = this.http.request({ params: params })
+      .then(resp => this.successesponse(resp, success, params))
+      .catch(error => { this.errorResponse(error, failure); });
+    console.log(promise)
+  };
+
+  http = axios.create({
+    baseURL: Config.settings().authBaseURL,
+    method: "post",
+    url: "/oauth/token",
+    headers: { accept: "application/json", "content-type": "application/json" },
+    auth: {
+      username: Config.settings().clientId,
+      password: Config.settings().clientSecret
+    },
+    withCredentials: true
+  });
+
+  successesponse (resp, successMethod, params) {
+    if (params.username === DUMMY_EMAIL) {
+      Store.saveDummyUserAccessToken(resp.data.access_token, resp.data.refresh_token);
+    } else {
+      Store.saveAppUserAccessToken(resp.data.access_token, resp.data.refresh_token, resp.data.expires_in);
+    }
+    if (successMethod != null) {
+      successMethod();
+    }
+  };
+
+  errorResponse (error, failure) {
+    if (failure != null) {
+      failure(error)
+    }
+  };
+}
 export default LoginApi;
 
-let process = function (params, success, failure) {
-  let promise = HTTP.request({ params: params })
-    .then(resp => validResponse(resp, success, params))
-    .catch(error => { errorResponse(error, failure); });
-  console.log(promise)
-};
-
-let validResponse = function (resp, successMethod, params) {
-  if (params.username === "dummy@email.com") { Store.saveDummyUserAccessToken(resp.data.access_token, resp.data.refresh_token); }
-  else { Store.saveAppUserAccessToken(resp.data.access_token, resp.data.refresh_token, resp.data.expires_in); }
-  if (successMethod != null) { successMethod(); }
-};
-
-let errorResponse = function (error, failure) {
-  if (failure != null) {
-    failure();
-  }
-};
-
-let HTTP = axios.create({
-  baseURL: Config.settings().authBaseURL,
-  method: "post",
-  url: "/oauth/token",
-  headers: { accept: "application/json", "content-type": "application/json" },
-  auth: { username: Config.settings().clientId, password: Config.settings().clientSecret },
-  withCredentials: true
-});

@@ -1,78 +1,57 @@
-import LoginApi from "./LoginApi";
-import Axios from "axios";
 import Config from "../data/Config";
-import Store from "../data/Store";
+import AbstractApi from "./AbstractApi";
 
-class GeneralApi {
+class GeneralApi extends AbstractApi{
+  
+  loginApi= null;
+  constructor() {
+    super();
+    if (!this.loginApi) {
+      this.loginApi = this.loginInstance();
+    }
+  }
+
   getCountrylist(success, failure) {
-    process(success, failure, "/general/countries", "GET");
+    this.process(success, failure, "/general/countries", this.apiMethod.GET);
   };
 
   getCurrencyList(success, failure) {
-    process(success, failure, "/general/currencies", "GET");
+    this.process(success, failure, "/general/currencies", this.apiMethod.GET);
   }
 
   settings(success, failure) {
-    process(success, failure, "/general/settings", "GET");
+    this.process(success, failure, "/general/settings", this.apiMethod.GET);
   }
-}
 
-export default GeneralApi;
+async process(successCall, failureCall, requestUrl, requestMethod, reload) {
 
-async function process(successCall, failureCall, requestUrl, requestMethod, reload) {
-  let HTTP = httpCall(requestUrl, requestMethod);
+  const baseUrl= Config.settings().cloudBaseURL;
+  let http = this.httpCall(requestUrl, requestMethod, baseUrl);
   let promise
-  if (HTTP) {
+  if (http) {
     try {
-      promise = await HTTP.request();
-      successResponse(promise, successCall)
+      promise = await http.request();
+      this.validResponse(promise, successCall)
     } catch (error) {
-      handleAccessTokenError(error, successCall, failureCall, requestUrl, requestMethod, reload);
+      this.handleAccessTokenError(error, successCall, failureCall, requestUrl, requestMethod, reload);
     }
   }
 }
 
-function handleAccessTokenError(error, success, failure, Uurl, Umethod, reload) {
+ handleAccessTokenError(error, success, failure, requestUrl, requestMethod, reload) {
   const request = error && error.request ? error.request : '';
   const response = error && error.response ? error.response : '';
   if (request && request.status === 0) {
-    errorResponse(error, failure)
+    this.errorResponse(error, failure)
   } else if (response && (response.status === 401 || response.status === 403)) {
     if (!reload) {
-      new LoginApi().refresh(() => process(success, failure, Uurl, Umethod, "reload"), errorResponse(error, failure))
+      this.loginApi.refresh(() => this.process(success, failure, requestUrl, requestMethod, true), this.errorResponse(error, failure))
     } else {
-      errorResponse(error, failure);
+      this.errorResponse(error, failure);
     }
   } else {
-    errorResponse(error, failure)
+    this.errorResponse(error, failure)
   }
 }
-
-let errorResponse = function (error, failure) {
-  if (failure != null) {
-    failure(error);
-  }
-};
-
-let successResponse = function (response, successCall) {
-  if (successCall != null) {
-    successCall(response.data);
-  }
-};
-
-function httpCall(url, method) {
-  let configUrl = Config.settings();
-  let instance = null;
-  if (configUrl) {
-    instance = Axios.create({
-      baseURL: configUrl.cloudBaseURL,
-      method: method,
-      url: url,
-      headers: {
-        "content-type": "application/json",
-        Authorization: "Bearer " + Store.getAppUserAccessToken()
-      }
-    });
-  }
-  return instance;
 }
+export default GeneralApi;
