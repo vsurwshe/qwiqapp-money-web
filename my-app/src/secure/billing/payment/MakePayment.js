@@ -66,16 +66,16 @@ class MakePayment extends Component {
       } else if (response.status === 400) { // Handling error call for email not verified
         errorData = {
           status: response.status,
-          message: "You are not added your billing address."
+          message: "You are not verified your email address, please verify it."
         }
       } else { // Handling any other api error calls
         errorData = {
-          message: "You are not added your billing address."
+          message: "Unable to process your request, try again later."
         }
       }
     } else {
       errorData = { 
-        message: "You are not added your billing address."
+        message: "Please check with your network and re-try again."
       }
     }
     this.setState({ loader: false, error_message: errorData}); 
@@ -117,13 +117,15 @@ class MakePayment extends Component {
   loadBillingItemError = () =>{
     const {status, message} = this.state.error_message;
     let link, buttonText;
-    if (status && status === 500) {
-      link = "/billing/address"
-      buttonText = "Add Billing Address"
-    } else if (status && status === 400) {
-      link = "/verify"
-      buttonText = "Verify Email"
-    } 
+    if (status) {
+      if (status === 400) {
+          link = "/verify"
+          buttonText = "Verify Email"
+      } else {
+          link = "/billing/address"
+          buttonText = "Add Billing Address"
+      }
+    }
     return(
       <Card>
         <CardHeader><strong>Make Payment</strong></CardHeader>
@@ -216,7 +218,7 @@ class MakePayment extends Component {
       <div className="form-group"> 
         <center>
           {this.state.showAlert && <Alert color="warning">
-            <b className="warning-" >Please Select your Payment option to continue</b></Alert>}
+            <b className="warning-" >Please select your payment option to continue</b></Alert>}
          </center>
         <FormGroup check>
           {this.state.billingItems && this.state.billingItems.map((item, index) => {

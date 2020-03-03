@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { Card, CardBody, CardHeader, Table, Button, Row, Col, Alert } from 'reactstrap';
+import { Card, CardBody, CardHeader, Table, Button, Row, Col } from 'reactstrap';
 import BillingAddressApi from '../../../services/BillingAddressApi';
 import Config from '../../../data/Config';
-import '../../../css/style.css';
 import Store from '../../../data/Store';
+import { ShowServiceComponent } from '../../utility/ShowServiceComponent';
+import '../../../css/style.css';
 
 class PaymentHistory extends Component {
   constructor(props) {
@@ -30,7 +31,7 @@ class PaymentHistory extends Component {
   // Response API Error 
   errorCall = error => { 
     if (error && error.response) {
-      this.callAlertTimer('danger', 'Unable to Process Request, Please Try Again');
+      this.callAlertTimer('danger', 'Unable to process your request, please try again');
     } else {
       this.callAlertTimer('danger', 'Please check with your network and try again.', true)
     }
@@ -81,11 +82,7 @@ class PaymentHistory extends Component {
         {this.loadHeader("Billing Payments")}
         <center className="padding-top" >
           <CardBody>
-            {spinnerOff ? <Alert color={alertColor}>{alertMessage}</Alert> :
-              <div className="text-primary spinner-size" role="status">
-                <span className="sr-only">Loading...</span>
-              </div>}
-            {/* <Loader type="TailSpin" className="loader-color" height={60} width={60} />} */}
+            {spinnerOff ? ShowServiceComponent.loadAlert(alertColor, alertMessage) : ShowServiceComponent.loadBootstrapSpinner()}
           </CardBody>
         </center>
       </Card>
