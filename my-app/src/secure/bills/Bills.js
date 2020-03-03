@@ -257,7 +257,7 @@ class Bills extends Component {
   }
 
   setMessageText = (alertColor, alertMessage, content) => { // 3rd parameter for set undefined states 
-    if (content === 'success') {
+    if (content === 'success') { // Setting the mark as unpaid success state text
       this.setState({ alertColor, alertMessage })
     } else {
       this.setState({ color: alertColor, content: alertMessage })
