@@ -72,21 +72,30 @@ class ContactForm extends Component {
   }
 
   successCall = (response) => {
-    this.callAlertTimer("success", "Contact Created Successfully !");
+    if (this.state.contact) {
+      this.callAlertTimer("success", "Contact updated successfully !", true);
+    } else {
+      this.callAlertTimer("success", "Contact created successfully !", true);
+    }
+    
   }
 
   handleSelect = selectedOption => {
     this.setState({ selectedOption, labelUpdate: true });
   };
 
-  errorCall = (err) => {
-    this.callAlertTimer("danger", "Unable to Process the request, Please Try Again");
-    this.setState({ failContactCreate: true })
+  errorCall = (error) => {
+    if (error && error.response) {
+      this.callAlertTimer("danger", "Unable to process your request, please re-try again.", true);
+    } else {
+      this.callAlertTimer("danger", "Please check your internet connection and re-try again.");
+    }
+    
   };
 
-  callAlertTimer = (alertColor, alertMessage) => {
+  callAlertTimer = (alertColor, alertMessage, timer) => {
     this.setState({ alertColor, alertMessage });
-    if (alertMessage !== "Country is Required") {
+    if (timer) { // If error response doesnt have response fied(XHR), stopping navigation
       setTimeout(() => {
         if (this.state.hideCancel) {
           this.setState({ hideCancel: '' })
@@ -97,7 +106,7 @@ class ContactForm extends Component {
           }
         }
       }, Config.notificationMillis);
-    }
+    } 
   };
 
   render() {
@@ -126,7 +135,7 @@ class ContactForm extends Component {
       <CardHeader><strong>CONTACTS</strong></CardHeader>
       <CardBody>
         {alertColor && <Alert color={alertColor}>{alertMessage}</Alert>}
-        <center><h5>{!this.props.contact ? "New Contact Details" : "Contact Details"}</h5></center><br />
+        <center><h5>{!this.props.contact ? "New contact details" : "Contact details"}</h5></center><br />
         <AvForm ref={refId => this.form = refId} onSubmit={this.handleSubmit}>
           <ContactFormUI
             data={contactData}

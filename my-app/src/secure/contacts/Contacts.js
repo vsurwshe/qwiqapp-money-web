@@ -12,6 +12,8 @@ import ContactApi from "../../services/ContactApi";
 import ContactForm from "./ContactForm";
 import { profileFeature } from "../../data/GlobalKeys";
 import '../../css/style.css';
+import Config from "../../data/Config";
+import { ShowServiceComponent } from "../utility/ShowServiceComponent";
 /* 
   * Presently we are showing attachments also
   * We must get profileType, if we doesn't show attachment file option for free/ basic profiles for user
@@ -22,7 +24,7 @@ class Contacts extends Component {
     super(props);
     this.state = {
       contacts: [],
-      visible: props.visible,
+      visible: props.visible, // is for show delete contact Alert. This field is for hide the message, because we could not change the props
       accordion: [],
       dropdownOpen: [],
       attachDropdown: [],
@@ -56,10 +58,26 @@ class Contacts extends Component {
     }
   };
 
-  errorCall = err => {
-    this.setState({ visible: true })
+  errorCall = error => {
+    if (error && error.response) {
+      this.loadCallTimer('danger', 'Unable to process your request, please re-try again.', true)
+    } else {
+      this.loadCallTimer('danger', 'Please check your internet connection and re-try again.')
+    }
   }
 
+  setColorContent = (alertColor, alertMessage) =>{
+    this.setState({alertColor, alertMessage});
+  }
+  loadCallTimer = (alertColor, alertMessage, timer) => {
+    this.setColorContent(alertColor, alertMessage);
+    if (timer) {
+      setTimeout(()=>{
+        this.setColorContent(undefined, undefined);
+      }, Config.apiTimeoutMillis)
+    }
+  }
+  
   callCreateContact = () => { this.setState({ createContact: true }) }
 
   loadCollapse = () => {
@@ -158,17 +176,13 @@ class Contacts extends Component {
   }
 
   loadSpinner = () => {
-    return <div className="animated fadeIn">
-      <Card>
-        {this.loadHeader()}
-        <center className="padding-top">
-          <CardBody>
-            <div className="text-primary spinner-size" role="status">
-              <span className="sr-only">Loading...</span>
-            </div></CardBody>
-        </center>
-      </Card>
-    </div>
+    const {alertMessage, alertColor, spinnerOff} = this.state;
+    if (alertMessage) { // Network error, while fetching the categories, then Stop the spinner and display message 
+      setTimeout(()=>{
+        this.setState({spinnerOff: true});
+      },Config.apiTimeoutMillis)
+    }
+    return ShowServiceComponent.loadSpinner("Contacts", alertColor, alertMessage, spinnerOff);
   }
 
   loadContactEmpty = () => {
@@ -182,20 +196,22 @@ class Contacts extends Component {
     </div>
   }
 
-  callAlertTimer = (visible) => {
+  callAlertTimer = (visible) => { // Hide the delete contact message 
     if (visible) {
-      setTimeout(() => this.setState({ visible: false }), 1800)
+      setTimeout(() => this.setState({ visible: false }), Config.apiTimeoutMillis)
     }
   }
 
   loadShowContact = () => {
     const { visible, contacts } = this.state;
-    if (this.props.color) { this.callAlertTimer(visible) }
+    const { color, content } = this.props ? this.props : '';
+    if (color) { this.callAlertTimer(visible) }
+    // Here alert for delete message
     return <div className="animated fadeIn">
       <Card>
         {this.loadHeader()}
         <div><br />
-          <h6>{visible && <Alert isOpen={visible} color={this.props.color ? this.props.color : ""}>{this.props.content}</Alert>}</h6>
+          <h6>{visible && <Alert color={color}>{content}</Alert>}</h6>
           {contacts.filter(this.searchingFor(this.state.searchContact)).map((contact, key) => { return this.loadSingleContact(contact, key) })}
         </div>
       </Card>

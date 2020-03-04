@@ -11,7 +11,7 @@ class DeleteContact extends Component {
       contactId: props.contactId,
       contactDeleted: false,
       color: "#00bfff",
-      content: "Deleting Contact.....",
+      content: "Deleting contact...",
       profileId: props.profileId
     };
   }
@@ -21,11 +21,15 @@ class DeleteContact extends Component {
   };
 
   successCall = async () => {
-    this.callAlertTimer("success", "Contact Deleted Successfully....");
+    this.callAlertTimer("success", "Contact deleted successfully...");
   };
 
   errorCall = (error) => {
-    this.callAlertTimer("danger", "Unable to handle the request, Please Try Again...  ");
+    if (error && error.response) {
+      this.callAlertTimer("danger", "Unable to handle the request, please try again.");
+    } else {
+      this.callAlertTimer("danger", "Please check your internet connection and re-try again.");
+    }
   };
 
   callAlertTimer = (color, content) => {
