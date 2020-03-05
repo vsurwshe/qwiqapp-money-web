@@ -114,8 +114,8 @@ class MakePayment extends Component {
     }
   }
 
-  loadBillingItemError = () =>{
-    const {status, message} = this.state.error_message;
+  loadBillingItemError = () =>{ // This method loads when user "not verified/not added billing address"
+    const {status, message} = this.state.error_message; // status is only for 400/500 errors(Email not verified, not added billing address)
     let link, buttonText;
     if (status) {
       if (status === 400) {
@@ -131,7 +131,8 @@ class MakePayment extends Component {
         <CardHeader><strong>Make Payment</strong></CardHeader>
         <center >
           <CardBody><h4><b className="text-color">{message} <br /><br />
-          {status && (status === 500 || status === 400) && <Link to={{pathname: link, state: {updateBill: billingAddressFields }}} className="text-link" > <Button color="info"> {buttonText} </Button> </Link>}
+          {/*  */}
+          {status && <Link to={{pathname: link, state: {updateBill: billingAddressFields }}} className="text-link" > <Button color="info"> {buttonText} </Button> </Link>}
           </b></h4></CardBody>
         </center>
       </Card>
