@@ -180,7 +180,8 @@ class BillForm extends Component {
     new BillApi().updateBill(this.successCall, this.errorCall, this.state.profileId, this.props.bill.id, data)
   };
 
-  successCall = (singleBill) => {
+  successCall = (bills) => { // we are getting bills list, so we are not able to find recuring/normal bill created
+    // so we can not call single method for succes of RecuringBill/normalBill at creating time
     if (this.props.bill) {
       this.callAlertTimer("success", "Bill updated successfully !! ");
     } else {
@@ -191,7 +192,7 @@ class BillForm extends Component {
 
   timerForBillsList = () => {
     setTimeout(() => { // Solved Bills component load issue, when user came to other tabs and edited bill form
-      if (this.props.activeTab && this.props.activeTab !==1 && this.props.updateBill) {
+      if (this.props.activeTab && this.props.activeTab !== 1 && this.props.updateBill) {
         this.props.updateBill(null, true, true);
       } 
       this.props.cancelButton(null, true);
@@ -221,7 +222,7 @@ class BillForm extends Component {
   }
   //this method Notifies the user after every request
   callAlertTimer = (alertColor, alertMessage) => {
-    this.setAlertMessageColor(alertColor, alertMessage);
+    this.setAlertMessage(alertColor, alertMessage);
     this.setState({ doubleClick: false });
     if (alertColor === "success") {
       setTimeout(() => {
@@ -230,27 +231,28 @@ class BillForm extends Component {
     }
   };
 
-  setAlertMessageColor = (alertColor, alertMessage) =>{ this.setState({alertColor, alertMessage});}
+  setAlertMessage = (alertColor, alertMessage) =>{ this.setState({alertColor, alertMessage});}
 
   handleSetAmount = e => {
     e.preventDefault()
     this.setState({ amount: e.target.value });
-    const data = ShowServiceComponent.handleTax(e.target.value, this.state.taxPercent, null)
-    this.setState({ taxAmount: data.taxAmount, taxPercent: data.taxPercent });
+    this.setTaxAmountAndPercent(e.target.value, this.state.taxPercent, null)
   }
 
   handleTaxAmount = (e) => {
     e.preventDefault()
-    const data = ShowServiceComponent.handleTax(this.state.amount, e.target.value, null)
-    this.setState({ taxAmount: data.taxAmount, taxPercent: data.taxPercent });
+    this.setTaxAmountAndPercent(this.state.amount, e.target.value, null)
   }
 
   handleTaxPercent = (e) => {
     e.preventDefault()
-    const data = ShowServiceComponent.handleTax(this.state.amount, null, e.target.value)
-    this.setState({ taxAmount: data.taxAmount, taxPercent: data.taxPercent });
+    this.setTaxAmountAndPercent(this.state.amount, null, e.target.value)
   }
 
+  setTaxAmountAndPercent = (amount, txPercent, txAmount) => {
+    const data = ShowServiceComponent.handleTax(amount, txPercent, txAmount)
+    this.setState({taxAmount: data.taxAmount, taxPercent: data.taxPercent});
+  }
   handleBillDate = async (e) => {
     await this.setState({ billDate: e.target.value });
     if (this.state.dueDays) {
@@ -268,7 +270,7 @@ class BillForm extends Component {
 
   setDueOrNotifyDate = (billDate, value, type) => {
     if (billDate && value) {
-      if (this.state.alertColor) { this.setAlertMessageColor('', '') }
+      if (this.state.alertColor) { this.setAlertMessage('', '') }
       let newDate = new Date(billDate);
       parseInt(value) === 0 ? newDate.setDate(newDate.getDate()) : newDate.setDate(newDate.getDate() + parseInt(value - 1))
       let date = ShowServiceComponent.loadDateFormat(newDate)
@@ -308,13 +310,13 @@ class BillForm extends Component {
   handlRecurBillForever = () => { this.setState({ recurBillForever: !this.state.recurBillForever }) }
 
   handleEveryRecurBill = (e) => {
-    this.setAlertMessageColor('', '')
+    this.setAlertMessage('', '')
     this.setState({ repeatEvery: e.target.value });
     this.setNextBillDate(e.target.value, this.state.repeatType);
   }
 
   recurBillOption = (e) => {
-    this.setAlertMessageColor('', '')
+    this.setAlertMessage('', '')
     this.setState({ repeatType: e.target.value });
     this.setNextBillDate(this.state.repeatEvery, e.target.value)
   }
