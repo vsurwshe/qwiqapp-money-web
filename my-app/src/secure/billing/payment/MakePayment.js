@@ -30,16 +30,11 @@ class MakePayment extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      disableDoubleCilck: false,
-      paymentSuccess: false,
       scriptLoaded: false,
       scriptError: false,
       billingItems: [],
       selectedItem: {},
-      paymentResponse:'',
-      loader: true,
-      showAlert: false,
-      error_message: ''
+      loader: true
     };
 
     this.createPaypalOrder = this.createPaypalOrder.bind(this)
@@ -81,16 +76,6 @@ class MakePayment extends Component {
     this.setState({ loader: false, error_message: errorData}); 
   }
 
-  callAlertTimer = (message) => {
-    setTimeout(() => {
-      this.setState({ paymentSuccess: true, disableDoubleCilck: false });
-    }, Config.apiTimeoutMillis)
-  };
-
-  updateInputValue(evt) {
-    this.setState({ selectedItem:{code: evt.target.value }});
-  }
-
   handleScriptCreate() {
     this.setState({ scriptLoaded: false })
   }
@@ -117,7 +102,7 @@ class MakePayment extends Component {
   loadBillingItemError = () =>{ // This method loads when user "not verified/not added billing address"
     const {status, message} = this.state.error_message; // status is only for 400/500 errors(Email not verified, not added billing address)
     let link, buttonText;
-    if (status) {
+    if (status) { // According to status, the Button text, link will be set
       if (status === 400) {
           link = "/verify"
           buttonText = "Verify Email"
@@ -130,10 +115,11 @@ class MakePayment extends Component {
       <Card>
         <CardHeader><strong>Make Payment</strong></CardHeader>
         <center >
-          <CardBody><h4><b className="text-color">{message} <br /><br />
-          {/*  */}
-          {status && <Link to={{pathname: link, state: {updateBill: billingAddressFields }}} className="text-link" > <Button color="info"> {buttonText} </Button> </Link>}
-          </b></h4></CardBody>
+          <CardBody>
+            <h4><b className="text-color">{message} <br /><br />
+              {status && <Link to={{pathname: link, state: {updateBill: billingAddressFields }}} className="text-link" > <Button color="info"> {buttonText} </Button> </Link>}
+            </b></h4>
+          </CardBody>
         </center>
       </Card>
     )
