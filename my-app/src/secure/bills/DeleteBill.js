@@ -1,8 +1,9 @@
 import React, { Component } from "react";
-import { Card, CardHeader, CardBody, Alert, Col } from "reactstrap";
+import { Card, CardBody } from "reactstrap";
 import Bills from "./Bills";
 import BillApi from "../../services/BillApi";
 import Config from "../../data/Config";
+import { ShowServiceComponent } from "../utility/ShowServiceComponent";
 
 class DeleteBill extends Component {
   constructor(props) {
@@ -10,9 +11,6 @@ class DeleteBill extends Component {
     this.state = {
       billId: props.billId,
       profileId: props.profileId,
-      labelDeleted: false,
-      color: "warning",
-      content: "Deleting Bill.....",
     };
   }
 
@@ -20,14 +18,15 @@ class DeleteBill extends Component {
     new BillApi().deleteBill(this.successCall, this.errorCall, this.state.profileId, this.state.billId, this.props.removeDependents);
   };
   successCall = () => {
-    this.callAlertTimer("success", "Bill Deleted Successfully....");
+    this.callAlertTimer("success", "Bill deleted successfully....");
   };
 
   errorCall = (error) => {
-    if (error.response && (error.response.status === 500 && error.response.data && error.response.data.error)) {
+    const response = error && error.response ? error.response : '';
+    if (response && (response.status === 500 && response.data && response.data.error)) {
       this.callAlertTimer("danger", "You are not able to delete, beacuse this bills has attachments or payments");
     } else {
-      this.callAlertTimer("danger", "Something went wrong, Please Try Again...  ");
+      this.callAlertTimer("danger", "Unable to process your request, please check with your internet connection and re-try again.");
     }
   };
 
@@ -47,9 +46,11 @@ class DeleteBill extends Component {
     return (
       <div className="animated fadeIn">
         <Card>
-          <CardHeader><strong>Delete Bill</strong></CardHeader>
+          {ShowServiceComponent.loadHeaderAction("Delete bill")}
           <CardBody>
-            <Col><Alert color={color}>{content}</Alert></Col>
+            <center>
+              {content ? ShowServiceComponent.loadAlert(color, content) : ShowServiceComponent.loadBootstrapSpinner()}
+            </center>
           </CardBody>
         </Card>
       </div>)

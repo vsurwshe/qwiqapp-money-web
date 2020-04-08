@@ -1,6 +1,6 @@
 import React, { Component, Suspense } from "react";
 import { withRouter } from "react-router-dom";
-import { Card, CardBody, Alert, FormGroup, Label, Input } from "reactstrap";
+import { Card, CardBody, FormGroup, Label, Input } from "reactstrap";
 import BillApi from "../../services/BillApi";
 import Store from "../../data/Store";
 import CategoryApi from "../../services/CategoryApi";
@@ -241,23 +241,36 @@ class Bills extends Component {
     new BillApi().markAsUnPaid(this.successUnpaidBill, this.errorCall, profileId, updateBill.id);
   }
 
-  successUnpaidBill = () => { this.setMarkasUnpaid(); this.callTimer("success", "Your bill payments cleared"); this.getBills() }
+  successUnpaidBill = () => { this.setMarkasUnpaid(); this.callTimer("success", "Your bill payments removed", true); this.getBills() }
 
   // This method handle Error Call of API 
-  errorCall = (err) => {
-    if (err.response && (err.response.status === 500 && err.response.data.error.debugMessage)) {
-      this.setState({ visible: true, color: 'danger', content: 'Something went wrong, unable to fetch bills...' });
+  errorCall = (error) => { // We are handling any API(bill, contacts, labels, categories) error call
+    const response = error && error.response ? error.response : '';
+    const {data, status} = response && response;
+    if (response && (status === 500 && data && data.error && data.error.debugMessage)) {
+      this.callTimer('danger', 'Something went wrong, unable to fetch bills...')
+      this.setState({ visible: true });
       setTimeout(() => { this.setState({ visible: false, spinner: true }); }, Config.apiTimeoutMillis);
     } else {
-      this.setState({ color: 'danger', content: 'Unable to Process Request, Please try Again....' });
+      this.callTimer('danger', 'Unable to process request, please try again.')
     }
   }
 
-  callTimer = (alertColor, alertMessage) => {
-    this.setState({ alertColor, alertMessage });
-    setTimeout(() => {
-      this.setState({ alertColor: undefined, alertMessage: undefined });
-    }, Config.apiTimeoutMillis);
+  setMessageText = (alertColor, alertMessage, content) => { // 3rd parameter for set undefined states 
+    if (content === 'success') { // Setting the mark as unpaid success state text
+      this.setState({ alertColor, alertMessage })
+    } else {
+      this.setState({ color: alertColor, content: alertMessage })
+    }
+  }
+  callTimer = (alertColor, alertMessage, timer) => { // alerColor setting for mark-as-unpaid bills
+    // if we use same variables for success/error messages to display(ref: line-247 => errorCall), UI can display some error messages on bills tables
+    this.setMessageText(alertColor, alertMessage, alertColor ) // 3rd paramete is for validate(line:- 260) which state to be set
+    if (timer) {
+      setTimeout(() => { // undefined for not allocating space, Here '', null also not allocated space, but if you see typeOf(''/null), it display Object, for undefined its undefined only
+       this.setMessageText(undefined, undefined, alertColor ) // 3rd paramete is for validate which state to be set
+      }, Config.apiTimeoutMillis);
+    }
   }
 
   //this toggle for Delete Model
@@ -386,7 +399,6 @@ class Bills extends Component {
       getLabels: this.getLabels,
       bill: updateBill
     }
-
     if (!profileId) {
       // If no profile then showing message 
       return <ProfileEmptyMessage />
@@ -394,7 +406,7 @@ class Bills extends Component {
       // Checks for bills not there and no bill create Request, then executes
       return <div>
         {/*  If spinner is true and bills are there, it shows the loader function, until bills are loaded */}
-        {(spinner && bills.length) ? <>{visible && <Alert isOpen={visible} color={color}>{content}</Alert>} {this.loadLoader()}
+        {(spinner && bills.length) ? <>{visible && ShowServiceComponent.loadAlert(color, content)} {this.loadLoader()}
         </> : !bills.length && this.emptyBills() // If bills not there, it will show Empty message 
         }
       </div>
@@ -428,7 +440,7 @@ class Bills extends Component {
   }
 
   loadHeader = (bills) => {
-    return new ShowServiceComponent.loadHeaderWithSearch("BILLS", bills, this.searchSelected, "Search Bills.....", this.createBillAction, false, null);
+    return new ShowServiceComponent.loadHeaderWithSearch("Bills", bills, this.searchSelected, "Search bills.....", this.createBillAction, false, null);
   }
 
   loadLoader = () => <div className="animated fadeIn">
@@ -436,22 +448,34 @@ class Bills extends Component {
       {this.loadHeader("")}
       <center className="padding-top" >
         <CardBody>
-          <div className="text-primary spinner-size" role="status">
-            <span className="sr-only">Loading...</span>
-          </div></CardBody>
+          {ShowServiceComponent.loadBootstrapSpinner()}
+        </CardBody>
       </center>
     </Card>
   </div>
 
   // when bills is empty. 
-  emptyBills = () => <div className="animated fadeIn">
-    <Card>
-      {this.loadHeader("")}
-      <center className="padding-top" >
-        <CardBody><h5><b>You don't have any {this.props.match.params.value ? this.props.match.params.value : ' '} Bills ... </b></h5><br /></CardBody>
-      </center>
-    </Card>
-  </div>
+  emptyBills = () => { // if bills.length is zero, then this code will executes, any error(contact, labels,...), that message will display, 
+    // if no error, then no bills, displey no bills message 
+    const {color, content, displayAlert} = this.state
+    if (content && !displayAlert) { // showing error message while fetching bills
+      setTimeout(()=>{
+        this.setState({displayAlert: true});
+      }, Config.apiTimeoutMillis);
+    } 
+    return <div className="animated fadeIn">
+      <Card>
+        {this.loadHeader("")}
+        <center className="padding-top" >
+          <CardBody><h5>
+            {displayAlert ? ShowServiceComponent.loadAlert(color, content) 
+              :<b>You don't have any {this.props.match.params.value ? this.props.match.params.value : ''} bills ... </b>}
+            </h5><br />
+          </CardBody>
+        </center>
+      </Card>
+    </div>
+  }
 
   // This Functions Loading Jquery DataTable into bills
   loadDataTable = (bills, featureAttachment) => {
@@ -469,10 +493,11 @@ class Bills extends Component {
       { title: "", orderable: false } // This column used for more options
     ]
     // This is Returning DataTable Component
+    const {alertColor, alertMessage} = this.state;
     return <div className="animated fadeIn">
       <Card>
         {this.loadHeader("")}
-        <h6>{this.state.alertMessage && <><br /><Alert color={this.state.alertColor}>{this.state.alertMessage}</Alert></>}</h6>
+        <h6>{alertMessage && <center><br />{ShowServiceComponent.loadAlert(alertColor, alertMessage)}</center>}</h6>
         <CardBody className="card-align">
           {/* Calling jquery datatable component providing rows and columns */}
           <DataTable billData={this.loadTableRows(bills, featureAttachment)} columns={columns} />
@@ -561,11 +586,11 @@ class Bills extends Component {
     var moreOption = "<span class='float-right'> <select id='more' class='dropdown-toggle'> <option>More ... </option>" +
       "<option>" + moreOptions.ADDPAYMENT + "</option>" +
       "<option>" + moreOptions.PAYHISTORY + "</option>";
-    // This Checking Bill is Paid or not according to adding mark as paid or mark as un paid
-    moreOption = moreOption.concat(bill.paid ? "<option>" + moreOptions.UNMARKPAID + "</option>" : "<option>" + moreOptions.MARKPAID + "</option>");
-    // This  its have feature attachment or not Checking
-    moreOption = moreOption.concat(featureAttachment && "<option>" + moreOptions.ATTACHMENTS + "</option>");
-    moreOption = moreOption.concat("<option>" + moreOptions.DELETE + "</option> </select> </span>");
+      // This Checking Bill is Paid or not, according to that option will display(mark as paid or mark as un paid)
+      moreOption = moreOption.concat(bill.paid ? "<option>" + moreOptions.UNMARKPAID + "</option>" : "<option>" + moreOptions.MARKPAID + "</option>");
+      // if user has a attachment feture, then display the option(Attachment)
+      moreOption = moreOption.concat(featureAttachment && "<option>" + moreOptions.ATTACHMENTS + "</option>");
+      moreOption = moreOption.concat("<option>" + moreOptions.DELETE + "</option> </select> </span>");
     return moreOption;
   }
 

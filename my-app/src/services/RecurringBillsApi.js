@@ -62,8 +62,8 @@ class RecurringBillsApi extends AbstractApi {
       }
     }
     //TODO: handle user error   
-    catch (err) {
-      this.handleAccessTokenError(profileId, err, failure, requestUrl, requestMethod, data, success, updateBill, createNewBill, billId, reload);
+    catch (error) {
+      this.handleAccessTokenError(profileId, error, failure, requestUrl, requestMethod, data, success, updateBill, createNewBill, billId, reload);
     }
   }
   }
@@ -71,19 +71,22 @@ class RecurringBillsApi extends AbstractApi {
   billSuccessData(success, failure, profileId) {
     this.billApi.getBills(success, failure, profileId, true)
   }
-  handleAccessTokenError(profileId, err, failure, requestUrl, requestMethod, data, success, updateBill, createNewBill, billId, reload) {
-    if (err.request && err.request.status === 0) {
+
+  handleAccessTokenError(profileId, error, failure, requestUrl, requestMethod, data, success, updateBill, createNewBill, billId, reload) {
+    const response = error && error.response ? error.response : '';
+    if (error.request && response && error.request.status === 0) { // ristricting the network issues
       this.getRecurringBills(success, failure, profileId, true);
-    } else if (err.response && (err.response.status === 403 || err.response.status === 401)) {
+    } else if (response && (response.status === 403 || response.status === 401)) {
       if (!reload) {
-      this.loginApi && this.loginApi.refresh(() => { this.process(success, failure, requestUrl, requestMethod, profileId, data, updateBill, createNewBill, billId, true) }, this.errorResponse(err, failure));
+        this.loginApi && this.loginApi.refresh(() => { this.process(success, failure, requestUrl, requestMethod, profileId, data, updateBill, createNewBill, billId, true) }, this.errorResponse(error, failure));
       } else {
-        this.errorResponse(err, failure)
+        this.errorResponse(error, failure)
       }
     } else {
-      this.errorResponse(err, failure)
+      this.errorResponse(error, failure)
     }
   }
 }
+
 
 export default RecurringBillsApi;

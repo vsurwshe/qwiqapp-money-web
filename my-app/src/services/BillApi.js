@@ -67,17 +67,16 @@ class BillApi extends AbstractApi {
     }
   }
   //this method slove the Exprie Token Problem.
-  handleAccessTokenError(profileId, err, failure, requestURL, requestMethod, data, success, reload) {
-    if (err.request && err.request.status === 0) {
-      this.getBills(success, failure, profileId, true);
-    } else if (err.response && (err.response.status === 403 || err.response.status === 401)) {
-      if (!reload) {
-        this.loginApi && this.loginApi.refresh(() => { this.process(success, failure, requestURL, requestMethod, profileId, data, true) }, this.errorResponse(err, failure))
+  handleAccessTokenError(profileId, error, failure, requestURL, requestMethod, data, success, reload) {
+    const response = error.response ? error.response : '';
+    if (response && (response.status === 403 || response.status === 401)) {
+      if (!reload) { // Handle access token error, ristricting the infinit api calls.
+        this.loginApi && this.loginApi.refresh(() => { this.process(success, failure, requestURL, requestMethod, profileId, data, true) }, this.errorResponse(error, failure))
       } else {
-        this.errorResponse(err, failure)
+        this.errorResponse(error, failure)
       }
     } else {
-      this.errorResponse(err, failure)
+      this.errorResponse(error, failure)
     }
   }
 }

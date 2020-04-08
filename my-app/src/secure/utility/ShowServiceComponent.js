@@ -80,10 +80,8 @@ export const ShowServiceComponent = {
         {this.loadHeaderAction(headerMessage, addButtonHandler, buttonText)}
           <center>
             <CardBody>
-              {visible && <Alert color="danger">{alertMessage}</Alert>}
-              {spinnerOff && <div className="text-primary spinner-size" role="status">
-                <span className="sr-only">Loading...</span>
-              </div>}
+              {visible && this.loadAlert("danger", alertMessage)}
+              {spinnerOff && this.loadBootstrapSpinner()}
             </CardBody>
           </center>
         </Card>
@@ -187,7 +185,7 @@ export const ShowServiceComponent = {
       <Card>
         {this.loadHeaderWithSearch(itemType, items, setSearch, placeHolder, addItem)}
         <div className="margin" >
-          {visible && <Alert color={color}>{content}</Alert>}
+          {visible && this.loadAlert(color, content)}
           {items.filter(this.searchingFor(search)).map((singleItem, key) => { return this.loadSingleItem(singleItem, key, toggleAccordion, accordion, setItemId, toggleDanger, handleUpdate, stateDrodownAccord, dropDownAccordion, subArray, subItemAccordion) })} </div>
       </Card>
     </div>
