@@ -1,10 +1,11 @@
 import React, { Component } from "react";
-import { Card, CardHeader, Col, Alert, CardBody } from "reactstrap";
+import { Card, Col, CardBody } from "reactstrap";
 import CategoryApi from "../../services/CategoryApi";
 import Config from "../../data/Config";
-import "../../css/style.css";
 import Categories from "./Categories";
 import { CategoryLabelForm } from "../utility/FormsModel";
+import { ShowServiceComponent } from "../utility/ShowServiceComponent";
+import "../../css/style.css";
 
 class CategoryForm extends Component {
   constructor(props) {
@@ -14,8 +15,6 @@ class CategoryForm extends Component {
       profileId: props.id,
       code: props.category ? props.category.code : "",
       collapse: props.category ? (props.category.parentId ? true : false) : false,
-      cancelCategory: false,
-      doubleClick: false,
       index: props.index
     };
   }
@@ -80,7 +79,7 @@ class CategoryForm extends Component {
 
   errorCall = error => {
     if (error && error.response) {
-      this.callAlertTimer("danger", "Unable to Process Request, Please Try Again");
+      this.callAlertTimer("danger", "Unable to process request, please try again");
     } else {
       this.handleDoubleClick(); // enable button to submit the values  
       this.callAlertTimer("danger", "Please check your internet connection and re-try again.", true);
@@ -137,21 +136,18 @@ class CategoryForm extends Component {
   loadFields = (categoryFields, alertColor, content) => {
     return (
       <Card className="card-width">
-        <CardHeader>
-          <strong>CATEGORIES</strong>
-        </CardHeader>
+        {ShowServiceComponent.loadHeaderAction("Category")}
         <CardBody>
-          <center><h5> <b>{!this.props.category ? "New Category Details" : "Category Details"}</b> </h5> </center>
-          <Col sm={{ size: 12, offset: 1 }} md={{ size: 12, offset: 1 }} lg={{ size: 8, offset: 3 }} xl={{ size: 6, offset: 3 }}>
-            {alertColor && <Alert color={alertColor}>{content}</Alert>} 
+          <center><h5> <b>{!this.props.category ? "New category details" : "Category details"}</b> </h5> </center>
+          <Col sm={{offset: 1 }} md={{ offset: 1 }}>
+            {alertColor && ShowServiceComponent.loadAlert(alertColor, content)} 
             <CategoryLabelForm
               data={categoryFields}
               handleSubmitValue={this.handleSubmitValue}
               handleInput={this.handleInput}
               toggle={this.toggle}
               cancelCategory={this.cancelCategory}
-              buttonText={this.props.category ? "Edit Category" : "Save Category"}
-            />
+              buttonText={this.props.category ? "Edit" : "Save"} />
           </Col>
         </CardBody>
       </Card>
