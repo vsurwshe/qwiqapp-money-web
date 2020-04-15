@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, Col, Row, Alert } from 'reactstrap';
+import { Button, Col, Row } from 'reactstrap';
 import PaymentApi from '../../../services/PaymentApi';
 import Store from '../../../data/Store';
 import Config from '../../../data/Config';
@@ -52,20 +52,31 @@ class BillPayment extends Component {
         if (response.amount - (paidAmountResult) === 0) {
             this.setState({ paid: true });
         } 
-        // this.setState({ alertColor: "success", alertMessage: alertMsg });
         this.setAlertMessage("success", alertMsg);
         
+        this.callTimer();
+    }
+
+    callTimer =()=>{
         setTimeout(() => {
             this.setState({ cancelPayment: true });
             this.setAlertMessage("", "");
         }, Config.apiTimeoutMillis)
     }
-
     setAlertMessage=(alertColor, alertMessage)=>{
         this.setState({ alertColor, alertMessage });
     }
 
-    handleErrorCall = (error) => { this.setState({ doubleClick: false }); }
+    handleErrorCall = (error) => {
+        const response = error.response ? error.response : '';
+        if (response) {
+            this.setAlertMessage("danger", "Unable to process request, please try again.");
+        } else {
+           this.setAlertMessage("danger", "Please check your internet connection and re-try again."); 
+        }
+        this.setState({ doubleClick: false });
+        this.callTimer();
+    }
 
     handlePaidDate = (date) => {
         return ShowServiceComponent.customDate(date);
@@ -80,12 +91,12 @@ class BillPayment extends Component {
     }
 
     loadPayment = (bill) => {
-        const { currencies } = this.state
+        const { currencies, alertColor, alertMessage} = this.state
         let selectedCurrency = currencies && currencies.filter(currency => currency.code === bill.currency);
         const name = bill.description ? bill.description : (bill.categoryName && bill.categoryName.name)
         let billDate = (bill.billDate + "").slice(0, 4) + "-" + (bill.billDate + "").slice(4, 6) + "-" + (bill.billDate + "").slice(6, 8);
         return <div>
-            {this.state.alertMessage && <Alert color={this.state.alertColor} >{this.state.alertMessage}</Alert>}
+            {alertMessage && ShowServiceComponent.loadAlert(alertColor, alertMessage)}
             <div className=" container shadow p-3 mb-1 md-white rounded border border-dark">
                 <Row>
                     <Col sm={3}>Bill Amount:</Col>
