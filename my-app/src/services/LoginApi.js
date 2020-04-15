@@ -2,6 +2,7 @@ import axios from "axios";
 import Config from "../data/Config";
 import Store from "../data/Store";
 import { DUMMY_EMAIL, grantType } from "../data/GlobalKeys";
+import AbstractApi from "./AbstractApi";
 
 class LoginApi {
 
@@ -34,7 +35,7 @@ class LoginApi {
 
   http = axios.create({
     baseURL: Config.settings().authBaseURL,
-    method: "post",
+    method: new AbstractApi().methodType.POST,
     url: "/oauth/token",
     headers: { accept: "application/json", "content-type": "application/json" },
     auth: {
