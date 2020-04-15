@@ -35,7 +35,7 @@ class LoginApi {
 
   http = axios.create({
     baseURL: Config.settings().authBaseURL,
-    method: new AbstractApi().methodType.POST,
+    method: new AbstractApi().requestType.POST,
     url: "/oauth/token",
     headers: { accept: "application/json", "content-type": "application/json" },
     auth: {

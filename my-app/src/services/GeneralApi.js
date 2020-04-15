@@ -12,15 +12,15 @@ class GeneralApi extends AbstractApi {
     }
 
     getCountrylist(success, failure) {
-        this.process(success, failure, "/general/countries", this.methodType.GET);
+        this.process(success, failure, "/general/countries", this.requestType.GET);
     };
 
     getCurrencyList(success, failure) {
-        this.process(success, failure, "/general/currencies", this.methodType.GET);
+        this.process(success, failure, "/general/currencies", this.requestType.GET);
     }
 
     settings(success, failure) {
-        this.process(success, failure, "/general/settings", this.methodType.GET);
+        this.process(success, failure, "/general/settings", this.requestType.GET);
     }
 
     async process(successCall, failureCall, requestUrl, requestMethod, reload) {

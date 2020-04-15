@@ -14,27 +14,27 @@ class ProfileApi extends AbstractApi {
     }
 
     createProfile(success, failure, data) {
-        this.process(success, failure, "/profiles/", this.methodType.POST, data);
+        this.process(success, failure, "/profiles/", this.requestType.POST, data);
     }
 
     getProfiles(success, failure, newGetRequest) {
-        !Store.getUserProfiles() || newGetRequest ? this.process(success, failure, "/profiles/", this.methodType.GET) : success(Store.getUserProfiles());
+        !Store.getUserProfiles() || newGetRequest ? this.process(success, failure, "/profiles/", this.requestType.GET) : success(Store.getUserProfiles());
     }
 
     getProfileById(success, failure, profileId) {
-        this.process(success, failure, "/profiles/" + profileId, this.methodType.GET, null, null, profileId);
+        this.process(success, failure, "/profiles/" + profileId, this.requestType.GET, null, null, profileId);
     }
 
     updateProfile(success, failure, data, profileId) {
-        this.process(success, failure, "/profiles/" + profileId, this.methodType.PUT, data);
+        this.process(success, failure, "/profiles/" + profileId, this.requestType.PUT, data);
     }
 
     deleteProfile(success, failure, profileId) {
-        this.process(success, failure, "/profiles/" + profileId, this.methodType.DELETE, null, null, profileId);
+        this.process(success, failure, "/profiles/" + profileId, this.requestType.DELETE, null, null, profileId);
     }
 
     upgradeProfile(success, failure, profileId, type) {
-        this.process(success, failure, "/profiles/" + profileId + "/upgrade?type=" + type, this.methodType.PUT, null, null, profileId);
+        this.process(success, failure, "/profiles/" + profileId + "/upgrade?type=" + type, this.requestType.PUT, null, null, profileId);
     }
 
 
@@ -45,7 +45,7 @@ class ProfileApi extends AbstractApi {
             if (http) {
                 try {
                     data === null ? promise = await http.request() : promise = await http.request({ data });
-                    if (requestMethod === this.methodType.GET) {
+                    if (requestMethod === this.requestType.GET) {
                         let selectedProfile = Store.getProfile();
                         // This condition decides to save profiles in Store for getProfiles Method call only
                         if (!profileId) {
@@ -55,7 +55,7 @@ class ProfileApi extends AbstractApi {
                         }
                         this.successResponse(promise, success, requestMethod, deleteId)
                     } else {
-                        if (requestMethod === this.methodType.POST || requestMethod === this.methodType.PUT) {
+                        if (requestMethod === this.requestType.POST || requestMethod === this.requestType.PUT) {
                             this.loginApi.refresh(async() => { // Calls Refresh Token 
                                 if (profileId) { //If profileId is there, calls getProfileById for updated data 
                                     this.getProfileById(async() => {
@@ -89,13 +89,13 @@ class ProfileApi extends AbstractApi {
     async successResponse(resp, successMethod, requestMethod, deleteId) {
 
         if (successMethod != null) {
-            if (requestMethod === this.methodType.DELETE) {
+            if (requestMethod === this.requestType.DELETE) {
                 if (Store.getProfile().id === deleteId) {
                     Store.saveProfile(null);
                     Store.setSelectedValue(false);
                     Store.userDataClear();
                 }
-            } else if (requestMethod === this.methodType.POST) {
+            } else if (requestMethod === this.requestType.POST) {
                 Store.setSelectedValue(true);
                 Store.userDataClear();
                 Store.saveProfile(resp.data)

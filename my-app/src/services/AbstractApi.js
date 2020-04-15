@@ -9,7 +9,7 @@ class AbstractApi {
     this.billApi= null;
   }
 
-  methodType = {
+  requestType = {
     GET: "GET",
     POST: "POST",
     PUT: "PUT",

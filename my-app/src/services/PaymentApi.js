@@ -13,22 +13,22 @@ class PaymentApi extends AbstractApi {
 
   //This Method Create Bill
   addBillPayment(success, failure, profileId, billId, data) {
-    this.process(success, failure, profileId + "/bills/" + billId + "/payments", this.methodType.POST, profileId, data, null, billId);
+    this.process(success, failure, profileId + "/bills/" + billId + "/payments", this.requestType.POST, profileId, data, null, billId);
   }
 
   //This Method Get All Bills
   getBillPayments(success, failure, profileId, billId) {
-    this.process(success, failure, profileId + "/bills/" + billId + "/payments", this.methodType.GET, profileId, null, null, billId);
+    this.process(success, failure, profileId + "/bills/" + billId + "/payments", this.requestType.GET, profileId, null, null, billId);
   }
 
   //This Method Update Bill 
   updateBillPayment(success, failure, profileId, billId, billPaymentId, data) {
-    this.process(success, failure, profileId + "/bills/" + billId + "/payments/" + billPaymentId, this.methodType.PUT, profileId, data, null, billId);
+    this.process(success, failure, profileId + "/bills/" + billId + "/payments/" + billPaymentId, this.requestType.PUT, profileId, data, null, billId);
   }
 
   //This Method Delete Bill
   deleteBillPayment(success, failure, profileId, billId, billPaymentId) {
-    this.process(success, failure, profileId + "/bills/" + billId + "/payments/" + billPaymentId, this.methodType.DELETE, profileId, null, null, billId);
+    this.process(success, failure, profileId + "/bills/" + billId + "/payments/" + billPaymentId, this.requestType.DELETE, profileId, null, null, billId);
   }
 
   async process(success, failure, requestUrl, requestMethod, profileId, data, reload, billId) {

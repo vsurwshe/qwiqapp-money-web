@@ -13,19 +13,19 @@ class BillingAddressApi extends AbstractApi {
     }
 
     createBillingAddress(success, failure, data) {
-        this.process(success, failure, "/billing/address", this.methodType.POST, data)
+        this.process(success, failure, "/billing/address", this.requestType.POST, data)
     }
 
     getBillings(success, failure) {
-        this.process(success, failure, "/billing/address", this.methodType.GET)
+        this.process(success, failure, "/billing/address", this.requestType.GET)
     }
 
     getBillingItems(success, failure) {
-        this.process(success, failure, "/billing/items", this.methodType.GET)
+        this.process(success, failure, "/billing/items", this.requestType.GET)
     }
 
     getPaymentsHistory(success, failure) {
-        this.process(success, failure, "/billing/payments", this.methodType.GET, null, null, true)
+        this.process(success, failure, "/billing/payments", this.requestType.GET, null, null, true)
     }
 
     async process(success, failure, requestUrl, requestMethod, data, reload, payments) {
@@ -35,7 +35,7 @@ class BillingAddressApi extends AbstractApi {
         if (http) {
             try {
                 data ? promise = await http.request({ data }) : promise = await http.request();
-                requestMethod === this.methodType.GET ? validResponse(promise.data, success, payments) : validResponse(data, success, payments)
+                requestMethod === this.requestType.GET ? validResponse(promise.data, success, payments) : validResponse(data, success, payments)
             } catch (error) {
                 this.handleAccessTokenError(error, failure, requestUrl, requestMethod, data, success, reload);
             }

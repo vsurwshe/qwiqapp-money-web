@@ -13,15 +13,15 @@ class UserApi extends AbstractApi {
     }
 
     getUser(success, failure) {
-        this.process(success, failure, "/user", this.methodType.GET)
+        this.process(success, failure, "/user", this.requestType.GET)
     }
 
     updateUser(success, failure, data) {
-        this.process(success, failure, "/user", this.methodType.PUT, data)
+        this.process(success, failure, "/user", this.requestType.PUT, data)
     }
 
     changePassword(success, failure, data) {
-        this.process(success, failure, "/user/passwd?new=" + data.new + "&old=" + data.old, this.methodType.PUT)
+        this.process(success, failure, "/user/passwd?new=" + data.new + "&old=" + data.old, this.requestType.PUT)
     }
 
     async process(success, failure, requestUrl, requestMethod, data, reload) {

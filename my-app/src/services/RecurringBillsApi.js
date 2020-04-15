@@ -10,27 +10,27 @@ class RecurringBillsApi extends AbstractApi {
   }
   //This Method Create Bill
   createRecurringBill(success, failure, profileId, data, updateBill, billId) {
-    this.process(success, failure, profileId + "/recurbills", this.methodType.POST, profileId, data, updateBill, null, billId);
+    this.process(success, failure, profileId + "/recurbills", this.requestType.POST, profileId, data, updateBill, null, billId);
   }
 
   //This Method Get All Bills
   getRecurringBills(success, failure, profileId, value) {
-    Store.getRecurringBills() === null || value ? this.process(success, failure, profileId + "/recurbills", this.methodType.GET) : success(Store.getRecurringBills());
+    Store.getRecurringBills() === null || value ? this.process(success, failure, profileId + "/recurbills", this.requestType.GET) : success(Store.getRecurringBills());
   }
 
   //This Method Get Bill By ID
   getRecurringBillById(success, failure, profileId, recurbillId) {
-    this.process(success, failure, profileId + "/recurbills/" + recurbillId, this.methodType.GET);
+    this.process(success, failure, profileId + "/recurbills/" + recurbillId, this.requestType.GET);
   }
 
   //This Method Update Bill 
   updateRecurringBill(success, failure, data, profileId, recurbillId, createNewBill, billId) {
-    this.process(success, failure, profileId + "/recurbills/" + recurbillId, this.methodType.PUT, profileId, data, null, createNewBill, billId);
+    this.process(success, failure, profileId + "/recurbills/" + recurbillId, this.requestType.PUT, profileId, data, null, createNewBill, billId);
   }
 
   //This Method Delete Bill
   deleteRecurringBill(success, failure, profileId, recurbillId, recurDependencies) {
-    this.process(success, failure, profileId + "/recurbills/" + recurbillId + "?removeDependents=" + recurDependencies, this.methodType.DELETE, profileId);
+    this.process(success, failure, profileId + "/recurbills/" + recurbillId + "?removeDependents=" + recurDependencies, this.requestType.DELETE, profileId);
   }
 
   async process(success, failure, requestUrl, requestMethod, profileId, data, updateBill, createNewBill, billId, reload) {
@@ -41,16 +41,16 @@ class RecurringBillsApi extends AbstractApi {
     if(http){
     try {
       data === null ? promise = await http.request() : promise = await http.request({ data });
-      if (requestMethod === this.methodType.GET) {
+      if (requestMethod === this.requestType.GET) {
         this.validResponse(promise, success)
-      } else if (requestMethod === this.methodType.POST) {
+      } else if (requestMethod === this.requestType.POST) {
         const newPostData = { ...data, "recurId": promise.data && promise.data.id }
         if (updateBill) { // normal Bill updated with recurring configuration
           await this.billApi.updateBill(this.billSuccessData(success, failure, profileId), failure, profileId, billId, newPostData);
         } else { // create new Recurring config and new Bills
           await this.billApi.createBill(this.billSuccessData(success, failure, profileId), failure, profileId, newPostData);
         }
-      } else if (requestMethod === this.methodType.PUT) {
+      } else if (requestMethod === this.requestType.PUT) {
         const newPostData = { ...data, "recurId": promise.data.id, "version": data.billVersion }
         if (createNewBill) { // recur configuration updated and create New bill 
           await this.billApi.createBill(this.billSuccessData(success, failure, profileId), failure, profileId, newPostData);

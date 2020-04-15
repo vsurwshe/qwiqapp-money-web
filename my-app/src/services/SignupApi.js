@@ -20,24 +20,24 @@ class SignupApi extends AbstractApi {
 
     //Registers User
     registerUser(success, failure, data) {
-        this.process(success, failure, "/user/register", this.methodType.POST, data);
+        this.process(success, failure, "/user/register", this.requestType.POST, data);
     }
 
     //user forgot password 
     forgotPassword(success, failure, email) {
-        this.process(success, failure, "/user/passwd/forgot?email=" + email, this.methodType.GET)
+        this.process(success, failure, "/user/passwd/forgot?email=" + email, this.requestType.GET)
     }
 
     // User Reset Password
     resetPassword(success, failure, email, otp, newpwd) {
-        this.process(success, failure, "/user/passwd/reset?email=" + email + "&otp=" + otp + "&newpwd=" + newpwd, this.methodType.PUT);
+        this.process(success, failure, "/user/passwd/reset?email=" + email + "&otp=" + otp + "&newpwd=" + newpwd, this.requestType.PUT);
     }
 
     //Checks Whether user already exists or not
     async existsUser(success, failure, userData) {
         this.getToken();
         setTimeout(() => {
-            let HTTP = httpCall("/user/exists?email=" + userData.email, this.methodType.GET, Store.getDummyUserAccessToken());
+            let HTTP = httpCall("/user/exists?email=" + userData.email, this.requestType.GET, Store.getDummyUserAccessToken());
             HTTP.request().then(response => {
                     if (response && response.data) {
                         this.validResponse(response, success)
@@ -57,12 +57,12 @@ class SignupApi extends AbstractApi {
     async verifySignup(success, failure, code) {
         await this.getToken()
         setTimeout(() => {
-            this.process(success, failure, "/user/verify?code=" + code + "&type=EMAIL", this.methodType.GET, "verify");
+            this.process(success, failure, "/user/verify?code=" + code + "&type=EMAIL", this.requestType.GET, "verify");
         }, Config.apiTimeoutMillis);
     }
 
     resendVerifyCode(success, failure) {
-        this.process(success, failure, "/user/verify/resend?type=EMAIL", this.methodType.GET, "verify");
+        this.process(success, failure, "/user/verify/resend?type=EMAIL", this.requestType.GET, "verify");
     }
 
     process(success, failure, Uurl, Umethod, data) {

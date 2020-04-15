@@ -16,7 +16,7 @@ class ProfileTypesApi extends AbstractApi {
         if (profileTypes) {
             success(profileTypes)
         } else {
-            this.process(success, failure, "/profile/types", this.methodType.GET)
+            this.process(success, failure, "/profile/types", this.requestType.GET)
         }
     }
     async process(success, failure, requestUrl, requestMethod, data, reload) {

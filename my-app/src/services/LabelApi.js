@@ -11,32 +11,32 @@ class LabelApi extends AbstractApi {
 
   //This Method Create label 
   createLabel(success, failure, profileId, data) {
-    this.process(success, failure, profileId + "/labels", this.methodType.POST, profileId, data);
+    this.process(success, failure, profileId + "/labels", this.requestType.POST, profileId, data);
   }
 
   //This Method Get All labels
   getlabels(success, failure, profileId) {
-    Store.getLabels() === null ? this.process(success, failure, profileId + "/labels?sublabels=true", this.methodType.GET, profileId) : success(Store.getLabels());
+    Store.getLabels() === null ? this.process(success, failure, profileId + "/labels?sublabels=true", this.requestType.GET, profileId) : success(Store.getLabels());
   }
 
   //This Method Get All labels
   getlabelsById(success, failure, profileId, labelId) {
-    this.process(success, failure, profileId + "/labels/" + labelId, this.methodType.GET, profileId);
+    this.process(success, failure, profileId + "/labels/" + labelId, this.requestType.GET, profileId);
   }
 
   //This Method Get All Sub-labels
   getSublabels(success, failure, profileId, value) {
-    Store.getLabels() === null || value ? this.process(success, failure, profileId + "/labels?sublabels=true", this.methodType.GET, profileId) : success(Store.getLabels());
+    Store.getLabels() === null || value ? this.process(success, failure, profileId + "/labels?sublabels=true", this.requestType.GET, profileId) : success(Store.getLabels());
   }
 
   //This Method Update labels 
   updateLabel(success, failure, data, profileId, labelId) {
-    this.process(success, failure, profileId + "/labels/" + labelId, this.methodType.PUT, profileId, data);
+    this.process(success, failure, profileId + "/labels/" + labelId, this.requestType.PUT, profileId, data);
   }
 
   //This Method Delete the lables
   deleteLabel(success, failure, profileId, labelId) {
-    this.process(success, failure, profileId + "/labels/" + labelId, this.methodType.DELETE, profileId);
+    this.process(success, failure, profileId + "/labels/" + labelId, this.requestType.DELETE, profileId);
   }
 
   async process(success, failure, requestUrl, requestMethod, profileId, data, reload) {
@@ -47,7 +47,7 @@ class LabelApi extends AbstractApi {
     if(http){
       try {
         data === null ? promise = await http.request() : promise = await http.request({ data });
-        if (requestMethod === this.methodType.GET) {
+        if (requestMethod === this.requestType.GET) {
           Store.storeLabels(promise.data);
         } else {
           this.getSublabels(success, failure, profileId, true);

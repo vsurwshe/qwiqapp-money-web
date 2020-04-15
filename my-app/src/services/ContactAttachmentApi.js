@@ -9,18 +9,18 @@ class ContactAttachmentApi extends AbstractApi{
   }
 
   createAttachment(success, failure, profileId, contactId, data) {
-    this.process(success, failure, profileId + "/contacts/" + contactId + "/attachments", this.methodType.POST, data);
+    this.process(success, failure, profileId + "/contacts/" + contactId + "/attachments", this.requestTypee.POST, data);
   }
 
   getAttachments(success, failure, profileId, contactId) {
-    this.process(success, failure, profileId + "/contacts/" + contactId + "/attachments", this.methodType.GET, profileId)
+    this.process(success, failure, profileId + "/contacts/" + contactId + "/attachments", this.requestTypee.GET, profileId)
   }
 
   getAttachmentsById(success, failure, profileId, contactId, attachmentId) {
-    this.process(success, failure, profileId + "/contacts/" + contactId + "/attachments/" + attachmentId, this.methodType.GET);
+    this.process(success, failure, profileId + "/contacts/" + contactId + "/attachments/" + attachmentId, this.requestTypee.GET);
   }
   deleteAttachment(success, failure, profileId, contactId, attachmentId) {
-    this.process(success, failure, profileId + "/contacts/" + contactId + "/attachments/" + attachmentId, this.methodType.DELETE, profileId);
+    this.process(success, failure, profileId + "/contacts/" + contactId + "/attachments/" + attachmentId, this.requestTypee.DELETE, profileId);
   }
 
 async  process(success, failure, requestUrl, requestMethod, data, reload) {

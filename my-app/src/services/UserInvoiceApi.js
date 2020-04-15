@@ -12,7 +12,7 @@ class UserInvoiceApi extends AbstractApi {
     }
 
     showInvoice(success, failure, invoceId) {
-        this.process(success, failure, "/invoices/" + invoceId, this.methodType.GET)
+        this.process(success, failure, "/invoices/" + invoceId, this.requestType.GET)
     }
 
     process(success, failure, requestUrl, requestMethod, reload) {
