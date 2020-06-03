@@ -1,6 +1,5 @@
 import React, { Component } from "react";
-import { Card, CardBody, Alert } from "reactstrap";
-import Loader from 'react-loader-spinner';
+import { Card, CardBody } from "reactstrap";
 import DeleteLabel from "./DeleteLabel";
 import LabelApi from "../../services/LabelApi";
 import Store from "../../data/Store";
@@ -159,7 +158,7 @@ class Lables extends Component {
           {ShowServiceComponent.loadHeaderWithSearch("Labels", null, null, null, this.callCreateLabel)}
           <center style={{ paddingTop: '20px' }}>
             <CardBody>
-              {spinnerOff ? <Loader type="TailSpin" color="#2E86C1" height={60} width={60} /> : <Alert color={alertColor}>{alertMessage}</Alert>}  
+              {spinnerOff ? ShowServiceComponent.loadBootstrapSpinner() : ShowServiceComponent.loadAlert(alertColor, alertMessage)}  
             </CardBody>
           </center>
         </Card>
