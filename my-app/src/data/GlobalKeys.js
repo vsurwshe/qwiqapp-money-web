@@ -14,6 +14,10 @@ export const CATEGORIES = 'categories';
 export const CONTACTS = 'contacts';
 export const BILLS = 'bills';
 export const PROFILEID_BILLID = 'profielIdAndBillId';
+export const billingAddres = {
+   EDIT: "Edit Billing Address",
+   ADD: "Add Billing Address"
+};
 
 //===== default profile currency
 export const DEFAULT_CURRENCY = 'GBP';

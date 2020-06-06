@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Card, CardBody, CardHeader, Button, Alert, Row, Col } from 'reactstrap';
+import { Card, CardBody, CardHeader, Button, Row, Col } from 'reactstrap';
 import Config from '../../../data/Config';
 import BillingAddressApi from '../../../services/BillingAddressApi';
 import EditBillingAddress from './EditBillingAddress';
 import { getBillingAddress, updateStatusValue } from "../../../redux/actions/BillingAddressAction";
 import { handleApiResponseMsg, buttonAction, setSpinnerValue } from "../../../redux/actions/UtilityActions";
+import { ShowServiceComponent } from '../../utility/ShowServiceComponent';
+import { billingAddres } from '../../../data/GlobalKeys';
 import '../../../css/style.css';
 
 // This is Empty Billing Address Set When There is no Billing Address we seting this Set into Billing Address for API (POST/PUT)
@@ -85,10 +87,10 @@ class BillingInfo extends Component {
     const { alertMessage, alertColor } = this.props.utility;
     return <div className="animated fadeIn">
     <Card>
-      {this.loadHeader("Edit Billing Address")}
+      {this.loadHeader(billingAddres.EDIT)}
       <center className="padding-top">
         <CardBody>
-          {!alertColor ? <div className="spinner-border text-info" style={{ height: 60, width: 60 }}></div> : <Alert color={alertColor}>{alertMessage} </Alert> }
+          {!alertColor ? <div className="spinner-border text-info" style={{ height: 60, width: 60 }}></div> : ShowServiceComponent.loadAlert(alertColor, alertMessage) }
         </CardBody>
       </center>
     </Card>
@@ -105,9 +107,9 @@ class BillingInfo extends Component {
     return (
       <div className="animated fadeIn">
         <Card>
-          {this.loadHeader("Edit Billing Address")}
+          {this.loadHeader(billingAddres.EDIT)}
           <CardBody>
-            {alertColor && <Alert color={alertColor}>{alertMessage} </Alert>}
+            {alertColor && ShowServiceComponent.loadAlert(alertColor, alertMessage)}
             {billingAddress &&
               <CardBody>
                 <center className="text-sm-left">
@@ -136,12 +138,12 @@ class BillingInfo extends Component {
     </Row>
   </CardHeader>
 
-  // This method is called when there is no billing address
+// This method is called when there is no billing address
   showingNoBillingMessage = () => <div className="animated fadeIn">
     <Card>
-      {this.loadHeader("+ Billing Address")}
+      {this.loadHeader(billingAddres.ADD)}
       <center className="padding-top" >
-        <CardBody> <b>No Billing Address added, Please Add Now...</b></CardBody>
+        <CardBody> <b>No billing address added, please add.</b></CardBody>
       </center>
     </Card>
   </div>

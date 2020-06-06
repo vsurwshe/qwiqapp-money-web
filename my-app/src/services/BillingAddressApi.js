@@ -49,10 +49,10 @@ async process(success, failure, requestUrl, requestMethod, data, reload, payment
     if (response && (response.status === 403 || response.status === 401)) {
         // This condtions restrict calling of api after geting 403 or 401 Error
         if (!reload) {
-            this.loginApi.refresh(() => { this.process(success, failure, requestUrl, requestMethod, data, true) }, ()=>{errorResponse(error, failure)});
+            this.loginApi.refresh(() => { this.process(success, failure, requestUrl, requestMethod, data, true) }, ()=>{this.errorResponse(error, failure)});
         } 
     } else {
-        errorResponse(error, failure)
+        this.errorResponse(error, failure)
     }
 }
 }
@@ -65,11 +65,5 @@ let validResponse = function (response, successMethod, payments) {
             Store.saveBillingAddress(response); 
         }
         successMethod(response);
-    }
-};
-
-let errorResponse = async function (error, failure) {
-    if (failure) {
-        failure(error);
     }
 };

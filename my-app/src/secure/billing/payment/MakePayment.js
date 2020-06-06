@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Card, CardBody, CardHeader, Col, FormGroup, Label, Input, Button, Alert } from 'reactstrap';
+import { Card, CardBody, CardHeader, Col, FormGroup, Label, Input, Button } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import Script from 'react-load-script';
 import Config from '../../../data/Config';
@@ -204,8 +204,7 @@ class MakePayment extends Component {
       <h4 className= "padding-top" ><center>Select an amount to pay</center></h4><br />
       <div className="form-group"> 
         <center>
-          {this.state.showAlert && <Alert color="warning">
-            <b className="warning-" >Please select your payment option to continue</b></Alert>}
+          {this.state.showAlert && ShowServiceComponent.loadAlert("warning", "Please select your payment option to continue")}
          </center>
         <FormGroup check>
           {this.state.billingItems && this.state.billingItems.map((item, index) => {
