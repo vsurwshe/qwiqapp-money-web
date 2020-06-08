@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { AvField } from 'availity-reactstrap-validation';
 import { Col, Row, Input, Collapse, Modal, ModalBody, ModalHeader } from "reactstrap";
-import Select from 'react-select';
 import BillApi from "../../services/BillApi";
 import Bills from "./Bills";
 import Data from '../../data/SelectData'
@@ -13,6 +12,7 @@ import RecurringBillsApi from "../../services/RecurringBillsApi";
 import { profileFeature, billType, billRepeatType, recurBillType } from "../../data/GlobalKeys";
 import ContactForm from "../contacts/ContactForm";
 import LabelForm from "../labels/LabelForm";
+import {SearchableDropdown} from '../utility/SearchDropdown'
 import '../../css/style.css';
 
 class BillForm extends Component {
@@ -464,7 +464,8 @@ class BillForm extends Component {
           <Row>
             <Col sm={3}> <label>Labels</label></Col>
             <Col>{labels ? <>
-              <Select isMulti options={Data.categoriesOrLabels(labels)} styles={Data.colourStyles} defaultValue={labelName} placeholder="Select Labels" onChange={this.labelSelected} /></>
+              <SearchableDropdown isMulti={true} labelName={labelName} options={Data.categoriesOrLabels(labels)} styles={Data.colourStyles} defaultValue={labelName} placeholder="Select labels" onChange={this.labelSelected} required={false} /></>
+              // <Select isMulti options={Data.categoriesOrLabels(labels)} styles={Data.colourStyles} defaultValue={labelName} placeholder="Select Labels" onChange={this.labelSelected} /></>
               : <p style={{ paddingTop: contacts && "10px", textDecoration: "none" }} onClick={() => this.toggleCreateModal("Labels")}>You don't have Labels, <u>Click here</u> to Create </p>}
             </Col>
           </Row>
@@ -473,7 +474,8 @@ class BillForm extends Component {
           <Row>
             <Col sm={3}> <label>Contacts</label></Col>
             <Col>{contacts ? <>
-              <Select options={Data.contacts(contacts)} defaultValue={contactName} placeholder="Select Contacts" onChange={this.contactSelected} /></>
+              <SearchableDropdown isMulti={false} labelName={contactName} options={Data.contacts(contacts)} styles={false} placeholder="Select contacts" onChangeHandler={this.contactSelected} /></>
+              // <Select options={Data.contacts(contacts)} defaultValue={contactName} placeholder="Select Contacts" onChange={this.contactSelected} /></>
               : <p style={{ paddingTop: labels && "10px", textDecoration: "none" }} onClick={() => this.toggleCreateModal("Contacts")}> You don't have Contacts, <u>Click here</u> to  Create</p>}
             </Col>
           </Row>
