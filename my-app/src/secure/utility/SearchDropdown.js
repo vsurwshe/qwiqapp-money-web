@@ -12,7 +12,8 @@ const {isMulti, defaultValue, options, onChangeHandler, required, placeholder, s
         filterOption={customFilter}
         placeholder={placeholder} 
         onChange={onChangeHandler}
-        required={required} />
+        required={required} 
+        isClearable={true}/>
 }
 
 //Add your search logic here.

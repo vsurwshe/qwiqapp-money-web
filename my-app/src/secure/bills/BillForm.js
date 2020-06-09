@@ -107,7 +107,7 @@ class BillForm extends Component {
         ...values,
         "billDate": Data.datePassToAPI(values.billDate),
         "categoryId": categoryOption.value ? categoryOption.value : categoryOption,
-        "contactId": contactOptionUpdate ? contactOption.value : (contactOption ? contactOption : ''),
+        "contactId": contactOptionUpdate ? (contactOption ? contactOption.value : null) : (contactOption ? contactOption : ''),
         "notificationEnabled": this.state.checked,
         "taxPercent": values.taxPercent ? values.taxPercent : 0,
         "labelIds": !labelOption || labelOption === [] ? null :
