@@ -464,7 +464,7 @@ class BillForm extends Component {
           <Row>
             <Col sm={3}> <label>Labels</label></Col>
             <Col>{labels && labels.length > 0 ? <>
-              <SearchableDropdown isMulti={true} labelName={labelName} options={Data.categoriesOrLabels(labels)} styles={Data.colourStyles} defaultValue={labelName} placeholder="Select labels" onChange={this.labelSelected} required={false} /></>
+              <SearchableDropdown isMulti={true} defaultValue={labelName} options={Data.categoriesOrLabels(labels)} styles={Data.colourStyles} placeholder="Select labels" onChangeHandler={this.labelSelected}/></>
               : <p style={{ paddingTop: contacts && "10px", textDecoration: "none" }} onClick={() => this.toggleCreateModal("Labels")}>You don't have Labels, <u>Click here</u> to Create </p>}
             </Col>
           </Row>
@@ -473,7 +473,7 @@ class BillForm extends Component {
           <Row>
             <Col sm={3}> <label>Contacts</label></Col>
             <Col>{contacts && contacts.length > 0 ? <>
-              <SearchableDropdown isMulti={false} labelName={contactName} options={Data.contacts(contacts)} styles={false} placeholder="Select contacts" onChangeHandler={this.contactSelected} /></>
+              <SearchableDropdown defaultValue={contactName} options={Data.contacts(contacts)} styles={false} placeholder="Select contacts" onChangeHandler={this.contactSelected} /></>
               : <p style={{ paddingTop: labels && "10px", textDecoration: "none" }} onClick={() => this.toggleCreateModal("Contacts")}> You don't have Contacts, <u>Click here</u> to  Create</p>}
             </Col>
           </Row>

@@ -3,11 +3,11 @@ import Select from 'react-select';
 
 export const SearchableDropdown=(props)=>{
 
-const {isMulti, labelName, options, onChangeHandler, required, placeholder, styles}=props;
+const {isMulti, defaultValue, options, onChangeHandler, required, placeholder, styles}=props;
     return <Select isMulti= {isMulti}
         options={options} 
         styles={styles} 
-        defaultValue={labelName} 
+        defaultValue={defaultValue} 
         isSearchable={true}
         filterOption={customFilter}
         placeholder={placeholder} 
@@ -17,7 +17,7 @@ const {isMulti, labelName, options, onChangeHandler, required, placeholder, styl
 
 //Add your search logic here.
 const customFilter = (option, searchText) => {
-    if ( option.label && option.label.props.children.toLowerCase().includes(searchText.toLowerCase()) ) {
+    if ( option.label && option.label.props && option.label.props.children.toLowerCase().includes(searchText.toLowerCase()) ) {
         return true;
     } else {
         return false;

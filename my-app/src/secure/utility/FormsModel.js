@@ -59,8 +59,7 @@ export const BillFormUI = (props) => {
         <Row>
           <Col sm={3} md={3}> <label>Category<b className="text-color">*</b> </label></Col>
           <Col sm={9} md={9}>
-            <SearchableDropdown isMulti={false} labelName={categoryName} options={Data.categoriesOrLabels(categories)} placeholder="Select categories " onChangeHandler={props.categorySelected} required={true}/>
-            {/* <Select options={Data.categoriesOrLabels(categories)} styles={Data.singleStyles} defaultValue={categoryName} placeholder="Select Categories " onChange={props.categorySelected} required /> */}
+            <SearchableDropdown isMulti={false} defaultValue={categoryName} options={Data.categoriesOrLabels(categories)} placeholder="Select categories " onChangeHandler={props.categorySelected} required={true}/>
           </Col>
         </Row>
       </Col>
