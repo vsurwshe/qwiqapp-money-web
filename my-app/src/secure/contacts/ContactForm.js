@@ -26,7 +26,8 @@ class ContactForm extends Component {
       labels: props.lables,
       contact: props.contact,
       selectedOption: [],
-      selectedCountry: props.contact && props.contact.country
+      selectedCountry: props.contact && props.contact.country,
+      hideCancel: props.hideButton
     };
   }
 
