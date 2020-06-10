@@ -186,7 +186,7 @@ export const ContactFormUI = (props) => {
       <Col><AvField name="organization" placeholder="Organization" value={organization} validate={{ myValidation: props.nameOrOrganization }} onChange={props.validateName} /></Col>
     </Row>
     <Row>
-      <Col><AvField name="phone" placeholder="Phone Number" value={phone} validate={{ pattern: { value: '^[0-9*+-]+$' } }} errorMessage="Please enter valid Phone number" required /></Col>
+      <Col><AvField name="phone" placeholder="Phone Number" value={phone} validate={{ pattern: { value: '^[ 0-9*+-]+$' } }} errorMessage="Please enter valid Phone number" required /></Col>
       <Col><AvField name="email" placeholder="Email" type="text" value={email} validate={{ email: true }} errorMessage="Please enter valid Email id" required /></Col></Row>
     <Row>
       <Col><AvField name="address1" placeholder="Address 1" value={address1} /></Col>

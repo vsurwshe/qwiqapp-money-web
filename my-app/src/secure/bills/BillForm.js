@@ -99,7 +99,7 @@ class BillForm extends Component {
 
   //this method handle form submit values and errors
   handleSubmitValue = async (event, errors, values) => {
-    const { labelOption, categoryOption, contactOption, labelOptionUpdate, contactOptionUpdate } = this.state
+    const { labelOption, categoryOption, contactOption, labelOptionUpdate } = this.state
     if (categoryOption === null) {
       this.callAlertTimer("warning", "Please select category");
     } else if (errors.length === 0) {
@@ -107,7 +107,7 @@ class BillForm extends Component {
         ...values,
         "billDate": Data.datePassToAPI(values.billDate),
         "categoryId": categoryOption.value ? categoryOption.value : categoryOption,
-        "contactId": contactOptionUpdate ? (contactOption ? contactOption.value : null) : (contactOption ? contactOption : ''),
+        "contactId": contactOption && contactOption.value ? contactOption.value : contactOption, // if user selected/changed the contact then only contactOption.value will be taken 
         "notificationEnabled": this.state.checked,
         "taxPercent": values.taxPercent ? values.taxPercent : 0,
         "labelIds": !labelOption || labelOption === [] ? null :
@@ -300,7 +300,7 @@ class BillForm extends Component {
   }
 
   contactSelected = (contactOption) => {
-    this.props.bill ? this.setState({ contactOption, contactOptionUpdate: true }) : this.setState({ contactOption });
+    this.setState({ contactOption });
   }
 
   toggleCustom = () => { this.setState({ moreOptions: !this.state.moreOptions }) }
