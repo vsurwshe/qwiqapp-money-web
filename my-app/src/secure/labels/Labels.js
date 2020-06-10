@@ -69,8 +69,10 @@ class Lables extends Component {
 
   errorCall = error => {
     const response = error && error.response ? error.response : '';
-    if (!response) {
-      this.setState({ alertColor: 'danger', alertMessage: 'Please check with your network, and try again' });
+    if (response) {
+      this.setState({ alertColor: 'danger', alertMessage: 'Unable to process your request, try again' });
+    } else {
+      this.setState({ alertColor: 'danger', alertMessage: 'Check with your network, and try again' });
     }
     this.setState({ visible: true });
   }
@@ -145,20 +147,14 @@ class Lables extends Component {
   }
 
   loadSpinner = () => {
-    let spinnerOff = false;
     const {alertMessage, alertColor} = this.state;
-    if (alertMessage) {
-      setTimeout(()=>{
-        spinnerOff = true
-      }, Config.apiTimeoutMillis);
-    }
     return (
       <div className="animated fadeIn">
         <Card>
           {ShowServiceComponent.loadHeaderWithSearch("Labels", null, null, null, this.callCreateLabel)}
           <center style={{ paddingTop: '20px' }}>
             <CardBody>
-              {spinnerOff ? ShowServiceComponent.loadBootstrapSpinner() : ShowServiceComponent.loadAlert(alertColor, alertMessage)}  
+              {alertColor === 'danger' ? ShowServiceComponent.loadAlert(alertColor, alertMessage) : ShowServiceComponent.loadBootstrapSpinner()}  
             </CardBody>
           </center>
         </Card>
