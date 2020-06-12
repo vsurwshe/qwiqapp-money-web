@@ -1,9 +1,10 @@
 import React, { Component } from "react";
-import { Alert, Card, CardHeader, CardBody, Col } from "reactstrap";
+import { Card, CardBody, Col } from "reactstrap";
 import LabelApi from "../../services/LabelApi";
 import Lables from './Labels';
 import Config from "../../data/Config";
 import { CategoryLabelForm } from "../utility/FormsModel";
+import { ShowServiceComponent } from "../utility/ShowServiceComponent";
 
 class LabelForm extends Component {
   _isMount = false;
@@ -69,7 +70,7 @@ class LabelForm extends Component {
   // handle the error response from api 
   errorCall = error => { 
     if (error && error.response) {
-      this.callAlertTimer("danger", "Unable to Process Request, Please try again!"); 
+      this.callAlertTimer("danger", "Unable to process your request, please try again!"); 
     } else {
       this.handleDoubleClick(); // enable button to submit the values  
       this.callAlertTimer("danger", "Please check your internet connection and re-try again.", true); 
@@ -126,18 +127,18 @@ class LabelForm extends Component {
       hideCancel: hideCancel
     };
     return <Card>
-      <CardHeader> <strong>LABELS</strong> </CardHeader>
+      {ShowServiceComponent.loadHeaderAction("Label")}
       <CardBody>
-        <br /><center><h5> <b>{!this.props.label ? "New label details" : "Label details"}</b> </h5> </center><br />
-        <Col sm={{ size: 12, offset: 1 }} md={{ size: 12, offset: 1 }} lg={{ size: 8, offset: 3 }} xl={{ size: 6, offset: 3 }}>
-          {alertColor && <Alert color={alertColor}>{content}</Alert>}
+        <center><h5> <b>{!this.props.label ? "New label details" : "Label details"}</b> </h5> </center>
+        <Col sm={{ offset: 1 }} md={{ offset: 1 }} >
+          {alertColor && ShowServiceComponent.loadAlert(alertColor, content)}
           <CategoryLabelForm
             data={labelFields}
             handleSubmitValue={this.handleSubmitValue}
             handleInput={this.handleInput}
             toggle={this.toggle}
             cancelCategory={this.cancelLabelAction}
-            buttonText={this.props.label ? "Edit Label" : "Save Label"}
+            buttonText={this.props.label ? "Edit" : "Save"}
           />
         </Col>
       </CardBody>
