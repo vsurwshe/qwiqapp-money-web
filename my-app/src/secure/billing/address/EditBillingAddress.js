@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Alert, Button, Card, FormGroup, Col, Row, Label } from "reactstrap";
+import { Button, Card, FormGroup, Col, Row, Label } from "reactstrap";
 import { AvForm, AvField } from 'availity-reactstrap-validation';
 import Config from "../../../data/Config";
 import Store from "../../../data/Store";
@@ -10,6 +10,7 @@ import BillingInfo from "./BillingInfo";
 import {  updateStatusValue } from "../../../redux/actions/BillingAddressAction";
 import { handleApiResponseMsg, setCountries, buttonAction } from "../../../redux/actions/UtilityActions";
 import { userAction } from "../../../data/GlobalKeys";
+import { ShowServiceComponent } from "../../utility/ShowServiceComponent";
 import '../../../css/style.css';
 
 const firstNameAndlastNameOrcompany = (value, field) => {
@@ -124,7 +125,7 @@ class EditBillingAddress extends Component {
     return <div className="animated fadeIn" >
       <Card>
         <h4 className="padding-top"><b><center> BILLING ADDRESS</center></b></h4> <br />
-        {alertMessage && <Alert color={alertColor}>{alertMessage}</Alert>}
+        {alertMessage && ShowServiceComponent.loadAlert(alertColor, alertMessage)}
         {updateBill && <Col >
           <AvForm ref={refId => this.form = refId} onSubmit={this.handleSubmitValue}>
             <Row>

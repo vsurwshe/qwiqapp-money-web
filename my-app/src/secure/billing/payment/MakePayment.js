@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Card, CardBody, CardHeader, Col, FormGroup, Label, Input, Button, Alert } from 'reactstrap';
+import { Card, CardBody, CardHeader, Col, FormGroup, Label, Input, Button } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import Script from 'react-load-script';
 import Config from '../../../data/Config';
@@ -30,16 +30,11 @@ class MakePayment extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      disableDoubleCilck: false,
-      paymentSuccess: false,
       scriptLoaded: false,
       scriptError: false,
       billingItems: [],
       selectedItem: {},
-      paymentResponse:'',
-      loader: true,
-      showAlert: false,
-      error_message: ''
+      loader: true
     };
 
     this.createPaypalOrder = this.createPaypalOrder.bind(this)
@@ -55,17 +50,30 @@ class MakePayment extends Component {
   };
 
   errorCall = (error) => {
-    this.setState({ loader: false, error_message: error}); 
-  }
-
-  callAlertTimer = (message) => {
-    setTimeout(() => {
-      this.setState({ paymentSuccess: true, disableDoubleCilck: false });
-    }, Config.apiTimeoutMillis)
-  };
-
-  updateInputValue(evt) {
-    this.setState({ selectedItem:{code: evt.target.value }});
+    const response = error && error.response ?  error.response : ""
+    let errorData = null;
+    if (response) {
+      if (response.status === 500) { // Handling error call for no billing address 
+        errorData = {
+          status: response.status,
+          message: "You are not added your billing address."
+        }
+      } else if (response.status === 400) { // Handling error call for email not verified
+        errorData = {
+          status: response.status,
+          message: "You are not verified your email address, please verify it."
+        }
+      } else { // Handling any other api error calls
+        errorData = {
+          message: "Unable to process your request, try again later."
+        }
+      }
+    } else {
+      errorData = { 
+        message: "Please check with your network and re-try again."
+      }
+    }
+    this.setState({ loader: false, error_message: errorData}); 
   }
 
   handleScriptCreate() {
@@ -91,23 +99,27 @@ class MakePayment extends Component {
     }
   }
 
-  loadBillingItemError = () =>{
-    const {status, message} = this.state.error_message;
+  loadBillingItemError = () =>{ // This method loads when user "not verified/not added billing address"
+    const {status, message} = this.state.error_message; // status is only for 400/500 errors(Email not verified, not added billing address)
     let link, buttonText;
-    if (status && status === 500) {
-      link = "/billing/address"
-      buttonText = "Add Billing Address"
-    } else {
-      link = "/verify"
-      buttonText = "Verify Email"
-    } 
+    if (status) { // According to status, the Button text, link will be set
+      if (status === 400) {
+          link = "/verify"
+          buttonText = "Verify Email"
+      } else {
+          link = "/billing/address"
+          buttonText = "Add Billing Address"
+      }
+    }
     return(
       <Card>
         <CardHeader><strong>Make Payment</strong></CardHeader>
         <center >
-          <CardBody><h4><b className="text-color">{message} <br /><br />
-          <Link to={{pathname: link, state: {updateBill: billingAddressFields }}} className="text-link" > <Button color="info"> {buttonText} </Button> </Link>
-          </b></h4></CardBody>
+          <CardBody>
+            <h4><b className="text-color">{message} <br /><br />
+              {status && <Link to={{pathname: link, state: {updateBill: billingAddressFields }}} className="text-link" > <Button color="info"> {buttonText} </Button> </Link>}
+            </b></h4>
+          </CardBody>
         </center>
       </Card>
     )
@@ -192,8 +204,7 @@ class MakePayment extends Component {
       <h4 className= "padding-top" ><center>Select an amount to pay</center></h4><br />
       <div className="form-group"> 
         <center>
-          {this.state.showAlert && <Alert color="warning">
-            <b className="warning-" >Please Select your Payment option to continue</b></Alert>}
+          {this.state.showAlert && ShowServiceComponent.loadAlert("warning", "Please select your payment option to continue")}
          </center>
         <FormGroup check>
           {this.state.billingItems && this.state.billingItems.map((item, index) => {
