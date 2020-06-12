@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { AvField } from 'availity-reactstrap-validation';
 import { Col, Row, Input, Collapse, Modal, ModalBody, ModalHeader } from "reactstrap";
-import Select from 'react-select';
 import BillApi from "../../services/BillApi";
 import Bills from "./Bills";
 import Data from '../../data/SelectData'
@@ -13,6 +12,7 @@ import RecurringBillsApi from "../../services/RecurringBillsApi";
 import { profileFeature, billType, billRepeatType, recurBillType } from "../../data/GlobalKeys";
 import ContactForm from "../contacts/ContactForm";
 import LabelForm from "../labels/LabelForm";
+import {SearchableDropdown} from '../utility/SearchDropdown'
 import '../../css/style.css';
 
 class BillForm extends Component {
@@ -99,7 +99,7 @@ class BillForm extends Component {
 
   //this method handle form submit values and errors
   handleSubmitValue = async (event, errors, values) => {
-    const { labelOption, categoryOption, contactOption, labelOptionUpdate, contactOptionUpdate } = this.state
+    const { labelOption, categoryOption, contactOption, labelOptionUpdate } = this.state
     if (categoryOption === null) {
       this.callAlertTimer("warning", "Please select category");
     } else if (errors.length === 0) {
@@ -107,7 +107,7 @@ class BillForm extends Component {
         ...values,
         "billDate": Data.datePassToAPI(values.billDate),
         "categoryId": categoryOption.value ? categoryOption.value : categoryOption,
-        "contactId": contactOptionUpdate ? contactOption.value : (contactOption ? contactOption : ''),
+        "contactId": contactOption && contactOption.value ? contactOption.value : contactOption, // if user selected/changed the contact then only contactOption.value will be taken 
         "notificationEnabled": this.state.checked,
         "taxPercent": values.taxPercent ? values.taxPercent : 0,
         "labelIds": !labelOption || labelOption === [] ? null :
@@ -300,7 +300,7 @@ class BillForm extends Component {
   }
 
   contactSelected = (contactOption) => {
-    this.props.bill ? this.setState({ contactOption, contactOptionUpdate: true }) : this.setState({ contactOption });
+    this.setState({ contactOption });
   }
 
   toggleCustom = () => { this.setState({ moreOptions: !this.state.moreOptions }) }
@@ -463,8 +463,8 @@ class BillForm extends Component {
         <Col>
           <Row>
             <Col sm={3}> <label>Labels</label></Col>
-            <Col>{labels ? <>
-              <Select isMulti options={Data.categoriesOrLabels(labels)} styles={Data.colourStyles} defaultValue={labelName} placeholder="Select Labels" onChange={this.labelSelected} /></>
+            <Col>{labels && labels.length > 0 ? <>
+              <SearchableDropdown isMulti={true} defaultValue={labelName} options={Data.categoriesOrLabels(labels)} styles={Data.colourStyles} placeholder="Select labels" onChangeHandler={this.labelSelected}/></>
               : <p style={{ paddingTop: contacts && "10px", textDecoration: "none" }} onClick={() => this.toggleCreateModal("Labels")}>You don't have Labels, <u>Click here</u> to Create </p>}
             </Col>
           </Row>
@@ -472,8 +472,8 @@ class BillForm extends Component {
         <Col>
           <Row>
             <Col sm={3}> <label>Contacts</label></Col>
-            <Col>{contacts ? <>
-              <Select options={Data.contacts(contacts)} defaultValue={contactName} placeholder="Select Contacts" onChange={this.contactSelected} /></>
+            <Col>{contacts && contacts.length > 0 ? <>
+              <SearchableDropdown defaultValue={contactName} options={Data.contacts(contacts)} styles={false} placeholder="Select contacts" onChangeHandler={this.contactSelected} /></>
               : <p style={{ paddingTop: labels && "10px", textDecoration: "none" }} onClick={() => this.toggleCreateModal("Contacts")}> You don't have Contacts, <u>Click here</u> to  Create</p>}
             </Col>
           </Row>

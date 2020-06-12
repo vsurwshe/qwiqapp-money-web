@@ -2,13 +2,13 @@ import React from 'react';
 import { AvForm, AvField, AvInput } from 'availity-reactstrap-validation';
 import { Button, FormGroup, Col, Row, Label, Collapse, Input } from "reactstrap";
 import { Link } from 'react-router-dom';
-import Select from 'react-select';
 import Data from '../../data/SelectData';
 import Store from '../../data/Store';
 import { userAction, profileFeature, billType, DEFAULT_CURRENCY } from '../../data/GlobalKeys';
-import '../../css/style.css';
 import { UpgradeProfileType } from '../profiles/UpgradeProfileType';
 import { DeleteModel } from './DeleteModel';
+import {SearchableDropdown} from './SearchDropdown'
+import '../../css/style.css';
 
 // ======================= This Bill Form Code =======
 export const BillFormUI = (props) => {
@@ -59,7 +59,7 @@ export const BillFormUI = (props) => {
         <Row>
           <Col sm={3} md={3}> <label>Category<b className="text-color">*</b> </label></Col>
           <Col sm={9} md={9}>
-            <Select options={Data.categoriesOrLabels(categories)} styles={Data.singleStyles} defaultValue={categoryName} placeholder="Select Categories " onChange={props.categorySelected} required />
+            <SearchableDropdown isMulti={false} defaultValue={categoryName} options={Data.categoriesOrLabels(categories)} placeholder="Select categories " onChangeHandler={props.categorySelected} required={true}/>
           </Col>
         </Row>
       </Col>
@@ -186,7 +186,7 @@ export const ContactFormUI = (props) => {
       <Col><AvField name="organization" placeholder="Organization" value={organization} validate={{ myValidation: props.nameOrOrganization }} onChange={props.validateName} /></Col>
     </Row>
     <Row>
-      <Col><AvField name="phone" placeholder="Phone Number" value={phone} validate={{ pattern: { value: '^[0-9*+-]+$' } }} errorMessage="Please enter valid Phone number" required /></Col>
+      <Col><AvField name="phone" placeholder="Phone Number" value={phone} validate={{ pattern: { value: '^[ 0-9*+-]+$' } }} errorMessage="Please enter valid Phone number" required /></Col>
       <Col><AvField name="email" placeholder="Email" type="text" value={email} validate={{ email: true }} errorMessage="Please enter valid Email id" required /></Col></Row>
     <Row>
       <Col><AvField name="address1" placeholder="Address 1" value={address1} /></Col>

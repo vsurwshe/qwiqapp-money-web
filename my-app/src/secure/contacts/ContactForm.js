@@ -1,13 +1,13 @@
 import React, { Component } from "react";
 import { CardBody, Button, Card, CardHeader, FormGroup, Col, Alert } from "reactstrap";
 import { AvForm } from 'availity-reactstrap-validation';
-import Select from "react-select";
 import Contacts from './Contacts';
 import ContactApi from "../../services/ContactApi";
 import Config from "../../data/Config";
 import Data from '../../data/SelectData';
 import Store from "../../data/Store";
 import { ContactFormUI } from "../utility/FormsModel";
+import { SearchableDropdown } from "../utility/SearchDropdown";
 
 const nameOrOrganization = (value, field) => {
   if (!field.name && !field.organization) {
@@ -26,7 +26,8 @@ class ContactForm extends Component {
       labels: props.lables,
       contact: props.contact,
       selectedOption: [],
-      selectedCountry: props.contact && props.contact.country
+      selectedCountry: props.contact && props.contact.country,
+      hideCancel: props.hideButton
     };
   }
 
@@ -158,37 +159,13 @@ class ContactForm extends Component {
 
   // getting lables and SubLabels in select option
   loadAvCollapse = (contact) => {
-    const labelOption = [];
-    this.state.labels.map((label, key) => {
-      if (Array.isArray(label.subLabels)) {
-        this.pushArray(labelOption, label);
-        label.subLabels.map(sul => {
-          return this.pushArray(labelOption, sul, label)
-        })
-      } else {
-        this.pushArray(labelOption, label);
-      }
-      return 0;
-    })
-    const data = contact && contact.labelIds && contact.labelIds.map(id => {
-      return labelOption.filter(item => {
+    const labelOptions = Data.categoriesOrLabels(this.state.labels)
+    const defaultValue = contact && contact.labelIds && contact.labelIds.map(id => {
+      return labelOptions.filter(item => {
         return item.value === id
       })
     }).flat();
-    return <Select isMulti options={labelOption} defaultValue={data} styles={Data.colourStyles} placeholder="Select Lables " autoFocus={true} onChange={this.handleSelect} />;
-
-  }
-
-  pushArray = (lablesList, label, slabel) => {
-    !slabel ? lablesList.push({
-      value: label.id,
-      label: label.name,
-      color: !label.color ? "#000000" : label.color,
-    }) : lablesList.push({
-      value: label.id,
-      label: slabel.name + "/" + label.name,
-      color: !label.color ? "#000000" : label.color,
-    })
+    return <SearchableDropdown isMulti={true} options={Data.categoriesOrLabels(this.state.labels)} defaultValue={defaultValue} styles={Data.colourStyles} placeholder="Select lables" onChangeHandler={this.handleSelect} />;
   }
 }
 
