@@ -37,7 +37,7 @@ export const BillPaymentForm = (props) =>{
         <Row>
             <Col>
                 <Row>
-                    <Col xl={1}><Label>Payment Type</Label></Col>
+                    <Col xl={1}><Label>Payment note / description:</Label></Col>
                     <Col><AvField type="textarea" name="notes" value={props.data.updateNote} placeholder="Payment description" /></Col>
                 </Row>
             </Col>
@@ -45,7 +45,7 @@ export const BillPaymentForm = (props) =>{
         <center>
             <FormGroup >
                 <Button color="success" disabled={props.data.doubleClick}> {buttonText}  </Button> &nbsp;&nbsp;
-                <Button type="button" onClick={props.cancelPayment}>Go to Payment History</Button>
+                <Button type="button" onClick={props.cancelPayment}>Go to payment history</Button>
             </FormGroup>
        </center>
     </AvForm>

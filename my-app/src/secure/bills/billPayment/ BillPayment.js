@@ -32,10 +32,8 @@ class BillPayment extends Component {
             let date = values.date.split("-")[0] + values.date.split("-")[1] + values.date.split("-")[2];
             let newData = { ...values, "date": date }
             if (update) {
-                // This blovk Execute the update bill payment
                 await new PaymentApi().updateBillPayment(this.handleSuccessCall, this.handleErrorCall, profileId, bill.id, updatePayment.txId, newData);
             } else {
-                // This block Execuet the create a bill payment 
                 await new PaymentApi().addBillPayment(this.handleSuccessCall, this.handleErrorCall, profileId, bill.id, newData);
             }
         } else {
@@ -92,23 +90,23 @@ class BillPayment extends Component {
 
     loadPayment = (bill) => {
         const { currencies, alertColor, alertMessage} = this.state
+        let notes = this.setNotes(bill);
         let selectedCurrency = currencies && currencies.filter(currency => currency.code === bill.currency);
-        const name = bill.description ? bill.description : (bill.categoryName && bill.categoryName.name)
         let billDate = (bill.billDate + "").slice(0, 4) + "-" + (bill.billDate + "").slice(4, 6) + "-" + (bill.billDate + "").slice(6, 8);
         return <div>
             {alertMessage && ShowServiceComponent.loadAlert(alertColor, alertMessage)}
             <div className=" container shadow p-3 mb-1 md-white rounded border border-dark">
                 <Row>
-                    <Col sm={3}>Bill Amount:</Col>
-                    <Col sm={9}> {selectedCurrency[0].symbol} &nbsp;{bill.amount > 0 ? bill.amount : -(bill.amount)} </Col>
+                    <Col sm={4}>Bill Amount:</Col>
+                    <Col sm={7}> {selectedCurrency[0].symbol} &nbsp;{bill.amount > 0 ? bill.amount : -(bill.amount)} </Col>
                 </Row> <br />
                 <Row>
-                    <Col sm={3}>Bill Date:</Col>
-                    <Col sm={9}>{billDate}</Col>
+                    <Col sm={4}>Bill Date:</Col>
+                    <Col sm={7}>{billDate}</Col>
                 </Row> <br />
                 <Row>
-                    <Col sm={3}>Bill Notes / Description: </Col>
-                    <Col sm={9}>{name}</Col>
+                    <Col sm={4}>Bill Notes / Description: </Col>
+                    <Col sm={7}>{notes}</Col>
                 </Row>
             </div> <br />
             {bill.paid ? this.loadPaidMessage() : this.loadBillPaymentForm(selectedCurrency[0], bill)}
@@ -151,6 +149,20 @@ class BillPayment extends Component {
         } else {
             return bill.amount < 0 ? -(bill.amount) : bill.amount;
         }
+    }
+
+    setNotes = (bill) => {
+        let notes = "";
+        if (bill.description) {
+            notes = bill.description
+        } else if (bill.categoryName) {
+            notes = bill.categoryName.name
+        } else {
+            const categories = Store.getCategories();
+            const category = categories && categories.length > 0 && categories.filter(item => item.id === bill.categoryId)
+            notes = category && category[0].name
+        }
+        return notes;
     }
 }
 
