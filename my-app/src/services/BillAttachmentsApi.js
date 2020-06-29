@@ -11,19 +11,19 @@ class BillAttachmentsApi extends AbstractApi {
     }
   }
   createBillAttachment(success, failure, profileId, billId, data) {
-    this.process(success, failure, profileId + "/bills/" + billId + "/attachments", this.apiMethod.POST, data);
+    this.process(success, failure, profileId + "/bills/" + billId + "/attachments", this.requestType.POST, data);
   }
 
   getBillAttachments(success, failure, profileId, billId) {
-    this.process(success, failure, profileId + "/bills/" + billId + "/attachments", this.apiMethod.GET, profileId);
+    this.process(success, failure, profileId + "/bills/" + billId + "/attachments", this.requestType.GET, profileId);
   }
 
   getBillAttachmentsById(success, failure, profileId, billId, attachmentId) {
-    this.process(success, failure, profileId + "/bills/" + billId + "/attachments/" + attachmentId, this.apiMethod.GET);
+    this.process(success, failure, profileId + "/bills/" + billId + "/attachments/" + attachmentId, this.requestType.GET);
   }
 
   deleteBillAttachment(success, failure, profileId, billId, attachmentId) {
-    this.process(success, failure, profileId + "/bills/" + billId + "/attachments/" + attachmentId, this.apiMethod.DELETE, profileId);
+    this.process(success, failure, profileId + "/bills/" + billId + "/attachments/" + attachmentId, this.requestType.DELETE, profileId);
   }
 
   async process(success, failure, requestUrl, requestMethod, data, reload) {
