@@ -9,36 +9,35 @@ export const BillPaymentForm = (props) =>{
 
     return <AvForm onSubmit={props.handleSubmitValue}>
         <Row>
-        <Col xs="3" style={{paddingRight:10, paddingBottom:0, marginRight:15}}> 
+                
+            <Col style={{paddingRight:10}}>
                 <Row>
-                    <Col sm={5}><Label>{props.data.amountLable}</Label></Col>
-                    <Col sm={7}> <AvField type="number" name="amount" placeholder="Amount" value={props.data.paidAmount} errorMessage="Invaild payment amount" required /></Col>
-                </Row>
-                </Col>
-        <Col xs="auto"  style={{paddingRight:10}}>
-            <Row>
-                <Col sm={5}><Label>Payment Date</Label></Col>
-                <Col sm={7} > <AvField type="date" name="date" value={date} errorMessage="Select payment date" required /></Col>
-            </Row>
-        </Col>
-
-        <Col xs="3"  style={{paddingRight:10}}>
-            <Row>
-                <Col sm={5} ><Label>Payment Type</Label></Col>
-                    <Col sm={7}>
-                        <AvField type="select" name="type" errorMessage="Select type of payment" value={props.data.paymentType} required>
-                            <option value="Paid">Paid</option>
-                            <option value="Received">Received</option>
-                        </AvField>
-                </Col>
-           </Row>
+                    <Col sm={5} ><Label>Payment Type</Label></Col>
+                        <Col sm={7}>
+                            <AvField type="select" name="type" errorMessage="Select type of payment" value={props.data.paymentType} required>
+                                <option value="Paid">Paid</option>
+                                <option value="Received">Received</option>
+                            </AvField>
                     </Col>
-                    <Col xs="3"></Col>
+            </Row>
+            </Col>
+            <Col style={{paddingRight:10}}> 
+                <Row>
+                    <Col sm={6}><Label>{props.data.amountLable}</Label></Col>
+                    <Col sm={6}> <AvField type="number" name="amount" placeholder="Amount" value={props.data.paidAmount} errorMessage="Invaild payment amount" required /></Col>
+                </Row>
+            </Col>
+            <Col style={{paddingRight:10}}>
+                <Row>
+                    <Col sm={5}><Label>Payment Date</Label></Col>
+                    <Col sm={7} > <AvField type="date" name="date" value={date} errorMessage="Select payment date" required /></Col>
+                </Row>
+            </Col>
         </Row>
         <Row>
             <Col>
                 <Row>
-                    <Col xl={1}><Label>Payment Type</Label></Col>
+                    <Col xl={1}><Label>Payment note / description:</Label></Col>
                     <Col><AvField type="textarea" name="notes" value={props.data.updateNote} placeholder="Payment description" /></Col>
                 </Row>
             </Col>
@@ -46,7 +45,7 @@ export const BillPaymentForm = (props) =>{
         <center>
             <FormGroup >
                 <Button color="success" disabled={props.data.doubleClick}> {buttonText}  </Button> &nbsp;&nbsp;
-                <Button type="button" onClick={props.cancelPayment}>Go to Payment History</Button>
+                <Button type="button" onClick={props.cancelPayment}>Go to payment history</Button>
             </FormGroup>
        </center>
     </AvForm>

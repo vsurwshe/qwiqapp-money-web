@@ -42,26 +42,28 @@ class PaymentApi extends AbstractApi {
       this.validResponse(promise, success)
     }
     //TODO: handle user error   
-    catch (err) {
-      this.handleAccessTokenError(profileId, err, failure, requestUrl, requestMethod, data, success, reload, billId);
+    catch (error) {
+      this.handleAccessTokenError(profileId, error, failure, requestUrl, requestMethod, data, success, reload, billId);
     }
   }
   }
 
   //this method slove the Exprie Token Problem.
-  handleAccessTokenError(profileId, err, failure, requestUrl, requestMethod, data, success, reload, billId) {
-    if (err.request.status === 0) {
+  handleAccessTokenError(profileId, error, failure, requestUrl, requestMethod, data, success, reload, billId) {
+    const response = error.response ? error.response : '';
+    if (response &&(error.request && error.request.status === 0)) {
       this.getBillPayments(success, failure, profileId, billId);
-    } else if (err.response.status === 403 || err.response.status === 401) {
+    } else 
+    if (response && (response.status === 403 || response.status === 401)) {
       if (!reload) {
         this.loginApi && this.loginApi.refresh(() => {
           this.process(success, failure, requestUrl, requestMethod, profileId, data, true)
-        }, this.errorResponse(err, failure))
+        }, this.errorResponse(error, failure))
       } else {
-        this.errorResponse(err, failure)
+        this.errorResponse(error, failure)
       }
     } else {
-      this.errorResponse(err, failure)
+      this.errorResponse(error, failure)
     }
   }
 }

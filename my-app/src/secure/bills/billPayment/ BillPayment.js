@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, Col, Row, Alert } from 'reactstrap';
+import { Button, Col, Row } from 'reactstrap';
 import PaymentApi from '../../../services/PaymentApi';
 import Store from '../../../data/Store';
 import Config from '../../../data/Config';
@@ -32,10 +32,8 @@ class BillPayment extends Component {
             let date = values.date.split("-")[0] + values.date.split("-")[1] + values.date.split("-")[2];
             let newData = { ...values, "date": date }
             if (update) {
-                // This blovk Execute the update bill payment
                 await new PaymentApi().updateBillPayment(this.handleSuccessCall, this.handleErrorCall, profileId, bill.id, updatePayment.txId, newData);
             } else {
-                // This block Execuet the create a bill payment 
                 await new PaymentApi().addBillPayment(this.handleSuccessCall, this.handleErrorCall, profileId, bill.id, newData);
             }
         } else {
@@ -47,19 +45,36 @@ class BillPayment extends Component {
         const { bill, paidAmount } = this.props.data;
         const { update } = this.props;
         let paidAmountResult = paidAmount === 0 ? bill.amount : paidAmount;
-        let alertMsg = update ? "BillPayment update succesfully !!" : "BillPayment added  succesfully !!"
+        let alertMsg = update ? "Bill payment update succesfully !!" : "Bill payment added  succesfully !!"
         // Checking Full payment paid or not.
         if (response.amount - (paidAmountResult) === 0) {
-            this.setState({ alertColor: "success", alertMessage: alertMsg, paid: true });
-        } else {
-            this.setState({ alertColor: "success", alertMessage: alertMsg });
-        }
-        setTimeout(() => {
-            this.setState({ cancelPayment: true, alertColor: "", alertMessage: "" });
-        }, Config.apiTimeoutMillis)
+            this.setState({ paid: true });
+        } 
+        this.setAlertMessage("success", alertMsg);
+        
+        this.callTimer();
     }
 
-    handleErrorCall = (error) => { this.setState({ doubleClick: false }); }
+    callTimer =()=>{
+        setTimeout(() => {
+            this.setState({ cancelPayment: true });
+            this.setAlertMessage("", "");
+        }, Config.apiTimeoutMillis)
+    }
+    setAlertMessage=(alertColor, alertMessage)=>{
+        this.setState({ alertColor, alertMessage });
+    }
+
+    handleErrorCall = (error) => {
+        const response = error.response ? error.response : '';
+        if (response) {
+            this.setAlertMessage("danger", "Unable to process request, please try again.");
+        } else {
+           this.setAlertMessage("danger", "Please check your internet connection and re-try again."); 
+        }
+        this.setState({ doubleClick: false });
+        this.callTimer();
+    }
 
     handlePaidDate = (date) => {
         return ShowServiceComponent.customDate(date);
@@ -74,24 +89,24 @@ class BillPayment extends Component {
     }
 
     loadPayment = (bill) => {
-        const { currencies } = this.state
+        const { currencies, alertColor, alertMessage} = this.state
+        let notes = this.setNotes(bill);
         let selectedCurrency = currencies && currencies.filter(currency => currency.code === bill.currency);
-        const name = bill.description ? bill.description : (bill.categoryName && bill.categoryName.name)
         let billDate = (bill.billDate + "").slice(0, 4) + "-" + (bill.billDate + "").slice(4, 6) + "-" + (bill.billDate + "").slice(6, 8);
         return <div>
-            {this.state.alertMessage && <Alert color={this.state.alertColor} >{this.state.alertMessage}</Alert>}
+            {alertMessage && ShowServiceComponent.loadAlert(alertColor, alertMessage)}
             <div className=" container shadow p-3 mb-1 md-white rounded border border-dark">
                 <Row>
-                    <Col sm={3}>Bill Amount:</Col>
-                    <Col sm={9}> {selectedCurrency.symbol} &nbsp;{bill.amount > 0 ? bill.amount : -(bill.amount)} </Col>
+                    <Col sm={4}>Bill Amount:</Col>
+                    <Col sm={7}> {selectedCurrency[0].symbol} &nbsp;{bill.amount > 0 ? bill.amount : -(bill.amount)} </Col>
                 </Row> <br />
                 <Row>
-                    <Col sm={3}>Bill Date:</Col>
-                    <Col sm={9}>{billDate}</Col>
+                    <Col sm={4}>Bill Date:</Col>
+                    <Col sm={7}>{billDate}</Col>
                 </Row> <br />
                 <Row>
-                    <Col sm={3}>Bill Notes / Description: </Col>
-                    <Col sm={9}>{name}</Col>
+                    <Col sm={4}>Bill Notes / Description: </Col>
+                    <Col sm={7}>{notes}</Col>
                 </Row>
             </div> <br />
             {bill.paid ? this.loadPaidMessage() : this.loadBillPaymentForm(selectedCurrency[0], bill)}
@@ -117,8 +132,8 @@ class BillPayment extends Component {
             updateNote: update && updatePayment.notes,
             paymentType: bill.amountType === billType.PAYABLE ? paymentType.PAID : paymentType.RECEIVED,
             doubleClick: this.state.doubleClick,
-            amountLable: "Payment Amount (" + selectedCurrency.symbol + ")",
-            buttonText: update ? 'Edit Payment ' : 'Save Payment'
+            amountLable: "Payment amount (" + selectedCurrency.symbol + ")",
+            buttonText: update ? 'Edit' : 'Save'
         }
         return <BillPaymentForm data={formData}
             handleSubmitValue={this.handleSubmitValue}
@@ -134,6 +149,20 @@ class BillPayment extends Component {
         } else {
             return bill.amount < 0 ? -(bill.amount) : bill.amount;
         }
+    }
+
+    setNotes = (bill) => {
+        let notes = "";
+        if (bill.description) {
+            notes = bill.description
+        } else if (bill.categoryName) {
+            notes = bill.categoryName.name
+        } else {
+            const categories = Store.getCategories();
+            const category = categories && categories.length > 0 && categories.filter(item => item.id === bill.categoryId)
+            notes = category && category[0].name
+        }
+        return notes;
     }
 }
 

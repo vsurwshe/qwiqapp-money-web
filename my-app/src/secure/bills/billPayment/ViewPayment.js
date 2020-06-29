@@ -4,6 +4,8 @@ import Store from '../../../data/Store';
 import BillApi from '../../../services/BillApi';
 import PaymentApi from '../../../services/PaymentApi';
 import BillPayment from './ BillPayment';
+import Config from '../../../data/Config';
+import { ShowServiceComponent } from '../../utility/ShowServiceComponent';
 import '../../../css/style.css';
 
 class ViewPayment extends Component {
@@ -46,8 +48,26 @@ class ViewPayment extends Component {
     this.state.bill && new PaymentApi().getBillPayments(this.paymentSuccessCall, this.errorCall, this.props.profileId, this.state.bill.id)
   }
 
-  errorCall = (err) => {
-    console.log("Error: ", err);
+  errorCall = (error) => {
+    const response = error && error.response ? error.response : '';
+    if (response) {
+      this.callTimer('danger', 'Unable to process request, please try again.', true)
+    } else {
+      this.callTimer('danger', 'Please check your internet connection and re-try again.')
+    }
+  }
+
+  setMessage = (color, message) => {
+    this.setState({color, message})
+  }
+
+  callTimer =(color, message, resetMessage)=>{
+    this.setMessage(color, message);
+    if (resetMessage) {
+      setTimeout(() => {
+        this.setMessage('', '');
+      }, Config.apiTimeoutMillis);
+    }
   }
 
   paymentSuccessCall = (payments) => {
@@ -193,7 +213,7 @@ class ViewPayment extends Component {
   noPaymentsAdded = () => {
     return <div>
       <center>
-        <h5 onClick={() => this.handleAddPayment()} >No payments added yet..!  {<u className="loader-color">Click here</u>}  to add payment</h5>
+        {this.state.message ? ShowServiceComponent.loadAlert(this.state.color, this.state.message) : <h5 onClick={() => this.handleAddPayment()} >No payments added yet..!  {<u className="loader-color">Click here</u>}  to add payment</h5>}
       </center>
     </div>
   }
