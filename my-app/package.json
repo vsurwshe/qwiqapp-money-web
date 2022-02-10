@@ -22,7 +22,7 @@
     "image-downloader": "^3.4.2",
     "jquery": "^3.4.1",
     "jspdf": "^1.5.3",
-    "node-sass": "^4.11.0",
+    "node-sass": "^7.0.0",
     "popper": "^1.0.1",
     "popper.js": "^1.14.7",
     "prop-types": "^15.7.2",
